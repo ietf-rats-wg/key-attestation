@@ -7,8 +7,8 @@ consensus: true
 submissiontype: IETF
 
 ipr: trust200902
-area: Security
-workgroup: RATS
+area: "Security"
+workgroup: "Remote ATtestation ProcedureS"
 keyword: Internet-Draft
 
 stand_alone: yes
