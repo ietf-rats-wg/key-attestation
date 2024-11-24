@@ -61,7 +61,7 @@ informative:
 
 entity:
   SELF: "RFCthis"
-  
+
 --- abstract
 
 This document specifies a format for key attestation claims to provide evidence of the security properties of
