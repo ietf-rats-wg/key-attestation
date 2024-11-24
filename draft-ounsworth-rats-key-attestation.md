@@ -81,7 +81,7 @@ evidence within PKCS#10 [{{RFC2986}}] or Certificate Request Message Format (CRM
 
 The content and encoding of this evidence in a CSR are not constrained by [{{I-D.ietf-lamps-csr-attestation}}].
 Hence, it is possible to use the Entity Attestation Token (EAT) {{I-D.ietf-rats-eat}} or, when a DER-based
-encoding of claims is desired, {{I-D.ietf-rats-pkix-evidence}}. For the latter, ASN.1 {{X.680,RFC5912}} is used
+encoding of claims is desired, {{I-D.ietf-rats-pkix-evidence}}. For the latter, ASN.1 {{X.680}}{{RFC5912}} is used
 to describe the claims and for EATs the claims are defined in CDDL.
 
 This specification defines the architecture of key attestation and registers claims for use with {{I-D.ietf-rats-eat}}
