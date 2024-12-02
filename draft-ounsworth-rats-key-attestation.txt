@@ -4,8 +4,11 @@
 
 Remote ATtestation ProcedureS                               M. Ounsworth
 Internet-Draft                                                   Entrust
-Intended status: Standards Track                         2 December 2024
-Expires: 5 June 2025
+Intended status: Standards Track                              M. Wiseman
+Expires: 5 June 2025                                     Beyond Identity
+                                                           H. Tschofenig
+                                                                   H-BRS
+                                                         2 December 2024
 
 
                             Key Attestation
@@ -84,7 +87,7 @@ Table of Contents
      7.1.  Normative References
      7.2.  Informative References
    Appendix A.  Acknowledgements
-   Author's Address
+   Authors' Addresses
 
 1.  Introduction
 
@@ -552,7 +555,7 @@ Appendix A.  Acknowledgements
    of the LAMPS working group.  This specification has been developed
    based on discussions in that design team.
 
-Author's Address
+Authors' Addresses
 
    Mike Ounsworth
    Entrust Limited
@@ -560,3 +563,14 @@ Author's Address
    Ottawa, Ontario  K2K 3G5
    Canada
    Email: mike.ounsworth@entrust.com
+
+
+   Monty Wiseman
+   Beyond Identity
+   United States of America
+   Email: monty.wiseman@beyondidentity.com
+
+
+   Hannes Tschofenig
+   University of Applied Sciences Bonn-Rhein-Siegx
+   Email: Hannes.Tschofenig@gmx.net
