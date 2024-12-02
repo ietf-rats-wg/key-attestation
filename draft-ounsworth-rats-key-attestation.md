@@ -291,7 +291,7 @@ The following table defines key claims relevant for key attestation:
 | NonExportable  | TBD      | BOOLEAN      | {{sect-nonexportable}} | RECOMMENDED |
 | Imported       | TBD      | BOOLEAN      | {{sect-imported}} | RECOMMENDED  |
 | KeyExpiry      | TBD      | Time         | {{sect-keyexpiry}}| OPTIONAL     |
-| FipsMode       | TBD      | BOOLEAN      | {{sect-fipsmode}} | RECOMMENDED  |
+| FipsBoot       | TBD      | BOOLEAN      | {{sect-fipsboot}} | RECOMMENDED  |
 ~~~
 
 A Verifier MAY reject an evidence claim if it lacks required information per their
@@ -350,16 +350,16 @@ KeyExpiry EVIDENCE-CLAIM ::= Time
 ~~~
 
 
-## FipsMode {#sect-fipsmode}
+## FipsBoot {#sect-fipsboot}
 
-Indicates whether the cryptographic module was booted in FIPS mode,
+Indicates whether the cryptographic module was booted in a specific FIPS state,
 including any required self-tests and conditions specified by its FIPS certificate.
 
 ~~~ asn.1
-FipsMode EVIDENCE-CLAIM ::= BOOLEAN IDENTIFIED BY TBD
+FipsBoot EVIDENCE-CLAIM ::= BOOLEAN IDENTIFIED BY TBD
 ~~~
 
-> **Note**: "FIPS Mode" alone does not guarantee "FIPS Certification."
+> **Note**: "FIPS Boot" alone does not guarantee "FIPS Certification."
 This claim should be used alongside a valid FIPS certification.
 
 
