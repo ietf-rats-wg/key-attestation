@@ -37,6 +37,12 @@ author:
     country: Canada
     code: K2K 3G5
     email: mike.ounsworth@entrust.com
+  - name: Henk Birkholz
+   organization: Fraunhofer SIT
+   email: henk.birkholz@ietf.contact
+  - name: Thomas Fossati
+   organization: Linaro
+   email: thomas.fossati@linaro.org
   -
     ins: M. Wiseman
     name: Monty Wiseman
@@ -45,7 +51,7 @@ author:
     email: monty.wiseman@beyondidentity.com
   -
     name: Hannes Tschofenig
-    organization: University of Applied Sciences Bonn-Rhein-Siegx
+    organization: University of Applied Sciences Bonn-Rhein-Sieg
     abbrev: H-BRS
     email: Hannes.Tschofenig@gmx.net
 
