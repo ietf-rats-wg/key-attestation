@@ -37,6 +37,17 @@ author:
     country: Canada
     code: K2K 3G5
     email: mike.ounsworth@entrust.com
+  -
+    ins: M. Wiseman
+    name: Monty Wiseman
+    org: Beyond Identity
+    country: USA
+    email: monty.wiseman@beyondidentity.com
+  -
+    name: Hannes Tschofenig
+    organization: University of Applied Sciences Bonn-Rhein-Siegx
+    abbrev: H-BRS
+    email: Hannes.Tschofenig@gmx.net
 
 normative:
   RFC2119:
