@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-12-01T00:52:04.253345+00:00",
+  "timestamp": "2024-12-03T00:43:45.347693+00:00",
   "repo": "hannestschofenig/key-attestation",
   "labels": [
     {
@@ -49,6 +49,23 @@
       "color": "ffffff"
     }
   ],
-  "issues": [],
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDONUAin86hstFV",
+      "title": "Security Consideration: FIPS Mode",
+      "url": "https://github.com/hannestschofenig/key-attestation/issues/1",
+      "state": "OPEN",
+      "author": "hannestschofenig",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Time at which the attester collected information from the target environment(s) is important with regards to the properties included in the cert. \r\n\r\nFor example, a device may obtain a certificate from a CA after it was booted in FIPS mode. Then, the device reboots in non-FIPS mode. \r\n\r\nLikely implementation: FIPS mode changes are destructive, which means that the certificate and the private key will get deleted. The device will have to obtain a new certificate.\r\n",
+      "createdAt": "2024-12-02T17:53:08Z",
+      "updatedAt": "2024-12-02T17:54:53Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
   "pulls": []
 }
