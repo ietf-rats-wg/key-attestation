@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-12-03T00:43:45.347693+00:00",
+  "timestamp": "2024-12-05T00:43:09.793849+00:00",
   "repo": "hannestschofenig/key-attestation",
   "labels": [
     {
@@ -67,5 +67,32 @@
       "comments": []
     }
   ],
-  "pulls": []
+  "pulls": [
+    {
+      "number": 2,
+      "id": "PR_kwDONUAin86EDZbG",
+      "title": "Editorial suggestions on the introductory parts",
+      "url": "https://github.com/hannestschofenig/key-attestation/pull/2",
+      "state": "OPEN",
+      "author": "frumioj",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2024-12-04T14:47:50Z",
+      "updatedAt": "2024-12-04T14:47:50Z",
+      "baseRepository": "hannestschofenig/key-attestation",
+      "baseRefName": "main",
+      "baseRefOid": "97d1fbea17bd2921238a725f45bc24825f19795d",
+      "headRepository": "frumioj/key-attestation",
+      "headRefName": "patch-1",
+      "headRefOid": "ff4c1c6cf1a511a8f71b7922b424b9a57f514b21",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    }
+  ]
 }
