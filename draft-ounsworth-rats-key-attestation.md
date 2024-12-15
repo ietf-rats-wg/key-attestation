@@ -314,16 +314,17 @@ An initial set of key claims is defined:
 The following table defines key claims relevant for key attestation described
 in ASN.1 for use in X.509 certificates and DER-encoded data structures.
 
-| Claim          | OID      | Value        | Status       |
-| -------------- | -------- | ------------ | ------------ |
-| KeyId          | TBD      | IA5String    | OPTIONAL     |
-| PubKey         | TBD      | OCTET STRING | RECOMMENDED  |
-| Purpose        | TBD      | CHOICE       | RECOMMENDED  |
-| NonExportable  | TBD      | BOOLEAN      | RECOMMENDED |
-| Imported       | TBD      | BOOLEAN      | RECOMMENDED  |
-| KeyExpiry      | TBD      | Time         | OPTIONAL     |
-| FipsBoot       | TBD      | BOOLEAN      | RECOMMENDED  |
+| Claim          | OID      | Data Type    |
+| -------------- | -------- | ------------ |
+| KeyId          | TBD      | IA5String    |
+| PubKey         | TBD      | OCTET STRING |
+| Purpose        | TBD      | CHOICE       |
+| NonExportable  | TBD      | BOOLEAN      |
+| Imported       | TBD      | BOOLEAN      |
+| KeyExpiry      | TBD      | Time         |
+| FipsBoot       | TBD      | BOOLEAN      |
 
+The ASN.1 description can be found below:
 
 ~~~ asn.1
 KeyId EVIDENCE-CLAIM ::= IA5String IDENTIFIED BY TBD
@@ -358,6 +359,8 @@ in CBOR and JSON.
 | imported       | TBD       | bool           |
 | key-expiry     | TBD       | time           |
 | fips-mode      | TBD       | bool           |
+
+TBD: CDDL description
 
 # Security Considerations {#sec-cons}
 
