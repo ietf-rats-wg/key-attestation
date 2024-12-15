@@ -90,7 +90,7 @@ certificate signing request (CSR). The specification defines key claims using AS
 
 # Introduction
 
-When a PKI End Entity provides a Certificate Signing Request (CSR) in requesting a certificate from a Certification Authority (CA), 
+When a PKI End Entity provides a Certificate Signing Request (CSR) in requesting a certificate from a Certification Authority (CA),
 that entity may wish to provide evidence of the security properties of the hardware security module where
 the private key resides. This evidence is verified by a Relying Party, such as a CA, as part of the CSR
 validation against a given certificate policy. [{{I-D.ietf-lamps-csr-attestation}}] specifies how to carry
