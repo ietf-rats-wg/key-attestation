@@ -27,9 +27,7 @@ pi:
   consensus: false
 
 author:
-  -
-    ins: M. Ounsworth
-    name: Mike Ounsworth
+  - name: Mike Ounsworth
     org: Entrust Limited
     abbrev: Entrust
     street: 2500 Solandt Road – Suite 100
