@@ -21,10 +21,9 @@ pi:
   strict: yes
   comments: yes
   inline: yes
-  text-list-symbols: o-*+
-  compact: yes
-  subcompact: yes
-  consensus: false
+  text-list-symbols: -o*+
+  docmapping: yes
+  toc_levels: 4
 
 author:
   - name: Mike Ounsworth
@@ -36,21 +35,19 @@ author:
     code: K2K 3G5
     email: mike.ounsworth@entrust.com
   - name: Henk Birkholz
-   organization: Fraunhofer SIT
-   email: henk.birkholz@ietf.contact
+    organization: Fraunhofer SIT
+    email: henk.birkholz@ietf.contact
   - name: Thomas Fossati
-   organization: Linaro
-   email: thomas.fossati@linaro.org
-  -
-    ins: M. Wiseman
-    name: Monty Wiseman
+    organization: Linaro
+    email: thomas.fossati@linaro.org
+  - name: Monty Wiseman
     org: Beyond Identity
     country: USA
     email: monty.wiseman@beyondidentity.com
-  -
-    name: Hannes Tschofenig
+  - name: Hannes Tschofenig
     organization: University of Applied Sciences Bonn-Rhein-Sieg
     abbrev: H-BRS
+    country: Germany
     email: Hannes.Tschofenig@gmx.net
 
 normative:
