@@ -346,6 +346,10 @@ FipsBoot EVIDENCE-CLAIM ::= BOOLEAN IDENTIFIED BY TBD
 
 # Key Claims for EAT
 
+For use in the Entity Attestation Token (EAT) the claims are
+described in CDDL. As a result, these claims can be encoded
+in CBOR and JSON.
+
 | Claim Name       | Claim Key | CBOR Type      |
 |-------------------|-----------|----------------|
 | key-id         | TBD       | tstr           |
@@ -355,7 +359,6 @@ FipsBoot EVIDENCE-CLAIM ::= BOOLEAN IDENTIFIED BY TBD
 | imported       | TBD       | bool           |
 | key-expiry     | TBD       | time           |
 | fips-mode      | TBD       | bool           |
-
 
 # Security Considerations {#sec-cons}
 
