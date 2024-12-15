@@ -323,38 +323,31 @@ Table of Contents
 
    An initial set of key claims is defined:
 
-   +================================+=================================+
-   | Claim                          | Description                     |
-   +================================+=================================+
-   | KeyId                          | Identifies the subject key,     |
-   |                                | with a vendor-specific format   |
-   |                                | constrained to ASCII            |
-   +--------------------------------+---------------------------------+
-   | PubKey                         | Represents the subject public   |
-   |                                | key being attested.             |
-   +--------------------------------+---------------------------------+
-   | Purpose                        | Defines the intended usage for  |
-   |                                | the key.                        |
-   +--------------------------------+---------------------------------+
-   | NonExportable                  | Indicates if the key is non-    |
-   |                                | exportable.                     |
-   +--------------------------------+---------------------------------+
-   | Imported                       | Shows whether the key was       |
-   |                                | imported.                       |
-   +--------------------------------+---------------------------------+
-   | KeyExpiry                      | Defines the expiry date or "not |
-   |                                | after" time for the key.        |
-   +--------------------------------+---------------------------------+
-   | FipsBoot                       | Indicates whether the           |
-   |                                | cryptographic module was booted |
-   |                                | in a specific FIPS state,       |
-   +--------------------------------+---------------------------------+
-   | including any required self-   |                                 |
-   | tests and conditions specified |                                 |
-   | by its FIPS certificate.       |                                 |
-   +--------------------------------+---------------------------------+
+     +===============+===============================================+
+     | Claim         | Description                                   |
+     +===============+===============================================+
+     | KeyId         | Identifies the subject key, with a vendor-    |
+     |               | specific format constrained to ASCII          |
+     +---------------+-----------------------------------------------+
+     | PubKey        | Represents the subject public key being       |
+     |               | attested.                                     |
+     +---------------+-----------------------------------------------+
+     | Purpose       | Defines the intended usage for the key.       |
+     +---------------+-----------------------------------------------+
+     | NonExportable | Indicates if the key is non-exportable.       |
+     +---------------+-----------------------------------------------+
+     | Imported      | Shows whether the key was imported.           |
+     +---------------+-----------------------------------------------+
+     | KeyExpiry     | Defines the expiry date or "not after" time   |
+     |               | for the key.                                  |
+     +---------------+-----------------------------------------------+
+     | FipsBoot      | Indicates whether the cryptographic module    |
+     |               | was booted in a specific FIPS state,          |
+     |               | including any required self-tests and         |
+     |               | conditions specified by its FIPS certificate. |
+     +---------------+-----------------------------------------------+
 
-                                 Table 1
+                                  Table 1
 
 5.  Data Model
 
