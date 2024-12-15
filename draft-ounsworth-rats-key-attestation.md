@@ -305,8 +305,7 @@ An initial set of key claims is defined:
 | NonExportable  | Indicates if the key is non-exportable. |
 | Imported       | Shows whether the key was imported. |
 | KeyExpiry      | Defines the expiry date or "not after" time for the key. |
-| FipsBoot       | Indicates whether the cryptographic module was booted in a specific FIPS state,
-including any required self-tests and conditions specified by its FIPS certificate. |
+| FipsBoot       | Indicates whether the cryptographic module was booted in a specific FIPS state, including any required self-tests and conditions specified by its FIPS certificate. |
 
 # Data Model
 
