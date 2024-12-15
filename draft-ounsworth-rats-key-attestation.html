@@ -1578,8 +1578,7 @@ in ASN.1 for use in X.509 certificates and DER-encoded data structures.<a href="
             <tr>
               <th class="text-left" rowspan="1" colspan="1">Claim</th>
               <th class="text-left" rowspan="1" colspan="1">OID</th>
-              <th class="text-left" rowspan="1" colspan="1">Value</th>
-              <th class="text-left" rowspan="1" colspan="1">Status</th>
+              <th class="text-left" rowspan="1" colspan="1">Data Type</th>
             </tr>
           </thead>
           <tbody>
@@ -1587,61 +1586,41 @@ in ASN.1 for use in X.509 certificates and DER-encoded data structures.<a href="
               <td class="text-left" rowspan="1" colspan="1">KeyId</td>
               <td class="text-left" rowspan="1" colspan="1">TBD</td>
               <td class="text-left" rowspan="1" colspan="1">IA5String</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">OPTIONAL</span>
-</td>
             </tr>
             <tr>
               <td class="text-left" rowspan="1" colspan="1">PubKey</td>
               <td class="text-left" rowspan="1" colspan="1">TBD</td>
               <td class="text-left" rowspan="1" colspan="1">OCTET STRING</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">RECOMMENDED</span>
-</td>
             </tr>
             <tr>
               <td class="text-left" rowspan="1" colspan="1">Purpose</td>
               <td class="text-left" rowspan="1" colspan="1">TBD</td>
               <td class="text-left" rowspan="1" colspan="1">CHOICE</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">RECOMMENDED</span>
-</td>
             </tr>
             <tr>
               <td class="text-left" rowspan="1" colspan="1">NonExportable</td>
               <td class="text-left" rowspan="1" colspan="1">TBD</td>
               <td class="text-left" rowspan="1" colspan="1">BOOLEAN</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">RECOMMENDED</span>
-</td>
             </tr>
             <tr>
               <td class="text-left" rowspan="1" colspan="1">Imported</td>
               <td class="text-left" rowspan="1" colspan="1">TBD</td>
               <td class="text-left" rowspan="1" colspan="1">BOOLEAN</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">RECOMMENDED</span>
-</td>
             </tr>
             <tr>
               <td class="text-left" rowspan="1" colspan="1">KeyExpiry</td>
               <td class="text-left" rowspan="1" colspan="1">TBD</td>
               <td class="text-left" rowspan="1" colspan="1">Time</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">OPTIONAL</span>
-</td>
             </tr>
             <tr>
               <td class="text-left" rowspan="1" colspan="1">FipsBoot</td>
               <td class="text-left" rowspan="1" colspan="1">TBD</td>
               <td class="text-left" rowspan="1" colspan="1">BOOLEAN</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">RECOMMENDED</span>
-</td>
             </tr>
           </tbody>
         </table>
-<div class="lang-asn.1 sourcecode" id="section-5.1-3">
+<p id="section-5.1-3">The ASN.1 description can be found below:<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+<div class="lang-asn.1 sourcecode" id="section-5.1-4">
 <pre>
 KeyId EVIDENCE-CLAIM ::= IA5String IDENTIFIED BY TBD
 
@@ -1658,7 +1637,7 @@ Imported EVIDENCE-CLAIM ::= BOOLEAN IDENTIFIED BY TBD
 KeyExpiry EVIDENCE-CLAIM ::= Time
 
 FipsBoot EVIDENCE-CLAIM ::= BOOLEAN IDENTIFIED BY TBD
-</pre><a href="#section-5.1-3" class="pilcrow">¶</a>
+</pre><a href="#section-5.1-4" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
@@ -1719,6 +1698,7 @@ in CBOR and JSON.<a href="#section-6-1" class="pilcrow">¶</a></p>
           </tr>
         </tbody>
       </table>
+<p id="section-6-3">TBD: CDDL description<a href="#section-6-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-cons">
