@@ -4,11 +4,15 @@
 
 Remote ATtestation ProcedureS                               M. Ounsworth
 Internet-Draft                                                   Entrust
-Intended status: Standards Track                              M. Wiseman
-Expires: 5 June 2025                                     Beyond Identity
+Intended status: Standards Track                             H. Birkholz
+Expires: 18 June 2025                                     Fraunhofer SIT
+                                                              T. Fossati
+                                                                  Linaro
+                                                              M. Wiseman
+                                                         Beyond Identity
                                                            H. Tschofenig
                                                                    H-BRS
-                                                         2 December 2024
+                                                        15 December 2024
 
 
                             Key Attestation
@@ -18,11 +22,11 @@ Abstract
 
    This document specifies a format for key attestation claims to
    provide evidence of the security properties of trusted execution
-   environments and secure elements in which private keys are stored.
-   This evidence is intended to be used by a Relying Party, such as a
-   Certification Authority (CA), as part of validating an incoming
-   certificate signing request (CSR).  The specification defines key
-   claims using ASN.1 and CDDL.
+   environments and secure elements in which private keys may be
+   generated and stored.  This evidence is intended to be used by a
+   Relying Party, such as a Certification Authority (CA), as part of
+   validating an incoming certificate signing request (CSR).  The
+   specification defines key claims using ASN.1 and CDDL.
 
 Discussion Venues
 
@@ -50,7 +54,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 5 June 2025.
+   This Internet-Draft will expire on 18 June 2025.
 
 Copyright Notice
 
@@ -71,32 +75,28 @@ Table of Contents
    1.  Introduction
    2.  Terminology
    3.  Architecture
-   4.  Key Claims
-     4.1.  KeyId
-     4.2.  PubKey
-     4.3.  Purpose
-     4.4.  NonExportable
-     4.5.  Imported
-     4.6.  KeyExpiry
-     4.7.  FipsBoot
-   5.  Security Considerations
-   6.  IANA Considerations
-     6.1.  OID Registration for Key Attestation Claims
-     6.2.  EAT Claims for Key Attestation
-   7.  References
-     7.1.  Normative References
-     7.2.  Informative References
+   4.  Information Model
+   5.  Data Model
+     5.1.  Key Claims for ASN.1
+   6.  Key Claims for EAT
+   7.  Security Considerations
+   8.  IANA Considerations
+     8.1.  Key Claims for ASN.1
+     8.2.  Key Claims for EAT
+   9.  References
+     9.1.  Normative References
+     9.2.  Informative References
    Appendix A.  Acknowledgements
    Authors' Addresses
 
 1.  Introduction
 
-   When a Certificate Signing Request (CSR) library requests a
-   certificate from a Certification Authority (CA), a PKI end entity may
-   wish to provide evidence of the security properties of the hardware
-   security module where the private key resides.  This evidence is
-   verified by a Relying Party, such as a CA, as part of the CSR
-   validation against a given certificate policy.
+   When a PKI End Entity provides a Certificate Signing Request (CSR) in
+   requesting a certificate from a Certification Authority (CA), that
+   entity may wish to provide evidence of the security properties of the
+   hardware security module where the private key resides.  This
+   evidence is verified by a Relying Party, such as a CA, as part of the
+   CSR validation against a given certificate policy.
    [[I-D.ietf-lamps-csr-attestation]] specifies how to carry evidence
    within PKCS#10 [[RFC2986]] or Certificate Request Message Format
    (CRMF) [[RFC4211]].
@@ -106,11 +106,11 @@ Table of Contents
    possible to use the Entity Attestation Token (EAT)
    [I-D.ietf-rats-eat] or, when a DER-based encoding of claims is
    desired, [I-D.ietf-rats-pkix-evidence].  For the latter, ASN.1
-   [X.680][RFC5912] is used to describe the claims and for EATs the
+   [X.680][RFC5912] is used to describe the claims, and for EATs the
    claims are defined in CDDL.
 
-   This specification defines the architecture of key attestation and
-   registers claims for use with [I-D.ietf-rats-eat] and
+   This specification defines the architecture for performing key
+   attestation and registers claims for use with [I-D.ietf-rats-eat] and
    [I-D.ietf-rats-pkix-evidence].
 
 2.  Terminology
@@ -137,9 +137,9 @@ Table of Contents
 
    Key Attestation:
       Evidence containing properties of the environment(s) in which the
-      private keys are stored.  For example, a Relying Party may want to
-      know whether a private key is stored in a hardware security module
-      and cannot be exported in unencrypted fashion.
+      private keys are generated and stored.  For example, a Relying
+      Party may want to know whether a private key is stored in a
+      hardware security module and cannot be exported in cleartext.
 
    Key Attestation Key (KAK):
       An AK used specifically for signing KATs.  In some systems only a
@@ -153,7 +153,7 @@ Table of Contents
 
    Usage Protocol:
       A (security) protocol that requires demonstrating possession of
-      the private IK.
+      the private component of the IK.
 
    Attestation Token (AT):
       A collection of claims that a RoT assembles (and signs) with the
@@ -213,20 +213,21 @@ Table of Contents
    physical entity.
 
    Security-sensitive functionality, like attestation, has to be placed
-   into the Root of Trust (RoT).  Since the RoT itself may be
-   implemented as part of different layers, the design allows platform
-   attestation to be separated from key attestation whereby platform
-   attestation is more privileged than the key attestation code.
-   Cryptographic services, used by key attestation and by platform
-   attestation, are typically part of separate components within the RoT
-   but they are not shown in the figure.
+   into the Root of Trust (RoT).  Since the RoT itself may be comprised
+   of different components, the design allows platform attestation to be
+   separated from key attestation whereby platform attestation is more
+   privileged than the key attestation code.  Cryptographic services,
+   used by key attestation and by platform attestation, are typically
+   part of separate components within the RoT but they are not shown in
+   the figure.
 
    The protocol used for communication between the Presenter and the
-   Recipient is referred as usage protocol.  The usage protocol, which
-   is outside the scope of this specification, needs to support proof-
-   of-possession of the private key (explained further below).  Examples
-   of usage protocols are attested TLS [I-D.fossati-tls-attestation] or
-   attested CSR [I-D.ietf-lamps-csr-attestation].
+   Recipient is referred as the Usage Protocol.  The Usage Protocol,
+   which is outside the scope of this specification, needs to support
+   proof-of-possession of the private key (explained further below).
+   Examples of usage protocols are attested TLS
+   [I-D.fossati-tls-attestation] or attested CSR
+   [I-D.ietf-lamps-csr-attestation].
 
      .------------------------------------.
     | .----------------------------------. |
@@ -301,29 +302,127 @@ Table of Contents
 
    *  The signature covering the PAT passes verification when using
       available trust anchor(s).
+
    *  The chaining of the PAT and the KAT has to be verified.  The
       detailed verification procedure depends on the chaining mechanism
       utilized.
+
    *  The claims in the PAT are matched against stored reference values.
+
    *  The signature protecting the KAT must pass verification.
+
    *  The KAT is checked for replays.
 
    Once all these steps are completed, the verifier produces the
    attestation result and includes (if needed) the IK public key (pIK).
 
-4.  Key Claims
+4.  Information Model
 
-   The following table defines key claims relevant for key attestation:
+   This section describes the semantics of the key claims as part of the
+   information model.
 
-| Claim          | OID      | Value        | Section           | Status       |
-| -------------- | -------- | ------------ | ----------------- | ------------ |
-| KeyId          | TBD      | IA5String    | {{sect-keyid}}    | OPTIONAL     |
-| PubKey         | TBD      | OCTET STRING | {{sect-pubkey}}   | RECOMMENDED  |
-| Purpose        | TBD      | CHOICE       | {{sect-purpose}}  | RECOMMENDED  |
-| NonExportable  | TBD      | BOOLEAN      | {{sect-nonexportable}} | RECOMMENDED |
-| Imported       | TBD      | BOOLEAN      | {{sect-imported}} | RECOMMENDED  |
-| KeyExpiry      | TBD      | Time         | {{sect-keyexpiry}}| OPTIONAL     |
-| FipsBoot       | TBD      | BOOLEAN      | {{sect-fipsboot}} | RECOMMENDED  |
+   An initial set of key claims is defined:
+
+   +================================+=================================+
+   | Claim                          | Description                     |
+   +================================+=================================+
+   | KeyId                          | Identifies the subject key,     |
+   |                                | with a vendor-specific format   |
+   |                                | constrained to ASCII            |
+   +--------------------------------+---------------------------------+
+   | PubKey                         | Represents the subject public   |
+   |                                | key being attested.             |
+   +--------------------------------+---------------------------------+
+   | Purpose                        | Defines the intended usage for  |
+   |                                | the key.                        |
+   +--------------------------------+---------------------------------+
+   | NonExportable                  | Indicates if the key is non-    |
+   |                                | exportable.                     |
+   +--------------------------------+---------------------------------+
+   | Imported                       | Shows whether the key was       |
+   |                                | imported.                       |
+   +--------------------------------+---------------------------------+
+   | KeyExpiry                      | Defines the expiry date or "not |
+   |                                | after" time for the key.        |
+   +--------------------------------+---------------------------------+
+   | FipsBoot                       | Indicates whether the           |
+   |                                | cryptographic module was booted |
+   |                                | in a specific FIPS state,       |
+   +--------------------------------+---------------------------------+
+   | including any required self-   |                                 |
+   | tests and conditions specified |                                 |
+   | by its FIPS certificate.       |                                 |
+   +--------------------------------+---------------------------------+
+
+                                 Table 1
+
+5.  Data Model
+
+5.1.  Key Claims for ASN.1
+
+   The following table defines key claims relevant for key attestation
+   described in ASN.1 for use in X.509 certificates and DER-encoded data
+   structures.
+
+           +===============+=====+==============+=============+
+           | Claim         | OID | Value        | Status      |
+           +===============+=====+==============+=============+
+           | KeyId         | TBD | IA5String    | OPTIONAL    |
+           +---------------+-----+--------------+-------------+
+           | PubKey        | TBD | OCTET STRING | RECOMMENDED |
+           +---------------+-----+--------------+-------------+
+           | Purpose       | TBD | CHOICE       | RECOMMENDED |
+           +---------------+-----+--------------+-------------+
+           | NonExportable | TBD | BOOLEAN      | RECOMMENDED |
+           +---------------+-----+--------------+-------------+
+           | Imported      | TBD | BOOLEAN      | RECOMMENDED |
+           +---------------+-----+--------------+-------------+
+           | KeyExpiry     | TBD | Time         | OPTIONAL    |
+           +---------------+-----+--------------+-------------+
+           | FipsBoot      | TBD | BOOLEAN      | RECOMMENDED |
+           +---------------+-----+--------------+-------------+
+
+                                 Table 2
+
+   KeyId EVIDENCE-CLAIM ::= IA5String IDENTIFIED BY TBD
+
+   PubKey EVIDENCE-CLAIM ::= OCTET STRING IDENTIFIED BY TBD
+
+   Purpose EVIDENCE-CLAIM ::= CHOICE IDENTIFIED BY TBD {
+      Sign, Decrypt, Unwrap, ...
+   }
+
+   NonExportable EVIDENCE-CLAIM ::= BOOLEAN IDENTIFIED BY TBD
+
+   Imported EVIDENCE-CLAIM ::= BOOLEAN IDENTIFIED BY TBD
+
+   KeyExpiry EVIDENCE-CLAIM ::= Time
+
+   FipsBoot EVIDENCE-CLAIM ::= BOOLEAN IDENTIFIED BY TBD
+
+6.  Key Claims for EAT
+
+                +================+===========+============+
+                | Claim Name     | Claim Key | CBOR Type  |
+                +================+===========+============+
+                | key-id         | TBD       | tstr       |
+                +----------------+-----------+------------+
+                | pub-key        | TBD       | bstr       |
+                +----------------+-----------+------------+
+                | purpose        | TBD       | tstr/array |
+                +----------------+-----------+------------+
+                | non-exportable | TBD       | bool       |
+                +----------------+-----------+------------+
+                | imported       | TBD       | bool       |
+                +----------------+-----------+------------+
+                | key-expiry     | TBD       | time       |
+                +----------------+-----------+------------+
+                | fips-mode      | TBD       | bool       |
+                +----------------+-----------+------------+
+
+                                  Table 3
+
+7.  Security Considerations
 
    A Verifier MAY reject an evidence claim if it lacks required
    information per their appraisal policy.  For example, if a Relying
@@ -331,66 +430,15 @@ Table of Contents
    lacking sufficient information to verify the device's FIPS
    certification status.
 
-4.1.  KeyId
+   "FIPS Boot" alone does not guarantee "FIPS Certification".  This
+   claim should be used alongside a valid FIPS certification.
 
-   Identifies the subject key, with a vendor-specific format constrained
-   to ASCII (IA5String).
-
-   KeyId EVIDENCE-CLAIM ::= IA5String IDENTIFIED BY TBD
-
-4.2.  PubKey
-
-   Represents the subject public key being attested.
-
-   PubKey EVIDENCE-CLAIM ::= OCTET STRING IDENTIFIED BY TBD
-
-4.3.  Purpose
-
-   Defines the intended usage for the key.
-
-   Purpose EVIDENCE-CLAIM ::= CHOICE IDENTIFIED BY TBD {
-      Sign, Decrypt, Unwrap, ...
-   }
-
-4.4.  NonExportable
-
-   Indicates if the key is non-exportable.
-
-   NonExportable EVIDENCE-CLAIM ::= BOOLEAN IDENTIFIED BY TBD
-
-4.5.  Imported
-
-   Shows whether the key was imported.
-
-   Imported EVIDENCE-CLAIM ::= BOOLEAN IDENTIFIED BY TBD
-
-4.6.  KeyExpiry
-
-   Defines the expiry date or "not after" time for the key.
-
-   KeyExpiry EVIDENCE-CLAIM ::= Time
-
-4.7.  FipsBoot
-
-   Indicates whether the cryptographic module was booted in a specific
-   FIPS state, including any required self-tests and conditions
-   specified by its FIPS certificate.
-
-   FipsBoot EVIDENCE-CLAIM ::= BOOLEAN IDENTIFIED BY TBD
-
-      *Note*: "FIPS Boot" alone does not guarantee "FIPS Certification."
-      This claim should be used alongside a valid FIPS certification.
-
-5.  Security Considerations
-
-   TBD.
-
-6.  IANA Considerations
+8.  IANA Considerations
 
    Please replace "RFCthis" with the RFC number assigned to this
    document.
 
-6.1.  OID Registration for Key Attestation Claims
+8.1.  Key Claims for ASN.1
 
    This document requests the registration of new Object Identifiers
    (OIDs) for the key attestation claims defined in this specification.
@@ -421,16 +469,17 @@ Table of Contents
                 | nested-evidences | TBD.OID | RFCthis   |
                 +------------------+---------+-----------+
 
-                                 Table 1
+                                 Table 4
 
    Note:
 
    *  The TBD.OID values will be assigned by IANA during the
       registration process.
+
    *  These OIDs are intended for use in ASN.1 data structures for the
       key attestation claims defined in this document.
 
-6.2.  EAT Claims for Key Attestation
+8.2.  Key Claims for EAT
 
    This document requests the registration of new claims in the "EAT
    Claims" registry defined by [I-D.ietf-rats-eat].  These claims are
@@ -457,18 +506,19 @@ Table of Contents
           | fips-mode      | TBD       | bool       | RFCthis   |
           +----------------+-----------+------------+-----------+
 
-                                  Table 2
+                                  Table 5
 
    Note:
 
    *  The exact "Claim Key" values (TBD) will be assigned by IANA during
       the registration process.
+
    *  The CBOR types are defined as per [RFC8949], with appropriate
       encoding rules for each claim.
 
-7.  References
+9.  References
 
-7.1.  Normative References
+9.1.  Normative References
 
    [I-D.ietf-rats-eat]
               Lundblade, L., Mandyam, G., O'Donoghue, J., and C.
@@ -500,7 +550,7 @@ Table of Contents
               One (ASN.1): Specification of basic notation", n.d.,
               <https://www.itu.int/rec/T-REC-X.680>.
 
-7.2.  Informative References
+9.2.  Informative References
 
    [I-D.bft-rats-kat]
               Brossard, M., Fossati, T., Tschofenig, H., and H.
@@ -565,6 +615,16 @@ Authors' Addresses
    Email: mike.ounsworth@entrust.com
 
 
+   Henk Birkholz
+   Fraunhofer SIT
+   Email: henk.birkholz@ietf.contact
+
+
+   Thomas Fossati
+   Linaro
+   Email: thomas.fossati@linaro.org
+
+
    Monty Wiseman
    Beyond Identity
    United States of America
@@ -572,5 +632,6 @@ Authors' Addresses
 
 
    Hannes Tschofenig
-   University of Applied Sciences Bonn-Rhein-Siegx
+   University of Applied Sciences Bonn-Rhein-Sieg
+   Germany
    Email: Hannes.Tschofenig@gmx.net
