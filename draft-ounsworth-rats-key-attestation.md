@@ -302,7 +302,6 @@ model.
 
 An initial set of key claims is defined:
 
-~~~
 | Claim          | Description     |
 | -------------- | -------- |
 | KeyId          | Identifies the subject key, with a vendor-specific format constrained to ASCII |
@@ -313,7 +312,6 @@ An initial set of key claims is defined:
 | KeyExpiry      | Defines the expiry date or "not after" time for the key. |
 | FipsBoot       | Indicates whether the cryptographic module was booted in a specific FIPS state,
 including any required self-tests and conditions specified by its FIPS certificate. |
-~~~
 
 # Data Model
 
@@ -322,7 +320,6 @@ including any required self-tests and conditions specified by its FIPS certifica
 The following table defines key claims relevant for key attestation described
 in ASN.1 for use in X.509 certificates and DER-encoded data structures.
 
-~~~
 | Claim          | OID      | Value        | Status       |
 | -------------- | -------- | ------------ | ------------ |
 | KeyId          | TBD      | IA5String    | OPTIONAL     |
@@ -332,7 +329,7 @@ in ASN.1 for use in X.509 certificates and DER-encoded data structures.
 | Imported       | TBD      | BOOLEAN      | RECOMMENDED  |
 | KeyExpiry      | TBD      | Time         | OPTIONAL     |
 | FipsBoot       | TBD      | BOOLEAN      | RECOMMENDED  |
-~~~
+
 
 ~~~ asn.1
 KeyId EVIDENCE-CLAIM ::= IA5String IDENTIFIED BY TBD
