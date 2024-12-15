@@ -295,100 +295,91 @@ Recipient, whereby the following checks are made:
 Once all these steps are completed, the verifier produces the
 attestation result and includes (if needed) the IK public key (pIK).
 
-# Key Claims
+# Information Model
 
-The following table defines key claims relevant for key attestation:
+This section describes the semantics of the key claims as part of the information
+model.
+
+An initial set of key claims is defined:
 
 ~~~
-| Claim          | OID      | Value        | Section           | Status       |
-| -------------- | -------- | ------------ | ----------------- | ------------ |
-| KeyId          | TBD      | IA5String    | {{sect-keyid}}    | OPTIONAL     |
-| PubKey         | TBD      | OCTET STRING | {{sect-pubkey}}   | RECOMMENDED  |
-| Purpose        | TBD      | CHOICE       | {{sect-purpose}}  | RECOMMENDED  |
-| NonExportable  | TBD      | BOOLEAN      | {{sect-nonexportable}} | RECOMMENDED |
-| Imported       | TBD      | BOOLEAN      | {{sect-imported}} | RECOMMENDED  |
-| KeyExpiry      | TBD      | Time         | {{sect-keyexpiry}}| OPTIONAL     |
-| FipsBoot       | TBD      | BOOLEAN      | {{sect-fipsboot}} | RECOMMENDED  |
+| Claim          | Description     |
+| -------------- | -------- |
+| KeyId          | Identifies the subject key, with a vendor-specific format constrained to ASCII |
+| PubKey         | Represents the subject public key being attested. |
+| Purpose        | Defines the intended usage for the key. |
+| NonExportable  | Indicates if the key is non-exportable. |
+| Imported       | Shows whether the key was imported. |
+| KeyExpiry      | Defines the expiry date or "not after" time for the key. |
+| FipsBoot       | Indicates whether the cryptographic module was booted in a specific FIPS state,
+including any required self-tests and conditions specified by its FIPS certificate. |
 ~~~
+
+# Data Model
+
+## Key Claims for ASN.1
+
+The following table defines key claims relevant for key attestation described
+in ASN.1 for use in X.509 certificates and DER-encoded data structures.
+
+~~~
+| Claim          | OID      | Value        | Status       |
+| -------------- | -------- | ------------ | ------------ |
+| KeyId          | TBD      | IA5String    | OPTIONAL     |
+| PubKey         | TBD      | OCTET STRING | RECOMMENDED  |
+| Purpose        | TBD      | CHOICE       | RECOMMENDED  |
+| NonExportable  | TBD      | BOOLEAN      | RECOMMENDED |
+| Imported       | TBD      | BOOLEAN      | RECOMMENDED  |
+| KeyExpiry      | TBD      | Time         | OPTIONAL     |
+| FipsBoot       | TBD      | BOOLEAN      | RECOMMENDED  |
+~~~
+
+~~~ asn.1
+KeyId EVIDENCE-CLAIM ::= IA5String IDENTIFIED BY TBD
+
+PubKey EVIDENCE-CLAIM ::= OCTET STRING IDENTIFIED BY TBD
+
+Purpose EVIDENCE-CLAIM ::= CHOICE IDENTIFIED BY TBD {
+   Sign, Decrypt, Unwrap, ...
+}
+
+NonExportable EVIDENCE-CLAIM ::= BOOLEAN IDENTIFIED BY TBD
+
+Imported EVIDENCE-CLAIM ::= BOOLEAN IDENTIFIED BY TBD
+
+KeyExpiry EVIDENCE-CLAIM ::= Time
+
+FipsBoot EVIDENCE-CLAIM ::= BOOLEAN IDENTIFIED BY TBD
+~~~
+
+# Key Claims for EAT
+
+| Claim Name       | Claim Key | CBOR Type      |
+|-------------------|-----------|----------------|
+| key-id         | TBD       | tstr           |
+| pub-key        | TBD       | bstr           |
+| purpose        | TBD       | tstr/array     |
+| non-exportable | TBD       | bool           |
+| imported       | TBD       | bool           |
+| key-expiry     | TBD       | time           |
+| fips-mode      | TBD       | bool           |
+
+
+# Security Considerations {#sec-cons}
 
 A Verifier MAY reject an evidence claim if it lacks required information per their
 appraisal policy. For example, if a Relying Party mandates a FIPS-certified device,
 it SHOULD reject evidence lacking sufficient information to verify the device's FIPS
 certification status.
 
-## KeyId {#sect-keyid}
-
-Identifies the subject key, with a vendor-specific format constrained to ASCII (IA5String).
-
-~~~ asn.1
-KeyId EVIDENCE-CLAIM ::= IA5String IDENTIFIED BY TBD
-~~~
-
-## PubKey {#sect-pubkey}
-
-Represents the subject public key being attested.
-
-~~~ asn.1
-PubKey EVIDENCE-CLAIM ::= OCTET STRING IDENTIFIED BY TBD
-~~~
-
-## Purpose {#sect-purpose}
-
-Defines the intended usage for the key.
-
-~~~ asn.1
-Purpose EVIDENCE-CLAIM ::= CHOICE IDENTIFIED BY TBD {
-   Sign, Decrypt, Unwrap, ...
-}
-~~~
-
-## NonExportable {#sect-nonexportable}
-
-Indicates if the key is non-exportable.
-
-~~~ asn.1
-NonExportable EVIDENCE-CLAIM ::= BOOLEAN IDENTIFIED BY TBD
-~~~
-
-## Imported {#sect-imported}
-
-Shows whether the key was imported.
-
-~~~ asn.1
-Imported EVIDENCE-CLAIM ::= BOOLEAN IDENTIFIED BY TBD
-~~~
-
-## KeyExpiry {#sect-keyexpiry}
-
-Defines the expiry date or "not after" time for the key.
-
-~~~ asn.1
-KeyExpiry EVIDENCE-CLAIM ::= Time
-~~~
-
-
-## FipsBoot {#sect-fipsboot}
-
-Indicates whether the cryptographic module was booted in a specific FIPS state,
-including any required self-tests and conditions specified by its FIPS certificate.
-
-~~~ asn.1
-FipsBoot EVIDENCE-CLAIM ::= BOOLEAN IDENTIFIED BY TBD
-~~~
-
-> **Note**: "FIPS Boot" alone does not guarantee "FIPS Certification."
-This claim should be used alongside a valid FIPS certification.
-
-
-# Security Considerations {#sec-cons}
-
-TBD.
+"FIPS Boot" alone does not guarantee "FIPS Certification". This claim should be used
+alongside a valid FIPS certification.
 
 #  IANA Considerations
 
 Please replace "{{&SELF}}" with the RFC number assigned to this document.
 
-## OID Registration for Key Attestation Claims
+## Key Claims for ASN.1
 
 This document requests the registration of new Object Identifiers (OIDs) for the key attestation claims defined in this
 specification. The OIDs are to be registered under an appropriate OID arc managed by IANA.
@@ -412,7 +403,7 @@ Note:
 - The `TBD.OID` values will be assigned by IANA during the registration process.
 - These OIDs are intended for use in ASN.1 data structures for the key attestation claims defined in this document.
 
-## EAT Claims for Key Attestation
+## Key Claims for EAT
 
 This document requests the registration of new claims in the "EAT Claims" registry defined by {{I-D.ietf-rats-eat}}.
 These claims are specific to key attestation and are intended for use in the context of the Entity Attestation Token (EAT).
@@ -433,7 +424,6 @@ Note:
 
 - The exact "Claim Key" values (TBD) will be assigned by IANA during the registration process.
 - The CBOR types are defined as per {{RFC8949}}, with appropriate encoding rules for each claim.
-
 
 --- back
 
