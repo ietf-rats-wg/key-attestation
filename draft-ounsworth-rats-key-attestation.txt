@@ -402,6 +402,10 @@ Table of Contents
 
 6.  Key Claims for EAT
 
+   For use in the Entity Attestation Token (EAT) the claims are
+   described in CDDL.  As a result, these claims can be encoded in CBOR
+   and JSON.
+
                 +================+===========+============+
                 | Claim Name     | Claim Key | CBOR Type  |
                 +================+===========+============+
