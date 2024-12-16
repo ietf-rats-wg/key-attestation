@@ -61,6 +61,12 @@ normative:
         org: ITU-T
         date: false
      target: https://www.itu.int/rec/T-REC-X.680
+  PKCS11:
+    title: "PKCS #11 Specification Version 3.1"
+    author:
+      org: OASIS PKCS 11 TC
+      date: false
+    target: https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/csd01/pkcs11-spec-v3.1-csd01.html
 
 informative:
   RFC5912:
@@ -297,15 +303,16 @@ model.
 
 An initial set of key claims is defined:
 
-| Claim          | Description     |
-| -------------- | -------- |
-| KeyId          | Identifies the subject key, with a vendor-specific format constrained to ASCII |
-| PubKey         | Represents the subject public key being attested. |
-| Purpose        | Defines the intended usage for the key. |
-| NonExportable  | Indicates if the key is non-exportable. |
-| Imported       | Shows whether the key was imported. |
-| KeyExpiry      | Defines the expiry date or "not after" time for the key. |
-| FipsBoot       | Indicates whether the cryptographic module was booted in a specific FIPS state, including any required self-tests and conditions specified by its FIPS certificate. |
+| Claim          | Definition | Description     |
+| -------------- | ---------- | -------- |
+| KeyId          | This document | Identifies the subject key, with a vendor-specific format constrained to ASCII |
+| PubKey         | This document | Represents the subject public key being attested. |
+| Purpose        | ??? | Defines the intended usage for the key. |
+| Exportable      | {{PKCS11}} CKA_EXTRACTABLE | Indicates if the key is able to be exported from the module. |
+| NeverExportable | {{PKCS11}} CKA_NEVER_EXTRACTABLE | Indicates if the key was able to be exported from the module. |
+| Imported       | ??? | Shows whether the key was imported. |
+| KeyExpiry      | ??? | Defines the expiry date or "not after" time for the key. |
+| FipsBoot       | This document | Indicates whether the cryptographic module was booted in a specific FIPS state, including any required self-tests and conditions specified by its FIPS certificate. |
 
 # Data Model
 
