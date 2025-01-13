@@ -5,14 +5,14 @@
 Remote ATtestation ProcedureS                               M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             H. Birkholz
-Expires: 20 June 2025                                     Fraunhofer SIT
+Expires: 17 July 2025                                     Fraunhofer SIT
                                                               T. Fossati
                                                                   Linaro
                                                               M. Wiseman
                                                          Beyond Identity
                                                            H. Tschofenig
                                                                    H-BRS
-                                                        17 December 2024
+                                                         13 January 2025
 
 
                             Key Attestation
@@ -54,11 +54,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 20 June 2025.
+   This Internet-Draft will expire on 17 July 2025.
 
 Copyright Notice
 
-   Copyright (c) 2024 IETF Trust and the persons identified as the
+   Copyright (c) 2025 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -75,17 +75,18 @@ Table of Contents
    1.  Introduction
    2.  Terminology
    3.  Architecture
-   4.  Information Model
-   5.  Data Model
-     5.1.  Key Claims for ASN.1
-   6.  Key Claims for EAT
-   7.  Security Considerations
-   8.  IANA Considerations
-     8.1.  Key Claims for ASN.1
-     8.2.  Key Claims for EAT
-   9.  References
-     9.1.  Normative References
-     9.2.  Informative References
+   4.  Submodule Model
+   5.  Information Model
+   6.  Data Model
+     6.1.  Key Claims for ASN.1
+   7.  Key Claims for EAT
+   8.  Security Considerations
+   9.  IANA Considerations
+     9.1.  Key Claims for ASN.1
+     9.2.  Key Claims for EAT
+   10. References
+     10.1.  Normative References
+     10.2.  Informative References
    Appendix A.  Acknowledgements
    Authors' Addresses
 
@@ -316,7 +317,24 @@ Table of Contents
    Once all these steps are completed, the verifier produces the
    attestation result and includes (if needed) the IK public key (pIK).
 
-4.  Information Model
+4.  Submodule Model
+
+   An EAT Key Attestation MUST be nested within a Platform Attestation
+   by using the EAT *__* Claim to achieve the nesting.
+
+   In this way, one or more Key Attestation objects can be nested within
+   the same Platform Attestation.
+
+   ACTION: Ned / Henk to figure out the details here, which needs some
+   coordination with the RATS WG -- do we want to use EAT SubMods, or
+   wait for Laurence to define a more better, less complicated CWM-based
+   SubMods claim.
+
+   Evidence { hwserial: 0x1234, fipsboot: true submods { key1 { keyhash:
+   0xa1b2c3, nonexportable: true }, key2 { keyhash: 0x3c2b1a,
+   nonexportable: false } } }
+
+5.  Information Model
 
    This section describes the semantics of the key claims as part of the
    information model.
@@ -369,9 +387,9 @@ Table of Contents
 
                                   Table 1
 
-5.  Data Model
+6.  Data Model
 
-5.1.  Key Claims for ASN.1
+6.1.  Key Claims for ASN.1
 
    The following table defines key claims relevant for key attestation
    described in ASN.1 for use in X.509 certificates and DER-encoded data
@@ -415,7 +433,7 @@ Table of Contents
 
    FipsBoot EVIDENCE-CLAIM ::= BOOLEAN IDENTIFIED BY TBD
 
-6.  Key Claims for EAT
+7.  Key Claims for EAT
 
    For use in the Entity Attestation Token (EAT) the claims are
    described in CDDL.  As a result, these claims can be encoded in CBOR
@@ -443,7 +461,7 @@ Table of Contents
 
    TBD: CDDL description
 
-7.  Security Considerations
+8.  Security Considerations
 
    A Verifier MAY reject an evidence claim if it lacks required
    information per their appraisal policy.  For example, if a Relying
@@ -454,12 +472,12 @@ Table of Contents
    "FIPS Boot" alone does not guarantee "FIPS Certification".  This
    claim should be used alongside a valid FIPS certification.
 
-8.  IANA Considerations
+9.  IANA Considerations
 
    Please replace "RFCthis" with the RFC number assigned to this
    document.
 
-8.1.  Key Claims for ASN.1
+9.1.  Key Claims for ASN.1
 
    This document requests the registration of new Object Identifiers
    (OIDs) for the key attestation claims defined in this specification.
@@ -500,7 +518,7 @@ Table of Contents
    *  These OIDs are intended for use in ASN.1 data structures for the
       key attestation claims defined in this document.
 
-8.2.  Key Claims for EAT
+9.2.  Key Claims for EAT
 
    This document requests the registration of new claims in the "EAT
    Claims" registry defined by [I-D.ietf-rats-eat].  These claims are
@@ -537,9 +555,9 @@ Table of Contents
    *  The CBOR types are defined as per [RFC8949], with appropriate
       encoding rules for each claim.
 
-9.  References
+10.  References
 
-9.1.  Normative References
+10.1.  Normative References
 
    [I-D.ietf-rats-eat]
               Lundblade, L., Mandyam, G., O'Donoghue, J., and C.
@@ -575,7 +593,7 @@ Table of Contents
               One (ASN.1): Specification of basic notation", n.d.,
               <https://www.itu.int/rec/T-REC-X.680>.
 
-9.2.  Informative References
+10.2.  Informative References
 
    [I-D.bft-rats-kat]
               Brossard, M., Fossati, T., Tschofenig, H., and H.
