@@ -296,6 +296,27 @@ Recipient, whereby the following checks are made:
 Once all these steps are completed, the verifier produces the
 attestation result and includes (if needed) the IK public key (pIK).
 
+# Submodule Model
+
+An EAT Key Attestation MUST be nested within a Platform Attestation by using the EAT ______ Claim to achieve the nesting.
+
+In this way, one or more Key Attestation objects can be nested within the same Platform Attestation.
+
+ACTION: Ned / Henk to figure out the details here, which needs some coordination with the RATS WG -- do we want to use EAT SubMods, or wait for Laurence to define a more better, less complicated CWM-based SubMods claim.
+
+```
+Evidence {
+   hwserial: 0x1234,
+   fipsboot: true
+   submods {
+	key1 { keyhash: 0xa1b2c3,
+	       nonexportable: true },
+        key2 { keyhash: 0x3c2b1a,
+	       nonexportable: false }
+       }
+}
+```
+
 # Information Model
 
 This section describes the semantics of the key claims as part of the information
