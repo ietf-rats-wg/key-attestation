@@ -204,9 +204,25 @@ class pkixclaim_keyExpiry(PkixClaim):
     type = id_pkixattest_imported
 
 
-# # Load the RSA and P256 certs
+# Load the RSA and P256 certs
 
-# # Extract the pub key from the RSA and P256 certs
+def loadCertFromPemFile(file):
+    idx, substrate = pem.readPemBlocksFromFile(
+        open(file, "r"), ('-----BEGIN CERTIFICATE-----',
+                    '-----END CERTIFICATE-----')
+    )
+    if not substrate:
+        return None
+    
+    cert, rest = decoder.decode(substrate, asn1Spec=rfc5280.Certificate())
+
+    return cert
+
+rsaCert = loadCertFromPemFile('rfc9500_rsa.crt')
+p256Cert = loadCertFromPemFile('rfc9500_p256.crt')
+
+
+# Extract the pub key from the RSA and P256 certs
 
 # TODO -- this is busted
 
@@ -353,3 +369,5 @@ class pkixclaim_keyExpiry(PkixClaim):
 
 # with open('out.cri', 'wb') as f:
 #     f.write(encode(cri_pyasn1))
+
+
