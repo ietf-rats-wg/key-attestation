@@ -5,14 +5,14 @@
 Remote ATtestation ProcedureS                               M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             H. Birkholz
-Expires: 19 June 2025                                     Fraunhofer SIT
+Expires: 22 July 2025                                     Fraunhofer SIT
                                                               T. Fossati
                                                                   Linaro
                                                               M. Wiseman
                                                          Beyond Identity
                                                            H. Tschofenig
                                                                    H-BRS
-                                                        16 December 2024
+                                                         18 January 2025
 
 
                             Key Attestation
@@ -54,11 +54,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 19 June 2025.
+   This Internet-Draft will expire on 22 July 2025.
 
 Copyright Notice
 
-   Copyright (c) 2024 IETF Trust and the persons identified as the
+   Copyright (c) 2025 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -323,49 +323,29 @@ Table of Contents
 
    An initial set of key claims is defined:
 
-   +=================+=======================+=========================+
-   | Claim           | Definition            | Description             |
-   +=================+=======================+=========================+
-   | KeyId           | This document         | Identifies the          |
-   |                 |                       | subject key, with a     |
-   |                 |                       | vendor-specific         |
-   |                 |                       | format constrained      |
-   |                 |                       | to ASCII                |
-   +-----------------+-----------------------+-------------------------+
-   | PubKey          | This document         | Represents the          |
-   |                 |                       | subject public key      |
-   |                 |                       | being attested.         |
-   +-----------------+-----------------------+-------------------------+
-   | Purpose         | ???                   | Defines the intended    |
-   |                 |                       | usage for the key.      |
-   +-----------------+-----------------------+-------------------------+
-   | Exportable      | [PKCS11]              | Indicates if the key    |
-   |                 | CKA_EXTRACTABLE       | is able to be           |
-   |                 |                       | exported from the       |
-   |                 |                       | module.                 |
-   +-----------------+-----------------------+-------------------------+
-   | NeverExportable | [PKCS11]              | Indicates if the key    |
-   |                 | CKA_NEVER_EXTRACTABLE | was able to be          |
-   |                 |                       | exported from the       |
-   |                 |                       | module.                 |
-   +-----------------+-----------------------+-------------------------+
-   | Imported        | ???                   | Shows whether the       |
-   |                 |                       | key was imported.       |
-   +-----------------+-----------------------+-------------------------+
-   | KeyExpiry       | ???                   | Defines the expiry      |
-   |                 |                       | date or "not after"     |
-   |                 |                       | time for the key.       |
-   +-----------------+-----------------------+-------------------------+
-   | FipsBoot        | This document         | Indicates whether       |
-   |                 |                       | the cryptographic       |
-   |                 |                       | module was booted in    |
-   |                 |                       | a specific FIPS         |
-   |                 |                       | state, including any    |
-   |                 |                       | required self-tests     |
-   |                 |                       | and conditions          |
-   |                 |                       | specified by its        |
-   |                 |                       | FIPS certificate.       |
-   +-----------------+-----------------------+-------------------------+
+     +===============+===============================================+
+     | Claim         | Description                                   |
+     +===============+===============================================+
+     | KeyId         | Identifies the subject key, with a vendor-    |
+     |               | specific format constrained to ASCII          |
+     +---------------+-----------------------------------------------+
+     | PubKey        | Represents the subject public key being       |
+     |               | attested.                                     |
+     +---------------+-----------------------------------------------+
+     | Purpose       | Defines the intended usage for the key.       |
+     +---------------+-----------------------------------------------+
+     | NonExportable | Indicates if the key is non-exportable.       |
+     +---------------+-----------------------------------------------+
+     | Imported      | Shows whether the key was imported.           |
+     +---------------+-----------------------------------------------+
+     | KeyExpiry     | Defines the expiry date or "not after" time   |
+     |               | for the key.                                  |
+     +---------------+-----------------------------------------------+
+     | FipsBoot      | Indicates whether the cryptographic module    |
+     |               | was booted in a specific FIPS state,          |
+     |               | including any required self-tests and         |
+     |               | conditions specified by its FIPS certificate. |
+     +---------------+-----------------------------------------------+
 
                                   Table 1
 
@@ -547,10 +527,6 @@ Table of Contents
               Progress, Internet-Draft, draft-ietf-rats-eat-31, 6
               September 2024, <https://datatracker.ietf.org/doc/html/
               draft-ietf-rats-eat-31>.
-
-   [PKCS11]   OASIS PKCS 11 TC, "PKCS #11 Specification Version 3.1",
-              n.d., <https://docs.oasis-open.org/pkcs11/pkcs11-
-              spec/v3.1/csd01/pkcs11-spec-v3.1-csd01.html>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
