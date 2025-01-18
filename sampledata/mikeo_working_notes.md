@@ -1,0 +1,239 @@
+# Design Goals
+
+## Information Model (Semantics)
+
+
+## Data Model (Syntax)
+
+* All claims in EAT are valid.
+* Add a set of platform claims that are useful to HSMs.
+* Add a set of "key attestation" claims that describe the protection properties of a private key.
+
+
+Each claim must appear only once in a given token.
+
+Claims allowed in a PKIX_PAT token:
+
+
+| Claim | Data Type | Definition | Description |
+| ----- | ----      | ---       | ---         |
+| hwserial | String | This document | The serial number of the device, as marked on the case, device certificate or other location. |
+| fipsboot | Boolean | This document | Indicates whether the cryptographic module was booted and is currently running in FIPS mode. |
+| nestedTokens | Nested token | This document | Tokens for any sub-subjects such as subordinate logical or physical partitions, keys that this platform wishes to attest, etc. In a JWT or CWT EAT token, this will contain a CMW object, in a DWT this will directly contain an ASN.1 object without a CMW wrapper (ie there is no need to support JWT / CWT EAT tokens inside DWT tokens). |
+| nonce | String | ?? | A nonce for the purposes of freshness of this token. EDNOTE: surely such a thing already exists in EAT? |
+| attestationTime | DateTime | JWT "iat" | The time at which this token was generated. EDNOTE: Surely such a thing already exists in EAT? |
+
+Claims allowed in a PKIX_KAT token:
+
+
+| Claim | Data Type | Definition | Description |
+| ----- | ----      | ---       | ---         |
+| keyID | String    | This document | Identifies the subject key, with a vendor-specific format constrained to ASCII |
+| pubKey | Bytes (OCTET STRING / SPKI) | This document | Represents the subject public key being attested. |
+| keyFingerprintAlg | AlgorithmID | This document | The digest algorithm used to compute the key fingerprint. |
+| keyFingerprint | OCTET STRING | This document | The fingerprint of the key. |
+| purpose | Enum (CHOICE) {Sign, Verify, Encrypt, Decrypt, Wrap, Unwrap, Encapsulate, Decapsulate, Derive} | ??          | Defines the intended usage for this key. |
+| extractable | Boolean | [PKCS11] CKA_EXTRACTABLE | Indicates if the key is able to be exported from the module. |
+| neverExtractable | Boolean | [PKCS11] CKA_NEVER_EXTRACTABLE | Indicates if the key was in the past able to be exported from the module. |
+| imported | Boolean | This document | Indicates if the key was generated outside the module and imported; ie this indicates that a software version of this key may exist outside of hardware protection. |
+| keyExpiry | DateTime | This document | Indicates if the key has a usage period. |
+
+
+The signature block is optional on a KAT, ie it MAY be signed so that the KAT is a standalone token, or the signature MAY be omitted if the KAT is contained within a PAT where the PAT signer has authority for both the PAT and KAT claims.
+
+All claims defined under PKIX_PAT are also allowed within a PKIX_KAT token -- in this way, an attester MAY produce a single flat token which contains both PAT and KAT claims.
+
+RECOMMENDED parsing logic: verifiers searching for key attestation claims SHOULD peform a depth-first recursive parsing by searching nested tokens for a keyID, SPKI, or key fingerprint matching the subject key they wish attestation of, and then searching for accompanying platform data first within the same token and then up the recursion stack towards the outer-most tokens. If the same claim appears at multiple levels with conflicting values -- for example fipsBoot=false within the inner-most KAT but fips-boot=true within the containing PAT, then the value of the innermost token SHOULD be taken as applying to that key. This allows the attester to convey, for example, that the overall device might be in FIPS mode, but that particular sub-module is not.
+
+### References
+
+IE places to go digging for concepts of "private key protection properties"
+
+* PKCS#11 v3.2
+* KMIP?
+* Crypto4A QASM Attest
+* nShield Attestaton docs
+* CoRIM ?
+
+
+## DWT Envelop Format
+
+* Generally, we are trying to design a DER encoded equivalent of JWT / CWT.
+* Dual-signing.
+* Attestation type OID ?? -- could probably cross over with a CMW registry
+  * PKIX_PAT
+  * PKIX_KAT
+* Nested attestations.
+
+
+
+
+# Example
+
+## Single KAT
+
+In a pseudo-json format
+
+```
+{
+  "keyID": "18",
+  "pubKey": <SPKI>,
+  "keyFingerprintAlg": AlgorithmID(id-sha256),
+  "keyFingerprint": 0x1a2b3c,
+  "purpose": {Sign},
+  "extractable": true,
+  "neverExtractable": false,
+  "imported": false
+}
+.
+// Signatures: 
+{
+  {
+    "signingCert": <x509Certificate>,
+    "signatureAlgorithm": <AlgorithmID>,
+    "signature": <OCTET STRING>
+  },
+  {
+    "signingCert": <x509Certificate>,
+    "signatureAlgorithm": <AlgorithmID>,
+    "signature": <OCTET STRING>
+  }
+}
+```
+
+## PAT containing multiple KATs
+
+In a pseudo-json format
+
+```
+TODO: add some more EAT claims
+
+{
+  "hwvendor": "IETF RATS",
+  "hwmodel": "HSM 9000",
+  "swversion": "1.2.3",
+  "hwserial": "1234567",
+  "fipsboot": false,
+  "nonce": "987654321",
+  "attestationTime: 2025-01-17-08-33-56,
+  nestedTokens: {
+    {"keyID": "18", "pubKey": <SPKI>, "keyFingerprintAlg": AlgorithmID(id-sha256), "keyFingerprint": 0x1a2b3c, "purpose": {Sign}, "extractable": false, "neverExtractable": false, "imported": false, }
+    .
+    { {"signingCert": <x509Certificate>, "signatureAlgorithm": <AlgorithmID>, "signature": <OCTET STRING> },
+      { "signingCert": <x509Certificate>, "signatureAlgorithm": <AlgorithmID>,"signature": <OCTET STRING> } },
+    {"keyID": "21", "pubKey": <SPKI>, "keyFingerprintAlg": AlgorithmID(id-sha256), "keyFingerprint": 0xc3b2a1, "purpose": {Decapsulate}, "extractable": true, "neverExtractable": false, "imported": true, }
+    .
+    { {"signingCert": <x509Certificate>, "signatureAlgorithm": <AlgorithmID>, "signature": <OCTET STRING> },
+      { "signingCert": <x509Certificate>, "signatureAlgorithm": <AlgorithmID>,"signature": <OCTET STRING> } }
+}
+.
+// Signatures: 
+{
+  {
+    "signingCert": <x509Certificate>,
+    "signatureAlgorithm"
+    "signature": <OCTET STRING>
+  },
+  {
+    "signingCert": <x509Certificate>,
+    "signatureAlgorithm"
+    "signature": <OCTET STRING>
+  }
+
+```
+
+
+# ASN.1 Module (DWT)
+
+
+```
+
+imports
+5280: Certificate, AlgorithmID, GeneralizedTime, SubjectPublicKeyInfo
+
+-- Envelope
+
+PkixAttestation ::= SEQUENCE {
+  version INTEGER,
+  claims SetOfClaims,
+  signatures SEQUENCE SIZE (0..MAX) OF SignatureBlock,
+}
+
+SignatureBlock ::= SEQUENCE {
+   certChain SEQUENCE of Certificate,
+   signatureAlgorithm AlgorithmIdentifier,
+   signatureValue OCTET STRING
+}
+
+PkixClaim ::= SEQUENCE {
+  type ::= Object Identifier,
+  value ::= Any
+}
+
+SetOfClaims ::= SEQUENCE SIZE (0..MAX) OF PkixClaim
+
+
+-- Claims
+TODO: define OIDs and ASN.1 for all the EAT claims.
+
+pkixattestarc ::= Object Identifier {1 2 3 999}
+
+id-pkixattest-hwserial ::= Object Identifier {pkixattestarc 1}
+pkixclaim-hwSerial ::= IA5String
+
+id-pkixattest-fipsboot ::= Object Identifier {pkixattestarc 2}
+pkixclaim-fipsboot ::= boolean
+
+id-pkixattest-nestedTokens ::= Object Identifier {pkixattestarc 3}
+pkixclaim-nestedTokens ::= SEQUENCE of PkixAttestation
+
+id-pkixattest-nonce ::= Object Identifier {pkixattestarc 4}
+pkixclaim-nonce ::= IA5String
+
+id-pkixattest-attestationTime ::= Object Identifier {pkixattestarc 5}
+pkixclaim-attestationTime ::= GeneralizedTime
+
+id-pkixattest-keyid ::= Object Identifier {pkixattestarc 6}
+pkixclaim-keyID ::= IA5String
+
+id-pkixattest-pubKey ::= Object Identifier {pkixattestarc 7}
+pkixclaim-pubKey ::= SubjectPublicKeyInfo
+
+id-pkixattest-keyFingerprintAlg ::= Object Identifier {pkixattestarc 8}
+pkixclaim-keyFingerprintAlg ::= AlgorithmID
+
+id-pkixattest-keyFingerprint ::= Object Identifier {pkixattestarc 9}
+pkixclaim-keyFingerprint ::= OCTET STRING
+
+
+TODO: this should be a bit mask similar to KeyUsage, not a CHOICE
+id-pkixattest-purpose ::= Object Identifier {pkixattestarc 10}
+pkixclaim-purpose ::= CHOICE {
+  [0] Sign,
+  [1] Verify,
+  [2] Encrypt, 
+  [3] Decrypt,
+  [4] Wrap,
+  [5] Unwrap,
+  [6] Encapsulate,
+  [7] Decapsulate,
+  [8] Derive
+  }
+}
+
+id-pkixattest-extractable ::= Object Identifier {pkixattestarc 11}
+pkixclaim-extractable ::= boolean
+
+id-pkixattest-neverExtractable ::= Object Identifier {pkixattestarc 12}
+pkixclaim-neverExtractable ::= boolean
+
+id-pkixattest-imported ::= Object Identifier {pkixattestarc 13}
+pkixclaim-imported ::= boolean
+
+id-pkixattest-keyexpiry ::= Object Identifier {pkixattestarc 14}
+pkixclaim-keyExpiry ::= GeneralizedTime
+```
+
+## Signing and Verification Process
+
+Signatures are computed over a PkixAttestation object with no signature blocks, ie with the PkixAttestation.signatures sequence containing zero elements, such that the signature protects the version number and the SetOfClaims.
