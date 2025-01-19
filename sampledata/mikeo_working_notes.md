@@ -297,20 +297,35 @@ id-pkixattest-keyFingerprint ::= Object Identifier {pkixattestarc 9}
 pkixclaim-keyFingerprint ::= OCTET STRING
 
 
-TODO: this should be a bit mask similar to KeyUsage, not a CHOICE
+TODO: this should be a bit mask similar to KeyUsage,
+      But I don't understand how you bit mask these together in the python
+      IE I think the python example that I borrowed fram pyasn1-alt-modules/rfc5280.py is wrong.
+
 id-pkixattest-purpose ::= Object Identifier {pkixattestarc 10}
-pkixclaim-purpose ::= CHOICE {
-  [0] Sign,
-  [1] Verify,
-  [2] Encrypt, 
-  [3] Decrypt,
-  [4] Wrap,
-  [5] Unwrap,
-  [6] Encapsulate,
-  [7] Decapsulate,
-  [8] Derive
+pkixclaim-purpose ::= BIT STRING {
+  sign (0),
+  verify (1),
+  Encrypt (2), 
+  Decrypt (3),
+  Wrap (4),
+  Unwrap (5),
+  Encapsulate (6),
+  Decapsulate (7),
+  Derive (8)
   }
 }
+
+    <!-- Value.namedValues = namedval.NamedValues(
+        ('Sign', 0),
+        ('Verify', 1),
+        ('Encrypt', 2),
+        ('Decrypt', 3),
+        ('Wrap', 4),
+        ('Unwrap', 5),
+        ('Encapsulate', 6),
+        ('Decapsulate', 7),
+        ('Derive', 8)
+    ) -->
 
 id-pkixattest-extractable ::= Object Identifier {pkixattestarc 11}
 pkixclaim-extractable ::= boolean
