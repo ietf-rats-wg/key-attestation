@@ -4,16 +4,18 @@ import io
 
 from cryptography import x509
 from cryptography.hazmat.primitives import asymmetric, serialization, hashes
+from cryptography.hazmat.primitives.asymmetric import padding
 
-from pyasn1.type import univ, char, namedtype, constraint
+import hashlib, base64
+
+from pyasn1.type import univ, char, namedtype, constraint, tag
 from pyasn1.codec.der import decoder 
 from pyasn1.codec.der.decoder import decode
 from pyasn1.codec.der.encoder import encode
 
-from pyasn1_modules import pem
 from pyasn1.type import namedval
 from pyasn1.type import useful
-from pyasn1_alt_modules import rfc2986, rfc5280, rfc5751, rfc8017
+from pyasn1_alt_modules import rfc2986, rfc5280, rfc5751, rfc8017, pem
 
 
 # CHANGE ME
@@ -39,15 +41,18 @@ class PkixClaim(univ.Sequence):
 # }
 class SignatureBlock(univ.Sequence):
     componentType = namedtype.NamedTypes(
-        namedtype.NamedType("certChain", univ.Integer()),
+        namedtype.NamedType("certChain", univ.SequenceOf(
+            componentType = rfc5280.Certificate(),
+            subtypeSpec = constraint.ValueSizeConstraint(0, MAX)
+        )),
         namedtype.NamedType("signatureAlgorithm", rfc5280.AlgorithmIdentifier()),
         namedtype.NamedType("signatureValue", univ.OctetString())
     )
 
-# SetOfClaims ::= SEQUENCE OF TypeAndValue -- TODO look up the built-in type.
 class SetOfClaims(univ.SequenceOf):
-    componentType = PkixClaim(),
+    componentType = PkixClaim()
     subtypeSpec = constraint.ValueSizeConstraint(0, MAX)
+
 
 # PkixAttestation ::= SEQUENCE {
 #   version INTEGER,
@@ -63,6 +68,11 @@ class PkixAttestation(univ.Sequence):
             subtypeSpec = constraint.ValueSizeConstraint(0, MAX)
         ))
     )
+    # def __init__(self, **kwargs):
+    #     super().__init__(**kwargs)
+    #     self['signatures'] = univ.SequenceOf(
+    #         componentType = SignatureBlock()
+    #     )
 
 
 
@@ -115,7 +125,7 @@ class Pkixclaim_attestationTime(PkixClaim):
     type = id_pkixattest_attestationTime,
 
 id_pkixattest_keyid = univ.ObjectIdentifier( PKIX_ATTEST_OID_ARC + (6,))
-class Pkixclaim_keyID(PkixClaim):
+class Pkixclaim_keyID(univ.Sequence):
     componentType = namedtype.NamedTypes(
         namedtype.NamedType('type', univ.ObjectIdentifier()),
         namedtype.NamedType('value', char.IA5String())
@@ -172,7 +182,7 @@ class PkixClaim_purpose(PkixClaim):
 
 
 id_pkixattest_extractable = univ.ObjectIdentifier(PKIX_ATTEST_OID_ARC + (11,))
-class pkixclaim_extractable(PkixClaim):
+class PkixCaim_extractable(PkixClaim):
     componentType = namedtype.NamedTypes(
         namedtype.NamedType('type', univ.ObjectIdentifier()),
         namedtype.NamedType('value', univ.Boolean())
@@ -180,7 +190,7 @@ class pkixclaim_extractable(PkixClaim):
     type = id_pkixattest_extractable
 
 id_pkixattest_neverExtractable = univ.ObjectIdentifier(PKIX_ATTEST_OID_ARC + (12,))
-class pkixclaim_neverExtractable(PkixClaim):
+class PkixClaim_neverExtractable(PkixClaim):
     componentType = namedtype.NamedTypes(
         namedtype.NamedType('type', univ.ObjectIdentifier()),
         namedtype.NamedType('value', univ.Boolean())
@@ -188,7 +198,7 @@ class pkixclaim_neverExtractable(PkixClaim):
     type = id_pkixattest_neverExtractable
 
 id_pkixattest_imported = univ.ObjectIdentifier(PKIX_ATTEST_OID_ARC + (13,))
-class pkixclaim_imported(univ.Boolean):
+class PkixClaim_imported(PkixClaim):
     componentType = namedtype.NamedTypes(
         namedtype.NamedType('type', univ.ObjectIdentifier()),
         namedtype.NamedType('value', univ.Boolean())
@@ -196,12 +206,21 @@ class pkixclaim_imported(univ.Boolean):
     type = id_pkixattest_imported
 
 id_pkixattest_keyexpiry = univ.ObjectIdentifier(PKIX_ATTEST_OID_ARC + (14,))
-class pkixclaim_keyExpiry(PkixClaim):
+class PkixClaim_keyExpiry(PkixClaim):
     componentType = namedtype.NamedTypes(
         namedtype.NamedType('type', univ.ObjectIdentifier()),
         namedtype.NamedType('value', useful.GeneralizedTime())
     )
     type = id_pkixattest_imported
+
+
+id_pkixattest_keydescription = univ.ObjectIdentifier(PKIX_ATTEST_OID_ARC + (15,))
+class PkixClaim_keyDescription(PkixClaim):
+    componentType = namedtype.NamedTypes(
+        namedtype.NamedType('type', univ.ObjectIdentifier()),
+        namedtype.NamedType('value', char.UTF8String())
+    )
+    type = id_pkixattest_keydescription
 
 
 # Load the RSA and P256 certs
@@ -221,52 +240,151 @@ def loadCertFromPemFile(file):
 rsaCert = loadCertFromPemFile('rfc9500_rsa.crt')
 p256Cert = loadCertFromPemFile('rfc9500_p256.crt')
 
+with open("rfc9500_rsa.priv", "rb") as key_file:
+    rsaPrivkey = serialization.load_pem_private_key(
+        key_file.read(),
+        password=None,
+    )
 
-# Extract the pub key from the RSA and P256 certs
-
-# TODO -- this is busted
-
-# pubkeyRsa = serialization.load_pem_public_key("rfc9500_rsa.crt")
-# pubkeyRSA_der = pubkey.public_bytes(serialization.Encoding.DER, serialization.PublicFormat.SubjectPublicKeyInfo)
-# spkiRSA, _ = decode(pubkey_der, rfc5280.SubjectPublicKeyInfo())
-
-# #... ditto for P256
-
-# spkiP256 = ""
-
+with open("rfc9500_p256.priv", "rb") as key_file:
+    p256Privkey = serialization.load_pem_private_key(
+        key_file.read(),
+        password=None,
+    )
 
 
+# Extract the SPKIs and pub keys from the RSA and P256 certs
 
-# # Construct KAT1 token
+rsaSPKI = rsaCert['tbsCertificate']['subjectPublicKeyInfo']
+p256SPKI = p256Cert['tbsCertificate']['subjectPublicKeyInfo']
 
-# # {
-# #   "keyID": "18",
-# #   "pubKey": <SPKI>,
-# #   "keyFingerprintAlg": AlgorithmID(id-sha256),
-# #   "keyFingerprint": 0x1a2b3c,
-# #   "purpose": {Sign},
-# #   "extractable": true,
-# #   "neverExtractable": false,
-# #   "imported": false
-# # }
-
-# kat1 = PkixAttestation()
-# kat1["version"] = 1
-
-# kat1Claims = SetOfClaims()
-# kat1Claims.append(pkixclaim_keyID("18"))
-# kat1Claims.append(pkixclaim_pubKey(spkiRSA))
+rsaPubKey = rsaSPKI['subjectPublicKey']
+p256PubKey = p256SPKI['subjectPublicKey']
 
 
-# TODO - compute the pub key fingerprint
-# fingerprintRSA = ""
 
-# kat1Claims.append(pkixclaim_keyFingerprintAlg(rfc5280.id_sha256))
-# kat1Claims.append(pkixclaim_keyFingerprint(fingerprintRSA))
-# kat1Claims.append(pkixClaim_purpose(pkixClaim_purposes.Sign))
-# kat1Claims.append(pkixclaim_extractable(True))
-# kat1Claims.append(pkixclaim_neverExtractable(False))
-# kat1Claims.append(pkixclaim_imported(False))
+# Construct KAT1 token
+
+# {
+#   "keyID": "18",
+#   "pubKey": <SPKI>,
+#   "keyFingerprintAlg": AlgorithmID(id-sha256),
+#   "keyFingerprint": 0x1a2b3c,
+#   "purpose": {Sign},
+#   "extractable": true,
+#   "neverExtractable": false,
+#   "imported": false
+# }
+
+kat1 = PkixAttestation()
+kat1["version"] = 1
+
+kat1Claims = SetOfClaims()
+
+claim = Pkixclaim_keyID()
+claim['type'] = id_pkixattest_keyid
+claim['value'] = char.IA5String('18')
+kat1Claims.append(claim)
+
+claim = Pkixclaim_pubKey()
+claim['type'] = id_pkixattest_pubKey
+claim['value'] = rsaSPKI
+kat1Claims.append(claim)
+
+
+claim = Pkixclaim_keyFingerprintAlg()
+claim['type'] = id_pkixattest_keyFingerprintAlg
+algID = rfc5280.AlgorithmIdentifier()
+algID['algorithm'] = rfc8017.id_sha256
+claim['value'] = algID
+kat1Claims.append(claim)
+
+
+fingerprint = hashlib.sha256(bytes(rsaSPKI['subjectPublicKey']))
+claim = Pkixclaim_keyFingerprint()
+claim['type'] = id_pkixattest_keyFingerprint
+claim['value'] = univ.OctetString(fingerprint.digest())
+kat1Claims.append(claim)
+
+claim = PkixClaim_purpose()
+claim['type'] = id_pkixattest_purpose
+claim['value'] = PkixClaim_purpose.Value.namedValues['Sign']
+kat1Claims.append(claim)
+
+claim = PkixCaim_extractable()
+claim['type'] = id_pkixattest_extractable
+claim['value'] = univ.Boolean(True)
+kat1Claims.append(claim)
+
+claim = PkixClaim_neverExtractable()
+claim['type'] = id_pkixattest_neverExtractable
+claim['value'] = univ.Boolean(False)
+kat1Claims.append(claim)
+
+claim = PkixClaim_imported()
+claim['type'] = id_pkixattest_imported
+claim['value'] = univ.Boolean(False)
+kat1Claims.append(claim)
+
+
+kat1['claims'] = kat1Claims
+signatures = univ.SequenceOf(
+                    componentType = SignatureBlock(),
+                    subtypeSpec = constraint.ValueSizeConstraint(0, MAX)
+                )
+                                     # create an empty SEQUENCE so that 
+                                     # the structure is complete for computing a signature over
+
+
+# Sign with the RSA key
+
+signature = rsaPrivkey.sign(
+    encode(kat1Claims),
+    padding.PSS(
+        mgf=padding.MGF1(hashes.SHA256()),
+        salt_length=20
+    ),
+    hashes.SHA256()
+)
+
+signatureBlock = SignatureBlock()
+certChain = univ.SequenceOf(
+            componentType = rfc5280.Certificate(),
+            subtypeSpec = constraint.ValueSizeConstraint(0, MAX)
+        )
+certChain.append(rsaCert)
+signatureBlock['certChain'] = certChain
+
+algIDRsaPSS = rfc5280.AlgorithmIdentifier()
+algIDRsaPSS['algorithm'] = rfc8017.id_RSASSA_PSS
+pssParams = rfc8017.RSASSA_PSS_params()
+algIdSha256 = rfc5280.AlgorithmIdentifier().subtype(
+        explicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatConstructed, 0))
+algIdSha256['algorithm'] = rfc8017.id_sha256
+pssParams['hashAlgorithm'] = algIdSha256
+maskGenAlgId = rfc5280.AlgorithmIdentifier().subtype(
+        explicitTag=tag.Tag(tag.tagClassContext, tag.tagFormatConstructed, 1))
+maskGenAlgId['algorithm'] = rfc8017.id_mgf1
+pssParams['maskGenAlgorithm'] = maskGenAlgId
+# pssParams['saltLength'] = univ.Integer(32) # this seems buggy, and rfc4055.py has a default of 20
+algIDRsaPSS['parameters'] = pssParams
+
+
+signatureBlock['signatureAlgorithm'] = algIDRsaPSS
+signatureBlock['signatureValue'] = univ.OctetString(signature)
+
+kat1['signatures'].append(signatureBlock)
+
+
+print("Outputting KAT1 to kat1.txt")
+with open('kat1.txt', 'w') as f:
+    f.write(str(kat1))
+    f.write("\n")
+    f.write("\n")
+    f.write("KAT1 DER Base64:\n")
+    f.write(base64.b64encode(encode(kat1)).decode('ascii'))
+
+# print(kat1)
 
 
 # TODO - compute a signature with the RSA cert
@@ -322,7 +440,7 @@ p256Cert = loadCertFromPemFile('rfc9500_p256.crt')
 
 # # {
 # #   "hwvendor": "IETF RATS",
-# #   "hwmodel": "HSM 9000",
+# #   "hwmodel": "RATS HSM 9000",
 # #   "swversion": "1.2.3",
 # #   "hwserial": "1234567",
 # #   "fipsboot": false,
@@ -369,5 +487,4 @@ p256Cert = loadCertFromPemFile('rfc9500_p256.crt')
 
 # with open('out.cri', 'wb') as f:
 #     f.write(encode(cri_pyasn1))
-
 

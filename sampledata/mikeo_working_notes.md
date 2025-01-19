@@ -49,9 +49,9 @@ RECOMMENDED parsing logic: verifiers searching for key attestation claims SHOULD
 
 IE places to go digging for concepts of "private key protection properties"
 
-* PKCS#11 v3.2
+* (DONE) PKCS#11 v3.2
 * KMIP?
-* Crypto4A QASM Attest
+* (DONE) Crypto4A QASM Attest
 * nShield Attestaton docs
 * CoRIM ?
 
@@ -103,6 +103,27 @@ In a pseudo-json format
 
 ## PAT containing multiple KATs
 
+This example shows a pair of Key Attestation Tokens (KATs) nested inside a Platform Attestation Token (PAT) which might result from an attesting environment structured like this:
+
+~~~aasvg
+ |--------------------------------------|
+ | .----------------------------------. |
+ | | Attester                         | |
+ | | --------                         | |
+ | | AK Certs                         | |
+ | | hwmodel="RATS HSM 9000"          | |
+ | | fipsboot=true                    | |
+ | | .-------------.  .-------------. | |
+ | | | Key 18      |  | Key 21      | | |
+ | | | RSA         |  | ECDH-P256   | | |
+ | | '-------------'  '-------------' | |
+ | '----------------------------------' |
+ |                                      |
+ |               Root of Trust (RoT)    |
+ |--------------------------------------|
+~~~
+{: #fig-arch title="Example of two KATs in a single PAT"}
+
 In a pseudo-json format
 
 ```
@@ -110,7 +131,77 @@ TODO: add some more EAT claims
 
 {
   "hwvendor": "IETF RATS",
-  "hwmodel": "HSM 9000",
+  "hwmodel": "RATS HSM 9000",
+  "swversion": "1.2.3",
+  "hwserial": "1234567",
+  "fipsboot": false,
+  "nonce": "987654321",
+  "attestationTime: 2025-01-17-08-33-56,
+  nestedTokens: {
+    {"keyID": "18", "pubKey": <SPKI>, "keyFingerprintAlg": AlgorithmID(id-sha256), "keyFingerprint": 0x1a2b3c, "purpose": {Sign}, "extractable": false, "neverExtractable": false, "imported": false, }
+    .
+    { {"signingCert": <x509Certificate>, "signatureAlgorithm": <AlgorithmID>, "signature": <OCTET STRING> },
+      { "signingCert": <x509Certificate>, "signatureAlgorithm": <AlgorithmID>,"signature": <OCTET STRING> } },
+    {"keyID": "21", "pubKey": <SPKI>, "keyFingerprintAlg": AlgorithmID(id-sha256), "keyFingerprint": 0xc3b2a1, "purpose": {Decapsulate}, "extractable": true, "neverExtractable": false, "imported": true, }
+    .
+    { {"signingCert": <x509Certificate>, "signatureAlgorithm": <AlgorithmID>, "signature": <OCTET STRING> },
+      { "signingCert": <x509Certificate>, "signatureAlgorithm": <AlgorithmID>,"signature": <OCTET STRING> } }
+}
+.
+// Signatures: 
+{
+  {
+    "signingCert": <x509Certificate>,
+    "signatureAlgorithm"
+    "signature": <OCTET STRING>
+  },
+  {
+    "signingCert": <x509Certificate>,
+    "signatureAlgorithm"
+    "signature": <OCTET STRING>
+  }
+
+```
+
+
+
+## PAT containing multiple KATs
+
+This example shows an attesting environment where an application key ("Key 18") is contained directly within the root of trust which is running in FIPS mode, and also there is a partition within the device which is not running in FIPS mode and which contains a partition root key ("Partition1-RootKey").
+
+The purpose of this example is to show how PAT properties can be overridden by nested tokens. Correct parsing of this token will show that both keys "Key 18" and "Partition1-RootKey" are on the same device but "Key 18" is protected in FIPS mode while "Partition1-RootKey" is not.
+
+This example also shows that while we conceptually break claims into "platform claims" and "key claims", in pratcise they can be interleaved in any way that makes sense for the attesting environment; for example the token for "Partitian 1" contains claims that attest both the platform "Partition 1" as well as attesting the key "Partition1-RootKey".
+
+~~~aasvg
+ |-------------------------------------------|
+ | .---------------------------------------. |
+ | | Attester                              | |
+ | | --------                              | |
+ | | AK Certs                              | |
+ | | hwmodel="RATS HSM 9000"               | |
+ | | fipsboot=true                         | |
+ | | .----------.  .---------------------. | |
+ | | | Key 18   |  | Partition 1         | | | 
+ | | | RSA      |  | fipsboot=false      | | |
+ | | |          |  | Partition1-RootKey  | | |
+ | | |          |  | ECDH-P256           | | |
+ | | '----------'  '---------------------' | |
+ | '---------------------------------------' |
+ |                                           |
+ |               Root of Trust (RoT)         |
+ |-------------------------------------------|
+~~~
+{: #fig-arch title="Example of two KATs in a single PAT"}
+
+In a pseudo-json format
+
+```
+TODO: add some more EAT claims
+
+{
+  "hwvendor": "IETF RATS",
+  "hwmodel": "RATS HSM 9000",
   "swversion": "1.2.3",
   "hwserial": "1234567",
   "fipsboot": false,
@@ -232,8 +323,35 @@ pkixclaim-imported ::= boolean
 
 id-pkixattest-keyexpiry ::= Object Identifier {pkixattestarc 14}
 pkixclaim-keyExpiry ::= GeneralizedTime
+
+id-pkixattest-keydescription ::= Object Identifier {pkixattestarc 15}
+pkiclaim-keyDescription ::= UTF8String
 ```
 
 ## Signing and Verification Process
 
-Signatures are computed over a PkixAttestation object with no signature blocks, ie with the PkixAttestation.signatures sequence containing zero elements, such that the signature protects the version number and the SetOfClaims.
+Signatures are computed over the DER encoded `SetOfClaims` object. Thus the PkixAttestation version number and `SignatureBlock` metadata are not protected.
+
+
+# Verification Profiles
+
+## CA/Browser Forum Code-Signing Baseline Requirements
+
+... intro text
+
+The subscriber MUST:
+
+* Provide the CA with a CSR containing the subscriber key.
+* Provide an attestation token as per this specification describing the private key protection properties of the subscriber's private key. This token MAY be transported inside the CSR as per draft-ietf-lamps-csr-attest, or it MAY be transported adjacent to the CSR over any other certificate enrollment mechanism.
+
+The CA / RA / RP / Verifier MUST:
+
+* Ensure that the subscriber key which is the subject of the CSR is also described by a KAT by matching either the key fingerprint or full SubjectPublicKeyInfo.
+* The hardware root-of-trust described by a PAT has a valid and active FIPS certificate according to the NIST CMVP database.
+* The attestation signing key (AK) which has signed the attestation token chains to a root certificate that A) belongs to the hardware vendor described in the PAT token, and B) is trusted by the CA / RA / RP / Verifier to endorse hardware from this vendor, for example through a CA's partner program or through a network operator's device onboarding process.
+* The key is protected by a module running in FIPS mode. The parsing logic is to start at the leaf KAT token that matches the key in the CSR and parsing towards the root PAT ensuring that there is at least one `fipsboot=true` and no `fipsboot=false` on that path.
+
+
+## Additional Verification Profiles
+
+The community is encouraged to define additional verification profiles to satisfy other use-cases or regulations.
