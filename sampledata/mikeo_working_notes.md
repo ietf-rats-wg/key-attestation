@@ -20,6 +20,7 @@ Claims allowed in a PKIX_PAT token:
 | hwserial | String | This document | The serial number of the device, as marked on the case, device certificate or other location. |
 | fipsboot | Boolean | This document | Indicates whether the cryptographic module was booted and is currently running in FIPS mode. |
 | nestedTokens | Nested token | This document | Tokens for any sub-subjects such as subordinate logical or physical partitions, keys that this platform wishes to attest, etc. In a JWT or CWT EAT token, this will contain a CMW object, in a DWT this will directly contain an ASN.1 object without a CMW wrapper (ie there is no need to support JWT / CWT EAT tokens inside DWT tokens). |
+| envDescription | String | Further description of the environment beyond hwvendor, hwmodel, hwserial, swversion; for example if there is a need to describe multiple logical partitions within the same device. Contents could be a human-readable description or other identifiers. |
 | nonce | String | ?? | A nonce for the purposes of freshness of this token. EDNOTE: surely such a thing already exists in EAT? |
 | attestationTime | DateTime | JWT "iat" | The time at which this token was generated. EDNOTE: Surely such a thing already exists in EAT? |
 
@@ -29,6 +30,7 @@ Claims allowed in a PKIX_KAT token:
 | Claim | Data Type | Definition | Description |
 | ----- | ----      | ---       | ---         |
 | keyID | String    | This document | Identifies the subject key, with a vendor-specific format constrained to ASCII |
+| keyDescription | String | Further description of the key beyond keyID human-readable description or other identifiers. |
 | pubKey | Bytes (OCTET STRING / SPKI) | This document | Represents the subject public key being attested. |
 | keyFingerprintAlg | AlgorithmID | This document | The digest algorithm used to compute the key fingerprint. |
 | keyFingerprint | OCTET STRING | This document | The fingerprint of the key. |
@@ -53,9 +55,8 @@ IE places to go digging for concepts of "private key protection properties"
 * KMIP?
 * (DONE) Crypto4A QASM Attest
 * nShield Attestaton docs
- * https://nshielddocs.entrust.com/key-attestation-docs/v1.0.2/intro.html
- * https://nshielddocs.entrust.com/app-notes/key-attestation-format/intro.html
- * https://nshielddocs.entrust.com/app-notes/warrants/intro.html 
+ * https://nshielddocs.entrust.com/app-notes/key-attestation-format/construction.html
+ * https://nshielddocs.entrust.com/key-attestation-docs/v1.0.2/examples.html
 * CoRIM ?
 
 
