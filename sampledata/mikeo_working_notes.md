@@ -53,6 +53,9 @@ IE places to go digging for concepts of "private key protection properties"
 * KMIP?
 * (DONE) Crypto4A QASM Attest
 * nShield Attestaton docs
+ * https://nshielddocs.entrust.com/key-attestation-docs/v1.0.2/intro.html
+ * https://nshielddocs.entrust.com/app-notes/key-attestation-format/intro.html
+ * https://nshielddocs.entrust.com/app-notes/warrants/intro.html 
 * CoRIM ?
 
 
