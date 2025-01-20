@@ -133,14 +133,12 @@ class PkixClaim_keyFingerprint(PkixClaim):
         namedtype.NamedType('type', univ.ObjectIdentifier()),
         namedtype.NamedType('value', univ.OctetString())
     )
-    type = id_pkixattest_keyFingerprint
 
 
 id_pkixattest_purpose = univ.ObjectIdentifier(PKIX_ATTEST_OID_ARC + (10,))
 class PkixClaim_purpose(PkixClaim):
     class Value(univ.BitString):
         pass
-
     Value.namedValues = namedval.NamedValues(
         ('Sign', 0),
         ('Verify', 1),
@@ -152,12 +150,10 @@ class PkixClaim_purpose(PkixClaim):
         ('Decapsulate', 7),
         ('Derive', 8)
     )
-
     componentType = namedtype.NamedTypes(
         namedtype.NamedType('type', univ.ObjectIdentifier()),
         namedtype.NamedType('value', Value())
     )
-    type = id_pkixattest_keyFingerprint
 
 
 id_pkixattest_extractable = univ.ObjectIdentifier(PKIX_ATTEST_OID_ARC + (11,))
@@ -223,4 +219,31 @@ class PkixClaim_hwserial(PkixClaim):
     )
     
 
+id_pkixattest_envDescription = univ.ObjectIdentifier(PKIX_ATTEST_OID_ARC + (19,))
+class PkixClaim_envDescription(PkixClaim):
+    componentType = namedtype.NamedTypes(
+        namedtype.NamedType('type', univ.ObjectIdentifier()),
+        namedtype.NamedType('value', char.UTF8String())
+    )
 
+id_pkixattest_keyDescription = univ.ObjectIdentifier(PKIX_ATTEST_OID_ARC + (20,))
+class PkixClaim_keyDescription(PkixClaim):
+    componentType = namedtype.NamedTypes(
+        namedtype.NamedType('type', univ.ObjectIdentifier()),
+        namedtype.NamedType('value', char.UTF8String())
+    )
+
+
+id_pkixattest_keyProtection = univ.ObjectIdentifier(PKIX_ATTEST_OID_ARC + (21,)) 
+class Value(univ.BitString):
+    class Value(univ.BitString):
+        pass
+    Value.namedValues = namedval.NamedValues(
+        ('DualControl', 0),
+        ('CardControl', 1),
+        ('PasswordControl', 2)
+    )
+    componentType = namedtype.NamedTypes(
+        namedtype.NamedType('type', univ.ObjectIdentifier()),
+        namedtype.NamedType('value', Value())
+    )

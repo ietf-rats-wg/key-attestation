@@ -192,8 +192,8 @@ subPat["version"] = 1
 
 subPatClaims = SetOfClaims()
 
-claim = PkixClaim_hwserial()
-claim['type'] = id_pkixattest_hwserial
+claim = PkixClaim_envDescription()
+claim['type'] = id_pkixattest_envDescription
 claim['value'] = char.UTF8String("Partition1")
 subPatClaims.append(claim)
 
@@ -212,9 +212,9 @@ claim['type'] = id_pkixattest_attestationTime
 claim['value'] = useful.GeneralizedTime(useful.UTCTime.fromDateTime(datetime.now()))
 subPatClaims.append(claim)
 
-claim = PkixClaim_keyID()
-claim['type'] = id_pkixattest_keyid
-claim['value'] = char.IA5String('Partition1-RootKey')
+claim = PkixClaim_keyDescription()
+claim['type'] = id_pkixattest_keyDescription
+claim['value'] = char.UTF8String('Partition1-RootKey')
 subPatClaims.append(claim)
 
 claim = PkixClaim_pubKey()
@@ -307,7 +307,7 @@ subPat['signatures'].append(signatureBlock)
 #   "swversion": "1.2.3",
 #   "hwserial": "1234567",
 #   "fipsboot": false,
-#   nestedTokens: {KAT1, KAT2}
+#   nestedTokens: {KAT1, subPAT}
 #   "nonce": "987654321",
 #   "attestationTime: 2025-01-17-08-33-56
 # }

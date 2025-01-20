@@ -34,12 +34,12 @@ Claims allowed in a PKIX_KAT token:
 | pubKey | Bytes (OCTET STRING / SPKI) | This document | Represents the subject public key being attested. |
 | keyFingerprintAlg | AlgorithmID | This document | The digest algorithm used to compute the key fingerprint. |
 | keyFingerprint | OCTET STRING | This document | The fingerprint of the key. |
-| purpose | Enum (CHOICE) {Sign, Verify, Encrypt, Decrypt, Wrap, Unwrap, Encapsulate, Decapsulate, Derive} | ??          | Defines the intended usage for this key. |
+| purpose | Enum {Sign, Verify, Encrypt, Decrypt, Wrap, Unwrap, Encapsulate, Decapsulate, Derive} | ??          | Defines the intended usage for this key. |
 | extractable | Boolean | [PKCS11] CKA_EXTRACTABLE | Indicates if the key is able to be exported from the module. |
 | neverExtractable | Boolean | [PKCS11] CKA_NEVER_EXTRACTABLE | Indicates if the key was in the past able to be exported from the module. |
 | imported | Boolean | This document | Indicates if the key was generated outside the module and imported; ie this indicates that a software version of this key may exist outside of hardware protection. |
 | keyExpiry | DateTime | This document | Indicates if the key has a usage period. |
-
+| keyProtection | BIT MASK / Boolean Array {DualControl (0), CardControl (1), PasswordControl (2), ...} | Description of additional key protection policies around use or modification of this key. These are generalized properties and will not apply the same way to all HSM vendors. Consult vendor documentation for the in-context meaning of these flags.|
 
 The signature block is optional on a KAT, ie it MAY be signed so that the KAT is a standalone token, or the signature MAY be omitted if the KAT is contained within a PAT where the PAT signer has authority for both the PAT and KAT claims.
 
@@ -54,7 +54,7 @@ IE places to go digging for concepts of "private key protection properties"
 * (DONE) PKCS#11 v3.2
 * KMIP?
 * (DONE) Crypto4A QASM Attest
-* nShield Attestaton docs
+* (DONE) nShield Attestaton docs
  * https://nshielddocs.entrust.com/app-notes/key-attestation-format/construction.html
  * https://nshielddocs.entrust.com/key-attestation-docs/v1.0.2/examples.html
 * CoRIM ?
