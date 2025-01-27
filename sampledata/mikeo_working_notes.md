@@ -110,23 +110,22 @@ In a pseudo-json format
 This example shows a pair of Key Attestation Tokens (KATs) nested inside a Platform Attestation Token (PAT) which might result from an attesting environment structured like this:
 
 ~~~aasvg
- |--------------------------------------|
- | .----------------------------------. |
- | | Attester                         | |
- | | --------                         | |
- | | AK Certs                         | |
- | | hwmodel="RATS HSM 9000"          | |
- | | fipsboot=true                    | |
- | | .-------------.  .-------------. | |
- | | | Key 18      |  | Key 21      | | |
- | | | RSA         |  | ECDH-P256   | | |
- | | '-------------'  '-------------' | |
- | '----------------------------------' |
- |                                      |
- |               Root of Trust (RoT)    |
- |--------------------------------------|
+ |----------------------------------|
+ | Attester                         |
+ | --------                         |
+ | hwmodel="RATS HSM 9000"          |
+ | fipsboot=true                    |
+ | nonce=1234                       |
+ | attestationTime=<timestamp>      |
+ | .-------------.  .-------------. |
+ | | Key 18      |  | Key 21      | |
+ | | RSA         |  | ECDH-P256   | |
+ | '-------------'  '-------------' |
+ '----------------------------------'
 ~~~
 {: #fig-arch title="Example of two KATs in a single PAT"}
+
+Each of these boxes will carry a signature and a chain of certificates that is the "Attesting Key (AK)". The inner boxes may or may not share the AK chain in whole or in part with the outer boxes.
 
 In a pseudo-json format
 
