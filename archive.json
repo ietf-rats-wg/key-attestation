@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-01-26T00:39:52.116997+00:00",
+  "timestamp": "2025-01-28T00:38:51.427931+00:00",
   "repo": "hannestschofenig/key-attestation",
   "labels": [
     {
@@ -63,6 +63,54 @@
       "body": "Time at which the attester collected information from the target environment(s) is important with regards to the properties included in the cert. \r\n\r\nFor example, a device may obtain a certificate from a CA after it was booted in FIPS mode. Then, the device reboots in non-FIPS mode. \r\n\r\nLikely implementation: FIPS mode changes are destructive, which means that the certificate and the private key will get deleted. The device will have to obtain a new certificate.\r\n",
       "createdAt": "2024-12-02T17:53:08Z",
       "updatedAt": "2024-12-02T17:54:53Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 6,
+      "id": "I_kwDONUAin86ntY25",
+      "title": "We need a section on AK restrictions",
+      "url": "https://github.com/hannestschofenig/key-attestation/issues/6",
+      "state": "OPEN",
+      "author": "ounsworth",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "At the minimum, we need a non-normative section describing the properties that an AK key MUST have. Things like:\n\n* Only ever signs attestation objects (ie cannot be a signing fool).\n* Is either injected and certified at manufacture time and chains to a vendor manufacture root, or else is injected at network onboarding time and chains to a network operator root.\n\nDiscussion point: should we, in this specification, be prescriptive about the structure of an AK certificate (ie prescribing v3 extensions that it must have), or should we describe non-normatively the properties that this should have, and then leave this to be vendor-specific?\n(I think the HSM vendors would prefer flexibility here)",
+      "createdAt": "2025-01-27T17:59:30Z",
+      "updatedAt": "2025-01-27T17:59:30Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 7,
+      "id": "I_kwDONUAin86ntaoX",
+      "title": "We need a section on Root-of-Trust endorsements",
+      "url": "https://github.com/hannestschofenig/key-attestation/issues/7",
+      "state": "OPEN",
+      "author": "ounsworth",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "I the \"big HSM\" world, you fully trust the entirety of the hardware boundary because it has been validated by FIPS CMVP, or Common Criteria. This is an \"endorsement\" in RATS terminology, but may not come in an automated format; ie a human may have to take the hardware_oem, hardware_model, and sw_version claims from the evidence and go find that thing on the NIST CMVP website.\n\nThis should be described in the document.",
+      "createdAt": "2025-01-27T18:02:48Z",
+      "updatedAt": "2025-01-27T18:02:48Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 8,
+      "id": "I_kwDONUAin86ntctl",
+      "title": "Should we flip the order of nesting?",
+      "url": "https://github.com/hannestschofenig/key-attestation/issues/8",
+      "state": "OPEN",
+      "author": "ounsworth",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Mike's samples have the KAT claims is the inner signed objects, and then are placed within an outer PAT signed object. From an HSM perspective, this makes sense. But from a RATS / DICE perspective it usually goes the other way where lower-level platforms (ex.: secure boot) produces its signed statement, and then this is included in a higher-level signed statement (ex.: OS boot)\n\nShould we flip the order?\n\nDo we actually need to do prescriptive about this, or we do only need to define a flexible syntax and then let HSM vendors use it either way?",
+      "createdAt": "2025-01-27T18:06:25Z",
+      "updatedAt": "2025-01-27T18:06:25Z",
       "closedAt": null,
       "comments": []
     }
@@ -155,6 +203,34 @@
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 5,
+      "id": "PR_kwDONUAin86JGbJS",
+      "title": "Python hackathon code to generate samples",
+      "url": "https://github.com/hannestschofenig/key-attestation/pull/5",
+      "state": "MERGED",
+      "author": "ounsworth",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-01-27T15:20:15Z",
+      "updatedAt": "2025-01-27T18:09:41Z",
+      "baseRepository": "hannestschofenig/key-attestation",
+      "baseRefName": "main",
+      "baseRefOid": "8a27726e727c6970cd9d802e38b2d3b8df9d86cd",
+      "headRepository": "hannestschofenig/key-attestation",
+      "headRefName": "mikeo_asn1",
+      "headRefOid": "518024ebb8659c055d5b90c10fe6a24e6d637a32",
+      "closedAt": "2025-01-27T18:09:41Z",
+      "mergedAt": "2025-01-27T18:09:41Z",
+      "mergedBy": "ounsworth",
+      "mergeCommit": {
+        "oid": "85cc7d537da8739993bdd144455e3d670d960227"
+      },
       "comments": [],
       "reviews": []
     }
