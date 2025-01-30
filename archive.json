@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-01-28T00:38:51.427931+00:00",
+  "timestamp": "2025-01-30T00:37:56.860352+00:00",
   "repo": "hannestschofenig/key-attestation",
   "labels": [
     {
@@ -78,9 +78,17 @@
       "labels": [],
       "body": "At the minimum, we need a non-normative section describing the properties that an AK key MUST have. Things like:\n\n* Only ever signs attestation objects (ie cannot be a signing fool).\n* Is either injected and certified at manufacture time and chains to a vendor manufacture root, or else is injected at network onboarding time and chains to a network operator root.\n\nDiscussion point: should we, in this specification, be prescriptive about the structure of an AK certificate (ie prescribing v3 extensions that it must have), or should we describe non-normatively the properties that this should have, and then leave this to be vendor-specific?\n(I think the HSM vendors would prefer flexibility here)",
       "createdAt": "2025-01-27T17:59:30Z",
-      "updatedAt": "2025-01-27T17:59:30Z",
+      "updatedAt": "2025-01-28T21:40:38Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> * Is either injected and certified at manufacture time and chains to a vendor manufacture root, or else is injected at network onboarding time and chains to a network operator root.\n\nIs this to say that an attestation signing key can't be generated within the HSM? Some customers prefer this over having to trust a vendor's key injection process (which they can't easily audit).",
+          "createdAt": "2025-01-28T21:40:37Z",
+          "updatedAt": "2025-01-28T21:40:37Z"
+        }
+      ]
     },
     {
       "number": 7,
@@ -94,9 +102,17 @@
       "labels": [],
       "body": "I the \"big HSM\" world, you fully trust the entirety of the hardware boundary because it has been validated by FIPS CMVP, or Common Criteria. This is an \"endorsement\" in RATS terminology, but may not come in an automated format; ie a human may have to take the hardware_oem, hardware_model, and sw_version claims from the evidence and go find that thing on the NIST CMVP website.\n\nThis should be described in the document.",
       "createdAt": "2025-01-27T18:02:48Z",
-      "updatedAt": "2025-01-27T18:02:48Z",
+      "updatedAt": "2025-01-28T21:35:20Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The endorsement document could be a certificate which binds an instance identifier (public key) to a device type or model (these are class identifiers). \n\nThen endorsement document for a CC or FIPS certified entity is a class identifier that binds the class of device with a rating. \n\nIf the class identifiers between the two documents are the same type. Then a verifier can relate the two documents even if they have difrerent signers and different lifecycles.",
+          "createdAt": "2025-01-28T21:35:18Z",
+          "updatedAt": "2025-01-28T21:35:18Z"
+        }
+      ]
     },
     {
       "number": 8,
@@ -110,9 +126,17 @@
       "labels": [],
       "body": "Mike's samples have the KAT claims is the inner signed objects, and then are placed within an outer PAT signed object. From an HSM perspective, this makes sense. But from a RATS / DICE perspective it usually goes the other way where lower-level platforms (ex.: secure boot) produces its signed statement, and then this is included in a higher-level signed statement (ex.: OS boot)\n\nShould we flip the order?\n\nDo we actually need to do prescriptive about this, or we do only need to define a flexible syntax and then let HSM vendors use it either way?",
       "createdAt": "2025-01-27T18:06:25Z",
-      "updatedAt": "2025-01-27T18:06:25Z",
+      "updatedAt": "2025-01-28T21:29:42Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> But from a RATS / DICE perspective\n\nI disagree. RATS doesn't equate nesting with idenitity. DICE keys are derived from environmental attributes, but once an identifier is generated, it doesn't NEED to be nested for it to make sense. \nHaving globally unique identfiers for environments means you don't depend on nesting (local name space scoping) contexts for disambiguation. A flat list of tuples : (environment identifier, attribute value) offers sufficient disambiguation if _environment identifier_ is globally unique. \n\nI'm not asking you to go look, but if you don't believe me you can look at the internal representation of claims in the corim draft which is modeled as a flat list of claims.\n\nGiven attestation pretty much requires attestation keys to assert claims, keys can be a reasonable instance specific identifiers for environments. This is what a device cert is doing already. It's often helpful to have a class specific identifier for cases where an attribute applies to multiple devices/environments at the same time (such as a model or versioned thing). If the class identifiers are also globally unique, then they don't depend on nesting for disambiguation. A key can also be a class identifier if it is a group key. \n\nHSMs are not different from other embedded computing environments in that they have both class-based and instance-based objects for which it makes sense to produce attested claims that describes them. If I have a preference, it is that the objects be identified with globally unique identifiers to minimize the need for composite nested identifiers. ",
+          "createdAt": "2025-01-28T21:29:41Z",
+          "updatedAt": "2025-01-28T21:29:41Z"
+        }
+      ]
     }
   ],
   "pulls": [
