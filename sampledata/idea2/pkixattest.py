@@ -98,13 +98,12 @@ class SignatureBlock(univ.Sequence):
     )
 
 
-# PkixKeyAttestation ::= SEQUENCE {
+# TbsPkixKeyAttestation ::= SEQUENCE {
 #     version INTEGER,
 #     keys SEQUENCE SIZE (1..MAX) OF SingleKeyAttestation,
 #     platformClaims SEQUENCE SIZE (0..MAX) OF PlatformClaim,
-#     signatures SEQUENCE SIZE (1..MAX) of SignatureBlock
 # }
-class PkixKeyAttestation(univ.Sequence):
+class TbsPkixKeyAttestation(univ.Sequence):
     componentType = namedtype.NamedTypes(
         namedtype.NamedType("version", univ.Integer()),
         namedtype.NamedType("keys", univ.SequenceOf(
@@ -114,7 +113,16 @@ class PkixKeyAttestation(univ.Sequence):
         namedtype.NamedType("platformClaims", univ.SequenceOf(
             componentType = PlatformClaim(),
             subtypeSpec = constraint.ValueSizeConstraint(0, MAX)
-        )),
+        ))
+    )
+
+# PkixKeyAttestation ::= SEQUENCE {
+#     tbs TbsPkixKeyAttestation,
+#     signatures SEQUENCE SIZE (0..MAX) of SignatureBlock
+# }
+class PkixKeyAttestation(univ.Sequence):
+    componentType = namedtype.NamedTypes(
+        namedtype.NamedType("tbs", TbsPkixKeyAttestation()),
         namedtype.NamedType("signatures", univ.SequenceOf(
             componentType = SignatureBlock(),
             subtypeSpec = constraint.ValueSizeConstraint(0, MAX)

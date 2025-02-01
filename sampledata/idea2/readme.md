@@ -16,10 +16,14 @@ Conceptually the data that needs to be conveyed breaks into several categories:
 # Information Model
 
 ```
-PkixKeyAttestation ::= SEQUENCE {
+TbsPkixKeyAttestation ::= SEQUENCE {
     version INTEGER,
     keys SEQUENCE SIZE (1..MAX) OF SingleKeyAttestation,
     platformClaims SEQUENCE SIZE (0..MAX) OF PlatformClaim,
+}
+
+PkixKeyAttestation ::= SEQUENCE {
+    tbs TbsPkixKeyAttestation,
     signatures SEQUENCE SIZE (0..MAX) of SignatureBlock
 }
 
