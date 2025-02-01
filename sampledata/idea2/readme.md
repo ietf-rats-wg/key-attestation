@@ -1,15 +1,15 @@
 # Conceptual Model
 
-The attestation data described here is self-attested evidence where the attesting environment is a slice of a complete device that can be thought of as the "HSM application layer" -- ie the layer of a trusted device that handles and manages private key material on behalf of other applications that make use of these keys. How this composes with other layers, for example a hardware root of trust in which this environment is running, or applications that make use of the managed keys, is out of scope.
+The attestation data described here is self-attested evidence where the attesting environment is the slice of a complete device that can be thought of as the "HSM application layer" -- ie the layer of a trusted device that handles and manages private key material on behalf of other applications that make use of these keys. How this attestation data composes with other attestation layers, for example a hardware root of trust in which this environment is running, or applications that make use of the managed keys, is out of scope and can be accomplished with other wrapper formats such as RATS CMW.
 
 The goal of this draft is for an HSM to be able to describe either a single key that it manages -- for example to accompany a Certificate Signing Request (CSR) -- or a set of keys that it manages -- for example to audit all keys within the device.
 
 Conceptually the data that needs to be conveyed breaks into several categories:
 
-1. Description of the key -- public key, key ID, fingerprint.
+1. Key description -- public key, key ID, fingerprint.
     1. Key protection properties -- non-exportable, etc.
     1. Key environment -- partition, cloud tenant, policy group, etc to which this key belongs.
-1. Platform -- description of the hardware, software, and global configuration state of the attesting environment in which this key resides.
+1. Platform description -- description of the hardware, software, and global configuration state of the attesting environment in which this key resides.
 
 
 
@@ -26,9 +26,6 @@ PkixKeyAttestation ::= SEQUENCE {
     tbs TbsPkixKeyAttestation,
     signatures SEQUENCE SIZE (0..MAX) of SignatureBlock
 }
-
-Signature is computed over the DER encoded PkixKeyAttestation structure 
-with an empty signatures sequence .. ie a sequence of size 0
 
 SingleKeyAttestation ::= SEQUENCE {
     keyDescription KeyDescription,
@@ -58,26 +55,27 @@ KeyEnvironmentDescription ::= SEQUENCE {
 
 The following PlatformClaims are registered by this document, but this list is open-ended and extensible.
 
-| Claim | Data Type       | Multiple allowed  |  Definition | Description |
-| ----- | ----            | ---               | ---        | ---         |
-| hwserial       | String | No                | This document | The serial number of the device, as marked on the case, device certificate or other location. |
-| fipsboot       | Boolean | No               | This document | Indicates whether the cryptographic module was booted and is currently running in FIPS mode. |
-| envDescription | String | Yes               | Further description of the environment beyond hwvendor, hwmodel, hwserial, swversion; for example if there is a need to describe multiple logical partitions within the same device. Contents could be a human-readable description or other identifiers. |
-| nonce          | String | No                | ?? | A nonce for the purposes of freshness of this token. EDNOTE: surely such a thing already exists in EAT? |
-| attestationTime | DateTime | No             | JWT "iat" | The time at which this token was generated. EDNOTE: Surely such a thing already exists in EAT? |
+| Claim | OID    | Data Type       | Multiple allowed  |  Definition | Description |
+| ----- | ----   | ---             | ---               | ---        | ---         |
+| hwserial | TBD | String | No                | This document | The serial number of the device, as marked on the case, device certificate or other location. |
+| fipsboot | TBD | Boolean | No               | This document | Indicates whether the cryptographic module was booted and is currently running in FIPS mode. |
+| envDescription | TBD | String | Yes               | Further description of the environment beyond hwvendor, hwmodel, hwserial, swversion; for example if there is a need to describe multiple logical partitions within the same device. Contents could be a human-readable description or other identifiers. |
+| nonce | TBD | String | No                | ?? | A nonce for the purposes of freshness of this token. EDNOTE: surely such a thing already exists in EAT? |
+| attestationTime | TBD | DateTime | No             | JWT "iat" | The time at which this token was generated. EDNOTE: Surely such a thing already exists in EAT? |
 
 
 
 
 The following KeyProtectionClaims are registered by this document, but this list is open-ended and extensible. Multiple copies of any KeyProtectonClaim is not allowed.
 
-| Claim             | Data Type | Definition | Description |
-| purpose | Enum {Sign, Verify, Encrypt, Decrypt, Wrap, Unwrap, Encapsulate, Decapsulate, Derive} | ??          | Defines the intended usage for this key. |
-| extractable | Boolean | [PKCS11] CKA_EXTRACTABLE | Indicates if the key is able to be exported from the module. |
-| neverExtractable | Boolean | [PKCS11] CKA_NEVER_EXTRACTABLE | Indicates if the key was in the past able to be exported from the module. |
-| imported | Boolean | This document | Indicates if the key was generated outside the module and imported; ie this indicates that a software version of this key may exist outside of hardware protection. |
-| keyExpiry | DateTime | This document | Indicates if the key has a usage period. |
-| keyProtection | BIT MASK / Boolean Array {DualControl (0), CardControl (1), PasswordControl (2), ...} | Description of additional key protection policies around use or modification of this key. These are generalized properties and will not apply the same way to all HSM vendors. Consult vendor documentation for the in-context meaning of these flags.|
+| Claim  | OID | Data Type | Definition | Description |
+| ---    | --- | ---       | ---        | ---         |
+| purpose | TBD | Enum {Sign, Verify, Encrypt, Decrypt, Wrap, Unwrap, Encapsulate, Decapsulate, Derive} | ??          | Defines the intended usage for this key. |
+| extractable | TBD | Boolean | [PKCS11] CKA_EXTRACTABLE | Indicates if the key is able to be exported from the module. |
+| neverExtractable | TBD | Boolean | [PKCS11] CKA_NEVER_EXTRACTABLE | Indicates if the key was in the past able to be exported from the module. |
+| imported | TBD | Boolean | This document | Indicates if the key was generated outside the module and imported; ie this indicates that a software version of this key may exist outside of hardware protection. |
+| keyExpiry | TBD | DateTime | This document | Indicates if the key has a usage period. |
+| keyProtection | TBD | BIT MASK / Boolean Array {DualControl (0), CardControl (1), PasswordControl (2), ...} | Description of additional key protection policies around use or modification of this key. These are generalized properties and will not apply the same way to all HSM vendors. Consult vendor documentation for the in-context meaning of these flags.|
 
 
 
@@ -121,7 +119,6 @@ The community is encouraged to define additional verification profiles to satisf
  .----------------------------------.
  | Attester                         |
  | --------                         |
- | AK Certs                         |
  | hwmodel="RATS HSM 9000"          |
  | fipsboot=true                    |
  | .----------.  .----------------. |
