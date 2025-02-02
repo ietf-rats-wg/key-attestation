@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-01-30T00:37:56.860352+00:00",
+  "timestamp": "2025-02-02T00:41:26.730161+00:00",
   "repo": "hannestschofenig/key-attestation",
   "labels": [
     {
@@ -209,24 +209,26 @@
       "id": "PR_kwDONUAin86FZaGK",
       "title": "Update draft-ounsworth-rats-key-attestation.md",
       "url": "https://github.com/hannestschofenig/key-attestation/pull/4",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "nedmsmith",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Added author information",
       "createdAt": "2024-12-16T18:48:43Z",
-      "updatedAt": "2024-12-16T18:48:44Z",
+      "updatedAt": "2025-01-30T08:34:15Z",
       "baseRepository": "hannestschofenig/key-attestation",
       "baseRefName": "main",
       "baseRefOid": "5ee6daef34463a78bcea811f9fa0a44089885317",
       "headRepository": "hannestschofenig/key-attestation",
       "headRefName": "ned-as-author",
       "headRefOid": "69a945550cdc887ffd9a6694890fbdfdf1a4469b",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-01-30T08:34:11Z",
+      "mergedAt": "2025-01-30T08:34:11Z",
+      "mergedBy": "hannestschofenig",
+      "mergeCommit": {
+        "oid": "1661f919f654666ad22113c40b791da66d26e817"
+      },
       "comments": [],
       "reviews": []
     },
