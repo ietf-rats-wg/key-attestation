@@ -5,7 +5,7 @@
 Remote ATtestation ProcedureS                               M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             H. Birkholz
-Expires: 5 August 2025                                    Fraunhofer SIT
+Expires: 9 August 2025                                    Fraunhofer SIT
                                                               T. Fossati
                                                                   Linaro
                                                               M. Wiseman
@@ -14,7 +14,7 @@ Expires: 5 August 2025                                    Fraunhofer SIT
                                                                    H-BRS
                                                                 N. Smith
                                                        Intel Corporation
-                                                         1 February 2025
+                                                         5 February 2025
 
 
                             Key Attestation
@@ -56,7 +56,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 5 August 2025.
+   This Internet-Draft will expire on 9 August 2025.
 
 Copyright Notice
 
@@ -617,9 +617,9 @@ Table of Contents
               Ounsworth, M., Tschofenig, H., Birkholz, H., Wiseman, M.,
               and N. Smith, "Use of Remote Attestation with
               Certification Signing Requests", Work in Progress,
-              Internet-Draft, draft-ietf-lamps-csr-attestation-15, 30
-              January 2025, <https://datatracker.ietf.org/doc/html/
-              draft-ietf-lamps-csr-attestation-15>.
+              Internet-Draft, draft-ietf-lamps-csr-attestation-16, 1
+              February 2025, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-lamps-csr-attestation-16>.
 
    [I-D.ietf-rats-pkix-evidence]
               Ounsworth, M., Kettlewell, R., Fiset, J., Tschofenig, H.,
