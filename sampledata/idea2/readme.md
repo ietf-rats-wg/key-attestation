@@ -63,7 +63,7 @@ The following PlatformClaims are registered by this document, but this list is o
 
 | Claim | OID    | Data Type       | Multiple allowed  |  Definition | Description |
 | ----- | ----   | ---             | ---               | ---        | ---         |
-| hwserial | TBD | String | No                | This document | The serial number of the device, as marked on the case, device certificate or other location. |
+| hwserial | TBD | String | No                | This document | The serial number of the device, as marked on the case, device certificate or other location. We should find and reference the NIST document that defines what is "FIPS Mode". |
 | fipsboot | TBD | Boolean | No               | This document | Indicates whether the cryptographic module was booted and is currently running in FIPS mode. |
 | envDescription | TBD | String | Yes               | Further description of the environment beyond hwvendor, hwmodel, hwserial, swversion; for example if there is a need to describe multiple logical partitions within the same device. Contents could be a human-readable description or other identifiers. |
 | nonce | TBD | String | No                | ?? | A nonce for the purposes of freshness of this token. EDNOTE: surely such a thing already exists in EAT? |
