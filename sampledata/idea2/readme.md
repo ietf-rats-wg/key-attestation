@@ -50,6 +50,12 @@ KeyEnvironmentDescription ::= SEQUENCE {
     description   [1] UTF8String OPTIONAL
 }
 
+SignatureBlock ::= SEQUENCE {
+   certChain SEQUENCE of Certificate,
+   signatureAlgorithm AlgorithmIdentifier,
+   signatureValue OCTET STRING
+}
+
 ```
 
 
