@@ -78,23 +78,16 @@ p256PubKey = p256SPKI['subjectPublicKey']
 tbsAtt = TbsPkixAttestation()
 tbsAtt["version"] = 1
 
+tbsAtt.addEntity(
+        ReportedEntityPlatform()
+            .addAttribute( ReportedAttributePlatformSerial("HSM-123") )
+    )
 
-# Platform entity
-# platformEntity = ReportedEntity()
-# platformEntity["entityType"] = id_pkix_attest_entity_platform
-# attribute = ReportedAttribute()
-# attribute["attributeType"] = id_pkix_attest_attribute_platform_hwserial
-# attValue = AttributeValue()
-# attValue["utf8String"] = "HSM-123"
-# attribute["value"] = attValue
-# platformEntity["reportedAttributes"].append(attribute)
-platformEntity = ReportedEntityPlatform()
-platformEntity["reportedAttributes"].append( ReportedAttributePlatformSerial("HSM-123") )
-tbsAtt["reportedEntities"].append(platformEntity)
-
-platformKey = ReportedEntityKey()
-platformKey["reportedAttributes"].append( ReportedAttributeKeyExtractable(False) )
-tbsAtt["reportedEntities"].append(platformKey)
+tbsAtt.addEntity(
+        ReportedEntityKey()
+            .addAttribute( ReportedAttributeKeyExtractable(False) )
+            .addAttribute( ReportedAttributeKeySPKI( encode(p256SPKI) ) )
+    )
 
 
 # RSA SignatureBlock

@@ -40,7 +40,8 @@ AttributeValue :== CHOICE {
    bytes       [0] IMPLICIT OCTET STRING,
    utf8String  [1] IMPLICIT UTF8String,
    time        [2] IMPLICIT GeneralizedTime,
-   value       [3] IMPLICIT INTEGER
+   value       [3] IMPLICIT INTEGER,
+   oid         [4] IMPLICIT OBJECT IDENTIFIER
 }
 
 id-pkix-attest OBJECT IDENTIFIER ::= { 1 2 3 999 }
