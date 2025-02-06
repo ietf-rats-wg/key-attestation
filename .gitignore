@@ -11,6 +11,8 @@
 /.refcache
 /.venv/
 /.vscode/
+.project
+.pydevproject
 /lib
 /node_modules/
 /versioned/
