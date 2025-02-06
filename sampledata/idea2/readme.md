@@ -61,11 +61,12 @@ SignatureBlock ::= SEQUENCE {
 
 The following PlatformClaims are registered by this document, but this list is open-ended and extensible.
 
-| Claim | OID    | Data Type       | Multiple allowed  |  Definition | Description |
-| ----- | ----   | ---             | ---               | ---        | ---         |
+| Claim | OID    | Data Type       | Multiple allowed  |  Description |
+| ----- | ----   | ---             | ---               | ---         |
 | hwserial | TBD | String | No                | This document | The serial number of the device, as marked on the case, device certificate or other location. We should find and reference the NIST document that defines what is "FIPS Mode". |
 | fipsboot | TBD | Boolean | No               | This document | Indicates whether the cryptographic module was booted and is currently running in FIPS mode. |
 | envDescription | TBD | String | Yes               | Further description of the environment beyond hwvendor, hwmodel, hwserial, swversion; for example if there is a need to describe multiple logical partitions within the same device. Contents could be a human-readable description or other identifiers. |
+| userModules    | TBD | SEQUENCE of KeyEnvironmentDescription | No    | An HSM typically has a way to load 3rd party applications to run within the HSM hardware boundary, typically for security-sensitive applications or to build higher-level cryptographic primitives. This claim MAY list all such modules loaded on the device, and MUST list all modules currently running that have access to the attested keys. |
 | nonce | TBD | String | No                | ?? | A nonce for the purposes of freshness of this token. EDNOTE: surely such a thing already exists in EAT? |
 | attestationTime | TBD | DateTime | No             | JWT "iat" | The time at which this token was generated. EDNOTE: Surely such a thing already exists in EAT? |
 
