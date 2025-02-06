@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-04T00:38:53.304743+00:00",
+  "timestamp": "2025-02-06T00:39:29.068657+00:00",
   "repo": "hannestschofenig/key-attestation",
   "labels": [
     {
@@ -137,6 +137,38 @@
           "updatedAt": "2025-01-28T21:29:41Z"
         }
       ]
+    },
+    {
+      "number": 9,
+      "id": "I_kwDONUAin86o6iuO",
+      "title": "Declare trust relationships between Attester and Verifier out-of-scope",
+      "url": "https://github.com/hannestschofenig/key-attestation/issues/9",
+      "state": "OPEN",
+      "author": "henkbirkholz",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This would be easiest accomplished,I think, by stating that [Section 7.4](https://www.rfc-editor.org/rfc/rfc9334.html#section-7.4) of [RFC9334](https://www.rfc-editor.org/rfc/rfc9334.html) does not apply in this document.",
+      "createdAt": "2025-02-05T20:40:03Z",
+      "updatedAt": "2025-02-05T20:40:03Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 10,
+      "id": "I_kwDONUAin86o6kOD",
+      "title": "Declaring Attester and Attesting Environment as interchangeable terim",
+      "url": "https://github.com/hannestschofenig/key-attestation/issues/10",
+      "state": "OPEN",
+      "author": "henkbirkholz",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "In order to avoid confusion about nesting and cardinality of environments, I'd like to propose to limit the numbers of Attesting Environments per Attester to one. That way the terms automatically become interchangeable.",
+      "createdAt": "2025-02-05T20:43:45Z",
+      "updatedAt": "2025-02-05T20:43:45Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
