@@ -76,9 +76,8 @@ p256PubKey = p256SPKI['subjectPublicKey']
 
 
 tbsAtt = TbsPkixAttestation()
-tbsAtt["version"] = 1
 
-nonce = bytes( [1, 2, 3, 4, 5] )
+nonce = b'0102030405'
 tbsAtt.addEntity(
         ReportedEntityRequest()
             .addAttribute( ReportedAttributeRequestNonce(nonce) )
@@ -105,6 +104,7 @@ tbsAtt.addEntity(
             .addAttribute( ReportedAttributeKeySPKI( encode(p256SPKI) ) )
     )
 
+# Custom entity and attribute
 id_attest_customized = univ.ObjectIdentifier((1, 2, 3, 888))
 id_attest_custom_entity_partition = univ.ObjectIdentifier( id_attest_customized + (0,))
 id_attest_custom_attribute_partition_identifier = univ.ObjectIdentifier( id_attest_customized + (1,))

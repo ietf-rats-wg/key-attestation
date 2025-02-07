@@ -245,6 +245,16 @@ class TbsPkixAttestation(univ.Sequence):
         ))
     )
     
+    def __init__(self, **kwargs):
+        univ.Sequence.__init__(self, **kwargs)
+        
+        # Defaults to 2 to avoid collision with legacy implementations
+        self.setVersion(2)
+    
+    def setVersion(self, version:int) -> "TbsPkixAttestation":
+        self["version"] = version
+        return self
+    
     def addEntity(self, entity) -> "TbsPkixAttestation":
         self["reportedEntities"].append(entity)
         return self
