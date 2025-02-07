@@ -32,13 +32,14 @@ id_pkix_attest_attribute_platform_desc     = univ.ObjectIdentifier( id_pkix_atte
 id_pkix_attest_attribute_platform_time     = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (3,))
 
 id_pkix_attest_attribute_key                   = univ.ObjectIdentifier( id_pkix_attest_attribute_type + (2,))
-id_pkix_attest_attribute_key_spki              = univ.ObjectIdentifier( id_pkix_attest_attribute_key + (0,))
-id_pkix_attest_attribute_key_purpose           = univ.ObjectIdentifier( id_pkix_attest_attribute_key + (1,))
-id_pkix_attest_attribute_key_extractable       = univ.ObjectIdentifier( id_pkix_attest_attribute_key + (2,))
-id_pkix_attest_attribute_key_never_extractable = univ.ObjectIdentifier( id_pkix_attest_attribute_key + (3,))
-id_pkix_attest_attribute_key_local             = univ.ObjectIdentifier( id_pkix_attest_attribute_key + (4,))
-id_pkix_attest_attribute_key_expiry            = univ.ObjectIdentifier( id_pkix_attest_attribute_key + (5,))
-id_pkix_attest_attribute_key_protection        = univ.ObjectIdentifier( id_pkix_attest_attribute_key + (6,))
+id_pkix_attest_attribute_key_identifier        = univ.ObjectIdentifier( id_pkix_attest_attribute_key + (0,))
+id_pkix_attest_attribute_key_spki              = univ.ObjectIdentifier( id_pkix_attest_attribute_key + (1,))
+id_pkix_attest_attribute_key_purpose           = univ.ObjectIdentifier( id_pkix_attest_attribute_key + (2,))
+id_pkix_attest_attribute_key_extractable       = univ.ObjectIdentifier( id_pkix_attest_attribute_key + (3,))
+id_pkix_attest_attribute_key_never_extractable = univ.ObjectIdentifier( id_pkix_attest_attribute_key + (4,))
+id_pkix_attest_attribute_key_local             = univ.ObjectIdentifier( id_pkix_attest_attribute_key + (5,))
+id_pkix_attest_attribute_key_expiry            = univ.ObjectIdentifier( id_pkix_attest_attribute_key + (6,))
+id_pkix_attest_attribute_key_protection        = univ.ObjectIdentifier( id_pkix_attest_attribute_key + (7,))
 
 # SignatureBlock ::= SEQUENCE {
 #    certChain SEQUENCE of Certificate,
@@ -83,6 +84,13 @@ class AttributeValue(univ.Choice):
         self["value"] = value
         return self
     
+    def setBoolean(self, flag:bool) -> "AttributeValue":
+        if flag:
+            self["value"] = 1
+        else:
+            self["value"] = 0
+        return self
+    
 # ReportedAttribute ::= SEQUENCE {
 #     attributeType      OBJECT IDENTIFIER,
 #     value              AttributeValue
@@ -92,27 +100,106 @@ class ReportedAttribute(univ.Sequence):
         namedtype.NamedType("attributeType", univ.ObjectIdentifier()),
         namedtype.NamedType("value", AttributeValue())
     )
+
+#
+# Generic Attributes
+#
+
+def ReportedAttributeBytes(oid:univ.ObjectIdentifier, valueBytes:bytes):
+    attribute = ReportedAttribute()
+    attribute["attributeType"] = oid
+    attribute["value"] = AttributeValue().setBytes(valueBytes)
+    return attribute
+
+def ReportedAttributeString(oid:univ.ObjectIdentifier, valueStr:str):
+    attribute = ReportedAttribute()
+    attribute["attributeType"] = oid
+    attribute["value"] = AttributeValue().setString(valueStr)
+    return attribute
+
+def ReportedAttributeInteger(oid:univ.ObjectIdentifier, valueInt:int):
+    attribute = ReportedAttribute()
+    attribute["attributeType"] = oid
+    attribute["value"] = AttributeValue().setInteger(valueInt)
+    return attribute
+
+def ReportedAttributeBoolean(oid:univ.ObjectIdentifier, valueBool:bool):
+    attribute = ReportedAttribute()
+    attribute["attributeType"] = oid
+    attribute["value"] = AttributeValue().setBoolean(valueBool)
+    return attribute
+
+#
+# Request Attributes
+#
+    
+def ReportedAttributeRequestNonce(nonce:bytes):
+    return ReportedAttributeBytes(
+        id_pkix_attest_attribute_request_nonce,
+        nonce
+    )
+    
+#
+# Platform Attributes
+#
     
 def ReportedAttributePlatformSerial(serialNumber:str):
-    attribute = ReportedAttribute()
-    attribute["attributeType"] = id_pkix_attest_attribute_platform_hwserial
-    attribute["value"] = AttributeValue().setString(serialNumber)
-    return attribute
+    return ReportedAttributeString(
+        id_pkix_attest_attribute_platform_hwserial,
+        serialNumber
+    )
+    
+def ReportedAttributePlatformFipsBoot(flag:bool):
+    return ReportedAttributeBoolean(
+        id_pkix_attest_attribute_platform_fipsboot,
+        flag
+    )
+    
+def ReportedAttributePlatformDescription(desc:str):
+    return ReportedAttributeString(
+        id_pkix_attest_attribute_platform_desc,
+        desc
+    )
+
+# id_pkix_attest_attribute_platform_time     = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (3,))
+    
+#
+# Key Attributes
+#
+    
+def ReportedAttributeKeyIdentifier(id:str):
+    return ReportedAttributeString(
+        id_pkix_attest_attribute_key_identifier,
+        id
+    )
     
 def ReportedAttributeKeySPKI(spki:bytes):
-    attribute = ReportedAttribute()
-    attribute["attributeType"] = id_pkix_attest_attribute_key_spki
-    attribute["value"] = AttributeValue().setBytes(spki)
-    return attribute
+    return ReportedAttributeBytes(
+        id_pkix_attest_attribute_key_spki,
+        spki
+    )
     
 def ReportedAttributeKeyExtractable(flag:bool):
-    attribute = ReportedAttribute()
-    attribute["attributeType"] = id_pkix_attest_attribute_key_extractable
-    if( flag ):
-        attribute["value"] = AttributeValue().setInteger(1)
-    else:
-        attribute["value"] = AttributeValue().setInteger(0)
-    return attribute
+    return ReportedAttributeBoolean(
+        id_pkix_attest_attribute_key_extractable,
+        flag
+    )
+    
+def ReportedAttributeKeyNeverExtractable(flag:bool):
+    return ReportedAttributeBoolean(
+        id_pkix_attest_attribute_key_never_extractable,
+        flag
+    )
+    
+def ReportedAttributeKeyLocal(flag:bool):
+    return ReportedAttributeBoolean(
+        id_pkix_attest_attribute_key_local,
+        flag
+    )
+
+# id_pkix_attest_attribute_key_purpose           = univ.ObjectIdentifier( id_pkix_attest_attribute_key + (2,))
+# id_pkix_attest_attribute_key_expiry            = univ.ObjectIdentifier( id_pkix_attest_attribute_key + (6,))
+# id_pkix_attest_attribute_key_protection        = univ.ObjectIdentifier( id_pkix_attest_attribute_key + (7,))
 
 # ReportedEntity ::= SEQUENCE {
 #     entityType         OBJECT IDENTIFIER,
@@ -131,15 +218,19 @@ class ReportedEntity(univ.Sequence):
         self["reportedAttributes"].append(attribute)
         return self
     
-def ReportedEntityPlatform():
+def ReportedEntityGeneric(entityType:univ.ObjectIdentifier) -> "ReportedEntity":
     entity = ReportedEntity()
-    entity["entityType"] = id_pkix_attest_entity_platform
+    entity["entityType"] = entityType
     return entity
     
-def ReportedEntityKey():
-    entity = ReportedEntity()
-    entity["entityType"] = id_pkix_attest_entity_key
-    return entity
+def ReportedEntityRequest() -> "ReportedEntity":
+    return ReportedEntityGeneric(id_pkix_attest_entity_request)
+    
+def ReportedEntityPlatform() -> "ReportedEntity":
+    return ReportedEntityGeneric(id_pkix_attest_entity_platform)
+    
+def ReportedEntityKey() -> "ReportedEntity":
+    return ReportedEntityGeneric(id_pkix_attest_entity_key)
 
 # TbsPkixAttestation ::= SEQUENCE {
 #     version INTEGER,

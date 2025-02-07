@@ -64,13 +64,14 @@ id-pkix-attest-attribute-platform-time     OBJECT IDENTIFIER ::= { id-pkix-attes
 
 
 id-pkix-attest-attribute-key                   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 2 }
-id-pkix-attest-attribute-key-spki              OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 0 }
-id-pkix-attest-attribute-key-purpose           OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 1 }
-id-pkix-attest-attribute-key-extractable       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 2 }
-id-pkix-attest-attribute-key-never-extractable OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 3 }
-id-pkix-attest-attribute-key-local             OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 4 }
-id-pkix-attest-attribute-key-expiry            OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 5 }
-id-pkix-attest-attribute-key-protection        OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 6 }
+id-pkix-attest-attribute-key-identifier        OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 0 }
+id-pkix-attest-attribute-key-spki              OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 1 }
+id-pkix-attest-attribute-key-purpose           OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 2 }
+id-pkix-attest-attribute-key-extractable       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 3 }
+id-pkix-attest-attribute-key-never-extractable OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 4 }
+id-pkix-attest-attribute-key-local             OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 5 }
+id-pkix-attest-attribute-key-expiry            OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 6 }
+id-pkix-attest-attribute-key-protection        OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 7 }
 
 
 ```

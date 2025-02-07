@@ -78,15 +78,43 @@ p256PubKey = p256SPKI['subjectPublicKey']
 tbsAtt = TbsPkixAttestation()
 tbsAtt["version"] = 1
 
+nonce = bytes( [1, 2, 3, 4, 5] )
+tbsAtt.addEntity(
+        ReportedEntityRequest()
+            .addAttribute( ReportedAttributeRequestNonce(nonce) )
+    )
+
 tbsAtt.addEntity(
         ReportedEntityPlatform()
             .addAttribute( ReportedAttributePlatformSerial("HSM-123") )
+            .addAttribute( ReportedAttributePlatformFipsBoot(True) )
+            .addAttribute( ReportedAttributePlatformDescription("Model ABC") )
     )
 
 tbsAtt.addEntity(
         ReportedEntityKey()
+            .addAttribute( ReportedAttributeKeyIdentifier("26d765d8-1afd-4dfb-a290-cf867ddecfa1") )
             .addAttribute( ReportedAttributeKeyExtractable(False) )
             .addAttribute( ReportedAttributeKeySPKI( encode(p256SPKI) ) )
+    )
+
+tbsAtt.addEntity(
+        ReportedEntityKey()
+            .addAttribute( ReportedAttributeKeyIdentifier("49a96ace-e39a-4fd2-bec1-13165a99621c") )
+            .addAttribute( ReportedAttributeKeyExtractable(True) )
+            .addAttribute( ReportedAttributeKeySPKI( encode(p256SPKI) ) )
+    )
+
+id_attest_customized = univ.ObjectIdentifier((1, 2, 3, 888))
+id_attest_custom_entity_partition = univ.ObjectIdentifier( id_attest_customized + (0,))
+id_attest_custom_attribute_partition_identifier = univ.ObjectIdentifier( id_attest_customized + (1,))
+tbsAtt.addEntity(
+        ReportedEntityGeneric(id_attest_custom_entity_partition)
+            .addAttribute( ReportedAttributeString(
+                id_attest_custom_attribute_partition_identifier,
+                "partition 1"
+            )
+        )
     )
 
 
