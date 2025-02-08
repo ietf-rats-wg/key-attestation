@@ -16,14 +16,14 @@ Conceptually the data that needs to be conveyed breaks into several categories:
 # Information Model
 
 ```
-TbsPkixAttestation ::= SEQUENCE {
-    version INTEGER,
-    reportedEntities SEQUENCE SIZE (1..MAX) OF ReportedEntity
-}
-
 PkixAttestation ::= SEQUENCE {
     tbs TbsPkixAttestation,
     signatures SEQUENCE SIZE (0..MAX) of SignatureBlock
+}
+
+TbsPkixAttestation ::= SEQUENCE {
+    version INTEGER,
+    reportedEntities SEQUENCE SIZE (1..MAX) OF ReportedEntity
 }
 
 ReportedEntity ::= SEQUENCE {
@@ -39,9 +39,16 @@ ReportedAttribute ::= SEQUENCE {
 AttributeValue :== CHOICE {
    bytes       [0] IMPLICIT OCTET STRING,
    utf8String  [1] IMPLICIT UTF8String,
-   time        [2] IMPLICIT GeneralizedTime,
-   value       [3] IMPLICIT INTEGER,
-   oid         [4] IMPLICIT OBJECT IDENTIFIER
+   bool        [2] IMPLICIT BOOLEAN,
+   time        [3] IMPLICIT GeneralizedTime,
+   value       [4] IMPLICIT INTEGER,
+   oid         [5] IMPLICIT OBJECT IDENTIFIER
+}
+
+SignatureBlock ::= SEQUENCE {
+   certChain SEQUENCE of Certificate,
+   signatureAlgorithm AlgorithmIdentifier,
+   signatureValue OCTET STRING
 }
 
 id-pkix-attest OBJECT IDENTIFIER ::= { 1 2 3 999 }
@@ -56,12 +63,12 @@ id-pkix-attest-attribute-type OBJECT IDENTIFIER ::= { id-pkix-attest 1 }
 id-pkix-attest-attribute-request       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 0 }
 id-pkix-attest-attribute-request-nonce OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-request 0 }
 
-id-pkix-attest-attribute-platform          OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 1 }
-id-pkix-attest-attribute-platform-hwserial OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 0 }
-id-pkix-attest-attribute-platform-fipsboot OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 1 }
-id-pkix-attest-attribute-platform-desc     OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 2 }
-id-pkix-attest-attribute-platform-time     OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 3 }
-
+id-pkix-attest-attribute-platform            OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 1 }
+id-pkix-attest-attribute-platform-hwserial   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 0 }
+id-pkix-attest-attribute-platform-fipsboot   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 1 }
+id-pkix-attest-attribute-platform-desc       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 2 }
+id-pkix-attest-attribute-platform-time       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 3 }
+id-pkix-attest-attribute-platform-fw-version OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 4 }
 
 id-pkix-attest-attribute-key                   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 2 }
 id-pkix-attest-attribute-key-identifier        OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 0 }
@@ -73,8 +80,16 @@ id-pkix-attest-attribute-key-local             OBJECT IDENTIFIER ::= { id-pkix-a
 id-pkix-attest-attribute-key-expiry            OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 6 }
 id-pkix-attest-attribute-key-protection        OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 7 }
 
-
 ```
+
+The following attributes relate to the Request entity and are registered by this document.
+
+| Claim           | OID  | Data Type | Multiple allowed | Definition | Description                                                  |
+| --------------- | ---- | --------- | ---------------- | ---------- | ------------------------------------------------------------ |
+| nonce           | TBD  | Bytes     | No               | ??         | A nonce for the purposes of freshness of this token. EDNOTE: surely such a thing already exists in EAT? |
+| attestationTime | TBD  | DateTime  | No               | JWT "iat"  | The time at which this token was generated. EDNOTE: Surely such a thing already exists in EAT? |
+
+
 
 
 The following PlatformClaims are registered by this document, but this list is open-ended and extensible.
@@ -83,9 +98,9 @@ The following PlatformClaims are registered by this document, but this list is o
 | ----- | ----   | ---             | ---               | ---        | ---         |
 | hwserial | TBD | String | No                | This document | The serial number of the device, as marked on the case, device certificate or other location. |
 | fipsboot | TBD | Boolean | No               | This document | Indicates whether the cryptographic module was booted and is currently running in FIPS mode. |
-| envDescription | TBD | String | Yes               | Further description of the environment beyond hwvendor, hwmodel, hwserial, swversion; for example if there is a need to describe multiple logical partitions within the same device. Contents could be a human-readable description or other identifiers. |
-| nonce | TBD | String | No                | ?? | A nonce for the purposes of freshness of this token. EDNOTE: surely such a thing already exists in EAT? |
-| attestationTime | TBD | DateTime | No             | JWT "iat" | The time at which this token was generated. EDNOTE: Surely such a thing already exists in EAT? |
+| envDescription | TBD | String | Yes               | Further description of the environment beyond hwvendor, hwmodel, hwserial, swversion; for example if there is a need to describe multiple logical partitions within the same device. Contents could be a human-readable description or other identifiers. ||
+| currentTime | TBD | DateTime | No             | JWT "iat" | The time at which this token was generated. EDNOTE: Surely such a thing already exists in EAT? |
+| fwVersion | TBD | String | No |  |  |
 
 
 
@@ -97,9 +112,9 @@ The following KeyProtectionClaims are registered by this document, but this list
 | purpose | TBD | Enum {Sign, Verify, Encrypt, Decrypt, Wrap, Unwrap, Encapsulate, Decapsulate, Derive} | ??          | Defines the intended usage for this key. |
 | extractable | TBD | Boolean | [PKCS11] CKA_EXTRACTABLE | Indicates if the key is able to be exported from the module. |
 | neverExtractable | TBD | Boolean | [PKCS11] CKA_NEVER_EXTRACTABLE | Indicates if the key was in the past able to be exported from the module. |
-| imported | TBD | Boolean | This document | Indicates if the key was generated outside the module and imported; ie this indicates that a software version of this key may exist outside of hardware protection. |
+| local | TBD | Boolean | This document | Indicates if the key was generated within the module. |
 | keyExpiry | TBD | DateTime | This document | Indicates if the key has a usage period. |
-| keyProtection | TBD | BIT MASK / Boolean Array {DualControl (0), CardControl (1), PasswordControl (2), ...} | Description of additional key protection policies around use or modification of this key. These are generalized properties and will not apply the same way to all HSM vendors. Consult vendor documentation for the in-context meaning of these flags.|
+| keyProtection | TBD | BIT MASK / Boolean Array {DualControl (0), CardControl (1), PasswordControl (2), ...} | Description of additional key protection policies around use or modification of this key. These are generalized properties and will not apply the same way to all HSM vendors. Consult vendor documentation for the in-context meaning of these flags.||
 
 
 

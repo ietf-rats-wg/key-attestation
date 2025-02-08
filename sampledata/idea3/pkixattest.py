@@ -25,11 +25,12 @@ id_pkix_attest_attribute_type = univ.ObjectIdentifier( id_pkix_attest + (1,))
 id_pkix_attest_attribute_request        = univ.ObjectIdentifier( id_pkix_attest_attribute_type + (0,))
 id_pkix_attest_attribute_request_nonce  = univ.ObjectIdentifier( id_pkix_attest_attribute_request + (0,))
 
-id_pkix_attest_attribute_platform          = univ.ObjectIdentifier( id_pkix_attest_attribute_type + (1,))
-id_pkix_attest_attribute_platform_hwserial = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (0,))
-id_pkix_attest_attribute_platform_fipsboot = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (1,))
-id_pkix_attest_attribute_platform_desc     = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (2,))
-id_pkix_attest_attribute_platform_time     = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (3,))
+id_pkix_attest_attribute_platform            = univ.ObjectIdentifier( id_pkix_attest_attribute_type + (1,))
+id_pkix_attest_attribute_platform_hwserial   = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (0,))
+id_pkix_attest_attribute_platform_fipsboot   = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (1,))
+id_pkix_attest_attribute_platform_desc       = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (2,))
+id_pkix_attest_attribute_platform_time       = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (3,))
+id_pkix_attest_attribute_platform_fw_version = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (4,))
 
 id_pkix_attest_attribute_key                   = univ.ObjectIdentifier( id_pkix_attest_attribute_type + (2,))
 id_pkix_attest_attribute_key_identifier        = univ.ObjectIdentifier( id_pkix_attest_attribute_key + (0,))
@@ -59,14 +60,16 @@ class SignatureBlock(univ.Sequence):
 # AttributeValue :== CHOICE {
 #    bytes       [0] IMPLICIT OCTET STRING,
 #    utf8String  [1] IMPLICIT UTF8String,
-#    time        [2] IMPLICIT GeneralizedTime,
-#    value       [3] IMPLICIT INTEGER,
-#    oid         [4] IMPLICIT OBJECT IDENTIFIER
+#    bool        [2] IMPLICIT BOOLEAN,
+#    time        [3] IMPLICIT GeneralizedTime,
+#    value       [4] IMPLICIT INTEGER,
+#    oid         [5] IMPLICIT OBJECT IDENTIFIER
 # }
 class AttributeValue(univ.Choice):
     componentType = namedtype.NamedTypes(
         namedtype.NamedType('bytes', univ.OctetString()),
         namedtype.NamedType('utf8String', char.UTF8String()),
+        namedtype.NamedType('bool', univ.Boolean()),
         namedtype.NamedType('time', useful.GeneralizedTime()),
         namedtype.NamedType('value', univ.Integer()),
         namedtype.NamedType('oid', univ.ObjectIdentifier())
@@ -85,10 +88,11 @@ class AttributeValue(univ.Choice):
         return self
     
     def setBoolean(self, flag:bool) -> "AttributeValue":
-        if flag:
-            self["value"] = 1
-        else:
-            self["value"] = 0
+        self["bool"] = flag
+        return self
+    
+    def setTime(self, time:str) -> "AttributeValue":
+        self["time"] = time
         return self
     
 # ReportedAttribute ::= SEQUENCE {
@@ -129,6 +133,12 @@ def ReportedAttributeBoolean(oid:univ.ObjectIdentifier, valueBool:bool):
     attribute["value"] = AttributeValue().setBoolean(valueBool)
     return attribute
 
+def ReportedAttributeTime(oid:univ.ObjectIdentifier, valueTime:str):
+    attribute = ReportedAttribute()
+    attribute["attributeType"] = oid
+    attribute["value"] = AttributeValue().setTime(valueTime)
+    return attribute
+
 #
 # Request Attributes
 #
@@ -160,8 +170,18 @@ def ReportedAttributePlatformDescription(desc:str):
         id_pkix_attest_attribute_platform_desc,
         desc
     )
-
-# id_pkix_attest_attribute_platform_time     = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (3,))
+    
+def ReportedAttributePlatformFwVersion(version:str):
+    return ReportedAttributeString(
+        id_pkix_attest_attribute_platform_fw_version,
+        version
+    )
+    
+def ReportedAttributePlatformTime(time:str):
+    return ReportedAttributeTime(
+        id_pkix_attest_attribute_platform_time,
+        time
+    )
     
 #
 # Key Attributes

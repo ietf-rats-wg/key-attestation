@@ -88,6 +88,8 @@ tbsAtt.addEntity(
             .addAttribute( ReportedAttributePlatformSerial("HSM-123") )
             .addAttribute( ReportedAttributePlatformFipsBoot(True) )
             .addAttribute( ReportedAttributePlatformDescription("Model ABC") )
+            .addAttribute( ReportedAttributePlatformFwVersion("3.1.9") )
+            .addAttribute( ReportedAttributePlatformTime("202502032234Z") )
     )
 
 tbsAtt.addEntity(
