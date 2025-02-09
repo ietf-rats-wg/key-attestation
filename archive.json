@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-06T00:39:29.068657+00:00",
+  "timestamp": "2025-02-09T00:42:00.860609+00:00",
   "repo": "hannestschofenig/key-attestation",
   "labels": [
     {
@@ -167,6 +167,22 @@
       "body": "In order to avoid confusion about nesting and cardinality of environments, I'd like to propose to limit the numbers of Attesting Environments per Attester to one. That way the terms automatically become interchangeable.",
       "createdAt": "2025-02-05T20:43:45Z",
       "updatedAt": "2025-02-05T20:43:45Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 11,
+      "id": "I_kwDONUAin86pArfa",
+      "title": "Format of the public key",
+      "url": "https://github.com/hannestschofenig/key-attestation/issues/11",
+      "state": "OPEN",
+      "author": "thomas-fossati",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Currently, `pub-key` is `OCTET STRING` in ASN.1 and `bstr` in CBOR.\n\nTwo observations:\n\n1. There is no equivalent JSON type, which EAT requires.  (But this seems to be a general problem with the EAT claims.)\n2. The claim is untyped.  The document should be clear about what type of public key is expected (`SubjectPublicKeyInfo`, `COSE_Key`, `JWK`, etc.).",
+      "createdAt": "2025-02-06T13:24:10Z",
+      "updatedAt": "2025-02-06T13:24:10Z",
       "closedAt": null,
       "comments": []
     }
