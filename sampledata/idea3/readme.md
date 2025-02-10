@@ -151,20 +151,45 @@ The community is encouraged to define additional verification profiles to satisf
 
 # Samples
 
+## Sample 1
 
-## Sample 1: Multiple keys
+In the following example, four entities are defined based on three types:
+
+- platform : This groups the attributes associated with the platform itself (the attesting environment).
+- request : This groups the attributes associated with the attestation request.
+- key : An entity of type "key" groups together the attributes associated with a single secret key managed by the HSM.
 
 ~~~aasvg
- .----------------------------------.
- | Attester                         |
- | --------                         |
- | hwmodel="RATS HSM 9000"          |
- | fipsboot=true                    |
- | .----------.  .----------------. |
- | | Key 18   |  | Key 21         | | 
- | | RSA      |  | ECDH-P256      | |
- | |          |  | Partition1     | |
- | '----------'  '----------------' |
- '----------------------------------'
++---------------------------------------------------+
+|   Attester                                        |
+|                                                   |
+|  +---------------------------------------------+  |
+|  | Platform                                    |  |
+|  |                                             |  |
+|  |    serial="HSM-123"                         |  |
+|  |    fips-boot=True                           |  |
+|  |    description="Model ABC"                  |  |
+|  |    fw-version="3.1.9"                       |  |
+|  |    time=2025-02-03 22:34Z                   |  |
+|  +---------------------------------------------+  |
+|  +---------------------------------------------+  |
+|  | Request                                     |  |
+|  |                                             |  |
+|  |    nonce=0x0102030405                       |  |
+|  +---------------------------------------------+  |
+|  +---------------------------------------------+  |
+|  | Key                                         |  |
+|  |                                             |  |
+|  |   id="26d765d8-1afd-4dfb-a290-cf867ddecfa1" |  |
+|  |   extractable=False                         |  |
+|  |   spki=...                                  |  |
+|  +---------------------------------------------+  |
+|  +---------------------------------------------+  |
+|  | Key                                         |  |
+|  |                                             |  |
+|  |   id="49a96ace-e39a-4fd2-bec1-13165a99621c" |  |
+|  |   extractable=True                          |  |
+|  |   spki=...                                  |  |
+|  +---------------------------------------------+  |
++---------------------------------------------------+
 ~~~
-{: #fig-arch title="Example of two KATs in a single PAT"}
