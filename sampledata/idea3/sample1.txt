@@ -1,0 +1,270 @@
+PkixAttestation:
+ tbs=TbsPkixAttestation:
+  version=2
+  reportedEntities=SequenceOf:
+   ReportedEntity:
+    entityType=1.2.3.999.0.0
+    reportedAttributes=SequenceOf:
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.0.0
+      value=AttributeValue:
+       bytes=0102030405
+
+
+   ReportedEntity:
+    entityType=1.2.3.999.0.1
+    reportedAttributes=SequenceOf:
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.1.0
+      value=AttributeValue:
+       utf8String=HSM-123
+
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.1.1
+      value=AttributeValue:
+       bool=True
+
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.1.2
+      value=AttributeValue:
+       utf8String=Model ABC
+
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.1.4
+      value=AttributeValue:
+       utf8String=3.1.9
+
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.1.3
+      value=AttributeValue:
+       time=202502032234Z
+
+
+   ReportedEntity:
+    entityType=1.2.3.999.0.2
+    reportedAttributes=SequenceOf:
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.2.0
+      value=AttributeValue:
+       utf8String=26d765d8-1afd-4dfb-a290-cf867ddecfa1
+
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.2.3
+      value=AttributeValue:
+       bool=False
+
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.2.1
+      value=AttributeValue:
+       bytes=0x3059301306072a8648ce3d020106082a8648ce3d03010703420004422548f88fb782ffb5eca3744452c72a1e558fbd6f73be5e48e93232cc45c5b16c4cd10c4cb8d5b8a17139e94882c8992572993425f41419ab7e90a42a494272
+
+
+   ReportedEntity:
+    entityType=1.2.3.999.0.2
+    reportedAttributes=SequenceOf:
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.2.0
+      value=AttributeValue:
+       utf8String=49a96ace-e39a-4fd2-bec1-13165a99621c
+
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.2.3
+      value=AttributeValue:
+       bool=True
+
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.2.1
+      value=AttributeValue:
+       bytes=0x3059301306072a8648ce3d020106082a8648ce3d03010703420004422548f88fb782ffb5eca3744452c72a1e558fbd6f73be5e48e93232cc45c5b16c4cd10c4cb8d5b8a17139e94882c8992572993425f41419ab7e90a42a494272
+
+
+   ReportedEntity:
+    entityType=1.2.3.888.0
+    reportedAttributes=SequenceOf:
+     ReportedAttribute:
+      attributeType=1.2.3.888.1
+      value=AttributeValue:
+       utf8String=partition 1
+
+
+
+
+ signatures=SequenceOf:
+  SignatureBlock:
+   certChain=SequenceOf:
+    Certificate:
+     tbsCertificate=TBSCertificate:
+      version=v3
+      serialNumber=510501933685942792810365453374472870755160518925
+      signature=AlgorithmIdentifier:
+       algorithm=1.2.840.113549.1.1.11
+       parameters=0x0500
+
+      issuer=Name:
+       rdnSequence=RDNSequence:
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.10
+          value=0x0c0449455446
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.11
+          value=0x0c0452415453
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.3
+          value=0x0c06414b20525341
+
+
+      validity=Validity:
+       notBefore=Time:
+        utcTime=250117171303Z
+
+       notAfter=Time:
+        generalTime=20520604171303Z
+
+
+      subject=Name:
+       rdnSequence=RDNSequence:
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.10
+          value=0x0c0449455446
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.11
+          value=0x0c0452415453
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.3
+          value=0x0c06414b20525341
+
+
+      subjectPublicKeyInfo=SubjectPublicKeyInfo:
+       algorithm=AlgorithmIdentifier:
+        algorithm=1.2.840.113549.1.1.1
+        parameters=0x0500
+
+       subjectPublicKey=31795268810366627125468059984427145931784542919710733587190808152893606542214208096328883077225607136393362795609997601968312039001251339428349101203532726047646450301142882318337709398316574407647199690000689245113739552615279534528145776090813314822312012607567736073057936820713733090928849092672110937300300755561797808000438134839458043673852453722969649609202093945235393494912138691342219564365300965387743701570507112064401758218314760153081271981340812350365663466513620853326534252424706992841033652817461354632316129312597825542820569667842318342646457447037125609399476844336456206583416539426479221164971369788464727307915820767918489601
+
+      extensions=Extensions:
+       Extension:
+        extnID=2.5.29.14
+        critical=False
+        extnValue=0x04148919595e0ef169f5cbbd47e134fce298cc693091
+       Extension:
+        extnID=2.5.29.35
+        critical=False
+        extnValue=0x301680148919595e0ef169f5cbbd47e134fce298cc693091
+       Extension:
+        extnID=2.5.29.19
+        critical=True
+        extnValue=0x30030101ff
+
+
+     signatureAlgorithm=AlgorithmIdentifier:
+      algorithm=1.2.840.113549.1.1.11
+      parameters=0x0500
+
+     signature=12977775424631768289542539102653382982431795551146145281750189553757940982572813264428982985997740595878077027853994515775116752030963858469651548765808775269857271167748512795017916284867051302884465315751010913658016640170608413935780119349866986170148033301955753116984041271273907756544780231564646860424999020990745523383622980115200446260103173103500647838758197610238552349053064525420240826193553395378873725256584269666918504793674497748455574822238022085054752185687440807655337724821853332688158460379554906105417720665175648371832825939577039874730442790337726004105878168375998123110331993348833629325492
+
+   signatureAlgorithm=AlgorithmIdentifier:
+    algorithm=1.2.840.113549.1.1.10
+    parameters=RSASSA_PSS_params:
+     hashAlgorithm=AlgorithmIdentifier:
+      algorithm=2.16.840.1.101.3.4.2.1
+
+     maskGenAlgorithm=AlgorithmIdentifier:
+      algorithm=1.2.840.113549.1.1.8
+
+     saltLength=20
+     trailerField=1
+
+
+   signatureValue=0x00257082b2de84367f998035e56b467b7a8e649375f746abeb4ad1be8eb5cb98acd9385935bd0b952b8811fdc7c5fdca36ef0fcb7d2e22435b74144b4f6c551d92edfb90083e1b660eab250403e17b6584fcc997ca01311aeabc1d48011782f5ca419b8f8b932ebe87c5e845e468a942c898dc92ba594b4b415e7129b28e7e2186bc28488c49e9796eeccfa0667289fdda4d1f10d29cb4533115fc31dfcf00d14bd8dfa1eb5ff33565b8a51a50999471f8ba61f527f00e49372cec1c018bb7de368c57f7cdfc3a97fd65708bfa5156464985916c4153dabae4ef03ebc36e8831a3f4adcd24d7172dff2f8de5c688a0dd076da8ae80dfacd5750bc1af1630e5fb
+  SignatureBlock:
+   certChain=SequenceOf:
+    Certificate:
+     tbsCertificate=TBSCertificate:
+      version=v3
+      serialNumber=43752118382009037811618748949928339462896457144
+      signature=AlgorithmIdentifier:
+       algorithm=1.2.840.10045.4.3.2
+
+      issuer=Name:
+       rdnSequence=RDNSequence:
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.10
+          value=0x0c0449455446
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.11
+          value=0x0c0452415453
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.3
+          value=0x0c07414b2050323536
+
+
+      validity=Validity:
+       notBefore=Time:
+        utcTime=250117171428Z
+
+       notAfter=Time:
+        generalTime=20520604171428Z
+
+
+      subject=Name:
+       rdnSequence=RDNSequence:
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.10
+          value=0x0c0449455446
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.11
+          value=0x0c0452415453
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.3
+          value=0x0c07414b2050323536
+
+
+      subjectPublicKeyInfo=SubjectPublicKeyInfo:
+       algorithm=AlgorithmIdentifier:
+        algorithm=1.2.840.10045.2.1
+        parameters=0x06082a8648ce3d030107
+
+       subjectPublicKey=57095560233504924588952816185508037812996307929249104847846164660564888397123390877585670462836285725041261897550020311481127562655774333675293173915140722
+
+      extensions=Extensions:
+       Extension:
+        extnID=2.5.29.14
+        critical=False
+        extnValue=0x04145b70a79817f79ff637d2f7e3dc446c2109d7bbd4
+       Extension:
+        extnID=2.5.29.35
+        critical=False
+        extnValue=0x301680145b70a79817f79ff637d2f7e3dc446c2109d7bbd4
+       Extension:
+        extnID=2.5.29.19
+        critical=True
+        extnValue=0x30030101ff
+
+
+     signatureAlgorithm=AlgorithmIdentifier:
+      algorithm=1.2.840.10045.4.3.2
+
+     signature=182167519797146035745575043154801415115532979136731128676399180692664821804883990401552040789643013103202424486088058364982966709324496782518079519267269438816178719668437
+
+   signatureAlgorithm=AlgorithmIdentifier:
+    algorithm=1.2.840.10045.2.1
+    parameters=0x06082a8648ce3d030107
+
+   signatureValue=0x30460221008ba8b34cce5d0dc85e26fb4cbcda0eaae64cf103dfd371b65229b1402f925693022100bb2991552754eaa7016d4823a2970c22c9096b89cff9a1c19c5126e26f60b848
+
+
+
+DER Base64:
+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
