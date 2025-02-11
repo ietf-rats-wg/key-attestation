@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-09T00:42:00.860609+00:00",
+  "timestamp": "2025-02-11T00:39:25.078612+00:00",
   "repo": "hannestschofenig/key-attestation",
   "labels": [
     {
@@ -305,6 +305,60 @@
       "mergeCommit": {
         "oid": "85cc7d537da8739993bdd144455e3d670d960227"
       },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 12,
+      "id": "PR_kwDONUAin86KtK-y",
+      "title": "Provide new sample code",
+      "url": "https://github.com/hannestschofenig/key-attestation/pull/12",
+      "state": "MERGED",
+      "author": "jpfiset",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Added \"idea3\" in the sample code. This demonstrates the use of \"entities\" and \"attributes\". With this approach, there is a flat list of entities in the top \"to-be-signed\" structure. Each entity contains a flat list of attributes.",
+      "createdAt": "2025-02-10T20:38:02Z",
+      "updatedAt": "2025-02-10T20:39:52Z",
+      "baseRepository": "hannestschofenig/key-attestation",
+      "baseRefName": "main",
+      "baseRefOid": "96d177ccc5a43de7d14264685907667de074fd2b",
+      "headRepository": "jpfiset/key-attestation",
+      "headRefName": "main",
+      "headRefOid": "afefa749f297f45c16eaf49c8e6be66e97449ab9",
+      "closedAt": "2025-02-10T20:39:52Z",
+      "mergedAt": "2025-02-10T20:39:51Z",
+      "mergedBy": "jpfiset",
+      "mergeCommit": {
+        "oid": "45306fe2af211a21783f029f4b0ef379eefc14e3"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 13,
+      "id": "PR_kwDONUAin86KuTRu",
+      "title": "Update .gitignore",
+      "url": "https://github.com/hannestschofenig/key-attestation/pull/13",
+      "state": "OPEN",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "ignore generated txt file",
+      "createdAt": "2025-02-10T22:45:55Z",
+      "updatedAt": "2025-02-10T22:46:13Z",
+      "baseRepository": "hannestschofenig/key-attestation",
+      "baseRefName": "main",
+      "baseRefOid": "45306fe2af211a21783f029f4b0ef379eefc14e3",
+      "headRepository": "hannestschofenig/key-attestation",
+      "headRefName": "ignore-text-file",
+      "headRefOid": "dae4971eca43f0b96c52052941362da7786320ad",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
       "comments": [],
       "reviews": []
     }
