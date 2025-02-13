@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-11T00:39:25.078612+00:00",
+  "timestamp": "2025-02-13T00:39:42.485651+00:00",
   "repo": "hannestschofenig/key-attestation",
   "labels": [
     {
@@ -157,7 +157,7 @@
     {
       "number": 10,
       "id": "I_kwDONUAin86o6kOD",
-      "title": "Declaring Attester and Attesting Environment as interchangeable terim",
+      "title": "Declaring Attester and Attesting Environment as interchangeable term",
       "url": "https://github.com/hannestschofenig/key-attestation/issues/10",
       "state": "OPEN",
       "author": "henkbirkholz",
@@ -166,7 +166,7 @@
       "labels": [],
       "body": "In order to avoid confusion about nesting and cardinality of environments, I'd like to propose to limit the numbers of Attesting Environments per Attester to one. That way the terms automatically become interchangeable.",
       "createdAt": "2025-02-05T20:43:45Z",
-      "updatedAt": "2025-02-05T20:43:45Z",
+      "updatedAt": "2025-02-12T23:29:00Z",
       "closedAt": null,
       "comments": []
     },
@@ -183,6 +183,46 @@
       "body": "Currently, `pub-key` is `OCTET STRING` in ASN.1 and `bstr` in CBOR.\n\nTwo observations:\n\n1. There is no equivalent JSON type, which EAT requires.  (But this seems to be a general problem with the EAT claims.)\n2. The claim is untyped.  The document should be clear about what type of public key is expected (`SubjectPublicKeyInfo`, `COSE_Key`, `JWK`, etc.).",
       "createdAt": "2025-02-06T13:24:10Z",
       "updatedAt": "2025-02-06T13:24:10Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 14,
+      "id": "I_kwDONUAin86pj_UD",
+      "title": "There is no such thing as \"self-attested evidence\"",
+      "url": "https://github.com/hannestschofenig/key-attestation/issues/14",
+      "state": "OPEN",
+      "author": "henkbirkholz",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Maybe I am missing something super obvious - so please correct me, if I am wrong, but either pick \"signed self-assertion\" or \"evidence\" (as evidence shall be specified by some source, maybe RATS). Self-attested evidence reads like a paradox to me.",
+      "createdAt": "2025-02-11T09:20:24Z",
+      "updatedAt": "2025-02-11T09:22:31Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "henkbirkholz",
+          "authorAssociation": "COLLABORATOR",
+          "body": "https://github.com/hannestschofenig/key-attestation/blob/45306fe2af211a21783f029f4b0ef379eefc14e3/sampledata/idea3/readme.md?plain=1#L3",
+          "createdAt": "2025-02-11T09:21:41Z",
+          "updatedAt": "2025-02-11T09:21:41Z"
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "id": "I_kwDONUAin86pkFaq",
+      "title": "An EAT is a CWT",
+      "url": "https://github.com/hannestschofenig/key-attestation/issues/15",
+      "state": "OPEN",
+      "author": "henkbirkholz",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "> JWT \"iat\"  The time at which this token was generated. EDNOTE: Surely such a thing already exists in EAT?\n\nYes, the IAT Claim is specified inf [RFC 7519](https://datatracker.ietf.org/doc/html/rfc7519) and in [RFC 8392](https://datatracker.ietf.org/doc/html/rfc8392) respectively.",
+      "createdAt": "2025-02-11T09:28:19Z",
+      "updatedAt": "2025-02-11T09:28:19Z",
       "closedAt": null,
       "comments": []
     }
