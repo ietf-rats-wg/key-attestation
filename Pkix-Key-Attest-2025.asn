@@ -1,0 +1,78 @@
+PKIX-Key-Attest-2025
+      { iso(1) identified-organization(3) dod(6) internet(1) 
+        security(5) mechanisms(5) pkix(7) id-mod(0) 
+        id-mod-pkik-key-attest-2025(TBDMOD) }
+
+
+PkixAttestation ::= SEQUENCE {
+    tbs TbsPkixAttestation,
+    signatures SEQUENCE SIZE (0..MAX) of SignatureBlock
+}
+
+TbsPkixAttestation ::= SEQUENCE {
+    version INTEGER,
+    reportedEntities SEQUENCE SIZE (1..MAX) OF ReportedEntity
+}
+
+ReportedEntity ::= SEQUENCE {
+    entityType         OBJECT IDENTIFIER,
+    reportedAttributes SEQUENCE SIZE (1..MAX) OF ReportedAttribute
+}
+
+ReportedAttribute ::= SEQUENCE {
+    attributeType      OBJECT IDENTIFIER,
+    value              AttributeValue
+}
+
+AttributeValue :== CHOICE {
+   bytes       [0] IMPLICIT OCTET STRING,
+   asciiString [1] IMPLICIT IA5String,
+   utf8String  [2] IMPLICIT UTF8String,
+   bool        [3] IMPLICIT BOOLEAN,
+   time        [4] IMPLICIT GeneralizedTime,
+   int         [5] IMPLICIT INTEGER,
+   oid         [6] IMPLICIT OBJECT IDENTIFIER
+}
+
+SignatureBlock ::= SEQUENCE {
+   certChain SEQUENCE of Certificate,
+   signatureAlgorithm AlgorithmIdentifier,
+   signatureValue OCTET STRING
+}
+
+id-pkix-attest OBJECT IDENTIFIER ::= { 1 2 3 999 }
+
+id-pkix-attest-entity-type     OBJECT IDENTIFIER ::= { id-pkix-attest 0 }
+id-pkix-attest-entity-request  OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 0 }
+id-pkix-attest-entity-platform OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 1 }
+id-pkix-attest-entity-key      OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 2 }
+
+id-pkix-attest-attribute-type OBJECT IDENTIFIER ::= { id-pkix-attest 1 }
+
+id-pkix-attest-attribute-request       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 0 }
+id-pkix-attest-attribute-request-nonce OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-request 0 }
+
+id-pkix-attest-attribute-platform            OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 1 }
+id-pkix-attest-attribute-platform-vendor     OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 0 }
+id-pkix-attest-attribute-platform-hwserial   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 1 }
+id-pkix-attest-attribute-platform-fipsboot   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 2 }
+id-pkix-attest-attribute-platform-desc       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 3 }
+id-pkix-attest-attribute-platform-time       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 4 }
+id-pkix-attest-attribute-platform-swversion  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 5 }
+id-pkix-attest-attribute-platform-oemid      OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 6 }
+id-pkix-attest-attribute-platform-debugstat  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 7 }
+id-pkix-attest-attribute-platform-uptime     OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 8 }
+id-pkix-attest-attribute-platform-bootcount  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 9 }
+id-pkix-attest-attribute-platform-usermods   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 8 }
+id-pkix-attest-attribute-platform-envdesc    OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 9 }
+
+
+id-pkix-attest-attribute-key                   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 2 }
+id-pkix-attest-attribute-key-identifier        OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 0 }
+id-pkix-attest-attribute-key-spki              OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 1 }
+id-pkix-attest-attribute-key-purpose           OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 2 }
+id-pkix-attest-attribute-key-extractable       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 3 }
+id-pkix-attest-attribute-key-never-extractable OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 4 }
+id-pkix-attest-attribute-key-local             OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 5 }
+id-pkix-attest-attribute-key-expiry            OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 6 }
+id-pkix-attest-attribute-key-protection        OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 7 }
