@@ -46,11 +46,11 @@ author:
     abbrev: H-BRS
     country: Germany
     email: Hannes.Tschofenig@gmx.net
-  
+
   - name: Henk Birkholz
     organization: Fraunhofer SIT
     email: henk.birkholz@ietf.contact
-  
+
   - name: Monty Wiseman
     org: Beyond Identity
     country: USA
@@ -106,7 +106,7 @@ This document specifies a vendor-agnostic format for attesting to the protection
 
 # Introduction
 
-This specification is targeted at attesting to the storage of cryptographic key 
+This specification is targeted at attesting to the storage of cryptographic key
 matarial -- symmetric keys or asymmetric private keys -- within a hardware cryptographic
 module such as a Hardware Security Module (HSM) or Trusted Platform Module (TPM).
 This requires providing evidence to the key protection properties of that key, referred to in
@@ -156,7 +156,7 @@ functionality for attesting to the state of the platform, and to attest
 the properties of the identity key (IK). More precisely, it has to atttest
 the integrity of the IK (public as well as private key) and the
 confidentiality of the IK private key. This document makes a simplifying
-assumption that the RoT, the attesting envorenment holding the 
+assumption that the RoT, the attesting envorenment holding the
 attestation key, and the target environment being measured and attested
 are all the same environment.
 
@@ -235,7 +235,7 @@ Key attestation is an extension to the attestation functionality
 described in {{RFC9334}}. In the general RATS Architecture, an attesting device
 consists of a hardware Root of Trust (RoT) which provides the basis for trust in the device,
 and then one or more layers of attestations where an attesting environment collects
-and signs measurements (evidence) about a target environment. Trust is 
+and signs measurements (evidence) about a target environment. Trust is
 established by chaining the cryptograhpic signatures on each layer of
 evidence up to the next layer of attester until the RoT is reached, and trust
 is established in the RoT via 3rd party endorsements.
@@ -414,7 +414,7 @@ AttributeValue :== CHOICE {
 }
 ~~~
 
-All attributes are optional; a compliant emitter is not required to include them all (although a given appraisal policy or profile MAY make certain attributes mandatory, see {{sec-profiles}}). 
+All attributes are optional; a compliant emitter is not required to include them all (although a given appraisal policy or profile MAY make certain attributes mandatory, see {{sec-profiles}}).
 
 A platform entity MUST NOT contain more than one of each attribute.
 
@@ -524,7 +524,7 @@ The `SignatureBlock.signatureValue` signs over the DER-enceded to-be-signed atte
 `PkixAttestation.tbs` and MUST be validated with the subject public key of the leaf
 X.509 certificate contained in the `SignatureBlock.certChain`.
 
-Note that a PkixAttestation MAY contain zero or more SignatureBlocks. 
+Note that a PkixAttestation MAY contain zero or more SignatureBlocks.
 A PkixAttestation with zero SignatureBlocks is unsigned, MUST be treated as un-protected and un-trusted,
 and any signature validation proceedures MUST fail.
 
@@ -532,7 +532,7 @@ More than one SignatureBlocks MAY be used to convey a number of different semant
 For example, the HSM's Attesting Service might hold multiple Attestation Keys on different cryptographic
 algorithms in order to provide algorithm redundancy in the case that one algorithm becomes cryptographically broken. In this case a Verifier would be expected to validate all SignatureBlocks. Alternatively, the HSM's Attesting Service may hold multiple Attestion Keys (or multiple X.509 certificates for the same key) from multiple operational environments to which it belongs. In this case a Verifier would be expected to only validate the SignatureBlock corresponding to its own environment. Alternatively, multiple SignatureBlocks could be used to convey counter-signatures from external parties, in which case the Verifier will need to be equipped with environment-specific verification logic. Multiple of these cases, and potentially others, could be present in a single PkixAttestation object.
 
-The following 
+The following
 
 Note that each SignatureBlock is a fully detached signature over the tbs content with no binding between the signed content and the SignatureBlocks, or between SignatureBlocks, meaning that a third party can add a
 counter-signature of the evidence after the fact, or an attacker can remove a SignatureBlock without leaving any evidence. See {#sec-detached-sigs} for further discussion.
@@ -614,7 +614,7 @@ certification status.
 
 The nature of attestation requires the attestation service to be implemented in an extremely priviledged position within the HSM so that it can collect measurements of both the hardware environment and the application keys being attested. For many HSM and TPM architectures, this will place the Attestation Service inside the "HSM kernel" and potentially subject to FIPS 140-3 or Common Criteria validation and change control. For both security and compliance reasons there is incentive for the emittin and parsing logic to be simple and easy to implement correctly. Additionally, when the data formats contained in this specification are parsed within an HSM boundary -- that would be parsing a request entity, or parsing an attestation produced by a different HSM -- implementers SHOULD opt for simple logic that rejects any data that does not match the expected format instead of attempting to be flexible.
 
-In particular, Attesting Services SHOULD generate the attestation object from scratch and avoid copying any content from the request. Attesting Services MUST NOT allow unrecognized attributes or any attribute value other than the nonce to be echoed from the request into the attestation object. 
+In particular, Attesting Services SHOULD generate the attestation object from scratch and avoid copying any content from the request. Attesting Services MUST NOT allow unrecognized attributes or any attribute value other than the nonce to be echoed from the request into the attestation object.
 
 ## Detached Signatures {#sec-detached-sigs}
 
