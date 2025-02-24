@@ -100,7 +100,7 @@ entity:
 
 --- abstract
 
-This document specifies a vendor-agnostic format for attesting to the protection properties of a symmetric or asymmetric cryptographic key within an HSM or TPM to support applications such as providing evidence to a Certification Authority that a key is being protected in accordance with the requested cerificate profile, or that HSMs can perform key import and maintain the private key protection properties in a robust way even when migrating keys across HSM vendors. This specification includes a format for requesting a key attestation containing certain attributes. This specification is called "PKIX Attestation" because it is designed to be easy to implement on top of a code base that already supports X.509 and PKCS#11 data models.
+This document specifies a vendor-agnostic format for attesting to the protection properties of a symmetric or asymmetric cryptographic key within a hardware cryptographic module to support applications such as providing evidence to a Certification Authority that a key is being protected in accordance with the requested cerificate profile, or that HSMs can perform key import and maintain the private key protection properties in a robust way even when migrating keys across HSM vendors. This specification includes a format for requesting a key attestation containing certain attributes. This specification is called "PKIX Attestation" because it is designed to be easy to implement on top of a code base that already supports X.509 and PKCS#11 data models.
 
 --- middle
 
@@ -112,14 +112,14 @@ module such as a Hardware Security Module (HSM) or Trusted Platform Module (TPM)
 This requires providing evidence to the key protection properties of that key, referred to in
 this specificion as "key attributes", as well as to the operational state of the hardware platform,
 referred to as "platform attributes". This specification also provides a format for requesting that a cryptographic module produce a key attestation containing a specific set of attributes.
-See {{sec-info-model}} for the full information model.
+See {{sec-data-model}} for the full information model.
 
 
 As described below in {{sec-arch}} "Architecture and Conceptual Model", this specification
 uses a simplified of the Remote ATtestation procedureS (RATS) Architecture [!RFC9443]
 by assuming that the attesting environment and the target environment
 are the same envirnoment, and that this envilonment only produces self-attested evidence as this aligns with the
-target hardware platforms. As such, the attestation data format specified in {{sec-info-model}} only contains
+target hardware platforms. As such, the attestation data format specified in {{sec-data-model}} only contains
 evidence (referred to in this document as "attributes") and does not provide for any form of endorsement except for
 endorsement of the device's attestationg signing key which is endorsed via an X.509 certificate chain rooted
 in a trust anchor belonging either to the device manufacturer or to the device operator, as described in {{sec-ak-chain}}.
@@ -259,11 +259,12 @@ statements or endorsements, then it must
 be acheived via by placing the attestation from this draft within another wrapper
 layer such as RATS Conceptual Message Wrapper (CMW) [I-D.ietf-rats-msg-wrap-11].
 
+TODO: for the RATS audience, we probably need to clafiry what exactly an "Application Key" is. Add to glossary? Potentially we need a Use Cases section: CA keys, TLS keys, etc.
 
 ~~~aasvg
       .-------------------------------------.
-      | HSM                                 |
-      |   Hardware environment              |
+      | Crypto Module                       |
+      |   Platform environment              |
       |        ^        .-------------.     |
       |        |        | Application |     |
       |        |        | Keys        |     |
@@ -276,9 +277,9 @@ layer such as RATS Conceptual Message Wrapper (CMW) [I-D.ietf-rats-msg-wrap-11].
       | | Service                      |    |
       | '------------------------------'    |
       |     ^    |                          |
-      |     |    |      Root of Trust (RoT) |
+      |     |    |                          |
       '-----+----+--------------------------'
-Attestation |    | Evidence
+Attestation |    | Attestation
     Request |    |
             |    v
      .-----------------.                 .-----------------.
@@ -310,7 +311,7 @@ part of the core HSM "kernel" and therefore would be subject to validations such
 FIPS 140-3 or Common Criteria, which motivates a design requirement to keep the evidence
 data format as simple as possible and as close as possible to existing functionality
 and data models of existing HSM and TPM products.
-As such, the information model presented in {{sec-info-model}}
+As such, the information model presented in {{sec-data-model}}
 will feel familiar to implenters with experience with PKI and PKCS#11.
 
 
@@ -325,15 +326,17 @@ as authoritative to vouch for the authenticity of the device. In practice the
 trust anchor will usually be a manufacturing CA belonging to the device vendor which proves
 that the device is genuine and not counterfit. The Trust Anchor can also belong
 to the device operator as would be the case when the AK certificate is replaced
-as part of onboarding the device into a new operatonal netork.
+as part of onboarding the device into a new operatonal network.
 
-Note that the data format specified in {{sec-info-model}} allows for zero, one, or multiple
+Note that the data format specified in {{sec-data-model}} allows for zero, one, or multiple
 'SignatureBlock's, so a single evidence statement could be un-protected, or could be endorsed by multiple
 AK chains leading to different trust anchors. See {{sec-verif-proc}} for a discussion of handling multiple SignatureBlocks.
 
+TODO: should this specification provide specific X.509 extensions that should be present in this AK Cert to carry specificic information about the device?
 
+TODO: should CPS be mentioned here?
 
-# Information Model {#sec-info-model}
+# Data Model {#sec-data-model}
 
 This section describes the semantics of the key claims as part of the information
 model.
@@ -366,7 +369,7 @@ While there might exist attesting environments which use out-of-band or non-X.50
 the AK public key to the Verifier, these SHALL be considered non-compliant with this specification.
 
 
-The attribute format is intended to be generic, flexible, and extensible with a default set of attributes defined in this document. attributes are grouped into entities; an entity can be either a key, a platform, or a request containing a set of claims that are requested to be filled by the attesting environment.
+The attribute format is intended to be generic, flexible, and extensible with a default set of attributes defined in this document. Attributes are grouped into entities; an entity can be either a key, a platform, or a request containing a set of claims that are requested to be filled by the attesting environment.
 
 ~~~asn.1
 ReportedEntity ::= SEQUENCE {
@@ -375,7 +378,7 @@ ReportedEntity ::= SEQUENCE {
 }
 ~~~
 
-This specification defines the following entity types which MUST be supported by any compliant implementation, however future specifications or proprietary implementations MAY define additional entity types by registering additional OIDs. Compliant implementations MAY ignore un-regognized entity types. In X.509 [RFC5280] terminology, entity types defined in this specification SHOULD be considered Critical while un-recognized entity types SHOULD be considered Non-Critical.
+This specification defines the following entity types which MUST be supported by any compliant implementation, however future specifications or proprietary implementations MAY define additional entity types by registering additional OIDs. Compliant implementations MAY ignore un-regognized entity types. Compliant MUST parse any entity types contained in this specification and fail if errors are encountered.
 
 ~~~asn.1
 id-pkix-attest OBJECT IDENTIFIER ::= { 1 2 3 999 }
@@ -385,9 +388,15 @@ id-pkix-attest-entity-platform OBJECT IDENTIFIER ::= { id-pkix-attest-entity-typ
 id-pkix-attest-entity-key      OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 2 }
 ~~~
 
+TODO: do we need entity types for "platform policy" and "key policy" ?
+
 A PKIX Attestation MUST NOT contain more than one platform entity. A PKIX Attestation containing more than one platform entity is considered a fatal error by a parser since duplicate and conflicting platform claims across multiple platform entities can easily lead to security bugs.
 
-A PKIX Attestation MAY contain any number of key entities. Each key entity SHOULD describe a unique application key, multiple key entities discribing the same application key SHOULD be avoided since different or conflicting claims could lead to security issues on the part of the Verifier or Relying Party.
+A PKIX Attestation MAY contain one or more application key entities. Each key entity SHOULD describe a unique application key. Multiple ReportedEntity objects of type `entity-key` that describe the same application key SHOULD be avoided since different or conflicting claims could lead to security issues on the part of the Verifier or Relying Party.
+
+TODO: note that we need to be careful about whether we are attesting the AK, or only attesting application keys.
+
+TODO: JP to re-write the Request Entities part.
 
 A PKIX Attestation that contains a request entity MUST NOT contain any platform or key entities. Request entities SHOULD correspond one-to-one with platform and key entities that are expected to be returned. In other words, the request SHOULD be constructed so that the Attesting Service can easily detect whether a request entity contains platform or key claims, replace `id-pkix-attest-entity-request` by either `id-pkix-attest-entity-platform` or `id-pkix-attest-entity-key` and fill in the requested claims. It is a goal of this draft to keep the Attesting Service logic as simple as possible since this is security-critical code deep within the HSM, and so the Attesting Service SHOULD contain hard-coded request templates and SHOULD reject any request that does not match its template since other behivour could lead to security issues.
 
@@ -476,7 +485,7 @@ Note that it is common for HSMs to not have an accurate system clock; consider a
 
 A default and vendor-agnostic set of key attributes is defined in this section.
 
-MUST be contained within a platform entity; ie an entity identified by `id-pkix-attest-entity-platform`.
+MUST be contained within a key entity; ie an entity identified by `id-pkix-attest-entity-key`.
 
 | Attribute       | AttributeValue  | Reference           | Description     |
 | ---             | ---             | ---                 | ---             |
@@ -532,10 +541,8 @@ More than one SignatureBlocks MAY be used to convey a number of different semant
 For example, the HSM's Attesting Service might hold multiple Attestation Keys on different cryptographic
 algorithms in order to provide algorithm redundancy in the case that one algorithm becomes cryptographically broken. In this case a Verifier would be expected to validate all SignatureBlocks. Alternatively, the HSM's Attesting Service may hold multiple Attestion Keys (or multiple X.509 certificates for the same key) from multiple operational environments to which it belongs. In this case a Verifier would be expected to only validate the SignatureBlock corresponding to its own environment. Alternatively, multiple SignatureBlocks could be used to convey counter-signatures from external parties, in which case the Verifier will need to be equipped with environment-specific verification logic. Multiple of these cases, and potentially others, could be present in a single PkixAttestation object.
 
-The following
-
 Note that each SignatureBlock is a fully detached signature over the tbs content with no binding between the signed content and the SignatureBlocks, or between SignatureBlocks, meaning that a third party can add a
-counter-signature of the evidence after the fact, or an attacker can remove a SignatureBlock without leaving any evidence. See {#sec-detached-sigs} for further discussion.
+counter-signature of the evidence after the fact, or an attacker can remove a SignatureBlock without leaving any artifacts. See {#sec-detached-sigs} for further discussion.
 
 
 # Appriasal Policies and Profiles {#sec-profiles}
