@@ -47,7 +47,7 @@ author:
     email: jp@crypto4a.com
     
 
-- name: Hannes Tschofenig
+  - name: Hannes Tschofenig
     organization: University of Applied Sciences Bonn-Rhein-Sieg
     abbrev: H-BRS
     country: Germany
@@ -62,7 +62,7 @@ author:
     country: USA
     email: monty.wiseman@beyondidentity.com
 
-- name: Ned Smith
+  - name: Ned Smith
     organization: Intel Corporation
     country: USA
     email: ned.smith@intel.com
