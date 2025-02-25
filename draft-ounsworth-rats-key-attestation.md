@@ -37,9 +37,15 @@ author:
     code: K2K 3G5
     email: mike.ounsworth@entrust.com
 
-  - Name: Jean-Pierre Fiset
-    ins: JP Fiset
-    org: Crypto4A
+  - name: Jean-Pierre Fiset
+    org: Crypto4A Inc.
+    abbrev: Crypto4A
+    street: 1550A Laperriere Ave
+    city: Ottawa, Ontario
+    country: Canada
+    code: K1Z 7T2
+    email: jp@crypto4a.com
+    
 
 - name: Hannes Tschofenig
     organization: University of Applied Sciences Bonn-Rhein-Sieg
@@ -100,28 +106,28 @@ entity:
 
 --- abstract
 
-This document specifies a vendor-agnostic format for attesting to the protection properties of a symmetric or asymmetric cryptographic key within a hardware cryptographic module to support applications such as providing evidence to a Certification Authority that a key is being protected in accordance with the requested cerificate profile, or that HSMs can perform key import and maintain the private key protection properties in a robust way even when migrating keys across HSM vendors. This specification includes a format for requesting a key attestation containing certain attributes. This specification is called "PKIX Attestation" because it is designed to be easy to implement on top of a code base that already supports X.509 and PKCS#11 data models.
+This document specifies a vendor-agnostic format for attesting to the protection properties of a symmetric or asymmetric cryptographic key within a hardware cryptographic module to support applications such as providing evidence to a Certification Authority that a key is being protected in accordance with the requested certificate profile, or that HSMs can perform key import and maintain the private key protection properties in a robust way even when migrating keys across HSM vendors. This specification includes a format for requesting a key attestation containing certain attributes. This specification is called "PKIX Attestation" because it is designed to be easy to implement on top of a code base that already supports X.509 and PKCS#11 data models.
 
 --- middle
 
 # Introduction
 
 This specification is targeted at attesting to the storage of cryptographic key
-matarial -- symmetric keys or asymmetric private keys -- within a hardware cryptographic
+material -- symmetric keys or asymmetric private keys -- within a hardware cryptographic
 module such as a Hardware Security Module (HSM) or Trusted Platform Module (TPM).
 This requires providing evidence to the key protection properties of that key, referred to in
-this specificion as "key attributes", as well as to the operational state of the hardware platform,
+this specification as "key attributes", as well as to the operational state of the hardware platform,
 referred to as "platform attributes". This specification also provides a format for requesting that a cryptographic module produce a key attestation containing a specific set of attributes.
 See {{sec-data-model}} for the full information model.
 
 
 As described below in {{sec-arch}} "Architecture and Conceptual Model", this specification
-uses a simplified of the Remote ATtestation procedureS (RATS) Architecture [!RFC9443]
+uses a simplification of the Remote ATtestation procedureS (RATS) Architecture [!RFC9443]
 by assuming that the attesting environment and the target environment
-are the same envirnoment, and that this envilonment only produces self-attested evidence as this aligns with the
+are the same environment, and that this environment only produces self-attested evidence as this aligns with the
 target hardware platforms. As such, the attestation data format specified in {{sec-data-model}} only contains
 evidence (referred to in this document as "attributes") and does not provide for any form of endorsement except for
-endorsement of the device's attestationg signing key which is endorsed via an X.509 certificate chain rooted
+endorsement of the device's attestation signing key which is endorsed via an X.509 certificate chain rooted
 in a trust anchor belonging either to the device manufacturer or to the device operator, as described in {{sec-ak-chain}}.
 
 Unlike other attestation data formats defined by the RATS working group, the format defined in this
@@ -135,7 +141,7 @@ this motivates the following design choices:
 For these reasons, this attestation format is called "PKIX Key Attestation" and may be used,
 for example within a Certificate Signing Request (CSR) object; [{{I-D.ietf-lamps-csr-attestation}}] specifies how to carry evidence within PKCS#10 [{{RFC2986}}] or Certificate Request Message Format (CRMF) [{{RFC4211}}].
 
-This document provides a vendor-agnostic format for attesting to the logical and physical protection properties of a cryptographic key and it envisions uses such as providing evidence to a Certification Authority that a key is being protected in accordance with the requested cerificate profile, or that HSMs can perform key import and maintain the private key protection properties in a robust way even when migrating keys across HSM vendors.
+This document provides a vendor-agnostic format for attesting to the logical and physical protection properties of a cryptographic key and it envisions uses such as providing evidence to a Certification Authority that a key is being protected in accordance with the requested certificate profile, or that HSMs can perform key import and maintain the private key protection properties in a robust way even when migrating keys across HSMs from different vendors.
 
 This specification defines the architecture for performing key attestation and registers attributes for use with {{I-D.ietf-rats-eat}}
 and {{I-D.ietf-rats-pkix-evidence}}.
@@ -143,6 +149,7 @@ and {{I-D.ietf-rats-pkix-evidence}}.
 # Terminology
 
 TODO: I think some of this terminology is not needed.
+TODO: JP believes that PAK, KAK and KAS should be removed.
 
 The following terms are used in this document:
 
@@ -153,10 +160,10 @@ Root of Trust (RoT):
 to act as a security foundation required for accomplishing the security
 goals of a system. In our case, the RoT is expected to offer the
 functionality for attesting to the state of the platform, and to attest
-the properties of the identity key (IK). More precisely, it has to atttest
+the properties of the identity key (IK). More precisely, it has to attest
 the integrity of the IK (public as well as private key) and the
 confidentiality of the IK private key. This document makes a simplifying
-assumption that the RoT, the attesting envorenment holding the
+assumption that the RoT, the attesting environment holding the
 attestation key, and the target environment being measured and attested
 are all the same environment.
 
@@ -236,7 +243,7 @@ described in {{RFC9334}}. In the general RATS Architecture, an attesting device
 consists of a hardware Root of Trust (RoT) which provides the basis for trust in the device,
 and then one or more layers of attestations where an attesting environment collects
 and signs measurements (evidence) about a target environment. Trust is
-established by chaining the cryptograhpic signatures on each layer of
+established by chaining the cryptographic signatures on each layer of
 evidence up to the next layer of attester until the RoT is reached, and trust
 is established in the RoT via 3rd party endorsements.
 The target devices for this specification tend to operate on a different
@@ -245,7 +252,7 @@ architecture and trust model: the devices consist of one single logical environm
 a single entity), and trust is established via product validations conducted by third-party
 testing labs against standardized security and functional requirements such
 as FIPS 140-3 or a given Common Criteria protection profile. A FIPS or CC
-certification provided by a testing lab would cenceptually count as an
+certification provided by a testing lab would conceptually count as an
 endorsement of the hardware platform in the RATS architecture, but they
 are often not digitally-signed
 artifacts, and are often conveyed out of band, sometimes via a website or even
@@ -256,14 +263,15 @@ As such, the attestation data format defined in this document does not
 capture the full functionality of the RATS architecture. If a device producing
 evidence in the specified format requires to also carry nested attestation
 statements or endorsements, then it must
-be acheived via by placing the attestation from this draft within another wrapper
+be achieved by placing the attestation from this draft within another wrapper
 layer such as RATS Conceptual Message Wrapper (CMW) [I-D.ietf-rats-msg-wrap-11].
 
-TODO: for the RATS audience, we probably need to clafiry what exactly an "Application Key" is. Add to glossary? Potentially we need a Use Cases section: CA keys, TLS keys, etc.
+TODO: for the RATS audience, we probably need to clarify what exactly an "Application Key" is. Add to glossary? Potentially we need a Use Cases section: CA keys, TLS keys, etc.
 
 ~~~aasvg
       .-------------------------------------.
       | Crypto Module                       |
+      |                                     |
       |   Platform environment              |
       |        ^        .-------------.     |
       |        |        | Application |     |
@@ -299,20 +307,20 @@ which will include the evidence in at attested TLS session [I-D.fossati-tls-atte
 or similar applications, refered to as the "Usage Protocol".
 
 This model does not assume any internal structure or logical separation within the HSM
-except for the existance of some kind of attestation service which may or may not be logically separate
+except for the existence of some kind of attestation service which may or may not be logically separate
 from the overall HSM Root of Trust, and that this attestation service measures the
 required evidence about both the hardware environment and the application keys
 that are being attested.
 In addition to emitting key attestation evidence, an HSM may also need to parse it,
 for example when running in an operational mode that only allows importing keys
-from other HSMs at a comparable security level (requires checking for specificic claims) or within the same operational network (requires checking the trust anchor of the attestation key certificate chain).
+from other HSMs at a comparable security level (requires checking for specific claims) or within the same operational network (requires checking the trust anchor of the attestation key certificate chain).
 This implies that the attestation service needs to be
 part of the core HSM "kernel" and therefore would be subject to validations such as
 FIPS 140-3 or Common Criteria, which motivates a design requirement to keep the evidence
 data format as simple as possible and as close as possible to existing functionality
 and data models of existing HSM and TPM products.
 As such, the information model presented in {{sec-data-model}}
-will feel familiar to implenters with experience with PKI and PKCS#11.
+will feel familiar to implementers with experience with PKI and PKCS#11.
 
 
 ## Attestation Key Certificate Chain {#sec-ak-chain}
@@ -324,15 +332,15 @@ the leaf certificate is the HSM's attestation key (AK) which signs the evidence,
 and this AK certificate chains to a trust anchor which is trusted by the Recipient
 as authoritative to vouch for the authenticity of the device. In practice the
 trust anchor will usually be a manufacturing CA belonging to the device vendor which proves
-that the device is genuine and not counterfit. The Trust Anchor can also belong
+that the device is genuine and not counterfeit. The Trust Anchor can also belong
 to the device operator as would be the case when the AK certificate is replaced
-as part of onboarding the device into a new operatonal network.
+as part of on-boarding the device into a new operational network.
 
 Note that the data format specified in {{sec-data-model}} allows for zero, one, or multiple
 'SignatureBlock's, so a single evidence statement could be un-protected, or could be endorsed by multiple
 AK chains leading to different trust anchors. See {{sec-verif-proc}} for a discussion of handling multiple SignatureBlocks.
 
-TODO: should this specification provide specific X.509 extensions that should be present in this AK Cert to carry specificic information about the device?
+TODO: should this specification provide specific X.509 extensions that should be present in this AK Certificate to carry specific information about the device?
 
 TODO: should CPS be mentioned here?
 
@@ -461,11 +469,11 @@ Some of the attributes defined in this specification have further details below.
 
 ### usermods
 
-Most HSMs have some concept of trusted execution environment where user software modules can be loaded inside the HSM to run with some level of priviledged access to the application keys. This attribute lists user modules currently loaded onto the HSM in a human readable format, preferabbly JSON.
+Most HSMs have some concept of trusted execution environment where user software modules can be loaded inside the HSM to run with some level of privileged access to the application keys. This attribute lists user modules currently loaded onto the HSM in a human readable format, preferably JSON.
 
 ### fipsboot
 
-FIPS 140-3 CMVP validation places stringeant requirements on the cryptography offered by the module, including only enabling FIPS-approved algorithms, certain requirements on entropy sources, and extensive start-up self-tests. Many HSMs include a configuration setting that allows the device to be taken out of FIPS mode and thus enable additional functionality or performance.
+FIPS 140-3 CMVP validation places stringent requirements on the cryptography offered by the module, including only enabling FIPS-approved algorithms, certain requirements on entropy sources, and extensive start-up self-tests. Many HSMs include a configuration setting that allows the device to be taken out of FIPS mode and thus enable additional functionality or performance.
 
 This boolean attribute indicates whether the device is currently operating in FIPS mode. For most HSMs, changing this configuration setting from `fipsboot=true` to `fips-boos=false` is destructive and will result in zeroization of all cryptographic keys held within the module.
 
@@ -479,7 +487,7 @@ Further description of the environment beyond hwvendor, hwmodel, hwserial, swver
 
 The time at which this attestation was generated, according to the internal system clock of the HSM.
 
-Note that it is common for HSMs to not have an accurate system clock; consider an HSM for a root CA kept offline and booted up infrequently in an air-gapped local network, or a smartcard which boots up only when held against an NFC reader. Implementers of emitters SHOULD include this attribute only if the device reliably knows its own time (for example has had recent contact with an NTP server). Implementers of parsers SHOULD be wary of trusting the contents of this attribute. A challenge-response protocol that makes use of the nonce attribute is a far more reliable way of establishing freshness.
+Note that it is common for HSMs to not have an accurate system clock; consider an HSM for a root CA kept offline and booted up infrequently in an local network segregated from all other network, or a smart card which boots up only when held against an NFC reader. Implementers of emitters SHOULD include this attribute only if the device reliably knows its own time (for example has had recent contact with an NTP server). Implementers of parsers SHOULD be wary of trusting the contents of this attribute. A challenge-response protocol that makes use of the nonce attribute is a far more reliable way of establishing freshness.
 
 ## Key Attributes
 
@@ -523,32 +531,32 @@ EDNOTE: I think we have to be precise about which flavour of Base64 we are refer
 
 # Signing Procedure
 
-The `SignatureBlock.signatureValue` signs over the DER-enceded to-be-signed attestation data
+The `SignatureBlock.signatureValue` signs over the DER-encoded to-be-signed attestation data
 `PkixAttestation.tbs` and MUST be validated with the subject public key of the leaf
 X.509 certificate contained in the `SignatureBlock.certChain`.
 
 # Verification Procedure {#sec-verif-proc}
 
-The `SignatureBlock.signatureValue` signs over the DER-enceded to-be-signed attestation data
+The `SignatureBlock.signatureValue` signs over the DER-encoded to-be-signed attestation data
 `PkixAttestation.tbs` and MUST be validated with the subject public key of the leaf
 X.509 certificate contained in the `SignatureBlock.certChain`.
 
 Note that a PkixAttestation MAY contain zero or more SignatureBlocks.
 A PkixAttestation with zero SignatureBlocks is unsigned, MUST be treated as un-protected and un-trusted,
-and any signature validation proceedures MUST fail.
+and any signature validation procedure MUST fail.
 
 More than one SignatureBlocks MAY be used to convey a number of different semantics.
 For example, the HSM's Attesting Service might hold multiple Attestation Keys on different cryptographic
 algorithms in order to provide algorithm redundancy in the case that one algorithm becomes cryptographically broken. In this case a Verifier would be expected to validate all SignatureBlocks. Alternatively, the HSM's Attesting Service may hold multiple Attestion Keys (or multiple X.509 certificates for the same key) from multiple operational environments to which it belongs. In this case a Verifier would be expected to only validate the SignatureBlock corresponding to its own environment. Alternatively, multiple SignatureBlocks could be used to convey counter-signatures from external parties, in which case the Verifier will need to be equipped with environment-specific verification logic. Multiple of these cases, and potentially others, could be present in a single PkixAttestation object.
 
 Note that each SignatureBlock is a fully detached signature over the tbs content with no binding between the signed content and the SignatureBlocks, or between SignatureBlocks, meaning that a third party can add a
-counter-signature of the evidence after the fact, or an attacker can remove a SignatureBlock without leaving any artifacts. See {#sec-detached-sigs} for further discussion.
+counter-signature of the evidence after the fact, or an attacker can remove a SignatureBlock without leaving any artifact. See {#sec-detached-sigs} for further discussion.
 
 
-# Appriasal Policies and Profiles {#sec-profiles}
+# Appraisal Policies and Profiles {#sec-profiles}
 
 This section provides some sample profiles of appraisal policies that verifiers
-MAY apply when evaluating evidence. These appriasal profiles represent environment-specific requirements
+MAY apply when evaluating evidence. These appraisal profiles represent environment-specific requirements
 on the contents of the evidence and / or endorsement certificate chain.
 
 
@@ -584,7 +592,7 @@ The CA / RA / RP / Verifier MUST:
 
 * Ensure that the subscriber key which is the subject of the CSR is also described by a KAT by matching either the key fingerprint or full SubjectPublicKeyInfo.
 * The hardware root-of-trust described by a PAT has a valid and active FIPS certificate according to the NIST CMVP database.
-* The attestation signing key (AK) which has signed the attestation token chains to a root certificate that A) belongs to the hardware vendor described in the PAT token, and B) is trusted by the CA / RA / RP / Verifier to endorse hardware from this vendor, for example through a CA's partner program or through a network operator's device onboarding process.
+* The attestation signing key (AK) which has signed the attestation token chains to a root certificate that A) belongs to the hardware vendor described in the PAT token, and B) is trusted by the CA / RA / RP / Verifier to endorse hardware from this vendor, for example through a CA's partner program or through a network operator's device on-boarding process.
 * The key is protected by a module running in FIPS mode. The parsing logic is to start at the leaf KAT token that matches the key in the CSR and parsing towards the root PAT ensuring that there is at least one `fipsboot=true` and no `fipsboot=false` on that path.
 
 
@@ -619,7 +627,7 @@ certification status.
 
 ## Simple to implement
 
-The nature of attestation requires the attestation service to be implemented in an extremely priviledged position within the HSM so that it can collect measurements of both the hardware environment and the application keys being attested. For many HSM and TPM architectures, this will place the Attestation Service inside the "HSM kernel" and potentially subject to FIPS 140-3 or Common Criteria validation and change control. For both security and compliance reasons there is incentive for the emittin and parsing logic to be simple and easy to implement correctly. Additionally, when the data formats contained in this specification are parsed within an HSM boundary -- that would be parsing a request entity, or parsing an attestation produced by a different HSM -- implementers SHOULD opt for simple logic that rejects any data that does not match the expected format instead of attempting to be flexible.
+The nature of attestation requires the attestation service to be implemented in an extremely privileged position within the HSM so that it can collect measurements of both the hardware environment and the application keys being attested. For many HSM and TPM architectures, this will place the Attestation Service inside the "HSM kernel" and potentially subject to FIPS 140-3 or Common Criteria validation and change control. For both security and compliance reasons there is incentive for the emitting and parsing logic to be simple and easy to implement correctly. Additionally, when the data formats contained in this specification are parsed within an HSM boundary -- that would be parsing a request entity, or parsing an attestation produced by a different HSM -- implementers SHOULD opt for simple logic that rejects any data that does not match the expected format instead of attempting to be flexible.
 
 In particular, Attesting Services SHOULD generate the attestation object from scratch and avoid copying any content from the request. Attesting Services MUST NOT allow unrecognized attributes or any attribute value other than the nonce to be echoed from the request into the attestation object.
 
