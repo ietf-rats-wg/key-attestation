@@ -287,8 +287,8 @@ TODO: for the RATS audience, we probably need to clarify what exactly an "Applic
       |     ^    |                          |
       |     |    |                          |
       '-----+----+--------------------------'
-Attestation |    | Attestation
-    Request |    |
+Attestation |    | PKIX
+    Request |    | Attestation
             |    v
      .-----------------.                 .-----------------.
      |                 | Usage Protocol  |                 |
@@ -369,6 +369,10 @@ SignatureBlock ::= SEQUENCE {
 }
 ~~~
 
+A PkixAttestation message is composed of a protected section known as the To-Be-Signed or TBS. The integrity of the To-Be-Signed section is ensured with one or multiple cryptographic signatures over the content of the section. There is a provision to carry the X.509 certificates supporting the signature(s).
+
+The TBS section is composed of a version number, to ensure future extensibility, and a number of reported entities. .
+
 For compliance with this specification, `TbsPkixAttestation.version` MUST be `1`.
 This envelope format is not extensible; future specifications which make compatibility-breaking changes MUST increment the version number.
 
@@ -386,14 +390,25 @@ ReportedEntity ::= SEQUENCE {
 }
 ~~~
 
-This specification defines the following entity types which MUST be supported by any compliant implementation, however future specifications or proprietary implementations MAY define additional entity types by registering additional OIDs. Compliant implementations MAY ignore un-regognized entity types. Compliant MUST parse any entity types contained in this specification and fail if errors are encountered.
+A reported entity is a unit of observation measured by the Attester (the HSM). In this specification, there are three types of entities defined:
+- Platform Entity : An entity that reports attributes about the platform, itself.
+- Key Entity : An entity that represents a single cryptographic key found in a HSM ad its associated attributes.
+- Transaction Entity : An entity reporting attributes observed from the request itself.
+
+A reported entity is composed of an Object Identifier (OID), specifying the entity type, and a sequence of reported attributes associated with the entity.
+
+Although this specification defines only three types of entities, implementations MAY define additional entity types by registering additional OIDs.
+
+An Attester (HSM) which is requested to provide information about unrecognized entity types MUST fail the operation.
+
+A Verifier which encounters an unrecognized entity type MAY ignore it.
 
 ~~~asn.1
-id-pkix-attest OBJECT IDENTIFIER ::= { 1 2 3 999 }
-id-pkix-attest-entity-type     OBJECT IDENTIFIER ::= { id-pkix-attest 0 }
-id-pkix-attest-entity-request  OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 0 }
-id-pkix-attest-entity-platform OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 1 }
-id-pkix-attest-entity-key      OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 2 }
+id-pkix-attest                    OBJECT IDENTIFIER ::= { 1 2 3 999 }
+id-pkix-attest-entity-type        OBJECT IDENTIFIER ::= { id-pkix-attest 0 }
+id-pkix-attest-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 0 }
+id-pkix-attest-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 1 }
+id-pkix-attest-entity-key         OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 2 }
 ~~~
 
 TODO: do we need entity types for "platform policy" and "key policy" ?
@@ -404,15 +419,11 @@ A PKIX Attestation MAY contain one or more application key entities. Each key en
 
 TODO: note that we need to be careful about whether we are attesting the AK, or only attesting application keys.
 
-TODO: JP to re-write the Request Entities part.
-
-A PKIX Attestation that contains a request entity MUST NOT contain any platform or key entities. Request entities SHOULD correspond one-to-one with platform and key entities that are expected to be returned. In other words, the request SHOULD be constructed so that the Attesting Service can easily detect whether a request entity contains platform or key claims, replace `id-pkix-attest-entity-request` by either `id-pkix-attest-entity-platform` or `id-pkix-attest-entity-key` and fill in the requested claims. It is a goal of this draft to keep the Attesting Service logic as simple as possible since this is security-critical code deep within the HSM, and so the Attesting Service SHOULD contain hard-coded request templates and SHOULD reject any request that does not match its template since other behivour could lead to security issues.
-
-EDNOTE: MikeO: I feel like the request syntax is too flexible. I would like to lock this down and make it more rigid.
+A PKIX Attestation can contain at most one transaction entity. A transaction entity contains attributes that are related to the request such as a "nonce". Attributes associated with the request do not belong with any other entities and should be reported as part of the transaction entity.
 
 
 
-Each attribute carries an Object Identifier (OID) identifying the type, and a value which must be one of the prescribed data types.
+Each reported attribute is composed of an Object Identifier (OID), identifying the type of the attribute, and a value which must be one of the prescribed data types.
 
 ~~~asn.1
 ReportedAttribute ::= SEQUENCE {
@@ -431,19 +442,25 @@ AttributeValue :== CHOICE {
 }
 ~~~
 
-All attributes are optional; a compliant emitter is not required to include them all (although a given appraisal policy or profile MAY make certain attributes mandatory, see {{sec-profiles}}).
+This specification defines a limited number of attributes types. However, implementations MAY define additional attribute types by registering additional OIDs.
 
-A platform entity MUST NOT contain more than one of each attribute.
+An Attester (HSM) which is requested to provide information about unrecognized attribute types MUST fail the operation.
 
-A compliant parser MUST be capable of successfully parsing a PKIX Attestation object containing all of the attributes defined in this document, although it MAY ignore attributes not required by its local appraisal policy or profile.
+A Verifier which encounters an unrecognized attribute type MAY ignore it.
 
-This list of attributes MAY be extended either through the IETF or by registering attribute OIDs in a private OID arc. Parsers SHOULD ignore any un-recognized attributes. A local appraisal policy or profile MAY require unrecognized entities or attributes to be treated as an error. In particular, un-recognized request attributes MUST NOT be copied into the response attestation object.
+An attribute type is generally associated with a single entity type. In the following sub-sections, defined attributes are grouped according to their related entity types.
+
+There are circumstances where an attribute type can be repeated for a given entity while other attribute types are unique. For example, the identifier for a key entity (key identifier) should not be repeated as this is a unique value. However, other attribute types could be interpreted as a "set". Therefore, this specification is not constraining the number of times a particular attribute type is encountered within an entity.
+
+A Verifier is responsible of ensuring the consistency of the recognized attributes reported for a given entity. Ultimately, a Verifier is responsible for providing attestation results to a Relying Party. Therefore, the Verifier should be constructed in such a way as to extract the relevant information for this Relying Party.
+
+
 
 ## Platform Attributes
 
 A default and vendor-agnostic set of platform attributes is defined in this section.
 
-MUST be contained within a platform entity; ie an entity identified by `id-pkix-attest-entity-platform`.
+These attribute types MAY be contained within a platform entity; i.e. an entity identified by `id-pkix-attest-entity-platform`.
 
 | Attribute       | AttributeValue  | Reference           | Description     |
 | ---             | ---             | ---                 | ---             |
@@ -459,7 +476,6 @@ MUST be contained within a platform entity; ie an entity identified by `id-pkix-
 | fipsboot        | bool            | [FIPS.140-3]        | Indicates whether the devices is currently running in FIPS mode. |
 | envdesc         | utf8String      | {{&SELF}}           | Further description of the environment. |
 | time            | time            | [I-D.ietf-rats-eat] | The time at which this attestation was generated. Corresponds to EAT IAT claim. |
-| nonce           | bytes           | [I-D.ietf-rats-eat] | A nonce with semantics as defined in [I-D.ietf-rats-eat] |
 
 TODO: find the actual reference for "FIPS Mode" -- FIPS 140-3 does not define it (at least not the 11 page useless version of 140-3 that I found).
 
@@ -493,7 +509,7 @@ Note that it is common for HSMs to not have an accurate system clock; consider a
 
 A default and vendor-agnostic set of key attributes is defined in this section.
 
-MUST be contained within a key entity; ie an entity identified by `id-pkix-attest-entity-key`.
+These attribute types MAY be contained within a key entity; i.e. an entity identified by `id-pkix-attest-entity-key`.
 
 | Attribute       | AttributeValue  | Reference           | Description     |
 | ---             | ---             | ---                 | ---             |
@@ -520,6 +536,20 @@ BIT MASK / Boolean Array {DualControl (0), CardControl (1), PasswordControl (2),
 
 We may need to say that the first X are reserved for use by future RFCs that update this specification, and beyond that is private use.
 
+## Transaction Attributes
+
+A default and vendor-agnostic set of transaction attributes is defined in this section.
+
+These attribute types MAY be contained within a transaction entity; i.e. an entity identified by `id-pkix-attest-entity-transaction`.
+
+| Attribute       | AttributeValue  | Reference           | Description     |
+| ---             | ---             | ---                 | ---             |
+| nonce           | bytes           | {{&SELF}}           | Repeats a "nonce" provided during the atttestation request. |
+
+### nonce
+
+The nonce attribute is used to provide "freshness" quality as to the information provided by the Attester (HSM) in the PkixAttestation message. A client requesting a PkixAttestation message MAY provide a nonce value as part of the request. This nonce value, if provided, SHOULD be repeated as an attribute to the transaction entity.
+
 ## Encoding
 
 A PKIXAttestation is to be DER encoded [X.690].
@@ -528,6 +558,17 @@ If a textual representation is required, then the DER encoding MAY be subsequent
 
 EDNOTE: I think we have to be precise about which flavour of Base64 we are referrring to.
 
+# Attestation Request
+
+A client of the Attester (the Presenter) may request the generation of a PkixAttestation message. This specification does not define the format of this request as the capabilities of a HSM vary from vendor to vendor and from model to model.
+
+Within this specification, it is RECOMMENDED that a request allows specifying a "nonce". This is to support the "freshness" quality offered by the attestation system.
+
+The manufacturer of a HSM device with limited capabilities may implement a response to the attestation request which includes a fixed set of reported entities, each with a fixed set of reported attributes. This approach might be appropriate for personal cryptographic tokens such as smart cards.
+
+On the other hand, an enterprise grade HSM with the capability to hold a large number of private keys is expected to have a different interface to request a Pkix Attestation message. In this case, there might be adverse effects to reporting all attributes associated with all the keys. A better approach would allow the Presenter to specify the interested key entities and the associated desired attributes.
+
+One approach would be to allow the Presenter to provide a structure of type TbsPkixAttestation as an attestation request to the HSM. Desired attribute values would be left empty for the HSM to fill out.
 
 # Signing Procedure
 

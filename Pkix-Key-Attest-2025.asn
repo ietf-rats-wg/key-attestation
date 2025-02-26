@@ -42,15 +42,15 @@ SignatureBlock ::= SEQUENCE {
 
 id-pkix-attest OBJECT IDENTIFIER ::= { 1 2 3 999 }
 
-id-pkix-attest-entity-type     OBJECT IDENTIFIER ::= { id-pkix-attest 0 }
-id-pkix-attest-entity-request  OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 0 }
-id-pkix-attest-entity-platform OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 1 }
-id-pkix-attest-entity-key      OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 2 }
+id-pkix-attest-entity-type        OBJECT IDENTIFIER ::= { id-pkix-attest 0 }
+id-pkix-attest-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 0 }
+id-pkix-attest-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 1 }
+id-pkix-attest-entity-key         OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 2 }
 
 id-pkix-attest-attribute-type OBJECT IDENTIFIER ::= { id-pkix-attest 1 }
 
-id-pkix-attest-attribute-request       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 0 }
-id-pkix-attest-attribute-request-nonce OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-request 0 }
+id-pkix-attest-attribute-transaction       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 0 }
+id-pkix-attest-attribute-transaction-nonce OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-transaction 0 }
 
 id-pkix-attest-attribute-platform            OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 1 }
 id-pkix-attest-attribute-platform-vendor     OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 0 }

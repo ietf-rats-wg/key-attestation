@@ -16,14 +16,14 @@ id_pkix_attest = univ.ObjectIdentifier((1, 2, 3, 999))
 
 id_pkix_attest_entity_type = univ.ObjectIdentifier( id_pkix_attest + (0,))
 
-id_pkix_attest_entity_request  = univ.ObjectIdentifier( id_pkix_attest_entity_type + (0,))
-id_pkix_attest_entity_platform = univ.ObjectIdentifier( id_pkix_attest_entity_type + (1,))
-id_pkix_attest_entity_key      = univ.ObjectIdentifier( id_pkix_attest_entity_type + (2,))
+id_pkix_attest_entity_transaction = univ.ObjectIdentifier( id_pkix_attest_entity_type + (0,))
+id_pkix_attest_entity_platform    = univ.ObjectIdentifier( id_pkix_attest_entity_type + (1,))
+id_pkix_attest_entity_key         = univ.ObjectIdentifier( id_pkix_attest_entity_type + (2,))
 
 id_pkix_attest_attribute_type = univ.ObjectIdentifier( id_pkix_attest + (1,))
 
-id_pkix_attest_attribute_request        = univ.ObjectIdentifier( id_pkix_attest_attribute_type + (0,))
-id_pkix_attest_attribute_request_nonce  = univ.ObjectIdentifier( id_pkix_attest_attribute_request + (0,))
+id_pkix_attest_attribute_transaction        = univ.ObjectIdentifier( id_pkix_attest_attribute_type + (0,))
+id_pkix_attest_attribute_transaction_nonce  = univ.ObjectIdentifier( id_pkix_attest_attribute_transaction + (0,))
 
 id_pkix_attest_attribute_platform            = univ.ObjectIdentifier( id_pkix_attest_attribute_type + (1,))
 id_pkix_attest_attribute_platform_hwserial   = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (0,))
@@ -140,12 +140,12 @@ def ReportedAttributeTime(oid:univ.ObjectIdentifier, valueTime:str):
     return attribute
 
 #
-# Request Attributes
+# Transaction Attributes
 #
     
-def ReportedAttributeRequestNonce(nonce:bytes):
+def ReportedAttributeTransactionNonce(nonce:bytes):
     return ReportedAttributeBytes(
-        id_pkix_attest_attribute_request_nonce,
+        id_pkix_attest_attribute_transaction_nonce,
         nonce
     )
     
@@ -243,8 +243,8 @@ def ReportedEntityGeneric(entityType:univ.ObjectIdentifier) -> "ReportedEntity":
     entity["entityType"] = entityType
     return entity
     
-def ReportedEntityRequest() -> "ReportedEntity":
-    return ReportedEntityGeneric(id_pkix_attest_entity_request)
+def ReportedEntityTransaction() -> "ReportedEntity":
+    return ReportedEntityGeneric(id_pkix_attest_entity_transaction)
     
 def ReportedEntityPlatform() -> "ReportedEntity":
     return ReportedEntityGeneric(id_pkix_attest_entity_platform)

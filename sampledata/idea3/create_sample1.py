@@ -79,8 +79,8 @@ tbsAtt = TbsPkixAttestation()
 
 nonce = b'0102030405'
 tbsAtt.addEntity(
-        ReportedEntityRequest()
-            .addAttribute( ReportedAttributeRequestNonce(nonce) )
+        ReportedEntityTransaction()
+            .addAttribute( ReportedAttributeTransactionNonce(nonce) )
     )
 
 tbsAtt.addEntity(
