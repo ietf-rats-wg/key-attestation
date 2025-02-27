@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-25T00:40:43.505142+00:00",
+  "timestamp": "2025-02-27T00:40:38.175175+00:00",
   "repo": "hannestschofenig/key-attestation",
   "labels": [
     {
@@ -381,24 +381,26 @@
       "id": "PR_kwDONUAin86KuTRu",
       "title": "Update .gitignore",
       "url": "https://github.com/hannestschofenig/key-attestation/pull/13",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "nedmsmith",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "ignore generated txt file",
       "createdAt": "2025-02-10T22:45:55Z",
-      "updatedAt": "2025-02-10T22:46:13Z",
+      "updatedAt": "2025-02-26T15:59:02Z",
       "baseRepository": "hannestschofenig/key-attestation",
       "baseRefName": "main",
       "baseRefOid": "45306fe2af211a21783f029f4b0ef379eefc14e3",
       "headRepository": "hannestschofenig/key-attestation",
       "headRefName": "ignore-text-file",
       "headRefOid": "dae4971eca43f0b96c52052941362da7786320ad",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-02-26T15:58:57Z",
+      "mergedAt": "2025-02-26T15:58:57Z",
+      "mergedBy": "hannestschofenig",
+      "mergeCommit": {
+        "oid": "0654849562e3d04d4c5dd74bc622d79fa5a856fa"
+      },
       "comments": [],
       "reviews": []
     }
