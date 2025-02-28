@@ -152,8 +152,6 @@ for example within a Certificate Signing Request (CSR) object; [{{I-D.ietf-lamps
 
 This document provides a vendor-agnostic format for attesting to the logical and physical protection properties of a cryptographic key and it envisions uses such as providing evidence to a Certification Authority that a key is being protected in accordance with the requested certificate profile, or that HSMs can perform key import and maintain the private key protection properties in a robust way even when migrating keys across HSMs from different vendors.
 
-This specification defines the architecture for performing key attestation and registers attributes for use with {{I-D.ietf-rats-eat}}
-and {{I-D.ietf-rats-pkix-evidence}}.
 
 # Terminology
 
