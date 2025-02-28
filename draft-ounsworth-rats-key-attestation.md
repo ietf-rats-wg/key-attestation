@@ -115,9 +115,18 @@ This document specifies a vendor-agnostic format for attesting to the protection
 This specification is targeted at attesting to the storage of cryptographic key
 material -- symmetric keys or asymmetric private keys -- within a hardware cryptographic
 module such as a Hardware Security Module (HSM) or Trusted Platform Module (TPM).
+HSMs and TPMs are devices whose primary purpose is to hold cryptographic keys and support interfaces whereby they can be used to perform encrypt, decrypt, sign, MAC and other keyed cryptographic operations on provided data without the key material ever leaving the hardware module.
+Typically an HSM or TPM holds an uses cryptographic keys on behalf of an application such as a Certification Authority, a code signing service, a TLS server.
+However, also included in the scope of this draft are single-purpose cryptographic devices such as smartcards which may hold only a single application key for a single purpose such as authenticating to a near-field "tap" terminal.
+Within this specification we will generically refer to the attesting device as an "HSM", and to the cryptographic keys that it holds an operates on behalf of some other application as "application keys".
+
+EDNOTE: is "application keys" a bad choice since "AK" already means "attestation key"?
+
+The goal of this specification is to provide a standardized format in which an HSM can attest that one or more application keys are contained within a hardware module, and attest to any additional attributes relating to the protection of this key material.
+
 This requires providing evidence to the key protection properties of that key, referred to in
 this specification as "key attributes", as well as to the operational state of the hardware platform,
-referred to as "platform attributes". This specification also provides a format for requesting that a cryptographic module produce a key attestation containing a specific set of attributes.
+referred to as "platform attributes". This specification also provides a format for requesting that a cryptographic module produce a key attestation about a specific application key, the application keys in a specific sub-environment of the HSM, or that the returned attestation contain a specific set of attributes.
 See {{sec-data-model}} for the full information model.
 
 
