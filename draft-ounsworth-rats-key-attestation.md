@@ -769,8 +769,6 @@ In absence of an existing mechanism for authenticating and authorizing administr
 
 # Samples
 
-TODO
-
 A reference implementation of this specification can be found at https://github.com/hannestschofenig/keyattestation
 
 It produces the following sample attestation:
