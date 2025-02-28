@@ -64,7 +64,8 @@ id-pkix-attest-attribute-platform-debugstat  OBJECT IDENTIFIER ::= { id-pkix-att
 id-pkix-attest-attribute-platform-uptime     OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 8 }
 id-pkix-attest-attribute-platform-bootcount  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 9 }
 id-pkix-attest-attribute-platform-usermods   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 8 }
-id-pkix-attest-attribute-platform-envdesc    OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 9 }
+id-pkix-attest-attribute-platform-envid    OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 9 }
+id-pkix-attest-attribute-platform-envdesc    OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 10 }
 
 
 id-pkix-attest-attribute-key                   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 2 }
