@@ -1340,8 +1340,6 @@ Table of Contents
 
 Appendix A.  Samples
 
-   TODO
-
    A reference implementation of this specification can be found at
    https://github.com/hannestschofenig/keyattestation
 
