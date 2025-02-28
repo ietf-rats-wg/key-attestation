@@ -594,27 +594,32 @@ Table of Contents
    The manufacturer of a HSM device with limited capabilities may
    implement a response to the attestation request which includes a
    fixed set of reported entities, each with a fixed set of reported
-   attributes and parses an Attesttion Request object only for the
+   attributes and parses an Attestion Request object only for the
    purposes of extracting the nonce.
 
    On the other hand, an enterprise grade HSM with the capability to
    hold a large number of private keys is expected to be capable of
    parsing attestation requests such that a Presenter can request
-   attestation of specific key(s) by their identifier, or requesting
-   attestation of all keys in a given environment with the given key
-   attributes.  A full implementation will also create a PKIX
-   Attestation containing exactly the requested attributes so that the
-   Presenter can fine-tune the information that it wishes to disclose to
-   the Recipient.
+   attestation of specific key(s) by their identifier, or request
+   attestation of all keys with given key attributes within a given sub-
+   environment of the HSM.  A full implementation will also create a
+   PKIX Attestation containing exactly the set of requested attributes
+   so that the Presenter can fine-tune the information that it wishes to
+   disclose to the Recipient.
 
-   A PKIX Attestation Request consists of a TbsPkixAttestation object
-   containing a single ReportedEntity identified with id-pkix-attest-
-   entity-request, called a request entity.  A TbsPkixAttestation
+   A PKIX Attestation Request consists of a un-signed TbsPkixAttestation
+   object containing a single ReportedEntity identified with id-pkix-
+   attest-entity-request, called a request entity.  A TbsPkixAttestation
    containing a request entity MUST NOT contain any other type of
    entities.  Request entities MAY contain Attributes of any type;
    transaction, platform, key, or any additional attribute type.  Any
    attribute contained in a request entity is called a request
-   attribute.
+   attribute.  Request entities MUST ONLY appear in attestation requests
+   and MUST NOT appear in PKIX Attestation objects.  The
+   TbsPkixAttestation object of an attestation request MAY appear inside
+   a signed PKIXAttestation for the purposes of authenticating and
+   authorizing the requester, but the semantics of doing so are left to
+   the implementer.
 
    An Attester that supports Attestation Requests MUST, at the minimum,
    support extracting the value from a nonce attribute and echoing it
@@ -1236,7 +1241,11 @@ Table of Contents
    which it is authorized, and by supporting request attributes that can
    be used as filters to allow the Presenter to request a key
    attestation containing only content that is appropriate for the
-   intended Recipient.
+   intended Recipient.  In absence of an existing mechanism for
+   authenticating and authorizing administrative connections to the HSM,
+   the attestation request MAY be authenticated by embedding the
+   TbsPkixAttestation of the request inside a PKIXAttestation signed
+   with a certificate belogning to the Presenter.
 
 11.  References
 
