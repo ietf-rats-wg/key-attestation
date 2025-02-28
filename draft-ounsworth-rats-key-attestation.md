@@ -45,7 +45,7 @@ author:
     country: Canada
     code: K1Z 7T2
     email: jp@crypto4a.com
-    
+
 
   - name: Hannes Tschofenig
     organization: University of Applied Sciences Bonn-Rhein-Sieg
@@ -502,7 +502,7 @@ Note that an Attestation Request will contain all request attributes inside a si
 For example, if the request contains the key `purpose` attribute (either valued or un-valued), then all returned key entities MUST contain the `purpose` attribute when this data is available for the given key.
 The tables in the following sections indicate whether an attribute of the given type MUST, MAY, or MUST NOT contain a value when included in a request entity.
 
-Generally errors should be handled gracefully by simply omitting an unfulfillable request attribute from the response. 
+Generally errors should be handled gracefully by simply omitting an unfulfillable request attribute from the response.
 An example would be if the `hwserial` attribute was requested but the devices does not have a serial number.
 However in some cases a fatal error MAY be returned, for example if attestation of a specific key is requested by key identifier or SubjectPublicKeyInfo but the HSM does not contain a matching key.
 HSMs SHOULD ignore request attributes with unrecognized type OIDs.
@@ -761,7 +761,7 @@ When multiple SignatureBlocks are used for providing third party counter-signatu
 
 Often, a TPM will host cryptographic keys for an entire operating system but a Presenter only represents a single user or application.
 Similarly, a single Hardware Security Module will often host cryptographic keys for an entire multi-tenant cloud service and the Presenter or Recipient belongs only to a single tenant.
-In these cases, disclosing even the existance of a given key, let alone its attributes, to an unauthorized party would constitute an egregious privacy violation. 
+In these cases, disclosing even the existance of a given key, let alone its attributes, to an unauthorized party would constitute an egregious privacy violation.
 Implementions SHOULD be careful to avoid over-disclosure of information, for example by authenticating the Presenter and only returning results for keys and envirnments for which it is authorized, and by supporting request attributes that can be used as filters to allow the Presenter to request a key attestation containing only content that is appropriate for the intended Recipient.
 
 --- back
