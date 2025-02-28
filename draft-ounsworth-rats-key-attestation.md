@@ -476,7 +476,7 @@ A Verifier is responsible of ensuring the consistency of the recognized attribut
 
 
 
-## Attestation Requests
+## Attestation Requests {#sec-reqs}
 
 EDNOTE: MikeO: this is complex, but I'm not really sure how to define a request format in any simpler way. Ideas are welcome!
 
@@ -759,11 +759,14 @@ When multiple SignatureBlocks are used for providing third party counter-signatu
 
 ## Privacy {#sec-cons-privacy}
 
-Often, a TPM will host cryptographic keys for an entire operating system but a Presenter only represents a single user or application.
-Similarly, a single Hardware Security Module will often host cryptographic keys for an entire multi-tenant cloud service and the Presenter or Recipient belongs only to a single tenant.
-In these cases, disclosing even the existance of a given key, let alone its attributes, to an unauthorized party would constitute an egregious privacy violation.
-Implementions SHOULD be careful to avoid over-disclosure of information, for example by authenticating the Presenter and only returning results for keys and envirnments for which it is authorized, and by supporting request attributes that can be used as filters to allow the Presenter to request a key attestation containing only content that is appropriate for the intended Recipient.
+Often, a TPM will host cryptographic keys for both the kernel and userspace of a local operating system but a Presenter may only represents a single user or application.
+Similarly, a single enterprise-grade Hardware Security Module will often host cryptographic keys for an entire multi-tenant cloud service and the Presenter or Reciever or Recipient belongs only to a single tenant. For example the HSM backing a TLS-terminating loadbalancer fronting thousands of un-related web domains.
+In these cases, disclosing that two different keys reside on the same hardware, or in some cases even disclosing the existance of a given key, let alone its attributes, to an unauthorized party would constitute an egregious privacy violation.
+
+Implementions SHOULD be careful to avoid over-disclosure of information, for example by authenticating the Presenter and only returning results for keys and envirnments for which it is authorized.
 In absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request MAY be authenticated by embedding the TbsPkixAttestation of the request inside a PKIXAttestation signed with a certificate belogning to the Presenter.
+
+Furthermore, enterprise and cloud-services grade HSMs SHOULD support the full set of attestation request functionality described in {{sec-reqs}} so that Presenters can fine-tune the content of a PKIX Attestation such that it is appropriate for the intended Recipient.
 
 --- back
 
