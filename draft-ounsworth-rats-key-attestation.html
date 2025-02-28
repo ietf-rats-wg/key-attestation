@@ -1701,7 +1701,7 @@ AttributeValue :== CHOICE {
 <p id="section-4-23">An attribute type is generally associated with a single entity type. In the following sub-sections, defined attributes are grouped according to their related entity types.<a href="#section-4-23" class="pilcrow">¶</a></p>
 <p id="section-4-24">There are circumstances where an attribute type can be repeated for a given entity while other attribute types are unique. For example, the identifier for a key entity (key identifier) should not be repeated as this is a unique value. However, other attribute types could be interpreted as a "set". Therefore, this specification is not constraining the number of times a particular attribute type is encountered within an entity.<a href="#section-4-24" class="pilcrow">¶</a></p>
 <p id="section-4-25">A Verifier is responsible of ensuring the consistency of the recognized attributes reported for a given entity. Ultimately, a Verifier is responsible for providing attestation results to a Relying Party. Therefore, the Verifier should be constructed in such a way as to extract the relevant information for this Relying Party.<a href="#section-4-25" class="pilcrow">¶</a></p>
-<div id="attestation-requests">
+<div id="sec-reqs">
 <section id="section-4.1">
         <h3 id="name-attestation-requests">
 <a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-attestation-requests" class="section-name selfRef">Attestation Requests</a>
@@ -2364,11 +2364,12 @@ certification status.<a href="#section-10-1" class="pilcrow">¶</a></p>
         <h3 id="name-privacy">
 <a href="#section-10.3" class="section-number selfRef">10.3. </a><a href="#name-privacy" class="section-name selfRef">Privacy</a>
         </h3>
-<p id="section-10.3-1">Often, a TPM will host cryptographic keys for an entire operating system but a Presenter only represents a single user or application.
-Similarly, a single Hardware Security Module will often host cryptographic keys for an entire multi-tenant cloud service and the Presenter or Recipient belongs only to a single tenant.
-In these cases, disclosing even the existance of a given key, let alone its attributes, to an unauthorized party would constitute an egregious privacy violation.
-Implementions <span class="bcp14">SHOULD</span> be careful to avoid over-disclosure of information, for example by authenticating the Presenter and only returning results for keys and envirnments for which it is authorized, and by supporting request attributes that can be used as filters to allow the Presenter to request a key attestation containing only content that is appropriate for the intended Recipient.
-In absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request <span class="bcp14">MAY</span> be authenticated by embedding the TbsPkixAttestation of the request inside a PKIXAttestation signed with a certificate belogning to the Presenter.<a href="#section-10.3-1" class="pilcrow">¶</a></p>
+<p id="section-10.3-1">Often, a TPM will host cryptographic keys for both the kernel and userspace of a local operating system but a Presenter may only represents a single user or application.
+Similarly, a single enterprise-grade Hardware Security Module will often host cryptographic keys for an entire multi-tenant cloud service and the Presenter or Reciever or Recipient belongs only to a single tenant. For example the HSM backing a TLS-terminating loadbalancer fronting thousands of un-related web domains.
+In these cases, disclosing that two different keys reside on the same hardware, or in some cases even disclosing the existance of a given key, let alone its attributes, to an unauthorized party would constitute an egregious privacy violation.<a href="#section-10.3-1" class="pilcrow">¶</a></p>
+<p id="section-10.3-2">Implementions <span class="bcp14">SHOULD</span> be careful to avoid over-disclosure of information, for example by authenticating the Presenter and only returning results for keys and envirnments for which it is authorized.
+In absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request <span class="bcp14">MAY</span> be authenticated by embedding the TbsPkixAttestation of the request inside a PKIXAttestation signed with a certificate belogning to the Presenter.<a href="#section-10.3-2" class="pilcrow">¶</a></p>
+<p id="section-10.3-3">Furthermore, enterprise and cloud-services grade HSMs <span class="bcp14">SHOULD</span> support the full set of attestation request functionality described in <a href="#sec-reqs" class="auto internal xref">Section 4.1</a> so that Presenters can fine-tune the content of a PKIX Attestation such that it is appropriate for the intended Recipient.<a href="#section-10.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
