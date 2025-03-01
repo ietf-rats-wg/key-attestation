@@ -25,13 +25,12 @@ ReportedAttribute ::= SEQUENCE {
 }
 
 AttributeValue :== CHOICE {
-   bytes       [0] IMPLICIT OCTET STRING,
-   asciiString [1] IMPLICIT IA5String,
-   utf8String  [2] IMPLICIT UTF8String,
-   bool        [3] IMPLICIT BOOLEAN,
-   time        [4] IMPLICIT GeneralizedTime,
-   int         [5] IMPLICIT INTEGER,
-   oid         [6] IMPLICIT OBJECT IDENTIFIER
+   bytes       [0] IMPLICIT OCTET STRING
+   utf8String  [1] IMPLICIT UTF8String,
+   bool        [2] IMPLICIT BOOLEAN,
+   time        [3] IMPLICIT GeneralizedTime,
+   int         [4] IMPLICIT INTEGER,
+   oid         [5] IMPLICIT OBJECT IDENTIFIER
 }
 
 SignatureBlock ::= SEQUENCE {
@@ -64,8 +63,11 @@ id-pkix-attest-attribute-platform-debugstat  OBJECT IDENTIFIER ::= { id-pkix-att
 id-pkix-attest-attribute-platform-uptime     OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 8 }
 id-pkix-attest-attribute-platform-bootcount  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 9 }
 id-pkix-attest-attribute-platform-usermods   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 8 }
-id-pkix-attest-attribute-platform-envid    OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 9 }
+id-pkix-attest-attribute-platform-envid      OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 9 }
 id-pkix-attest-attribute-platform-envdesc    OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 10 }
+id-pkix-attest-attribute-platform-fipsver  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 11 }
+id-pkix-attest-attribute-platform-fipslevel  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 12 }
+
 
 
 id-pkix-attest-attribute-key                   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 2 }
