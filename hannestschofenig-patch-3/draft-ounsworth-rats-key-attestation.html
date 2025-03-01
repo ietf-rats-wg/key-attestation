@@ -1,0 +1,2880 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>PKIX Key Attestation</title>
+<meta content="Mike Ounsworth" name="author">
+<meta content="Jean-Pierre Fiset" name="author">
+<meta content="Hannes Tschofenig" name="author">
+<meta content="Henk Birkholz" name="author">
+<meta content="Monty Wiseman" name="author">
+<meta content="Ned Smith" name="author">
+<meta content='
+       This document specifies a vendor-agnostic format for attesting to the protection properties of a symmetric or asymmetric cryptographic key within a hardware cryptographic module to support applications such as providing evidence to a Certification Authority that a key is being protected in accordance with the requested certificate profile, or that HSMs can perform key import and maintain the private key protection properties in a robust way even when migrating keys across HSM vendors. This specification includes a format for requesting a key attestation containing certain attributes. This specification is called "PKIX Attestation" because it is designed to be easy to implement on top of a code base that already supports X.509 and PKCS#11 data models. 
+    ' name="description">
+<meta content="xml2rfc 3.27.0" name="generator">
+<meta content="Internet-Draft" name="keyword">
+<meta content="draft-ounsworth-rats-key-attestation-latest" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.27.0
+    Python 3.12.9
+    ConfigArgParse 1.7
+    google-i18n-address 3.1.1
+    intervaltree 3.1.0
+    Jinja2 3.1.5
+    lxml 5.3.0
+    platformdirs 4.3.6
+    pycountry 24.6.1
+    PyYAML 6.0.2
+    requests 2.32.3
+    setuptools 70.3.0
+    wcwidth 0.2.13
+-->
+<link href="draft-ounsworth-rats-key-attestation.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Lora SemiBold'), local('Lora-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light dark;
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --pilcrow-weak: #ddd;
+  --pilcrow-strong: #bbb;
+  --small-font-size: 14.5px;
+  --font-mono: 'Oxygen Mono', monospace;
+  --font-title: "Sofia Sans Semi Condensed", sans-serif;
+  scrollbar-color: #bbb #eee;
+}
+body {
+  max-width: 600px;
+  margin: 75px auto;
+  padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
+}
+
+.ears {
+  display: none;
+}
+
+/* headings */
+section {
+  clear: both;
+}
+.section-number {
+  padding-right: 0.5em;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-title);
+  font-weight: 680;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+h1#title {
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+h1#title, h1#rfcnum {
+  margin: 1.5em 0 0.2em;
+}
+h1#rfcnum + h1#title {
+  margin: 0.2em 0;
+}
+
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 27px;
+}
+h4, h5, h6 {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+#abstract+p {
+  font-size: 18px;
+  line-height: 24px;
+}
+#abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 16px;
+  line-height: 0;
+}
+
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+/* font-family isn't space-separated, but =~ will have to do */
+svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
+  font-family: var(--font-mono);
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+  & :is(ol, ul) {
+    margin-left: 1em;
+  }
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+  & li {
+    margin-top: 0.5em;
+  }
+}
+:is(ul, ol).compact, .ulCompact, .olCompact {
+  margin: 0 0 0 2em;
+  & li {
+    margin: 0;
+    & :first-child { margin-top: 0; }
+    & :last-child { margin-bottom: 0; }
+  }
+}
+
+/* definition lists */
+dl {
+  clear: left;
+  --indent: 3ch;
+  /* --indent: attr(indent ch); not supported in any browser, but we can dream */
+  &.olPercent {
+    --indent: 5ch;
+    & > dt {
+      min-width: calc(var(--indent) - 2ch);
+    }
+  }
+  &.olPercent > dt {
+    float: none;
+  }
+
+  dl > dd > & {
+    margin-top: 0.5em;
+    margin-bottom: 0;
+  }
+}
+dl:not(.dlNewline) > dt {
+  float: left;
+  margin-right: 2ch;
+  min-width: 8ch;
+}
+dl > dd {
+  margin-bottom: .8em;
+  margin-left: var(--indent) !important; /* stupid element overrides */
+  min-height: 2ex;
+}
+:is(dl.compact, .dlCompact) > dd {
+  margin-bottom: 0;
+  & > :is(:first-child, .break:first-child + *) {
+    margin-top: 0;
+  }
+  & > :is(:last-child) {
+    margin-bottom: 0;
+  }
+}
+:is(dd, span).break {
+  display: none;
+}
+
+/* links */
+a, a[href].selfRef:hover {
+  text-decoration: none;
+}
+a[href] {
+  color: var(--link-color);
+}
+a[href].selfRef, .iref + a[href].internal {
+  color: var(--text-color);
+}
+a[href]:hover {
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
+  white-space: nowrap;
+}
+
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px var(--font-mono);
+}
+tt, code {
+  /* changing the font for inline elements leads to different ascender
+     and descender heights; as we want to retain baseline alignment,
+     remove leading to avoid altering the final height of lines
+     note: this fails if these blocks take an entire line,
+     a different solution would be great */
+  line-height: 0;
+}
+:is(h1, h2, h3, h4, h5, h6) :is(tt, code) {
+  font-size: 84%;
+}
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0.5em 0;
+  padding: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
+  caption-side: bottom;
+}
+@media screen {
+  /* Auto-collapse boilerplate. */
+  :is(#status-of-memo, #copyright) p {
+    margin: -2px 0;
+    max-height: 0;
+    transition: max-height 2s ease, margin 0.5s ease 0.5s;
+    overflow: hidden;
+  }
+  :is(#status-of-memo, #copyright):hover p,
+  :is(#status-of-memo, #copyright) h2:target ~ p {
+    margin: 0.5em 0;
+    max-height: 500px;
+    overflow: auto;
+  }
+  pre, svg {
+    display: inline-block;
+    /* In the horizontal direction, sometimes people make over-sized figures.
+       Scrollbars for those is therefore necessary: auto adds them as necessary..
+       In the vertical direction, the line-height can combine with the font
+       asender/descender height to produce scrollbars: hidden avoids that. */
+    overflow: auto hidden;
+  }
+  pre {
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  svg {
+    max-width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  :is(pre, svg) + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
+}
+blockquote {
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  width: auto;
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+table.right {
+  margin-left: auto;
+}
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+table.left {
+  margin-right: auto;
+}
+table .text-left {
+  text-align: left;
+}
+table .text-center {
+  text-align: center;
+}
+table .text-right {
+  text-align: right;
+}
+
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+:is(tr:nth-child(2n), thead+tbody > tr:nth-child(2n+1)) > td {
+  background-color: var(--background-color);
+}
+:is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
+  background-color: var(--highlight-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 0 3px 1em;
+}
+table p {
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  opacity: 0.2;
+  user-select: none;
+  &[href] {
+    color: var(--pilcrow-weak);
+    &:hover { text-decoration: none; }
+  }
+}
+@media not print {
+  :hover > a.pilcrow {
+    opacity: 1;
+  }
+  a.pilcrow[href]:hover {
+    color: var(--pilcrow-strong);
+    background-color: transparent;
+  }
+}
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: 600;
+  font-size: var(--small-font-size);
+}
+.role {
+  font-variant: all-small-caps;
+}
+sub, sup {
+  line-height: 1;
+  font-size: 80%;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 15ch;
+  & dt {
+    width: var(--identifier-width);
+    min-width: var(--identifier-width);
+    clear: left;
+    float: left;
+    text-align: right;
+    margin-right: 1ch;
+  }
+  & dd {
+    margin: 0;
+    margin-left: calc(1em + var(--identifier-width)) !important;
+    min-width: 5em;
+  }
+  & .authors {
+    & .author {
+      display: inline-block;
+      margin-right: 1.5em;
+    }
+    & .org {
+      font-style: italic;
+    }
+  }
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+
+  & nav {
+    & ul {
+      margin: 0 0.5em 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    & li {
+      line-height: 1.3em;
+      margin: 2px 0;
+      padding-left: 1.2em;
+      text-indent: -1.2em;
+    }
+  }
+  & a.xref {
+    white-space: normal;
+  }
+}
+
+.references {
+  & > dt {
+    text-align: right;
+    font-weight: bold;
+    min-width: 10ch;
+    margin-right: 1.5ch;
+    &:target::before {
+      content: "⇒";
+      margin: 0 10px 0 -25px;
+    }
+  }
+  & > dd {
+    margin-left: 12ch !important;
+    overflow: visible;
+    & .refInstance {
+      margin-bottom: 0.8em;
+    }
+    & .ascii {
+      margin-bottom: 0.25em;
+    }
+  }
+}
+
+#rfc\.index\.index + ul {
+  margin-left: 0;
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  max-width: 20em;
+  margin: 1em auto 1em 0;
+
+  & .nameRole {
+    font-weight: 700;
+    margin-left: 0;
+  }
+  & .label {
+    margin: 0.5em 0;
+  }
+  & .type {
+    display: none;
+  }
+  & .alternative-contact {
+    margin: 0.5em 0 0.25em 0;
+  }
+  & .non-ascii {
+    margin: 0 0 0 2em;
+  }
+  & div.left {
+    text-align: left;
+  }
+  & div.right {
+    text-align: right;
+  }
+}
+
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #authors-addresses > section > h2 {
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+/* Comments */
+.rfcEditorRemove p:first-of-type {
+  font-style: italic;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+
+@media screen {
+  #toc nav {
+    font-family: var(--font-title);
+    font-weight: 360;
+    & > ul { margin-bottom: 2em; }
+    & ul {
+      margin: 0 0 0 4px;
+      & :is(p, li) {
+        margin: 2px 0;
+      }
+    }
+  }
+  #toc a.toplink {
+    float: right;
+  }
+}
+@media not screen {
+  #toc a.toplink {
+    display: none;
+  }
+}
+
+
+/* TOC layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 1px 0 0 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+    &::before { /* css hamburger */
+      float: right;
+      position: relative;
+      width: 1em;
+      height: 1px;
+      left: -164px;
+      margin: 8px 0 0 0;
+      background: white none repeat scroll 0 0;
+      box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+      content: "";
+    }
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active {
+    opacity: 1;
+    & nav { display: block; }
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:is(:link, :focus, :hover),
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin: 2px 0.5em 0;
+  }
+}
+
+/* TOC layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+  #toc a.toplink {
+    margin: 8px 0.5em 0;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre, .vcard {
+    page-break-inside: avoid;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  :is(h2, h3, h4, h5, h6)+*, dd {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Dark mode. */
+@media (prefers-color-scheme: dark) {
+:root {
+  --background-color: #121212;
+  --text-color: #f0f0f0;
+  --title-color: #fff;
+  --link-color: #4da4f0;
+  --highlight-color: #282828;
+  --line-color: #444;
+  --pilcrow-weak: #444;
+  --pilcrow-strong: #666;
+  scrollbar-color: #777 #333;
+}
+}
+
+/* SVG Trick: a prefix match works because only black and white are allowed */
+svg :is([stroke="black"], [stroke^="#000"]) {
+  stroke: var(--text-color);
+}
+svg :is([stroke="white"], [stroke^="#fff"]) {
+  stroke: var(--background-color);
+}
+svg :is([fill="black"], [fill^="#000"], :not([fill])) {
+  fill: var(--text-color);
+}
+svg :is([fill="white"], [fill^="#fff"]) {
+  fill: var(--background-color);
+}
+</style>
+
+</head>
+<body class="xml2rfc">
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">PKIX Key Attestation</td>
+<td class="right">March 2025</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Ounsworth, et al.</td>
+<td class="center">Expires 2 September 2025</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">Remote ATtestation procedureS</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-ounsworth-rats-key-attestation-latest</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2025-03-01" class="published">1 March 2025</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Standards Track</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2025-09-02">2 September 2025</time></dd>
+<dt class="label-authors">Authors:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">M. Ounsworth</div>
+<div class="org">Entrust</div>
+</div>
+<div class="author">
+      <div class="author-name">J.-P. Fiset</div>
+<div class="org">Crypto4A</div>
+</div>
+<div class="author">
+      <div class="author-name">H. Tschofenig</div>
+<div class="org">H-BRS</div>
+</div>
+<div class="author">
+      <div class="author-name">H. Birkholz</div>
+<div class="org">Fraunhofer SIT</div>
+</div>
+<div class="author">
+      <div class="author-name">M. Wiseman</div>
+<div class="org">Beyond Identity</div>
+</div>
+<div class="author">
+      <div class="author-name">N. Smith</div>
+<div class="org">Intel Corporation</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">PKIX Key Attestation</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This document specifies a vendor-agnostic format for attesting to the protection properties of a symmetric or asymmetric cryptographic key within a hardware cryptographic module to support applications such as providing evidence to a Certification Authority that a key is being protected in accordance with the requested certificate profile, or that HSMs can perform key import and maintain the private key protection properties in a robust way even when migrating keys across HSM vendors. This specification includes a format for requesting a key attestation containing certain attributes. This specification is called "PKIX Attestation" because it is designed to be easy to implement on top of a code base that already supports X.509 and PKCS#11 data models.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note rfcEditorRemove" id="section-note.1">
+      <h2 id="name-discussion-venues">
+<a href="#name-discussion-venues" class="section-name selfRef">Discussion Venues</a>
+      </h2>
+<p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">Discussion of this document takes place on the
+    Remote ATtestation ProcedureS Working Group mailing list (rats@ietf.org),
+    which is archived at <span><a href="https://mailarchive.ietf.org/arch/browse/rats/">https://mailarchive.ietf.org/arch/browse/rats/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">Source for this draft and an issue tracker can be found at
+    <span><a href="https://github.com/hannestschofenig/key-attestation">https://github.com/hannestschofenig/key-attestation</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 2 September 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2025 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-terminology" class="internal xref">Terminology</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-architecture-and-conceptual" class="internal xref">Architecture and Conceptual Model</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1" class="keepWithNext"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-attestation-key-certificate" class="internal xref">Attestation Key Certificate Chain</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-data-model" class="internal xref">Data Model</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-transaction-attributes" class="internal xref">Transaction Attributes</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1.2.1">
+                    <p id="section-toc.1-1.4.2.1.2.1.1"><a href="#section-4.1.1" class="auto internal xref">4.1.1</a>.  <a href="#name-nonce" class="internal xref">nonce</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1.2.2">
+                    <p id="section-toc.1-1.4.2.1.2.2.1"><a href="#section-4.1.2" class="auto internal xref">4.1.2</a>.  <a href="#name-time" class="internal xref">time</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-platform-attributes" class="internal xref">Platform Attributes</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2.2.1">
+                    <p id="section-toc.1-1.4.2.2.2.1.1"><a href="#section-4.2.1" class="auto internal xref">4.2.1</a>.  <a href="#name-usermods" class="internal xref">usermods</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2.2.2">
+                    <p id="section-toc.1-1.4.2.2.2.2.1"><a href="#section-4.2.2" class="auto internal xref">4.2.2</a>.  <a href="#name-fipsboot-fipsver-and-fipsle" class="internal xref">fipsboot, fipsver and fipslevel</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2.2.3">
+                    <p id="section-toc.1-1.4.2.2.2.3.1"><a href="#section-4.2.3" class="auto internal xref">4.2.3</a>.  <a href="#name-envid" class="internal xref">envid</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2.2.4">
+                    <p id="section-toc.1-1.4.2.2.2.4.1"><a href="#section-4.2.4" class="auto internal xref">4.2.4</a>.  <a href="#name-envdesc" class="internal xref">envdesc</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-key-attributes" class="internal xref">Key Attributes</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3.2.1">
+                    <p id="section-toc.1-1.4.2.3.2.1.1"><a href="#section-4.3.1" class="auto internal xref">4.3.1</a>.  <a href="#name-purpose" class="internal xref">purpose</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3.2.2">
+                    <p id="section-toc.1-1.4.2.3.2.2.1"><a href="#section-4.3.2" class="auto internal xref">4.3.2</a>.  <a href="#name-protection" class="internal xref">protection</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.4">
+                <p id="section-toc.1-1.4.2.4.1"><a href="#section-4.4" class="auto internal xref">4.4</a>.  <a href="#name-additional-entity-and-attri" class="internal xref">Additional Entity and Attribute Types</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.5">
+                <p id="section-toc.1-1.4.2.5.1"><a href="#section-4.5" class="auto internal xref">4.5</a>.  <a href="#name-encoding" class="internal xref">Encoding</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-signing-procedure" class="internal xref">Signing Procedure</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-verification-procedure" class="internal xref">Verification Procedure</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-attestation-requests" class="internal xref">Attestation Requests</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-appraisal-policies-and-prof" class="internal xref">Appraisal Policies and Profiles</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-key-import-into-an-hsm" class="internal xref">Key Import into an HSM</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-ca-browser-forum-code-signi" class="internal xref">CA/Browser Forum Code-Signing</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-asn1-module" class="internal xref">ASN.1 Module</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.1">
+                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="auto internal xref">11.1</a>.  <a href="#name-simple-to-implement" class="internal xref">Simple to implement</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.2">
+                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="auto internal xref">11.2</a>.  <a href="#name-detached-signatures" class="internal xref">Detached Signatures</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.3">
+                <p id="section-toc.1-1.11.2.3.1"><a href="#section-11.3" class="auto internal xref">11.3</a>.  <a href="#name-privacy" class="internal xref">Privacy</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.1">
+                <p id="section-toc.1-1.12.2.1.1"><a href="#section-12.1" class="auto internal xref">12.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.2">
+                <p id="section-toc.1-1.12.2.2.1"><a href="#section-12.2" class="auto internal xref">12.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
+            <p id="section-toc.1-1.13.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-samples" class="internal xref">Samples</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
+            <p id="section-toc.1-1.14.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-acknowledgements" class="internal xref">Acknowledgements</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15">
+            <p id="section-toc.1-1.15.1"><a href="#appendix-C" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">This specification is targeted at attesting to the storage of cryptographic key
+material -- symmetric keys or asymmetric private keys -- within a hardware cryptographic
+module such as a Hardware Security Module (HSM) or Trusted Platform Module (TPM).
+HSMs and TPMs are devices whose primary purpose is to hold cryptographic keys and support interfaces whereby they can be used to perform encrypt, decrypt, sign, MAC and other keyed cryptographic operations on provided data without the key material ever leaving the hardware module.
+Typically an HSM or TPM holds an uses cryptographic keys on behalf of an application such as a Certification Authority, a code signing service, a TLS server.
+However, also included in the scope of this draft are single-purpose cryptographic devices such as smartcards which may hold only a single application key for a single purpose such as authenticating to a near-field "tap" terminal.
+Within this specification we will generically refer to the attesting device as an "HSM", and to the cryptographic keys that it holds an operates on behalf of some other application as "application keys".<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">EDNOTE: is "application keys" a bad choice since "AK" already means "attestation key"?<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">The goal of this specification is to provide a standardized format in which an HSM can attest that one or more application keys are contained within a hardware module, and attest to any additional attributes relating to the protection of this key material.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4">This requires providing evidence to the key protection properties of that key, referred to in
+this specification as "key attributes", as well as to the operational state of the hardware platform,
+referred to as "platform attributes". This specification also provides a format for requesting that a cryptographic module produce a key attestation about a specific application key, the application keys in a specific sub-environment of the HSM, or that the returned attestation contain a specific set of attributes.
+See <a href="#sec-data-model" class="auto internal xref">Section 4</a> for the full information model.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-5">As described below in <a href="#sec-arch" class="auto internal xref">Section 3</a> "Architecture and Conceptual Model", this specification
+uses a simplification of the Remote ATtestation procedureS (RATS) Architecture [!RFC9443]
+by assuming that the attesting environment and the target environment
+are the same environment, and that this environment only produces self-attested evidence as this aligns with the
+target hardware platforms. As such, the attestation data format specified in <a href="#sec-data-model" class="auto internal xref">Section 4</a> only contains
+evidence (referred to in this document as "attributes") and does not provide for any form of endorsement except for
+endorsement of the device's attestation signing key which is endorsed via an X.509 certificate chain rooted
+in a trust anchor belonging either to the device manufacturer or to the device operator, as described in <a href="#sec-ak-chain" class="auto internal xref">Section 3.1</a>.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-6">Unlike other attestation data formats defined by the RATS working group, the format defined in this
+document is targeting devices designed to operate within Public Key Infrastructure (PKI) ecosystems;
+this motivates the following design choices:<a href="#section-1-6" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1-7.1">
+          <p id="section-1-7.1.1">Attestation data structure defined in ASN.1 [X680] and encoded in Distinguished Encoding Rules (DER) <span>[<a href="#X.690" class="cite xref">X.690</a>]</span>.<a href="#section-1-7.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-7.2">
+          <p id="section-1-7.2.1">Endorsement of attesting key uses an X.509 certificate chain [!RFC5280].<a href="#section-1-7.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-7.3">
+          <p id="section-1-7.3.1">Key attributes are mostly just a mapping of the private key properties from PKCS#11 <span>[<a href="#PKCS11" class="cite xref">PKCS11</a>]</span>.<a href="#section-1-7.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-1-8">For these reasons, this attestation format is called "PKIX Key Attestation" and may be used,
+for example within a Certificate Signing Request (CSR) object; [<span>[<a href="#I-D.ietf-lamps-csr-attestation" class="cite xref">I-D.ietf-lamps-csr-attestation</a>]</span>] specifies how to carry evidence within PKCS#10 [<span>[<a href="#RFC2986" class="cite xref">RFC2986</a>]</span>] or Certificate Request Message Format (CRMF) [<span>[<a href="#RFC4211" class="cite xref">RFC4211</a>]</span>].<a href="#section-1-8" class="pilcrow">¶</a></p>
+<p id="section-1-9">This document provides a vendor-agnostic format for attesting to the logical and physical protection properties of a cryptographic key and it envisions uses such as providing evidence to a Certification Authority that a key is being protected in accordance with the requested certificate profile, or that HSMs can perform key import and maintain the private key protection properties in a robust way even when migrating keys across HSMs from different vendors.<a href="#section-1-9" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="terminology">
+<section id="section-2">
+      <h2 id="name-terminology">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-terminology" class="section-name selfRef">Terminology</a>
+      </h2>
+<p id="section-2-1">TODO: I think some of this terminology is not needed.
+TODO: JP believes that PAK, KAK and KAS should be removed.
+TODO: these should be sorted alphabetically<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">The reader is assumed to be familiar with the vocabulary and concepts
+defined in <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>.<a href="#section-2-2" class="pilcrow">¶</a></p>
+<p id="section-2-3">The following terms are used in this document:<a href="#section-2-3" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlNewline" id="section-2-4">
+        <dt id="section-2-4.1">Root of Trust (RoT):</dt>
+        <dd style="margin-left: 1.5em" id="section-2-4.2">
+          <p id="section-2-4.2.1">A set of software and/or hardware components that need to be trusted
+to act as a security foundation required for accomplishing the security
+goals of a system. In our case, the RoT is expected to offer the
+functionality for attesting to the state of the platform, and to attest
+the properties of the identity key (IK). More precisely, it has to attest
+the integrity of the IK (public as well as private key) and the
+confidentiality of the IK private key. This document makes a simplifying
+assumption that the RoT, the attesting environment holding the
+attestation key, and the target environment being measured and attested
+are all the same environment.<a href="#section-2-4.2.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-4.3">Attestation Key (AK):</dt>
+        <dd style="margin-left: 1.5em" id="section-2-4.4">
+          <p id="section-2-4.4.1">Cryptographic key belonging to the RoT that is only used to sign
+attestation tokens.<a href="#section-2-4.4.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-4.5">Platform Attestation Key (PAK):</dt>
+        <dd style="margin-left: 1.5em" id="section-2-4.6">
+          <p id="section-2-4.6.1">An AK used specifically for signing attestation tokens relating to the
+state of the platform.<a href="#section-2-4.6.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-4.7">Hardware Security Module (HSM):</dt>
+        <dd style="margin-left: 1.5em" id="section-2-4.8">
+          <p id="section-2-4.8.1">a physical computing device that safeguards and manages secrets (most importantly cryptographic keys),
+and performs encryption, decryption, signing, MACing and other cryptographic operations with the managed
+cryptographic keys. HSMs can sometimes host user applications within a secure enclave environment within
+the HSM that are often used to extend the cryptographic functionality of the HSM.
+This specification takes a broad definition of what counts as an HSM to include smartcards,
+USB tokens, and similar devices which this specification refers to as "personal cryptographic tokens",
+as well as TPMs, in addition to the usual PCI card, rack-mount, and blade server form-factor
+of HSM which this specification refers to as "enterprise-grade" or "cloud-service grade" HSMs.<a href="#section-2-4.8.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-4.9">Key Attestation:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-4.10">
+          <p id="section-2-4.10.1">Evidence containing properties of the environment(s) in which the private
+keys are generated and stored. For example, a Relying Party may want to know whether
+a private key is stored in a hardware security module and cannot be
+exported in cleartext.<a href="#section-2-4.10.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-4.11">Key Attestation Key (KAK):</dt>
+        <dd style="margin-left: 1.5em" id="section-2-4.12">
+          <p id="section-2-4.12.1">An AK used specifically for signing KATs. In some systems only a
+single AK is used. In that case the AK is used as a PAK and a KAK.<a href="#section-2-4.12.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-4.13">Identity Key (IK):</dt>
+        <dd style="margin-left: 1.5em" id="section-2-4.14">
+          <p id="section-2-4.14.1">The IK consists of a private and a public key. The private key is used
+by the usage protocol. The public key is included in the Key Attestation
+Token.  The IK is protected by the RoT.<a href="#section-2-4.14.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-4.15">Usage Protocol:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-4.16">
+          <p id="section-2-4.16.1">A (security) protocol that requires demonstrating possession of the
+private component of the IK.<a href="#section-2-4.16.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-4.17">Attestation Token (AT):</dt>
+        <dd style="margin-left: 1.5em" id="section-2-4.18">
+          <p id="section-2-4.18.1">A collection of claims that a RoT assembles (and signs) with the
+purpose of informing - in a verifiable way - relying parties about the
+identity and state of the platform. Essentially a type of Evidence as
+per the RATS architecture terminology <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>.<a href="#section-2-4.18.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-4.19">Platform Attestation Entity:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-4.20">
+          <p id="section-2-4.20.1">An Entity containing attributes relating to the security state of the
+platform,. The process of generating a platform entity typically involves gathering
+data during measured boot.<a href="#section-2-4.20.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-4.21">Key Attestation Entity:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-4.22">
+          <p id="section-2-4.22.1">An Entity containing attributes relating to a specific application key
+protected by the HSM. The key attestation service, which is part
+of the platform root of trust (RoT), conceptually acts as a local
+certification authority since the KAT behaves like a certificate.<a href="#section-2-4.22.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-4.23">Presenter:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-4.24">
+          <p id="section-2-4.24.1">Party that proves possession of a private key to a recipient of a KAT.
+Typically this will be an application layer entity such as a cryptographic
+library constructing a Certificate Signing Request that must embed a
+key attestation, or a TLS library attempting to perform attested TLS.
+The Presenter is not fulfilling any roles in the RATS architecture.<a href="#section-2-4.24.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-4.25">Recipient:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-4.26">
+          <p id="section-2-4.26.1">Party that receives the KAT containing the proof-of-possession key
+information from the presenter. The Recipient is likely fulfilling
+the roles of Verifier and Relying Party in the RATS architecture,
+but the exact details of this arrangement is out-of-scope for this
+specification.<a href="#section-2-4.26.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-4.27">Key Attestation Service (KAS):</dt>
+        <dd style="margin-left: 1.5em" id="section-2-4.28">
+          <p id="section-2-4.28.1">The module within the HSM that is responsible for parsing the
+PKIX Attestation Request, measuring the
+Platform and the Key attributes, constructing the PKIX Attestation
+object, and signing it with the AK. The KAS fulfills the role of
+Attester in the RATS architecture.
+Note that real HSMs may or may not implement the Attester as a
+single internal module, but this abstraction is used for the
+design and security analysis of this specification.<a href="#section-2-4.28.1" class="pilcrow">¶</a></p>
+</dd>
+      <dd class="break"></dd>
+</dl>
+<p id="section-2-5">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+"<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
+appear in all capitals, as shown here.<a href="#section-2-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-arch">
+<section id="section-3">
+      <h2 id="name-architecture-and-conceptual">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-architecture-and-conceptual" class="section-name selfRef">Architecture and Conceptual Model</a>
+      </h2>
+<p id="section-3-1">Key attestation is an extension to the attestation functionality
+described in <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>. In the general RATS Architecture, an attesting device
+consists of a hardware Root of Trust (RoT) which provides the basis for trust in the device,
+and then one or more layers of attestations where an attesting environment collects
+and signs measurements (evidence) about a target environment. Trust is
+established by chaining the cryptographic signatures on each layer of
+evidence up to the next layer of attester until the RoT is reached, and trust
+is established in the RoT via 3rd party endorsements.
+The target devices for this specification tend to operate on a different
+architecture and trust model: the devices consist of one single logical environment
+(combining the RATS roles of RoT, attesting environment, and target environment together into
+a single entity), and trust is established via product validations conducted by third-party
+testing labs against standardized security and functional requirements such
+as FIPS 140-3 or a given Common Criteria protection profile. A FIPS or CC
+certification provided by a testing lab would conceptually count as an
+endorsement of the hardware platform in the RATS architecture, but they
+are often not digitally-signed
+artifacts, and are often conveyed out of band, sometimes via a website or even
+via a paper certificate and so they are out of scope for the wire format
+specified in this document.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">As such, the attestation data format defined in this document does not
+capture the full functionality of the RATS architecture. If a device producing
+evidence in the specified format requires to also carry nested attestation
+statements or endorsements, then it must
+be achieved by placing the attestation from this draft within another wrapper
+layer such as RATS Conceptual Message Wrapper (CMW) [I-D.ietf-rats-msg-wrap-11].<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">TODO: for the RATS audience, we probably need to clarify what exactly an "Application Key" is. Add to glossary? Potentially we need a Use Cases section: CA keys, TLS keys, etc.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<span id="name-architecture"></span><div id="fig-arch">
+<figure id="figure-1">
+        <div id="section-3-4.1">
+          <div class="alignLeft art-svg artwork" id="section-3-4.1.1">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="448" width="488" viewBox="0 0 488 448" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
+              <path d="M 48,368 L 48,432" fill="none" stroke="black"></path>
+              <path d="M 56,32 L 56,304" fill="none" stroke="black"></path>
+              <path d="M 72,208 L 72,256" fill="none" stroke="black"></path>
+              <path d="M 104,264 L 104,360" fill="none" stroke="black"></path>
+              <path d="M 128,96 L 128,200" fill="none" stroke="black"></path>
+              <path d="M 144,264 L 144,360" fill="none" stroke="black"></path>
+              <path d="M 192,368 L 192,432" fill="none" stroke="black"></path>
+              <path d="M 200,96 L 200,144" fill="none" stroke="black"></path>
+              <path d="M 248,152 L 248,200" fill="none" stroke="black"></path>
+              <path d="M 312,96 L 312,144" fill="none" stroke="black"></path>
+              <path d="M 320,208 L 320,256" fill="none" stroke="black"></path>
+              <path d="M 336,368 L 336,432" fill="none" stroke="black"></path>
+              <path d="M 360,64 L 360,304" fill="none" stroke="black"></path>
+              <path d="M 480,368 L 480,432" fill="none" stroke="black"></path>
+              <path d="M 56,32 L 360,32" fill="none" stroke="black"></path>
+              <path d="M 200,96 L 312,96" fill="none" stroke="black"></path>
+              <path d="M 200,144 L 312,144" fill="none" stroke="black"></path>
+              <path d="M 72,208 L 320,208" fill="none" stroke="black"></path>
+              <path d="M 72,256 L 320,256" fill="none" stroke="black"></path>
+              <path d="M 56,304 L 360,304" fill="none" stroke="black"></path>
+              <path d="M 48,368 L 192,368" fill="none" stroke="black"></path>
+              <path d="M 336,368 L 480,368" fill="none" stroke="black"></path>
+              <path d="M 192,400 L 328,400" fill="none" stroke="black"></path>
+              <path d="M 48,432 L 192,432" fill="none" stroke="black"></path>
+              <path d="M 336,432 L 480,432" fill="none" stroke="black"></path>
+              <polygon class="arrowhead" points="336,400 324,394.4 324,405.6" fill="black" transform="rotate(0,328,400)"></polygon>
+              <polygon class="arrowhead" points="256,152 244,146.4 244,157.6" fill="black" transform="rotate(270,248,152)"></polygon>
+              <polygon class="arrowhead" points="152,360 140,354.4 140,365.6" fill="black" transform="rotate(90,144,360)"></polygon>
+              <polygon class="arrowhead" points="136,96 124,90.4 124,101.6" fill="black" transform="rotate(270,128,96)"></polygon>
+              <polygon class="arrowhead" points="112,264 100,258.4 100,269.6" fill="black" transform="rotate(270,104,264)"></polygon>
+              <g class="text">
+                <text x="100" y="52">Hardware</text>
+                <text x="172" y="52">Security</text>
+                <text x="236" y="52">Module</text>
+                <text x="448" y="52">|</text>
+                <text x="116" y="84">Platform</text>
+                <text x="200" y="84">environment</text>
+                <text x="256" y="116">Application</text>
+                <text x="228" y="132">Keys</text>
+                <text x="188" y="196">measurements</text>
+                <text x="128" y="228">Attestation</text>
+                <text x="112" y="244">Service</text>
+                <text x="48" y="324">Attestation</text>
+                <text x="172" y="324">PKIX</text>
+                <text x="64" y="340">Request</text>
+                <text x="200" y="340">Attestation</text>
+                <text x="224" y="388">Usage</text>
+                <text x="284" y="388">Protocol</text>
+                <text x="120" y="404">Presenter</text>
+                <text x="408" y="404">Recipient</text>
+              </g>
+            </svg><a href="#section-3-4.1.1" class="pilcrow">¶</a>
+</div>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-architecture" class="selfRef">Architecture</a>
+        </figcaption></figure>
+</div>
+<p id="section-3-5"><a href="#fig-arch" class="auto internal xref">Figure 1</a> depicts a typical workflow where an external tool queries the HSM
+for the status of one or more cryptographic keys that it is protecting ("Application Keys").
+The "Presenter" may be, for example, a command-line or graphical user interface which will display
+the evidence to an operator or auditor; a cryptographic library which will include
+the evidence in a CSR for transmission to a Certification Authority; a TLS library
+which will include the evidence in at attested TLS session <span>[<a href="#I-D.fossati-tls-attestation" class="cite xref">I-D.fossati-tls-attestation</a>]</span>;
+or similar applications, refered to as the "Usage Protocol".<a href="#section-3-5" class="pilcrow">¶</a></p>
+<p id="section-3-6">This model does not assume any internal structure or logical separation within the HSM
+except for the existence of some kind of attestation service which may or may not be logically separate
+from the overall HSM Root of Trust, and that this attestation service measures the
+required evidence about both the hardware environment and the application keys
+that are being attested.
+In addition to emitting key attestation evidence, an HSM may also need to parse it,
+for example when running in an operational mode that only allows importing keys
+from other HSMs at a comparable security level (requires checking for specific claims) or within the same operational network (requires checking the trust anchor of the attestation key certificate chain).
+This implies that the attestation service needs to be
+part of the core HSM "kernel" and therefore would be subject to validations such as
+FIPS 140-3 or Common Criteria, which motivates a design requirement to keep the evidence
+data format as simple as possible and as close as possible to existing functionality
+and data models of existing HSM and TPM products.
+As such, the information model presented in <a href="#sec-data-model" class="auto internal xref">Section 4</a>
+will feel familiar to implementers with experience with PKI and PKCS#11.<a href="#section-3-6" class="pilcrow">¶</a></p>
+<div id="sec-ak-chain">
+<section id="section-3.1">
+        <h3 id="name-attestation-key-certificate">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-attestation-key-certificate" class="section-name selfRef">Attestation Key Certificate Chain</a>
+        </h3>
+<p id="section-3.1-1">The data format in this specification represents attestation evidence and
+requires third-party endorsement in order to establish trust. Part of this
+endorsement is a trust anchor that chains to the HSM's attestation key (AK)
+which signs the evidence. In practice the trust anchor will usually be a
+manufacturing CA belonging to the device vendor which proves
+that the device is genuine and not counterfeit. The trust anchor can also belong
+to the device operator as would be the case when the AK certificate is replaced
+as part of onboarding the device into a new operational network.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">Note that the data format specified in <a href="#sec-data-model" class="auto internal xref">Section 4</a> allows for zero, one, or multiple
+'SignatureBlock's, so a single evidence statement could be un-protected, or could be endorsed by multiple
+AK chains leading to different trust anchors. See <a href="#sec-verif-proc" class="auto internal xref">Section 6</a> for a discussion of handling multiple SignatureBlocks.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="sec-data-model">
+<section id="section-4">
+      <h2 id="name-data-model">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-data-model" class="section-name selfRef">Data Model</a>
+      </h2>
+<p id="section-4-1">This section describes the semantics of the key claims as part of the information
+model.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">The envelop structure is:<a href="#section-4-2" class="pilcrow">¶</a></p>
+<div class="lang-asn.1 sourcecode" id="section-4-3">
+<pre>
+PkixAttestation ::= SEQUENCE {
+    tbs TbsPkixAttestation,
+    signatures SEQUENCE SIZE (0..MAX) of SignatureBlock
+}
+
+TbsPkixAttestation ::= SEQUENCE {
+    version INTEGER,
+    reportedEntities SEQUENCE SIZE (1..MAX) OF ReportedEntity
+}
+
+SignatureBlock ::= SEQUENCE {
+   certChain SEQUENCE of Certificate,
+   signatureAlgorithm AlgorithmIdentifier,
+   signatureValue OCTET STRING
+}
+</pre><a href="#section-4-3" class="pilcrow">¶</a>
+</div>
+<p id="section-4-4">A PkixAttestation message is composed of a protected section known as the To-Be-Signed or TBS. The integrity of the To-Be-Signed section is ensured with one or multiple cryptographic signatures over the content of the section. There is a provision to carry the X.509 certificates supporting the signature(s).<a href="#section-4-4" class="pilcrow">¶</a></p>
+<p id="section-4-5">The TBS section is composed of a version number, to ensure future extensibility, and a sequence of reported entities.<a href="#section-4-5" class="pilcrow">¶</a></p>
+<p id="section-4-6">For compliance with this specification, <code>TbsPkixAttestation.version</code> <span class="bcp14">MUST</span> be <code>1</code>.
+This envelope format is not extensible; future specifications which make compatibility-breaking changes <span class="bcp14">MUST</span> increment the version number.<a href="#section-4-6" class="pilcrow">¶</a></p>
+<p id="section-4-7">EDNOTE: do we want extension marks on the TbsAttestation object? I can see pros and cons to doing that.<a href="#section-4-7" class="pilcrow">¶</a></p>
+<p id="section-4-8"><code>SignatureBlock.certChain</code> <span class="bcp14">MUST</span> contain at least one X.509 certificate as per [!RFC5280].
+While there might exist attesting environments which use out-of-band or non-X.509 mechanisms for communicating
+the AK public key to the Verifier, these <span class="bcp14">SHALL</span> be considered non-compliant with this specification.<a href="#section-4-8" class="pilcrow">¶</a></p>
+<p id="section-4-9">The attribute format is intended to be generic, flexible, and extensible with a default set of attributes defined in this document. Attributes are grouped into entities; an entity can be either a key, a platform, or a request containing a set of claims that are requested to be filled by the attesting environment.<a href="#section-4-9" class="pilcrow">¶</a></p>
+<div class="lang-asn.1 sourcecode" id="section-4-10">
+<pre>
+ReportedEntity ::= SEQUENCE {
+    entityType         OBJECT IDENTIFIER,
+    reportedAttributes SEQUENCE SIZE (1..MAX) OF ReportedAttribute
+}
+</pre><a href="#section-4-10" class="pilcrow">¶</a>
+</div>
+<p id="section-4-11">A reported entity is a unit of observation measured by the Attester (the HSM). In this specification, there are three types of entities defined:
+- Platform Entity : An entity that reports attributes about the platform, itself. A PKIX Attestation <span class="bcp14">MAY</span> contain only one Platform Entity.
+- Key Entity : An entity that represents a single cryptographic key found in a HSM ad its associated attributes. A PKIX Attestation <span class="bcp14">MAY</span> contain one or more Key Entities.
+- Transaction Entity : An entity reporting attributes observed from the request itself. A PKIX Attestation <span class="bcp14">MAY</span> contain only one Transaction Entity.<a href="#section-4-11" class="pilcrow">¶</a></p>
+<p id="section-4-12">A reported entity is composed of an Object Identifier (OID), specifying the entity type, and a sequence of reported attributes associated with the entity.<a href="#section-4-12" class="pilcrow">¶</a></p>
+<p id="section-4-13">Although this specification defines only three types of entities, implementations <span class="bcp14">MAY</span> define additional entity types by registering additional OIDs.<a href="#section-4-13" class="pilcrow">¶</a></p>
+<p id="section-4-14">An Attester (HSM) which is requested to provide information about unrecognized entity types <span class="bcp14">MUST</span> fail the operation.<a href="#section-4-14" class="pilcrow">¶</a></p>
+<p id="section-4-15">A Verifier which encounters an unrecognized entity type <span class="bcp14">MAY</span> ignore it.<a href="#section-4-15" class="pilcrow">¶</a></p>
+<div class="lang-asn.1 sourcecode" id="section-4-16">
+<pre>
+id-pkix-attest                    OBJECT IDENTIFIER ::= { 1 2 3 999 }
+id-pkix-attest-entity-type        OBJECT IDENTIFIER ::= { id-pkix-attest 0 }
+id-pkix-attest-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 0 }
+id-pkix-attest-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 1 }
+id-pkix-attest-entity-key         OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 2 }
+id-pkix-attest-entity-request     OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 3 }
+</pre><a href="#section-4-16" class="pilcrow">¶</a>
+</div>
+<p id="section-4-17">TODO: do we need entity types for "platform policy" and "key policy" ?<a href="#section-4-17" class="pilcrow">¶</a></p>
+<p id="section-4-18">A PKIX Attestation <span class="bcp14">MUST NOT</span> contain more than one platform entity since duplicate and conflicting platform claims across multiple platform entities can easily lead to security bugs.
+A parser <span class="bcp14">MUST</span> fail with an error if it encouters multiple platform entities.<a href="#section-4-18" class="pilcrow">¶</a></p>
+<p id="section-4-19">A PKIX Attestation <span class="bcp14">MUST NOT</span> contain more than one transaction entity. A transaction entity contains attributes that are related to the request such as a "nonce".
+A parser <span class="bcp14">MUST</span> fail with an error if it encouters multiple transaction entities.<a href="#section-4-19" class="pilcrow">¶</a></p>
+<p id="section-4-20">A PKIX Attestation <span class="bcp14">MAY</span> contain one or more application key entities. Each key entity <span class="bcp14">SHOULD</span> describe a unique application key. Multiple ReportedEntity objects of type <code>entity-key</code> that describe the same application key <span class="bcp14">SHOULD</span> be avoided since different or conflicting claims could lead to security issues on the part of the Verifier or Relying Party.<a href="#section-4-20" class="pilcrow">¶</a></p>
+<p id="section-4-21">TODO: note that we need to be careful about whether it is allowed to include the AK(s) and other "platform-owned" keys in the set of keys you can attest, or only attesting application keys.<a href="#section-4-21" class="pilcrow">¶</a></p>
+<p id="section-4-22">Each reported attribute is composed of an Object Identifier (OID), identifying the type of the attribute, and a value which must be one of the prescribed data types.<a href="#section-4-22" class="pilcrow">¶</a></p>
+<div class="lang-asn.1 sourcecode" id="section-4-23">
+<pre>
+ReportedAttribute ::= SEQUENCE {
+    attributeType      OBJECT IDENTIFIER,
+    value              OPTIONAL AttributeValue
+}
+
+AttributeValue :== CHOICE {
+   bytes       [0] IMPLICIT OCTET STRING
+   utf8String  [1] IMPLICIT UTF8String,
+   bool        [2] IMPLICIT BOOLEAN,
+   time        [3] IMPLICIT GeneralizedTime,
+   int         [4] IMPLICIT INTEGER,
+   oid         [5] IMPLICIT OBJECT IDENTIFIER
+}
+</pre><a href="#section-4-23" class="pilcrow">¶</a>
+</div>
+<p id="section-4-24">An attribute type is generally associated with a single entity type. In the following sub-sections, defined attributes are grouped according to their related entity types.<a href="#section-4-24" class="pilcrow">¶</a></p>
+<p id="section-4-25">There are circumstances where an attribute type can be repeated for a given entity while other attribute types are unique.
+For example, the <code>hwmodel</code>, <code>uptime</code>, and <code>fipsboot</code> attributes are not allowed to have multiple instances since these are global measurements of the platform. However, other attribute types such as <code>usermods</code> allow multiple instances as an HSM can have more than one user module loaded. The tables below list for each attribute type whether multiples are allowed.
+For attribute types that do not allow multiples, a parser <span class="bcp14">MUST</span> fail with an error if it encouters multiple instances.
+For attribute types that allow multiples, a parser <span class="bcp14">MUST</span> treat each one as an independent attribute and <span class="bcp14">MUST NOT</span>, for example, consider later ones to overwrite the previous one. Appraisal policies and profiles <span class="bcp14">SHOULD</span> be clear about how to handle multiples when requiring attribute types that allow multiples.<a href="#section-4-25" class="pilcrow">¶</a></p>
+<p id="section-4-26">PKIX Attestation Requests are discussed in <a href="#sec-reqs" class="auto internal xref">Section 7</a>.
+In the tables in the sections that follow, the column "Request Contains a Value" specifies whether,
+when the given attribute appears in a request, whether it is to be a valued or un-valued request attribute as described in <a href="#sec-reqs" class="auto internal xref">Section 7</a>.<a href="#section-4-26" class="pilcrow">¶</a></p>
+<div id="transaction-attributes">
+<section id="section-4.1">
+        <h3 id="name-transaction-attributes">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-transaction-attributes" class="section-name selfRef">Transaction Attributes</a>
+        </h3>
+<p id="section-4.1-1">A default and vendor-agnostic set of transaction attributes is defined in this section.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">These attribute types <span class="bcp14">MAY</span> be contained within a transaction entity; i.e. an entity identified by <code>id-pkix-attest-entity-transaction</code>.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+<table class="center" id="table-1">
+          <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Attribute</th>
+              <th class="text-left" rowspan="1" colspan="1">AttributeValue</th>
+              <th class="text-left" rowspan="1" colspan="1">Reference</th>
+              <th class="text-left" rowspan="1" colspan="1">Multiple Allowed</th>
+              <th class="text-left" rowspan="1" colspan="1">Request Contains a Value</th>
+              <th class="text-left" rowspan="1" colspan="1">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">nonce</td>
+              <td class="text-left" rowspan="1" colspan="1">bytes</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MUST</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Repeats a "nonce" provided during the atttestation request.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">timestamp</td>
+              <td class="text-left" rowspan="1" colspan="1">time</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span>[<a href="#I-D.ietf-rats-eat" class="cite xref">I-D.ietf-rats-eat</a>]</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MUST NOT</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">The time at which this attestation was generated. Corresponds to EAT IAT claim.</td>
+            </tr>
+          </tbody>
+        </table>
+<div id="nonce">
+<section id="section-4.1.1">
+          <h4 id="name-nonce">
+<a href="#section-4.1.1" class="section-number selfRef">4.1.1. </a><a href="#name-nonce" class="section-name selfRef">nonce</a>
+          </h4>
+<p id="section-4.1.1-1">The nonce attribute is used to provide "freshness" quality as to the information provided by the Attester (HSM) in the PkixAttestation message. A client requesting a PkixAttestation message <span class="bcp14">MAY</span> provide a nonce value as part of the request. This nonce value, if provided, <span class="bcp14">SHOULD</span> be repeated as an attribute to the transaction entity.<a href="#section-4.1.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="time">
+<section id="section-4.1.2">
+          <h4 id="name-time">
+<a href="#section-4.1.2" class="section-number selfRef">4.1.2. </a><a href="#name-time" class="section-name selfRef">time</a>
+          </h4>
+<p id="section-4.1.2-1">The time at which this attestation was generated, according to the internal system clock of the HSM.<a href="#section-4.1.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.1.2-2">Note that it is common for HSMs to not have an accurate system clock; consider an HSM for a root CA kept offline and booted up infrequently in an local network segregated from all other network, or a smart card which boots up only when held against an NFC reader. Implementers of emitters <span class="bcp14">SHOULD</span> include this attribute only if the device reliably knows its own time (for example has had recent contact with an NTP server). Implementers of parsers <span class="bcp14">SHOULD</span> be wary of trusting the contents of this attribute. A challenge-response protocol that makes use of the nonce attribute is a far more reliable way of establishing freshness.<a href="#section-4.1.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="platform-attributes">
+<section id="section-4.2">
+        <h3 id="name-platform-attributes">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-platform-attributes" class="section-name selfRef">Platform Attributes</a>
+        </h3>
+<p id="section-4.2-1">A default and vendor-agnostic set of platform attributes is defined in this section.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.2-2">These attribute types <span class="bcp14">MAY</span> be contained within a platform entity; i.e. an entity identified by <code>id-pkix-attest-entity-platform</code>.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
+<table class="center" id="table-2">
+          <caption><a href="#table-2" class="selfRef">Table 2</a></caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Attribute</th>
+              <th class="text-left" rowspan="1" colspan="1">AttributeValue</th>
+              <th class="text-left" rowspan="1" colspan="1">Reference</th>
+              <th class="text-left" rowspan="1" colspan="1">Multiple Allowed</th>
+              <th class="text-left" rowspan="1" colspan="1">Request Contains a Value</th>
+              <th class="text-left" rowspan="1" colspan="1">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">vendor</td>
+              <td class="text-left" rowspan="1" colspan="1">utf8String</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MUST NOT</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">A human-readable string by which the vendor identifies themself.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">oemid</td>
+              <td class="text-left" rowspan="1" colspan="1">bytes</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span>[<a href="#I-D.ietf-rats-eat" class="cite xref">I-D.ietf-rats-eat</a>]</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MUST NOT</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">The EAT OEM ID as defined in <span>[<a href="#I-D.ietf-rats-eat" class="cite xref">I-D.ietf-rats-eat</a>]</span>.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">hwmodel</td>
+              <td class="text-left" rowspan="1" colspan="1">utf8String</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span>[<a href="#I-D.ietf-rats-eat" class="cite xref">I-D.ietf-rats-eat</a>]</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MUST NOT</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Model or product line of the hardware module.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">hwserial</td>
+              <td class="text-left" rowspan="1" colspan="1">utf8String</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MUST NOT</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Serial number of the hardware module, often matches the number engraved or stickered on the case.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">swversion</td>
+              <td class="text-left" rowspan="1" colspan="1">utf8String</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span>[<a href="#I-D.ietf-rats-eat" class="cite xref">I-D.ietf-rats-eat</a>]</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MUST NOT</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">A text string identifying the firmware or software running on the HSM.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">dbgstat</td>
+              <td class="text-left" rowspan="1" colspan="1">int</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span>[<a href="#I-D.ietf-rats-eat" class="cite xref">I-D.ietf-rats-eat</a>]</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MUST NOT</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Indicates whether the HSM is currently in a debug state, or is capable in the future of being turned to a debug state. Semantics and integer codes are defined in <span>[<a href="#I-D.ietf-rats-eat" class="cite xref">I-D.ietf-rats-eat</a>]</span>.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">uptime</td>
+              <td class="text-left" rowspan="1" colspan="1">int</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span>[<a href="#I-D.ietf-rats-eat" class="cite xref">I-D.ietf-rats-eat</a>]</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MUST NOT</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Contains the number of seconds that have elapsed since the entity was last booted.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">bootcount</td>
+              <td class="text-left" rowspan="1" colspan="1">int</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span>[<a href="#I-D.ietf-rats-eat" class="cite xref">I-D.ietf-rats-eat</a>]</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MUST NOT</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Contains a count of the number of times the entity has been booted.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">usermods</td>
+              <td class="text-left" rowspan="1" colspan="1">utf8String</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
+              <td class="text-left" rowspan="1" colspan="1">Yes</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MUST NOT</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">This attribute lists user modules currently loaded onto the HSM in a human readable format, preferabbly JSON.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">fipsboot</td>
+              <td class="text-left" rowspan="1" colspan="1">bool</td>
+              <td class="text-left" rowspan="1" colspan="1">[FIPS.140-3]</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MUST NOT</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Indicates whether the devices is currently running in FIPS mode.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">fipsver</td>
+              <td class="text-left" rowspan="1" colspan="1">utf8String</td>
+              <td class="text-left" rowspan="1" colspan="1">[FIPS.140-3]</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MUST NOT</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Indicates the version of the FIPS CMVP standard that is being enforced. At time of writing this is typically "FIPS 140-2" or "FIPS 140-3".</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">fipslevel</td>
+              <td class="text-left" rowspan="1" colspan="1">int</td>
+              <td class="text-left" rowspan="1" colspan="1">[FIPS.140-3]</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MUST NOT</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Indicates the FIPS Level to which the device is currently operating in compliance with.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">envid</td>
+              <td class="text-left" rowspan="1" colspan="1">utf8String</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
+              <td class="text-left" rowspan="1" colspan="1">Yes</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MAY</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">An environment ID, which will typically be a URI, UUID, or similar.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">envdesc</td>
+              <td class="text-left" rowspan="1" colspan="1">utf8String</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
+              <td class="text-left" rowspan="1" colspan="1">Yes</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MUST NOT</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Further description of the environment.</td>
+            </tr>
+          </tbody>
+        </table>
+<p id="section-4.2-4">TODO: find the actual reference for "FIPS Mode" -- FIPS 140-3 does not define it (at least not the 11 page useless version of 140-3 that I found).<a href="#section-4.2-4" class="pilcrow">¶</a></p>
+<p id="section-4.2-5">Each attribute has an assigned OID, see <a href="#sec-asn1-mod" class="auto internal xref">Section 9</a>.<a href="#section-4.2-5" class="pilcrow">¶</a></p>
+<p id="section-4.2-6">Some of the attributes defined in this specification have further details below.<a href="#section-4.2-6" class="pilcrow">¶</a></p>
+<div id="usermods">
+<section id="section-4.2.1">
+          <h4 id="name-usermods">
+<a href="#section-4.2.1" class="section-number selfRef">4.2.1. </a><a href="#name-usermods" class="section-name selfRef">usermods</a>
+          </h4>
+<p id="section-4.2.1-1">Most HSMs have some concept of trusted execution environment where user software modules can be loaded inside the HSM to run with some level of privileged access to the application keys. This attribute lists user modules currently loaded onto the HSM in a human readable format, preferably JSON.<a href="#section-4.2.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="fipsboot-fipsver-and-fipslevel">
+<section id="section-4.2.2">
+          <h4 id="name-fipsboot-fipsver-and-fipsle">
+<a href="#section-4.2.2" class="section-number selfRef">4.2.2. </a><a href="#name-fipsboot-fipsver-and-fipsle" class="section-name selfRef">fipsboot, fipsver and fipslevel</a>
+          </h4>
+<p id="section-4.2.2-1">FIPS 140-3 CMVP validation places stringent requirements on the mode of operation of the device and the cryptography offered by the module, including only enabling FIPS-approved algorithms, certain requirements on entropy sources, and extensive start-up self-tests. FIPS 140-3 offers compliance levels 1 through 4 with increasingly strict requirements. Many HSMs include a configuration setting that allows the device to be taken out of FIPS mode and thus enable additional functionality or performance, and some offer configuration settings to change between compliance levels.<a href="#section-4.2.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.2.2-2">The boolean attribute <code>fipsboot</code> indicates whether the device is currently operating in FIPS mode. For most HSMs, changing this configuration setting from <code>fipsboot=true</code> to <code>fips-boos=false</code> is destructive and will result in zeroization of all cryptographic keys held within the module.<a href="#section-4.2.2-2" class="pilcrow">¶</a></p>
+<p id="section-4.2.2-3">The UTF8String attribet <code>fipsver</code> indicates the version of the FIPS CMVP specification with which the device's operational mode is compliant. At the time of writing, the strings "FIPS 140-2" or "FIPS 140-3" <span class="bcp14">SHOULD</span> be used.<a href="#section-4.2.2-3" class="pilcrow">¶</a></p>
+<p id="section-4.2.2-4">The integer attribute <code>fipslevel</code> indicates the compliance level to which the device is currently operating and <span class="bcp14">MUST</span> only be 1, 2, 3, or 4. The <code>fipslevel</code> attribute has no meaning if <code>fipsboot</code> is absent or <code>false</code>.<a href="#section-4.2.2-4" class="pilcrow">¶</a></p>
+<p id="section-4.2.2-5">The FIPS status information in a PKIX Attestation indicates only the mode of operation of the device and is not authoritative of its validation status.
+This information is available on the NIST CMVP website or by contacting the device vendor.
+As an example, some devices may have the option to enable FIPS mode in configuration even if the vendor has not sumbitted this model for validation. As another example, a device may be running in a mode consistent with FIPS Level 3 but the device was only validated and certified to Level 2.
+A Relying Party wishing to know the validation status of the device <span class="bcp14">MUST</span> couple the device state information contained in the attestation with a valid FIPS CMVP certificate for the device.<a href="#section-4.2.2-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="envid">
+<section id="section-4.2.3">
+          <h4 id="name-envid">
+<a href="#section-4.2.3" class="section-number selfRef">4.2.3. </a><a href="#name-envid" class="section-name selfRef">envid</a>
+          </h4>
+<p id="section-4.2.3-1">An identifier for an environment to which the attested keys belong. These will be an a vendor-chosen format, but are constrained to ASCII as URIs, UUID, and similar types of identifiers are envisioned.<a href="#section-4.2.3-1" class="pilcrow">¶</a></p>
+<p id="section-4.2.3-2">There <span class="bcp14">MAY</span> be multiple envid attributes if the attested keys simultaneously belong to multiple environments.<a href="#section-4.2.3-2" class="pilcrow">¶</a></p>
+<p id="section-4.2.3-3">Note that by including envid as a Platform Attribute, this implies that it applies to all attested key entities. If the HSM needs to attest multiple keys across multiple disjoint environments, then multiple PKIXAttestations are required. This naturally enforces privacy constraints of only attesting a single environment at a time.<a href="#section-4.2.3-3" class="pilcrow">¶</a></p>
+<p id="section-4.2.3-4">If an envdid request attribute contains a value, this means that the Presenter is requesting that only keys belogning to the given environment be included in the returned attestation.<a href="#section-4.2.3-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="envdesc">
+<section id="section-4.2.4">
+          <h4 id="name-envdesc">
+<a href="#section-4.2.4" class="section-number selfRef">4.2.4. </a><a href="#name-envdesc" class="section-name selfRef">envdesc</a>
+          </h4>
+<p id="section-4.2.4-1">Further description of the environment beyond hwvendor, hwmodel, hwserial, swversion; for example if there is a need to describe multiple logical partitions within the same device. Contents could be a human-readable description or other identifiers.<a href="#section-4.2.4-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="key-attributes">
+<section id="section-4.3">
+        <h3 id="name-key-attributes">
+<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-key-attributes" class="section-name selfRef">Key Attributes</a>
+        </h3>
+<p id="section-4.3-1">A default and vendor-agnostic set of key attributes is defined in this section.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+<p id="section-4.3-2">These attribute types <span class="bcp14">MAY</span> be contained within a key entity; i.e. an entity identified by <code>id-pkix-attest-entity-key</code>.<a href="#section-4.3-2" class="pilcrow">¶</a></p>
+<table class="center" id="table-3">
+          <caption><a href="#table-3" class="selfRef">Table 3</a></caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Attribute</th>
+              <th class="text-left" rowspan="1" colspan="1">AttributeValue</th>
+              <th class="text-left" rowspan="1" colspan="1">Reference</th>
+              <th class="text-left" rowspan="1" colspan="1">Multiple Allowed</th>
+              <th class="text-left" rowspan="1" colspan="1">Request Contains a Value</th>
+              <th class="text-left" rowspan="1" colspan="1">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">identifier</td>
+              <td class="text-left" rowspan="1" colspan="1">utf8String</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
+              <td class="text-left" rowspan="1" colspan="1">Yes</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MAY</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Identifies the subject key, with a vendor-specific format which could be numeric, UUID, or other textual identifier.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">spki</td>
+              <td class="text-left" rowspan="1" colspan="1">bytes</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MAY</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">A complete DER-encoded SubjectPublicKeyInfo representing the public key associated with the asymetric key pair being attested.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">purpose</td>
+              <td class="text-left" rowspan="1" colspan="1">bytes</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span>[<a href="#PKCS11" class="cite xref">PKCS11</a>]</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MAY</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Defines the intended usage for the key.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">extractable</td>
+              <td class="text-left" rowspan="1" colspan="1">bool</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span>[<a href="#PKCS11" class="cite xref">PKCS11</a>]</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MAY</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Indicates if the key is able to be exported from the module. Corresponds directly to PKCS#11 CKA_EXTRACTABLE.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">sensitive</td>
+              <td class="text-left" rowspan="1" colspan="1">bool</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span>[<a href="#PKCS11" class="cite xref">PKCS11</a>]</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MAY</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Indicates that the key cannot leave the module in plaintext. Corresponds directly to PKCS#11 CKA_SENSITIVE.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">never-extractable</td>
+              <td class="text-left" rowspan="1" colspan="1">bool</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span>[<a href="#PKCS11" class="cite xref">PKCS11</a>]</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MAY</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Indicates if the key was able to be exported from the module. Corresponds directly to PKCS#11  CKA_NEVER_EXTRACTABLE.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">local</td>
+              <td class="text-left" rowspan="1" colspan="1">bool</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MAY</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Indicates whether the key was generated locally or imported.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">expiry</td>
+              <td class="text-left" rowspan="1" colspan="1">time</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MAY</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Defines the expiry date or "not after" time for the key.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">protection</td>
+              <td class="text-left" rowspan="1" colspan="1">bytes</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MAY</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">Indicates any additional key protection properties.</td>
+            </tr>
+          </tbody>
+        </table>
+<p id="section-4.3-4">PKCS#11 private key attributes can be somewhat complex to parse, especially as their exact meanings can vary by the key type and the exact details of key export mechanisms supported by the HSM.<a href="#section-4.3-4" class="pilcrow">¶</a></p>
+<p id="section-4.3-5">In most cases, the Verifier of a PKIX Attestation will want to know simply that the key is in hardware and cannot be extracted to be used with a software cryptographic module. A setting of <code>extractable=false</code> satisfies this requirement. Generally <code>extractable=true &amp;&amp; sensitive=true</code> also satisfies this requirement as the key cannot be extracted in plaintext, but only under key wrap. This is common in HSM clustering scenarios, and is also common in scenarios where keys are exported under wrap so that they can be stored in an off-board database for re-import later, thus allowing the HSM to protect and manage a much larger set of keys than it has internal memory for. The <code>never-extractable</code> and <code>local</code> attributes give additional assurance that the key has always been in hardware and was not imported from software.<a href="#section-4.3-5" class="pilcrow">¶</a></p>
+<div id="purpose">
+<section id="section-4.3.1">
+          <h4 id="name-purpose">
+<a href="#section-4.3.1" class="section-number selfRef">4.3.1. </a><a href="#name-purpose" class="section-name selfRef">purpose</a>
+          </h4>
+<p id="section-4.3.1-1">TODO: probably need to define a mapping from PKCS#11 CKA enums to a bit-indexed byte array.<a href="#section-4.3.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="protection">
+<section id="section-4.3.2">
+          <h4 id="name-protection">
+<a href="#section-4.3.2" class="section-number selfRef">4.3.2. </a><a href="#name-protection" class="section-name selfRef">protection</a>
+          </h4>
+<p id="section-4.3.2-1">Indicates any additional key protection properties around use or modification of this key. These are generalized properties and will not apply the same way to all HSM vendors. Consult vendor documentation for the in-context meaning of these flags.<a href="#section-4.3.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.3.2-2">TODO: define a bit-indexed byte array<a href="#section-4.3.2-2" class="pilcrow">¶</a></p>
+<p id="section-4.3.2-3">BIT MASK / Boolean Array {DualControl (0), CardControl (1), PasswordControl (2), ...}<a href="#section-4.3.2-3" class="pilcrow">¶</a></p>
+<p id="section-4.3.2-4">We may need to say that the first X are reserved for use by future RFCs that update this specification, and beyond that is private use.<a href="#section-4.3.2-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="sec-additional-attr-types">
+<section id="section-4.4">
+        <h3 id="name-additional-entity-and-attri">
+<a href="#section-4.4" class="section-number selfRef">4.4. </a><a href="#name-additional-entity-and-attri" class="section-name selfRef">Additional Entity and Attribute Types</a>
+        </h3>
+<p id="section-4.4-1">It is expected that HSM vendors will register additional Entity and Attribute types by assigning OIDs from their own proprietary OID arcs to hold data describing additional proprietary key properties.<a href="#section-4.4-1" class="pilcrow">¶</a></p>
+<p id="section-4.4-2">An Attester (HSM) which is requested to provide information about unrecognized Entity or Attribute types <span class="bcp14">MUST</span> fail the operation.<a href="#section-4.4-2" class="pilcrow">¶</a></p>
+<p id="section-4.4-3">A Verifier which encounters an unrecognized Entity or Attribute type <span class="bcp14">MAY</span> ignore it.<a href="#section-4.4-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="encoding">
+<section id="section-4.5">
+        <h3 id="name-encoding">
+<a href="#section-4.5" class="section-number selfRef">4.5. </a><a href="#name-encoding" class="section-name selfRef">Encoding</a>
+        </h3>
+<p id="section-4.5-1">A PKIXAttestation is to be DER encoded <span>[<a href="#X.690" class="cite xref">X.690</a>]</span>.<a href="#section-4.5-1" class="pilcrow">¶</a></p>
+<p id="section-4.5-2">If a textual representation is required, then the DER encoding <span class="bcp14">MAY</span> be subsequently encoded into Base64.<a href="#section-4.5-2" class="pilcrow">¶</a></p>
+<p id="section-4.5-3">EDNOTE: I think we have to be precise about which flavour of Base64 we are referrring to.<a href="#section-4.5-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="signing-procedure">
+<section id="section-5">
+      <h2 id="name-signing-procedure">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-signing-procedure" class="section-name selfRef">Signing Procedure</a>
+      </h2>
+<p id="section-5-1">The <code>SignatureBlock.signatureValue</code> signs over the DER-encoded to-be-signed attestation data
+<code>PkixAttestation.tbs</code> and <span class="bcp14">MUST</span> be validated with the subject public key of the leaf
+X.509 certificate contained in the <code>SignatureBlock.certChain</code>.<a href="#section-5-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-verif-proc">
+<section id="section-6">
+      <h2 id="name-verification-procedure">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-verification-procedure" class="section-name selfRef">Verification Procedure</a>
+      </h2>
+<p id="section-6-1">The <code>SignatureBlock.signatureValue</code> signs over the DER-encoded to-be-signed attestation data
+<code>PkixAttestation.tbs</code> and <span class="bcp14">MUST</span> be validated with the subject public key of the leaf
+X.509 certificate contained in the <code>SignatureBlock.certChain</code>.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-2">Note that a PkixAttestation <span class="bcp14">MAY</span> contain zero or more SignatureBlocks.
+A PkixAttestation with zero SignatureBlocks is unsigned, <span class="bcp14">MUST</span> be treated as un-protected and un-trusted,
+and any signature validation procedure <span class="bcp14">MUST</span> fail.<a href="#section-6-2" class="pilcrow">¶</a></p>
+<p id="section-6-3">More than one SignatureBlocks <span class="bcp14">MAY</span> be used to convey a number of different semantics.
+For example, the HSM's Attesting Service might hold multiple Attestation Keys on different cryptographic
+algorithms in order to provide algorithm redundancy in the case that one algorithm becomes cryptographically broken. In this case a Verifier would be expected to validate all SignatureBlocks. Alternatively, the HSM's Attesting Service may hold multiple Attestion Keys (or multiple X.509 certificates for the same key) from multiple operational environments to which it belongs. In this case a Verifier would be expected to only validate the SignatureBlock corresponding to its own environment. Alternatively, multiple SignatureBlocks could be used to convey counter-signatures from external parties, in which case the Verifier will need to be equipped with environment-specific verification logic. Multiple of these cases, and potentially others, could be present in a single PkixAttestation object.<a href="#section-6-3" class="pilcrow">¶</a></p>
+<p id="section-6-4">Note that each SignatureBlock is a fully detached signature over the tbs content with no binding between the signed content and the SignatureBlocks, or between SignatureBlocks, meaning that a third party can add a
+counter-signature of the evidence after the fact, or an attacker can remove a SignatureBlock without leaving any artifact. See {#sec-detached-sigs} for further discussion.<a href="#section-6-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-reqs">
+<section id="section-7">
+      <h2 id="name-attestation-requests">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-attestation-requests" class="section-name selfRef">Attestation Requests</a>
+      </h2>
+<p id="section-7-1">EDNOTE: MikeO: this is complex, but I'm not really sure how to define a request format in any simpler way. Ideas are welcome!<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-2">This section specifies a standardized format that a Presenter can use to request a PKIX Attestation about a specific key or set of keys, a specific environment, or containing specific attributes.<a href="#section-7-2" class="pilcrow">¶</a></p>
+<p id="section-7-3">Hardware Security Modules range greatly in size and complexity from personal cryptographic tokens containing a single application key such as a smartcard acting as a personal ID card, up to clusters of enterprise-grade HSMs serving an entire cloud service.<a href="#section-7-3" class="pilcrow">¶</a></p>
+<p id="section-7-4">The manufacturer of a HSM device with limited capabilities may implement a response to the attestation request which includes a fixed set of reported entities, each with a fixed set of reported attributes and parses an Attestion Request object only for the purposes of extracting the nonce.<a href="#section-7-4" class="pilcrow">¶</a></p>
+<p id="section-7-5">On the other hand, an enterprise grade HSM with the capability to hold a large number of private keys is expected to be capable of parsing attestation requests such that a Presenter can request attestation of specific key(s) by their identifier, or request attestation of all keys with given key attributes within a given sub-environment of the HSM. A full implementation will also create a PKIX Attestation containing exactly the set of requested attributes so that the Presenter can fine-tune the information that it wishes to disclose to the Recipient.<a href="#section-7-5" class="pilcrow">¶</a></p>
+<p id="section-7-6">A PKIX Attestation Request consists of a un-signed TbsPkixAttestation object containing a single <code>ReportedEntity</code> identified with <code>id-pkix-attest-entity-request</code>, called a request entity. A TbsPkixAttestation containing a request entity <span class="bcp14">MUST NOT</span> contain any other type of entities. Request entities <span class="bcp14">MAY</span> contain Attributes of any type; transaction, platform, key, or any additional attribute type. Any attribute contained in a request entity is called a request attribute. Request entities <span class="bcp14">MUST NOT</span> appear in PKIX Attestation response objects. The TbsPkixAttestation object of an attestation request <span class="bcp14">MAY</span> appear inside a signed PKIXAttestation for the purposes of authenticating and authorizing the requester, but the semantics of doing so are left to the implementer.<a href="#section-7-6" class="pilcrow">¶</a></p>
+<p id="section-7-7">An Attester that supports Attestation Requests <span class="bcp14">MUST</span>, at the minimum, support extracting the value from a <code>nonce</code> attribute and echoing it into a <code>nonce</code> attribute within a TransactionEntity.<a href="#section-7-7" class="pilcrow">¶</a></p>
+<p id="section-7-8">Some request attributes contain a value that the HSM uses as a filter or search parameter in constructing the PKIX Attestation; these are called valued requests attributes.
+Other requests attributes omit the optional <code>value</code> field so that they consist of only the attribute type OID and indicate that the HSM <span class="bcp14">SHOULD</span> collect and return the appropriate measurement; these are called un-valued request attributes.
+An Attester <span class="bcp14">SHOULD</span> return a PKIX Attestation containing exactly the set of attributes listed in the request, including both valued and un-valued request attributes but <span class="bcp14">MAY</span> omit requested attributes if it cannot be measured in the current device configuration.
+Note that an Attestation Request will contain all request attributes inside a single request entity, but the HSM <span class="bcp14">MUST</span> sort the attributes in the response PKIX Attestation into the appropriate entity types.
+For example, if the request contains the key <code>purpose</code> attribute (either valued or un-valued), then all returned key entities will contain the <code>purpose</code> attribute when this data is available for the given key.
+The tables in the following sections indicate whether an attribute of the given type <span class="bcp14">MUST</span>, <span class="bcp14">MAY</span>, or <span class="bcp14">MUST NOT</span> contain a value when included in a request entity.<a href="#section-7-8" class="pilcrow">¶</a></p>
+<p id="section-7-9">Generally errors should be handled gracefully by simply omitting an unfulfillable request attribute from the response.
+An example would be if the <code>hwserial</code> attribute was requested but the devices does not have a serial number.
+However in some cases a fatal error <span class="bcp14">MAY</span> be returned, for example if attestation of a specific key is requested by key identifier or SubjectPublicKeyInfo but the HSM does not contain a matching key.
+HSMs <span class="bcp14">SHOULD</span> ignore request attributes with unrecognized type OIDs.<a href="#section-7-9" class="pilcrow">¶</a></p>
+<p id="section-7-10">Generally, the Attester <span class="bcp14">SHOULD NOT</span> include additional attributes beyond those that were requested. This is to allow the Presenter to fine-tune the information that will be disclosed to the Recipient.
+Further privacy concerns are discussed in <a href="#sec-cons-privacy" class="auto internal xref">Section 11.3</a>.
+However, in some contexts this <span class="bcp14">MAY</span> be appropriate, for example, a request containing only a key <code>identifier</code> attribute could be responded to with the full set of platform and key attributes that apply to that key.
+Discretion is left to implementers.<a href="#section-7-10" class="pilcrow">¶</a></p>
+<p id="section-7-11">For both error handling and privacy reasons, the Presenter <span class="bcp14">SHOULD</span> check that the returned PKIX Attestation contains the expected attributes prior to forwarding it to the Recipient.<a href="#section-7-11" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-profiles">
+<section id="section-8">
+      <h2 id="name-appraisal-policies-and-prof">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-appraisal-policies-and-prof" class="section-name selfRef">Appraisal Policies and Profiles</a>
+      </h2>
+<p id="section-8-1">This section provides some sample profiles of appraisal policies that verifiers
+<span class="bcp14">MAY</span> apply when evaluating evidence. These appraisal profiles represent environment-specific requirements
+on the contents of the evidence and / or endorsement certificate chain.<a href="#section-8-1" class="pilcrow">¶</a></p>
+<div id="key-import-into-an-hsm">
+<section id="section-8.1">
+        <h3 id="name-key-import-into-an-hsm">
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-key-import-into-an-hsm" class="section-name selfRef">Key Import into an HSM</a>
+        </h3>
+<p id="section-8.1-1">An HSM which is compliant with this draft <span class="bcp14">SHOULD</span> validate any PKIX Key Attestations that are provided
+along with the key being imported.<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+<p id="section-8.1-2">The SignatureBlocks <span class="bcp14">MUST</span> be validated and <span class="bcp14">MUST</span> chain to a trust anchor known to the HSM. In most cases this will
+be the same trust anchor that endorsed the HSMs own AK, but the HSM <span class="bcp14">MAY</span> be configured with set of third party trust anchors from which it will accept key attestations.<a href="#section-8.1-2" class="pilcrow">¶</a></p>
+<p id="section-8.1-3">If the HSM is operating in FIPS Mode, then it <span class="bcp14">MUST</span> only import keys from HSMs also operating in FIPS Mode.<a href="#section-8.1-3" class="pilcrow">¶</a></p>
+<p id="section-8.1-4">The claims <code>key-purpose</code>, <code>key-extractable</code>, <code>key-never-extractable</code>, <code>key-local</code> <span class="bcp14">MUST</span> be checked and honoured during key import, which typically means that after import, the key <span class="bcp14">MUST NOT</span> claim a stronger protection property than it had on the previous hardware. In other words, Key Attestation allows and requires that key protection properties be preserved over export / import operations between different HSMs, and this format provides a vendor-agnostic
+way to acheive this.<a href="#section-8.1-4" class="pilcrow">¶</a></p>
+<p id="section-8.1-5">How to handle errors is outside the scope of this specification and is left to implementors; for example the
+key import <span class="bcp14">MAY</span> be aborted, or a prompt <span class="bcp14">MAY</span> be given to the user administrator, or any similar reasonable error handling logic.<a href="#section-8.1-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="cabrowser-forum-code-signing">
+<section id="section-8.2">
+        <h3 id="name-ca-browser-forum-code-signi">
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-ca-browser-forum-code-signi" class="section-name selfRef">CA/Browser Forum Code-Signing</a>
+        </h3>
+<p id="section-8.2-1">TODO: ... intro text<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+<p id="section-8.2-2">The subscriber <span class="bcp14">MUST</span>:<a href="#section-8.2-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-8.2-3.1">
+            <p id="section-8.2-3.1.1">Provide the CA with a CSR containing the subscriber key.<a href="#section-8.2-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-8.2-3.2">
+            <p id="section-8.2-3.2.1">Provide an attestation token as per this specification describing the private key protection properties of the subscriber's private key. This token <span class="bcp14">MAY</span> be transported inside the CSR as per draft-ietf-lamps-csr-attest, or it <span class="bcp14">MAY</span> be transported adjacent to the CSR over any other certificate enrollment mechanism.<a href="#section-8.2-3.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-8.2-4">The CA / RA / RP / Verifier <span class="bcp14">MUST</span>:<a href="#section-8.2-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-8.2-5.1">
+            <p id="section-8.2-5.1.1">Ensure that the subscriber key which is the subject of the CSR is also described by a KAT by matching either the key fingerprint or full SubjectPublicKeyInfo.<a href="#section-8.2-5.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-8.2-5.2">
+            <p id="section-8.2-5.2.1">The hardware root-of-trust described by a PAT has a valid and active FIPS certificate according to the NIST CMVP database.<a href="#section-8.2-5.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-8.2-5.3">
+            <p id="section-8.2-5.3.1">The attestation signing key (AK) which has signed the attestation token chains to a root certificate that A) belongs to the hardware vendor described in the PAT token, and B) is trusted by the CA / RA / RP / Verifier to endorse hardware from this vendor, for example through a CA's partner program or through a network operator's device on-boarding process.<a href="#section-8.2-5.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-8.2-5.4">
+            <p id="section-8.2-5.4.1">The key is protected by a module running in FIPS mode. The parsing logic is to start at the leaf KAT token that matches the key in the CSR and parsing towards the root PAT ensuring that there is at least one <code>fipsboot=true</code> and no <code>fipsboot=false</code> on that path.<a href="#section-8.2-5.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+</section>
+</div>
+<div id="sec-asn1-mod">
+<section id="section-9">
+      <h2 id="name-asn1-module">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-asn1-module" class="section-name selfRef">ASN.1 Module</a>
+      </h2>
+<div class="breakable lang-asn.1 sourcecode" id="section-9-1">
+<pre>
+&lt;CODE STARTS&gt;
+
+PKIX-Key-Attest-2025
+      { iso(1) identified-organization(3) dod(6) internet(1)
+        security(5) mechanisms(5) pkix(7) id-mod(0)
+        id-mod-pkik-key-attest-2025(TBDMOD) }
+
+
+PkixAttestation ::= SEQUENCE {
+    tbs TbsPkixAttestation,
+    signatures SEQUENCE SIZE (0..MAX) of SignatureBlock
+}
+
+TbsPkixAttestation ::= SEQUENCE {
+    version INTEGER,
+    reportedEntities SEQUENCE SIZE (1..MAX) OF ReportedEntity
+}
+
+ReportedEntity ::= SEQUENCE {
+    entityType         OBJECT IDENTIFIER,
+    reportedAttributes SEQUENCE SIZE (1..MAX) OF ReportedAttribute
+}
+
+ReportedAttribute ::= SEQUENCE {
+    attributeType      OBJECT IDENTIFIER,
+    value              AttributeValue
+}
+
+AttributeValue :== CHOICE {
+   bytes       [0] IMPLICIT OCTET STRING
+   utf8String  [1] IMPLICIT UTF8String,
+   bool        [2] IMPLICIT BOOLEAN,
+   time        [3] IMPLICIT GeneralizedTime,
+   int         [4] IMPLICIT INTEGER,
+   oid         [5] IMPLICIT OBJECT IDENTIFIER
+}
+
+SignatureBlock ::= SEQUENCE {
+   certChain SEQUENCE of Certificate,
+   signatureAlgorithm AlgorithmIdentifier,
+   signatureValue OCTET STRING
+}
+
+id-pkix-attest OBJECT IDENTIFIER ::= { 1 2 3 999 }
+
+id-pkix-attest-entity-type        OBJECT IDENTIFIER ::= { id-pkix-attest 0 }
+id-pkix-attest-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 0 }
+id-pkix-attest-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 1 }
+id-pkix-attest-entity-key         OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 2 }
+
+id-pkix-attest-attribute-type OBJECT IDENTIFIER ::= { id-pkix-attest 1 }
+
+id-pkix-attest-attribute-transaction       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 0 }
+id-pkix-attest-attribute-transaction-nonce OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-transaction 0 }
+
+id-pkix-attest-attribute-platform            OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 1 }
+id-pkix-attest-attribute-platform-vendor     OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 0 }
+id-pkix-attest-attribute-platform-hwserial   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 1 }
+id-pkix-attest-attribute-platform-fipsboot   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 2 }
+id-pkix-attest-attribute-platform-desc       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 3 }
+id-pkix-attest-attribute-platform-time       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 4 }
+id-pkix-attest-attribute-platform-swversion  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 5 }
+id-pkix-attest-attribute-platform-oemid      OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 6 }
+id-pkix-attest-attribute-platform-debugstat  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 7 }
+id-pkix-attest-attribute-platform-uptime     OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 8 }
+id-pkix-attest-attribute-platform-bootcount  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 9 }
+id-pkix-attest-attribute-platform-usermods   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 8 }
+id-pkix-attest-attribute-platform-envid      OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 9 }
+id-pkix-attest-attribute-platform-envdesc    OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 10 }
+id-pkix-attest-attribute-platform-fipsver  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 11 }
+id-pkix-attest-attribute-platform-fipslevel  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 12 }
+
+
+
+id-pkix-attest-attribute-key                   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 2 }
+id-pkix-attest-attribute-key-identifier        OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 0 }
+id-pkix-attest-attribute-key-spki              OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 1 }
+id-pkix-attest-attribute-key-purpose           OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 2 }
+id-pkix-attest-attribute-key-extractable       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 3 }
+id-pkix-attest-attribute-key-never-extractable OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 4 }
+id-pkix-attest-attribute-key-local             OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 5 }
+id-pkix-attest-attribute-key-expiry            OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 6 }
+id-pkix-attest-attribute-key-protection        OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 7 }
+
+&lt;CODE ENDS&gt;
+
+</pre><a href="#section-9-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-10">
+      <h2 id="name-iana-considerations">
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-10-1">Please replace "RFCthis" with the RFC number assigned to this document.<a href="#section-10-1" class="pilcrow">¶</a></p>
+<p id="section-10-2">TODO: list out all the OIDs that need IANA registration.<a href="#section-10-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-11">
+      <h2 id="name-security-considerations">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-11-1">A Verifier <span class="bcp14">MAY</span> reject a PKIX Attestation if it lacks required attributes per their
+appraisal policy. For example, if a Relying Party mandates a FIPS-certified device,
+it <span class="bcp14">SHOULD</span> reject evidence lacking sufficient information to verify the device's FIPS
+certification status.<a href="#section-11-1" class="pilcrow">¶</a></p>
+<div id="simple-to-implement">
+<section id="section-11.1">
+        <h3 id="name-simple-to-implement">
+<a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-simple-to-implement" class="section-name selfRef">Simple to implement</a>
+        </h3>
+<p id="section-11.1-1">The nature of attestation requires the attestation service to be implemented in an extremely privileged position within the HSM so that it can collect measurements of both the hardware environment and the application keys being attested. For many HSM and TPM architectures, this will place the Attestation Service inside the "HSM kernel" and potentially subject to FIPS 140-3 or Common Criteria validation and change control. For both security and compliance reasons there is incentive for the emitting and parsing logic to be simple and easy to implement correctly. Additionally, when the data formats contained in this specification are parsed within an HSM boundary -- that would be parsing a request entity, or parsing an attestation produced by a different HSM -- implementers <span class="bcp14">SHOULD</span> opt for simple logic that rejects any data that does not match the expected format instead of attempting to be flexible.<a href="#section-11.1-1" class="pilcrow">¶</a></p>
+<p id="section-11.1-2">In particular, Attesting Services <span class="bcp14">SHOULD</span> generate the attestation object from scratch and avoid copying any content from the request. Attesting Services <span class="bcp14">MUST NOT</span> allow unrecognized attributes or any attribute value other than the nonce to be echoed from the request into the attestation object.<a href="#section-11.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-detached-sigs">
+<section id="section-11.2">
+        <h3 id="name-detached-signatures">
+<a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-detached-signatures" class="section-name selfRef">Detached Signatures</a>
+        </h3>
+<p id="section-11.2-1">TODO beef this up<a href="#section-11.2-1" class="pilcrow">¶</a></p>
+<p id="section-11.2-2">No indication within the tbs content about what or how many signatures to expect.<a href="#section-11.2-2" class="pilcrow">¶</a></p>
+<p id="section-11.2-3">A SignatureBlock can be trivially stripped off without leaving any evidence.<a href="#section-11.2-3" class="pilcrow">¶</a></p>
+<p id="section-11.2-4">When multiple SignatureBlocks are used for providing third party counter-signatures, note that the counter signature only covers the tbs content and not existing SignatureBlocks.<a href="#section-11.2-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-cons-privacy">
+<section id="section-11.3">
+        <h3 id="name-privacy">
+<a href="#section-11.3" class="section-number selfRef">11.3. </a><a href="#name-privacy" class="section-name selfRef">Privacy</a>
+        </h3>
+<p id="section-11.3-1">Often, a TPM will host cryptographic keys for both the kernel and userspace of a local operating system but a Presenter may only represents a single user or application.
+Similarly, a single enterprise-grade Hardware Security Module will often host cryptographic keys for an entire multi-tenant cloud service and the Presenter or Reciever or Recipient belongs only to a single tenant. For example the HSM backing a TLS-terminating loadbalancer fronting thousands of un-related web domains.
+In these cases, disclosing that two different keys reside on the same hardware, or in some cases even disclosing the existance of a given key, let alone its attributes, to an unauthorized party would constitute an egregious privacy violation.<a href="#section-11.3-1" class="pilcrow">¶</a></p>
+<p id="section-11.3-2">Implementions <span class="bcp14">SHOULD</span> be careful to avoid over-disclosure of information, for example by authenticating the Presenter and only returning results for keys and envirnments for which it is authorized.
+In absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request <span class="bcp14">MAY</span> be authenticated by embedding the TbsPkixAttestation of the request inside a PKIXAttestation signed with a certificate belogning to the Presenter.<a href="#section-11.3-2" class="pilcrow">¶</a></p>
+<p id="section-11.3-3">Furthermore, enterprise and cloud-services grade HSMs <span class="bcp14">SHOULD</span> support the full set of attestation request functionality described in <a href="#sec-reqs" class="auto internal xref">Section 7</a> so that Presenters can fine-tune the content of a PKIX Attestation such that it is appropriate for the intended Recipient.<a href="#section-11.3-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="sec-combined-references">
+<section id="section-12">
+      <h2 id="name-references">
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<div id="sec-normative-references">
+<section id="section-12.1">
+        <h3 id="name-normative-references">
+<a href="#section-12.1" class="section-number selfRef">12.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="I-D.ietf-rats-eat">[I-D.ietf-rats-eat]</dt>
+        <dd>
+<span class="refAuthor">Lundblade, L.</span>, <span class="refAuthor">Mandyam, G.</span>, <span class="refAuthor">O'Donoghue, J.</span>, and <span class="refAuthor">C. Wallace</span>, <span class="refTitle">"The Entity Attestation Token (EAT)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-rats-eat-31</span>, <time datetime="2024-09-06" class="refDate">6 September 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-rats-eat-31">https://datatracker.ietf.org/doc/html/draft-ietf-rats-eat-31</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="PKCS11">[PKCS11]</dt>
+        <dd>
+<span class="refAuthor">Cox, T.</span>, <span class="refTitle">"PKCS #11 Specification Version 3.1"</span>, <span>n.d.</span>, <span>&lt;<a href="https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/pkcs11-spec-v3.1-cs01.html">https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/pkcs11-spec-v3.1-cs01.html</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8949">[RFC8949]</dt>
+        <dd>
+<span class="refAuthor">Bormann, C.</span> and <span class="refAuthor">P. Hoffman</span>, <span class="refTitle">"Concise Binary Object Representation (CBOR)"</span>, <span class="seriesInfo">STD 94</span>, <span class="seriesInfo">RFC 8949</span>, <span class="seriesInfo">DOI 10.17487/RFC8949</span>, <time datetime="2020-12" class="refDate">December 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8949">https://www.rfc-editor.org/rfc/rfc8949</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9334">[RFC9334]</dt>
+        <dd>
+<span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Thaler, D.</span>, <span class="refAuthor">Richardson, M.</span>, <span class="refAuthor">Smith, N.</span>, and <span class="refAuthor">W. Pan</span>, <span class="refTitle">"Remote ATtestation procedureS (RATS) Architecture"</span>, <span class="seriesInfo">RFC 9334</span>, <span class="seriesInfo">DOI 10.17487/RFC9334</span>, <time datetime="2023-01" class="refDate">January 2023</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9334">https://www.rfc-editor.org/rfc/rfc9334</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="X.680">[X.680]</dt>
+        <dd>
+<span class="refAuthor">ITU-T</span>, <span class="refTitle">"Information technology -- Abstract Syntax Notation One (ASN.1): Specification of basic notation"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.itu.int/rec/T-REC-X.680">https://www.itu.int/rec/T-REC-X.680</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="X.690">[X.690]</dt>
+      <dd>
+<span class="refAuthor">ITU-T</span>, <span class="refTitle">"Information technology - ASN.1 encoding Rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"</span>, <span class="seriesInfo">ISO/IEC 8825-1:2015</span>, <time datetime="2015-11" class="refDate">November 2015</time>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="sec-informative-references">
+<section id="section-12.2">
+        <h3 id="name-informative-references">
+<a href="#section-12.2" class="section-number selfRef">12.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="I-D.bft-rats-kat">[I-D.bft-rats-kat]</dt>
+        <dd>
+<span class="refAuthor">Brossard, M.</span>, <span class="refAuthor">Fossati, T.</span>, <span class="refAuthor">Tschofenig, H.</span>, and <span class="refAuthor">H. Birkholz</span>, <span class="refTitle">"An EAT-based Key Attestation Token"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-bft-rats-kat-05</span>, <time datetime="2024-11-21" class="refDate">21 November 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-bft-rats-kat-05">https://datatracker.ietf.org/doc/html/draft-bft-rats-kat-05</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.fossati-tls-attestation">[I-D.fossati-tls-attestation]</dt>
+        <dd>
+<span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Sheffer, Y.</span>, <span class="refAuthor">Howard, P.</span>, <span class="refAuthor">Mihalcea, I.</span>, <span class="refAuthor">Deshpande, Y.</span>, <span class="refAuthor">Niemi, A.</span>, and <span class="refAuthor">T. Fossati</span>, <span class="refTitle">"Using Attestation in Transport Layer Security (TLS) and Datagram Transport Layer Security (DTLS)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-fossati-tls-attestation-08</span>, <time datetime="2024-10-21" class="refDate">21 October 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-fossati-tls-attestation-08">https://datatracker.ietf.org/doc/html/draft-fossati-tls-attestation-08</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-lamps-csr-attestation">[I-D.ietf-lamps-csr-attestation]</dt>
+        <dd>
+<span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Wiseman, M.</span>, and <span class="refAuthor">N. Smith</span>, <span class="refTitle">"Use of Remote Attestation with Certification Signing Requests"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-lamps-csr-attestation-16</span>, <time datetime="2025-02-01" class="refDate">1 February 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-16">https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-16</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-rats-msg-wrap">[I-D.ietf-rats-msg-wrap]</dt>
+        <dd>
+<span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Smith, N.</span>, <span class="refAuthor">Fossati, T.</span>, <span class="refAuthor">Tschofenig, H.</span>, and <span class="refAuthor">D. Glaze</span>, <span class="refTitle">"RATS Conceptual Messages Wrapper (CMW)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-rats-msg-wrap-12</span>, <time datetime="2025-02-28" class="refDate">28 February 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-rats-msg-wrap-12">https://datatracker.ietf.org/doc/html/draft-ietf-rats-msg-wrap-12</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2986">[RFC2986]</dt>
+        <dd>
+<span class="refAuthor">Nystrom, M.</span> and <span class="refAuthor">B. Kaliski</span>, <span class="refTitle">"PKCS #10: Certification Request Syntax Specification Version 1.7"</span>, <span class="seriesInfo">RFC 2986</span>, <span class="seriesInfo">DOI 10.17487/RFC2986</span>, <time datetime="2000-11" class="refDate">November 2000</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2986">https://www.rfc-editor.org/rfc/rfc2986</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4211">[RFC4211]</dt>
+        <dd>
+<span class="refAuthor">Schaad, J.</span>, <span class="refTitle">"Internet X.509 Public Key Infrastructure Certificate Request Message Format (CRMF)"</span>, <span class="seriesInfo">RFC 4211</span>, <span class="seriesInfo">DOI 10.17487/RFC4211</span>, <time datetime="2005-09" class="refDate">September 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4211">https://www.rfc-editor.org/rfc/rfc4211</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5912">[RFC5912]</dt>
+      <dd>
+<span class="refAuthor">Hoffman, P.</span> and <span class="refAuthor">J. Schaad</span>, <span class="refTitle">"New ASN.1 Modules for the Public Key Infrastructure Using X.509 (PKIX)"</span>, <span class="seriesInfo">RFC 5912</span>, <span class="seriesInfo">DOI 10.17487/RFC5912</span>, <time datetime="2010-06" class="refDate">June 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5912">https://www.rfc-editor.org/rfc/rfc5912</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+</section>
+</div>
+<div id="samples">
+<section id="appendix-A">
+      <h2 id="name-samples">
+<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-samples" class="section-name selfRef">Samples</a>
+      </h2>
+<p id="appendix-A-1">A reference implementation of this specification can be found at https://github.com/hannestschofenig/keyattestation<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-2">It produces the following sample attestation:<a href="#appendix-A-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A-3">
+<pre>
+PkixAttestation:
+ tbs=TbsPkixAttestation:
+  version=2
+  reportedEntities=SequenceOf:
+   ReportedEntity:
+    entityType=1.2.3.999.0.0
+    reportedAttributes=SequenceOf:
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.0.0
+      value=AttributeValue:
+       bytes=0102030405
+
+
+   ReportedEntity:
+    entityType=1.2.3.999.0.1
+    reportedAttributes=SequenceOf:
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.1.0
+      value=AttributeValue:
+       utf8String=HSM-123
+
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.1.1
+      value=AttributeValue:
+       bool=True
+
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.1.2
+      value=AttributeValue:
+       utf8String=Model ABC
+
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.1.4
+      value=AttributeValue:
+       utf8String=3.1.9
+
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.1.3
+      value=AttributeValue:
+       time=202502032234Z
+
+
+   ReportedEntity:
+    entityType=1.2.3.999.0.2
+    reportedAttributes=SequenceOf:
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.2.0
+      value=AttributeValue:
+       utf8String=26d765d8-1afd-4dfb-a290-cf867ddecfa1
+
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.2.3
+      value=AttributeValue:
+       bool=False
+
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.2.1
+      value=AttributeValue:
+       bytes=0x3059301306072a8648ce3d020106082a8648ce3d03010703420004422548f88fb782ffb5eca3744452c72a1e558fbd6f73be5e48e93232cc45c5b16c4cd10c4cb8d5b8a17139e94882c8992572993425f41419ab7e90a42a494272
+
+
+   ReportedEntity:
+    entityType=1.2.3.999.0.2
+    reportedAttributes=SequenceOf:
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.2.0
+      value=AttributeValue:
+       utf8String=49a96ace-e39a-4fd2-bec1-13165a99621c
+
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.2.3
+      value=AttributeValue:
+       bool=True
+
+     ReportedAttribute:
+      attributeType=1.2.3.999.1.2.1
+      value=AttributeValue:
+       bytes=0x3059301306072a8648ce3d020106082a8648ce3d03010703420004422548f88fb782ffb5eca3744452c72a1e558fbd6f73be5e48e93232cc45c5b16c4cd10c4cb8d5b8a17139e94882c8992572993425f41419ab7e90a42a494272
+
+
+   ReportedEntity:
+    entityType=1.2.3.888.0
+    reportedAttributes=SequenceOf:
+     ReportedAttribute:
+      attributeType=1.2.3.888.1
+      value=AttributeValue:
+       utf8String=partition 1
+
+
+
+
+ signatures=SequenceOf:
+  SignatureBlock:
+   certChain=SequenceOf:
+    Certificate:
+     tbsCertificate=TBSCertificate:
+      version=v3
+      serialNumber=510501933685942792810365453374472870755160518925
+      signature=AlgorithmIdentifier:
+       algorithm=1.2.840.113549.1.1.11
+       parameters=0x0500
+
+      issuer=Name:
+       rdnSequence=RDNSequence:
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.10
+          value=0x0c0449455446
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.11
+          value=0x0c0452415453
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.3
+          value=0x0c06414b20525341
+
+
+      validity=Validity:
+       notBefore=Time:
+        utcTime=250117171303Z
+
+       notAfter=Time:
+        generalTime=20520604171303Z
+
+
+      subject=Name:
+       rdnSequence=RDNSequence:
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.10
+          value=0x0c0449455446
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.11
+          value=0x0c0452415453
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.3
+          value=0x0c06414b20525341
+
+
+      subjectPublicKeyInfo=SubjectPublicKeyInfo:
+       algorithm=AlgorithmIdentifier:
+        algorithm=1.2.840.113549.1.1.1
+        parameters=0x0500
+
+       subjectPublicKey=31795268810366627125468059984427145931784542919710733587190808152893606542214208096328883077225607136393362795609997601968312039001251339428349101203532726047646450301142882318337709398316574407647199690000689245113739552615279534528145776090813314822312012607567736073057936820713733090928849092672110937300300755561797808000438134839458043673852453722969649609202093945235393494912138691342219564365300965387743701570507112064401758218314760153081271981340812350365663466513620853326534252424706992841033652817461354632316129312597825542820569667842318342646457447037125609399476844336456206583416539426479221164971369788464727307915820767918489601
+
+      extensions=Extensions:
+       Extension:
+        extnID=2.5.29.14
+        critical=False
+        extnValue=0x04148919595e0ef169f5cbbd47e134fce298cc693091
+       Extension:
+        extnID=2.5.29.35
+        critical=False
+        extnValue=0x301680148919595e0ef169f5cbbd47e134fce298cc693091
+       Extension:
+        extnID=2.5.29.19
+        critical=True
+        extnValue=0x30030101ff
+
+
+     signatureAlgorithm=AlgorithmIdentifier:
+      algorithm=1.2.840.113549.1.1.11
+      parameters=0x0500
+
+     signature=12977775424631768289542539102653382982431795551146145281750189553757940982572813264428982985997740595878077027853994515775116752030963858469651548765808775269857271167748512795017916284867051302884465315751010913658016640170608413935780119349866986170148033301955753116984041271273907756544780231564646860424999020990745523383622980115200446260103173103500647838758197610238552349053064525420240826193553395378873725256584269666918504793674497748455574822238022085054752185687440807655337724821853332688158460379554906105417720665175648371832825939577039874730442790337726004105878168375998123110331993348833629325492
+
+   signatureAlgorithm=AlgorithmIdentifier:
+    algorithm=1.2.840.113549.1.1.10
+    parameters=RSASSA_PSS_params:
+     hashAlgorithm=AlgorithmIdentifier:
+      algorithm=2.16.840.1.101.3.4.2.1
+
+     maskGenAlgorithm=AlgorithmIdentifier:
+      algorithm=1.2.840.113549.1.1.8
+
+     saltLength=20
+     trailerField=1
+
+
+   signatureValue=0x9b6ac1932f1cd85befbde054e084577ebc9181bcf05179658a700e22556fc3f1931f59dc9734efe08df204fcfe55c64c6a97e8d520e58c1f64080b6cce1c08e88db510c06d6914a818b70df82326b37a2abe54fab0567d748e1e82e2de954cac63c5ab3bc92fff9cb8aa64fbcb83dd8bacbce96392f91dd40ee05058adceb11f5cf0c379241fd470918abceea70fd01c0cbc64d96067fe549ec443738655bc2bcf7e5bd54c15d5e5ac2f4ad180d973a7e6025126ccd2b45d78e9944662237959ef73f47e9ae0fa9b0c55177bb6f867a90b41d0efb72c192f15a66531d030bc85fed3d135aea4045e024ef2e807517504d313dbea4b0f709d0553b60793b2dcaa
+  SignatureBlock:
+   certChain=SequenceOf:
+    Certificate:
+     tbsCertificate=TBSCertificate:
+      version=v3
+      serialNumber=43752118382009037811618748949928339462896457144
+      signature=AlgorithmIdentifier:
+       algorithm=1.2.840.10045.4.3.2
+
+      issuer=Name:
+       rdnSequence=RDNSequence:
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.10
+          value=0x0c0449455446
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.11
+          value=0x0c0452415453
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.3
+          value=0x0c07414b2050323536
+
+
+      validity=Validity:
+       notBefore=Time:
+        utcTime=250117171428Z
+
+       notAfter=Time:
+        generalTime=20520604171428Z
+
+
+      subject=Name:
+       rdnSequence=RDNSequence:
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.10
+          value=0x0c0449455446
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.11
+          value=0x0c0452415453
+        RelativeDistinguishedName:
+         AttributeTypeAndValue:
+          type=2.5.4.3
+          value=0x0c07414b2050323536
+
+
+      subjectPublicKeyInfo=SubjectPublicKeyInfo:
+       algorithm=AlgorithmIdentifier:
+        algorithm=1.2.840.10045.2.1
+        parameters=0x06082a8648ce3d030107
+
+       subjectPublicKey=57095560233504924588952816185508037812996307929249104847846164660564888397123390877585670462836285725041261897550020311481127562655774333675293173915140722
+
+      extensions=Extensions:
+       Extension:
+        extnID=2.5.29.14
+        critical=False
+        extnValue=0x04145b70a79817f79ff637d2f7e3dc446c2109d7bbd4
+       Extension:
+        extnID=2.5.29.35
+        critical=False
+        extnValue=0x301680145b70a79817f79ff637d2f7e3dc446c2109d7bbd4
+       Extension:
+        extnID=2.5.29.19
+        critical=True
+        extnValue=0x30030101ff
+
+
+     signatureAlgorithm=AlgorithmIdentifier:
+      algorithm=1.2.840.10045.4.3.2
+
+     signature=182167519797146035745575043154801415115532979136731128676399180692664821804883990401552040789643013103202424486088058364982966709324496782518079519267269438816178719668437
+
+   signatureAlgorithm=AlgorithmIdentifier:
+    algorithm=1.2.840.10045.2.1
+    parameters=0x06082a8648ce3d030107
+
+   signatureValue=0x304402201e7703f63bff951917714e5fa813de5265f151a6802165ef0be5f1fe6c91225b02200ad06b41a5062b07ff3ad37c7d112e19575f0e14a9750fe95e615550b88b5fed
+
+
+
+DER Base64:
+MIIIyzCCAiUCAQIwggIeMCEGBioDh2cAADAXMBUGByoDh2cBAAAECjAxMDIwMzA0MDUwbgYGKgOHZwABMGQwEgYHKgOHZwEBAAwHSFNNLTEyMzAMBgcqA4dnAQEBAQH/MBQGByoDh2cBAQIMCU1vZGVsIEFCQzAQBgcqA4dnAQEEDAUzLjEuOTAYBgcqA4dnAQEDGA0yMDI1MDIwMzIyMzRaMIGyBgYqA4dnAAIwgacwLwYHKgOHZwECAAwkMjZkNzY1ZDgtMWFmZC00ZGZiLWEyOTAtY2Y4NjdkZGVjZmExMAwGByoDh2cBAgMBAQAwZgYHKgOHZwECAQRbMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQiVI+I+3gv+17KN0RFLHKh5Vj71vc75eSOkyMsxFxbFsTNEMTLjVuKFxOelIgsiZJXKZNCX0FBmrfpCkKklCcjCBsgYGKgOHZwACMIGnMC8GByoDh2cBAgAMJDQ5YTk2YWNlLWUzOWEtNGZkMi1iZWMxLTEzMTY1YTk5NjIxYzAMBgcqA4dnAQIDAQH/MGYGByoDh2cBAgEEWzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABEIlSPiPt4L/teyjdERSxyoeVY+9b3O+XkjpMjLMRcWxbEzRDEy41bihcTnpSILImSVymTQl9BQZq36QpCpJQnIwHwYFKgOGeAAwFjAUBgUqA4Z4AQwLcGFydGl0aW9uIDEwggaeMIIEejCCA0UwggNBMIICKaADAgECAhRZa7LL1EZqtYP6TqThmzBiZDtxDTANBgkqhkiG9w0BAQsFADAvMQ0wCwYDVQQKDARJRVRGMQ0wCwYDVQQLDARSQVRTMQ8wDQYDVQQDDAZBSyBSU0EwIBcNMjUwMTE3MTcxMzAzWhgPMjA1MjA2MDQxNzEzMDNaMC8xDTALBgNVBAoMBElFVEYxDTALBgNVBAsMBFJBVFMxDzANBgNVBAMMBkFLIFJTQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALD56BlDp66YkqreF8p8QPh0T+0vgUjmyOqie30AFUj7UZKrKLVsUGCxGMzRMeWUh0xsqYm1bCcpbwn7k6A03zLpfG/wmYz9jm9C3aWKzR+peYbxRPPRVNZ2UBdeaFSzqVIAO8Boh7hFWsKxn3svdlBOvJjslFVxsHiSFQ3canTKD7zTVJfOgVNNr5QYhEsTrqMfnVprlVe732Ge/U6Ify1CuN2LyYfq4b+Jyrhe4h41YwXfbAeog44+9BxZXczkPa/EkSPvTYq7qT05BeQCjXupFISidZbge0tu2ZLwd7Uk09z+fd1VSb58zo2gNc+gs/uPnkb3MrKoa0YBZcCPUxMCAwEAAaNTMFEwHQYDVR0OBBYEFIkZWV4O8Wn1y71H4TT84pjMaTCRMB8GA1UdIwQYMBaAFIkZWV4O8Wn1y71H4TT84pjMaTCRMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEBAGbNxMg9iFU20x2s5v1572pgAOVO5CXXLWZ2sM9wL7ObBm7Aosm7z2G/GYV0OtU1zpCw0qcfR9a0xnFTlRBOupbZZ/SMtjduN8mQKZNBqE4rxcPehCp9dUoJ74wYVRKHvUFRdzgUhDMwnqmEb7mqIKqwP0Ev+AVd/hqj4EjhJCFVaLoVH4k4EzF33UNgPJivo1910BvNpbuIOhURZHWm9ABlvJxZ+/Uohjqd7bJDR1J506ogT052OqLZCRbiQPupdEtgpww+p7VI9qjbGhLYrPxIh2gsicu7sJvdALuf+gRuIrgkhUPb2CIym50nyBsEsuPAOsKWzTID6eDyf/CSSLQwKwYJKoZIhvcNAQEKMB6gDTALBglghkgBZQMEAgGhDTALBgkqhkiG9w0BAQgEggEAm2rBky8c2FvvveBU4IRXfryRgbzwUXllinAOIlVvw/GTH1nclzTv4I3yBPz+VcZMapfo1SDljB9kCAtszhwI6I21EMBtaRSoGLcN+CMms3oqvlT6sFZ9dI4eguLelUysY8WrO8kv/5y4qmT7y4Pdi6y86WOS+R3UDuBQWK3OsR9c8MN5JB/UcJGKvO6nD9AcDLxk2WBn/lSexENzhlW8K89+W9VMFdXlrC9K0YDZc6fmAlEmzNK0XXjplEZiI3lZ73P0fprg+psMVRd7tvhnqQtB0O+3LBkvFaZlMdAwvIX+09E1rqQEXgJO8ugHUXUE0xPb6ksPcJ0FU7YHk7LcqjCCAhwwggG7MIIBtzCCAV2gAwIBAgIUB6npr/yEpH9d/wPt8w6Lo5AflbgwCgYIKoZIzj0EAwIwMDENMAsGA1UECgwESUVURjENMAsGA1UECwwEUkFUUzEQMA4GA1UEAwwHQUsgUDI1NjAgFw0yNTAxMTcxNzE0MjhaGA8yMDUyMDYwNDE3MTQyOFowMDENMAsGA1UECgwESUVURjENMAsGA1UECwwEUkFUUzEQMA4GA1UEAwwHQUsgUDI1NjBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABEIlSPiPt4L/teyjdERSxyoeVY+9b3O+XkjpMjLMRcWxbEzRDEy41bihcTnpSILImSVymTQl9BQZq36QpCpJQnKjUzBRMB0GA1UdDgQWBBRbcKeYF/ef9jfS9+PcRGwhCde71DAfBgNVHSMEGDAWgBRbcKeYF/ef9jfS9+PcRGwhCde71DAPBgNVHRMBAf8EBTADAQH/MAoGCCqGSM49BAMCA0gAMEUCIQCQfwSuP9Ms2gR8ki+iQQQNWaEfl/tRAd2usLJBYSEl6AIgJGzL/VWqOjeqD9aseiynBwHY9odjL4Wcfv2bOeo7uNUwEwYHKoZIzj0CAQYIKoZIzj0DAQcERjBEAiAedwP2O/+VGRdxTl+oE95SZfFRpoAhZe8L5fH+bJEiWwIgCtBrQaUGKwf/OtN8fREuGVdfDhSpdQ/pXmFVULiLX+0=
+</pre><a href="#appendix-A-3" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="acknowledgements">
+<section id="appendix-B">
+      <h2 id="name-acknowledgements">
+<a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-acknowledgements" class="section-name selfRef">Acknowledgements</a>
+      </h2>
+<p id="appendix-B-1">This specification is the work of a design team created by the chairs
+of the RATS working group. This specification has been developed
+based on discussions in that design team and also with great amounts of
+input taken from discussions on the RATS mailing list.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-C">
+      <h2 id="name-authors-addresses">
+<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Mike Ounsworth</span></div>
+<div dir="auto" class="left"><span class="org">Entrust Limited</span></div>
+<div dir="auto" class="left"><span class="street-address">2500 Solandt Road – Suite 100</span></div>
+<div dir="auto" class="left">
+<span class="locality">Ottawa, Ontario</span>  <span class="postal-code">K2K 3G5</span>
+</div>
+<div dir="auto" class="left"><span class="country-name">Canada</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:mike.ounsworth@entrust.com" class="email">mike.ounsworth@entrust.com</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Jean-Pierre Fiset</span></div>
+<div dir="auto" class="left"><span class="org">Crypto4A Inc.</span></div>
+<div dir="auto" class="left"><span class="street-address">1550A Laperriere Ave</span></div>
+<div dir="auto" class="left">
+<span class="locality">Ottawa, Ontario</span>  <span class="postal-code">K1Z 7T2</span>
+</div>
+<div dir="auto" class="left"><span class="country-name">Canada</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:jp@crypto4a.com" class="email">jp@crypto4a.com</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Hannes Tschofenig</span></div>
+<div dir="auto" class="left"><span class="org">University of Applied Sciences Bonn-Rhein-Sieg</span></div>
+<div dir="auto" class="left"><span class="country-name">Germany</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:Hannes.Tschofenig@gmx.net" class="email">Hannes.Tschofenig@gmx.net</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Henk Birkholz</span></div>
+<div dir="auto" class="left"><span class="org">Fraunhofer SIT</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:henk.birkholz@ietf.contact" class="email">henk.birkholz@ietf.contact</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Monty Wiseman</span></div>
+<div dir="auto" class="left"><span class="org">Beyond Identity</span></div>
+<div dir="auto" class="left"><span class="country-name">United States of America</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:monty.wiseman@beyondidentity.com" class="email">monty.wiseman@beyondidentity.com</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Ned Smith</span></div>
+<div dir="auto" class="left"><span class="org">Intel Corporation</span></div>
+<div dir="auto" class="left"><span class="country-name">United States of America</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:ned.smith@intel.com" class="email">ned.smith@intel.com</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>
