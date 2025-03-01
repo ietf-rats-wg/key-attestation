@@ -292,11 +292,9 @@ statements or endorsements, then it must
 be achieved by placing the attestation from this draft within another wrapper
 layer such as RATS Conceptual Message Wrapper (CMW) [I-D.ietf-rats-msg-wrap-11].
 
-TODO: for the RATS audience, we probably need to clarify what exactly an "Application Key" is. Add to glossary? Potentially we need a Use Cases section: CA keys, TLS keys, etc.
-
 ~~~aasvg
       .-------------------------------------.
-      | Hardware Security Module                       |
+      | Hardware Security Module            |
       |                                     |
       |   Platform environment              |
       |        ^        .-------------.     |
