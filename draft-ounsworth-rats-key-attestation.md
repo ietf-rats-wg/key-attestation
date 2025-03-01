@@ -372,7 +372,7 @@ TODO: should CPS be mentioned here?
 
 
 
-# Data Model {#sec-data-model}
+# Information Model {#sec-data-model}
 
 This section describes the semantics of the key claims as part of the information
 model.
