@@ -477,11 +477,12 @@ AttributeValue :== CHOICE {
 
 An attribute type is generally associated with a single entity type. In the following sub-sections, defined attributes are grouped according to their related entity types.
 
-There are circumstances where an attribute type can be repeated for a given entity while other attribute types are unique. For example, the `hwmodel`, `uptime`, and `fipsboot` attributes are not allowed to have multiple instances since these are global measurements of the platform. However, other attribute types such as `usermods` allow multiple instances as an HSM can have more than one user module loaded. The tables below list for each attribute type whether multiples are allowed. 
+There are circumstances where an attribute type can be repeated for a given entity while other attribute types are unique.
+For example, the `hwmodel`, `uptime`, and `fipsboot` attributes are not allowed to have multiple instances since these are global measurements of the platform. However, other attribute types such as `usermods` allow multiple instances as an HSM can have more than one user module loaded. The tables below list for each attribute type whether multiples are allowed.
 For attribute types that do not allow multiples, a parser MUST fail with an error if it encouters multiple instances.
 For attribute types that allow multiples, a parser MUST treat each one as an independent attribute and MUST NOT, for example, consider later ones to overwrite the previous one. Appraisal policies and profiles SHOULD be clear about how to handle multiples when requiring attribute types that allow multiples.
 
-PKIX Attestation Requests are discussed in {{sec-reqs}}. 
+PKIX Attestation Requests are discussed in {{sec-reqs}}.
 In the tables in the sections that follow, the column "Request Contains a Value" specifies whether,
 when the given attribute appears in a request, whether it is to be a valued or un-valued request attribute as described in {{sec-reqs}}.
 
@@ -554,7 +555,7 @@ The UTF8String attribet `fipsver` indicates the version of the FIPS CMVP specifi
 The integer attribute `fipslevel` indicates the compliance level to which the device is currently operating and MUST only be 1, 2, 3, or 4. The `fipslevel` attribute has no meaning if `fipsboot` is absent or `false`.
 
 The FIPS status information in a PKIX Attestation indicates only the mode of operation of the device and is not authoritative of its validation status.
-This information is available on the NIST CMVP website or by contacting the device vendor. 
+This information is available on the NIST CMVP website or by contacting the device vendor.
 As an example, some devices may have the option to enable FIPS mode in configuration even if the vendor has not sumbitted this model for validation. As another example, a device may be running in a mode consistent with FIPS Level 3 but the device was only validated and certified to Level 2.
 A Relying Party wishing to know the validation status of the device MUST couple the device state information contained in the attestation with a valid FIPS CMVP certificate for the device.
 
