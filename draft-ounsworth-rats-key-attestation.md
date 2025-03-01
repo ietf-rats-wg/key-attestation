@@ -157,11 +157,6 @@ This document provides a vendor-agnostic format for attesting to the logical and
 
 # Terminology
 
-TODO: I think some of this terminology is not needed.
-TODO: JP believes that PAK, KAK and KAS should be removed.
-TODO: these should be sorted alphabetically
-
-
 The reader is assumed to be familiar with the vocabulary and concepts
 defined in {{RFC9334}}.
 
@@ -174,9 +169,9 @@ Root of Trust (RoT):
 to act as a security foundation required for accomplishing the security
 goals of a system. In our case, the RoT is expected to offer the
 functionality for attesting to the state of the platform, and to attest
-the properties of the identity key (IK). More precisely, it has to attest
-the integrity of the IK (public as well as private key) and the
-confidentiality of the IK private key. This document makes a simplifying
+the properties of the application key. More precisely, it has to attest
+the integrity of the application key (public as well as private key) and the
+confidentiality of the private part of the application key. This document makes a simplifying
 assumption that the RoT, the attesting environment holding the
 attestation key, and the target environment being measured and attested
 are all the same environment.
@@ -184,10 +179,6 @@ are all the same environment.
 Attestation Key (AK):
 : Cryptographic key belonging to the RoT that is only used to sign
 attestation tokens.
-
-Platform Attestation Key (PAK):
-: An AK used specifically for signing attestation tokens relating to the
-state of the platform.
 
 Hardware Security Module (HSM):
 : a physical computing device that safeguards and manages secrets (most importantly cryptographic keys),
@@ -205,18 +196,9 @@ keys are generated and stored. For example, a Relying Party may want to know whe
 a private key is stored in a hardware security module and cannot be
 exported in cleartext.
 
-Key Attestation Key (KAK):
-: An AK used specifically for signing KATs. In some systems only a
-single AK is used. In that case the AK is used as a PAK and a KAK.
-
-Identity Key (IK):
-: The IK consists of a private and a public key. The private key is used
-by the usage protocol. The public key is included in the Key Attestation
-Token.  The IK is protected by the RoT.
-
 Usage Protocol:
 : A (security) protocol that requires demonstrating possession of the
-private component of the IK.
+private component of the application key.
 
 Attestation Token (AT):
 : A collection of claims that a RoT assembles (and signs) with the
@@ -231,19 +213,19 @@ data during measured boot.
 
 Key Attestation Entity:
 : An Entity containing attributes relating to a specific application key
-protected by the HSM. The key attestation service, which is part
-of the platform root of trust (RoT), conceptually acts as a local
-certification authority since the KAT behaves like a certificate.
+protected by the HSM. The key attestation service is part
+of the root of trust (RoT).
 
 Presenter:
-: Party that proves possession of a private key to a recipient of a KAT.
-Typically this will be an application layer entity such as a cryptographic
-library constructing a Certificate Signing Request that must embed a
-key attestation, or a TLS library attempting to perform attested TLS.
-The Presenter is not fulfilling any roles in the RATS architecture.
+: Party that proves possession of a private key to a recipient of a key
+attestation token. Typically this will be an application layer entity,
+such as a cryptographiclibrary constructing a Certificate Signing Request
+that must embed attestation evidence, or a TLS library attempting to
+perform attested TLS. The Presenter is not fulfilling any roles in the
+RATS architecture.
 
 Recipient:
-: Party that receives the KAT containing the proof-of-possession key
+: Party that receives the attestation evidence containing the proof-of-possession key
 information from the presenter. The Recipient is likely fulfilling
 the roles of Verifier and Relying Party in the RATS architecture,
 but the exact details of this arrangement is out-of-scope for this
@@ -258,7 +240,6 @@ Attester in the RATS architecture.
 Note that real HSMs may or may not implement the Attester as a
 single internal module, but this abstraction is used for the
 design and security analysis of this specification.
-
 
 {::boilerplate bcp14-tagged}
 
