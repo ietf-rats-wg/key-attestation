@@ -5,7 +5,7 @@
 Remote ATtestation procedureS                               M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 1 September 2025                                       Crypto4A
+Expires: 2 September 2025                                       Crypto4A
                                                            H. Tschofenig
                                                                    H-BRS
                                                              H. Birkholz
@@ -14,7 +14,7 @@ Expires: 1 September 2025                                       Crypto4A
                                                          Beyond Identity
                                                                 N. Smith
                                                        Intel Corporation
-                                                        28 February 2025
+                                                            1 March 2025
 
 
                           PKIX Key Attestation
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 1 September 2025.
+   This Internet-Draft will expire on 2 September 2025.
 
 Copyright Notice
 
@@ -84,34 +84,34 @@ Table of Contents
    3.  Architecture and Conceptual Model
      3.1.  Attestation Key Certificate Chain
    4.  Data Model
-     4.1.  Attestation Requests
-     4.2.  Transaction Attributes
-       4.2.1.  nonce
-       4.2.2.  time
-     4.3.  Platform Attributes
-       4.3.1.  usermods
-       4.3.2.  fipsboot
-       4.3.3.  envid
-       4.3.4.  envdesc
-     4.4.  Key Attributes
-       4.4.1.  purpose
-       4.4.2.  protection
-     4.5.  Additional Entity and Attribute Types
-     4.6.  Encoding
+     4.1.  Transaction Attributes
+       4.1.1.  nonce
+       4.1.2.  time
+     4.2.  Platform Attributes
+       4.2.1.  usermods
+       4.2.2.  fipsboot, fipsver and fipslevel
+       4.2.3.  envid
+       4.2.4.  envdesc
+     4.3.  Key Attributes
+       4.3.1.  purpose
+       4.3.2.  protection
+     4.4.  Additional Entity and Attribute Types
+     4.5.  Encoding
    5.  Signing Procedure
    6.  Verification Procedure
-   7.  Appraisal Policies and Profiles
-     7.1.  Key Import into an HSM
-     7.2.  CA/Browser Forum Code-Signing
-   8.  ASN.1 Module
-   9.  IANA Considerations
-   10. Security Considerations
-     10.1.  Simple to implement
-     10.2.  Detached Signatures
-     10.3.  Privacy
-   11. References
-     11.1.  Normative References
-     11.2.  Informative References
+   7.  Attestation Requests
+   8.  Appraisal Policies and Profiles
+     8.1.  Key Import into an HSM
+     8.2.  CA/Browser Forum Code-Signing
+   9.  ASN.1 Module
+   10. IANA Considerations
+   11. Security Considerations
+     11.1.  Simple to implement
+     11.2.  Detached Signatures
+     11.3.  Privacy
+   12. References
+     12.1.  Normative References
+     12.2.  Informative References
    Appendix A.  Samples
    Appendix B.  Acknowledgements
    Authors' Addresses
@@ -199,8 +199,8 @@ Table of Contents
 2.  Terminology
 
    TODO: I think some of this terminology is not needed.  TODO: JP
-   believes that PAK, KAK and KAS should be removed.  TODO: MikeO
-   believes that PAT, KAT, and CAB can also be removed.
+   believes that PAK, KAK and KAS should be removed.  TODO: these should
+   be sorted alphabetically
 
    The reader is assumed to be familiar with the vocabulary and concepts
    defined in [RFC9334].
@@ -228,6 +228,21 @@ Table of Contents
       An AK used specifically for signing attestation tokens relating to
       the state of the platform.
 
+   Hardware Security Module (HSM):
+      a physical computing device that safeguards and manages secrets
+      (most importantly cryptographic keys), and performs encryption,
+      decryption, signing, MACing and other cryptographic operations
+      with the managed cryptographic keys.  HSMs can sometimes host user
+      applications within a secure enclave environment within the HSM
+      that are often used to extend the cryptographic functionality of
+      the HSM.  This specification takes a broad definition of what
+      counts as an HSM to include smartcards, USB tokens, and similar
+      devices which this specification refers to as "personal
+      cryptographic tokens", as well as TPMs, in addition to the usual
+      PCI card, rack-mount, and blade server form-factor of HSM which
+      this specification refers to as "enterprise-grade" or "cloud-
+      service grade" HSMs.
+
    Key Attestation:
       Evidence containing properties of the environment(s) in which the
       private keys are generated and stored.  For example, a Relying
@@ -254,26 +269,17 @@ Table of Contents
       the identity and state of the platform.  Essentially a type of
       Evidence as per the RATS architecture terminology [RFC9334].
 
-   Platform Attestation Token (PAT):
-      An AT containing claims relating to the security state of the
-      platform, including software constituting the platform trusted
-      computing base (TCB).  The process of generating a PAT typically
-      involves gathering data during measured boot.
+   Platform Attestation Entity:
+      An Entity containing attributes relating to the security state of
+      the platform,. The process of generating a platform entity
+      typically involves gathering data during measured boot.
 
-   Key Attestation Token (KAT):
-      An AT containing a claim with a public key.  The KAT may also
-      contain other claims, such as those indicating its validity.  The
-      KAT is signed by the KAK.  The key attestation service, which is
+   Key Attestation Entity:
+      An Entity containing attributes relating to a specific application
+      key protected by the HSM.  The key attestation service, which is
       part of the platform root of trust (RoT), conceptually acts as a
       local certification authority since the KAT behaves like a
       certificate.
-
-   Combined Attestation Bundle (CAB):
-      A structure used to bundle a KAT and a PAT together for transport
-      in the usage protocol.  If the KAT already includes a PAT, in form
-      of a nested token, then it already corresponds to a CAB.  A CAB is
-      equivalent to a certificate that binds the identity of the
-      platform's TCB with the IK public key.
 
    Presenter:
       Party that proves possession of a private key to a recipient of a
@@ -343,7 +349,7 @@ Table of Contents
    Cases section: CA keys, TLS keys, etc.
 
          .-------------------------------------.
-         | Crypto Module                       |
+         | Hardware Security Module                       |
          |                                     |
          |   Platform environment              |
          |        ^        .-------------.     |
@@ -459,12 +465,15 @@ Table of Contents
    certificates supporting the signature(s).
 
    The TBS section is composed of a version number, to ensure future
-   extensibility, and a number of reported entities. .
+   extensibility, and a sequence of reported entities.
 
    For compliance with this specification, TbsPkixAttestation.version
    MUST be 1.  This envelope format is not extensible; future
    specifications which make compatibility-breaking changes MUST
    increment the version number.
+
+   EDNOTE: do we want extension marks on the TbsAttestation object?  I
+   can see pros and cons to doing that.
 
    SignatureBlock.certChain MUST contain at least one X.509 certificate
    as per [!RFC5280].  While there might exist attesting environments
@@ -517,11 +526,15 @@ Table of Contents
    TODO: do we need entity types for "platform policy" and "key policy"
    ?
 
-   A PKIX Attestation MUST NOT contain more than one platform entity.  A
-   PKIX Attestation containing more than one platform entity is
-   considered a fatal error by a parser since duplicate and conflicting
-   platform claims across multiple platform entities can easily lead to
-   security bugs.
+   A PKIX Attestation MUST NOT contain more than one platform entity
+   since duplicate and conflicting platform claims across multiple
+   platform entities can easily lead to security bugs.  A parser MUST
+   fail with an error if it encouters multiple platform entities.
+
+   A PKIX Attestation MUST NOT contain more than one transaction entity.
+   A transaction entity contains attributes that are related to the
+   request such as a "nonce".  A parser MUST fail with an error if it
+   encouters multiple transaction entities.
 
    A PKIX Attestation MAY contain one or more application key entities.
    Each key entity SHOULD describe a unique application key.  Multiple
@@ -534,12 +547,6 @@ Table of Contents
    include the AK(s) and other "platform-owned" keys in the set of keys
    you can attest, or only attesting application keys.
 
-   A PKIX Attestation can contain at most one transaction entity.  A
-   transaction entity contains attributes that are related to the
-   request such as a "nonce".  Attributes associated with the request do
-   not belong with any other entities and should be reported as part of
-   the transaction entity.
-
    Each reported attribute is composed of an Object Identifier (OID),
    identifying the type of the attribute, and a value which must be one
    of the prescribed data types.
@@ -550,13 +557,12 @@ Table of Contents
    }
 
    AttributeValue :== CHOICE {
-      bytes       [0] IMPLICIT OCTET STRING,
-      asciiString [1] IMPLICIT IA5String,
-      utf8String  [2] IMPLICIT UTF8String,
-      bool        [3] IMPLICIT BOOLEAN,
-      time        [4] IMPLICIT GeneralizedTime,
-      int         [5] IMPLICIT INTEGER,
-      oid         [6] IMPLICIT OBJECT IDENTIFIER
+      bytes       [0] IMPLICIT OCTET STRING
+      utf8String  [1] IMPLICIT UTF8String,
+      bool        [2] IMPLICIT BOOLEAN,
+      time        [3] IMPLICIT GeneralizedTime,
+      int         [4] IMPLICIT INTEGER,
+      oid         [5] IMPLICIT OBJECT IDENTIFIER
    }
 
    An attribute type is generally associated with a single entity type.
@@ -565,109 +571,26 @@ Table of Contents
 
    There are circumstances where an attribute type can be repeated for a
    given entity while other attribute types are unique.  For example,
-   the identifier for a key entity (key identifier) should not be
-   repeated as this is a unique value.  However, other attribute types
-   could be interpreted as a "set".  Therefore, this specification is
-   not constraining the number of times a particular attribute type is
-   encountered within an entity.
+   the hwmodel, uptime, and fipsboot attributes are not allowed to have
+   multiple instances since these are global measurements of the
+   platform.  However, other attribute types such as usermods allow
+   multiple instances as an HSM can have more than one user module
+   loaded.  The tables below list for each attribute type whether
+   multiples are allowed.  For attribute types that do not allow
+   multiples, a parser MUST fail with an error if it encouters multiple
+   instances.  For attribute types that allow multiples, a parser MUST
+   treat each one as an independent attribute and MUST NOT, for example,
+   consider later ones to overwrite the previous one.  Appraisal
+   policies and profiles SHOULD be clear about how to handle multiples
+   when requiring attribute types that allow multiples.
 
-   A Verifier is responsible of ensuring the consistency of the
-   recognized attributes reported for a given entity.  Ultimately, a
-   Verifier is responsible for providing attestation results to a
-   Relying Party.  Therefore, the Verifier should be constructed in such
-   a way as to extract the relevant information for this Relying Party.
+   PKIX Attestation Requests are discussed in Section 7.  In the tables
+   in the sections that follow, the column "Request Contains a Value"
+   specifies whether, when the given attribute appears in a request,
+   whether it is to be a valued or un-valued request attribute as
+   described in Section 7.
 
-4.1.  Attestation Requests
-
-   EDNOTE: MikeO: this is complex, but I'm not really sure how to define
-   a request format in any simpler way.  Ideas are welcome!
-
-   This section specifies a standardized format that a Presenter can use
-   to request a PKIX Attestation about a specific key or set of keys, a
-   specific environment, or containing specific attributes.
-
-   Hardware Security Modules range greatly in size and complexity from
-   personal cryptographic tokens containing a single application key
-   such as a smartcard acting as a personal ID card, up to clusters of
-   enterprise-grade HSMs serving an entire cloud service.
-
-   The manufacturer of a HSM device with limited capabilities may
-   implement a response to the attestation request which includes a
-   fixed set of reported entities, each with a fixed set of reported
-   attributes and parses an Attestion Request object only for the
-   purposes of extracting the nonce.
-
-   On the other hand, an enterprise grade HSM with the capability to
-   hold a large number of private keys is expected to be capable of
-   parsing attestation requests such that a Presenter can request
-   attestation of specific key(s) by their identifier, or request
-   attestation of all keys with given key attributes within a given sub-
-   environment of the HSM.  A full implementation will also create a
-   PKIX Attestation containing exactly the set of requested attributes
-   so that the Presenter can fine-tune the information that it wishes to
-   disclose to the Recipient.
-
-   A PKIX Attestation Request consists of a un-signed TbsPkixAttestation
-   object containing a single ReportedEntity identified with id-pkix-
-   attest-entity-request, called a request entity.  A TbsPkixAttestation
-   containing a request entity MUST NOT contain any other type of
-   entities.  Request entities MAY contain Attributes of any type;
-   transaction, platform, key, or any additional attribute type.  Any
-   attribute contained in a request entity is called a request
-   attribute.  Request entities MUST ONLY appear in attestation requests
-   and MUST NOT appear in PKIX Attestation objects.  The
-   TbsPkixAttestation object of an attestation request MAY appear inside
-   a signed PKIXAttestation for the purposes of authenticating and
-   authorizing the requester, but the semantics of doing so are left to
-   the implementer.
-
-   An Attester that supports Attestation Requests MUST, at the minimum,
-   support extracting the value from a nonce attribute and echoing it
-   into a nonce attribute within a TransactionEntity.
-
-   Some request attributes contain a value that the HSM uses as a filter
-   or search parameter in constructing the PKIX Attestation; these are
-   called valued requests attributes.  Other requests attributes omit
-   the optional value field so that they consist of only the attribute
-   type OID and indicate that the HSM SHOULD collect and return the
-   appropriate measurement; these are called un-valued request
-   attributes.  An Attester SHOULD return a PKIX Attestation containing
-   exactly the set of attributes listed in the request, including both
-   valued and un-valued request attributes but MAY omit requested
-   attributes if it cannot be measured in the current device
-   configuration.  Note that an Attestation Request will contain all
-   request attributes inside a single request entity, but the HSM MUST
-   sort the attributes in the response PKIX Attestation into the
-   appropriate entity types.  For example, if the request contains the
-   key purpose attribute (either valued or un-valued), then all returned
-   key entities MUST contain the purpose attribute when this data is
-   available for the given key.  The tables in the following sections
-   indicate whether an attribute of the given type MUST, MAY, or MUST
-   NOT contain a value when included in a request entity.
-
-   Generally errors should be handled gracefully by simply omitting an
-   unfulfillable request attribute from the response.  An example would
-   be if the hwserial attribute was requested but the devices does not
-   have a serial number.  However in some cases a fatal error MAY be
-   returned, for example if attestation of a specific key is requested
-   by key identifier or SubjectPublicKeyInfo but the HSM does not
-   contain a matching key.  HSMs SHOULD ignore request attributes with
-   unrecognized type OIDs.
-
-   Generally, the Attester SHOULD NOT include additional attributes
-   beyond those that were requested.  This is to allow the Presenter to
-   fine-tune the information that will be disclosed to the Recipient.
-   Further privacy concerns are discussed in {#sec-cons-privacy}.
-   However, in some contexts this MAY be appropriate, for example, a
-   request containing only a key identifier attribute could be responded
-   to with the full set of platform and key attributes that apply to
-   that key.  Discretion is left to implementers.
-
-   For both error handling and privacy reasons, the Presenter SHOULD
-   check that the returned PKIX Attestation contains the expected
-   attributes prior to forwarding it to the Recipient.
-
-4.2.  Transaction Attributes
+4.1.  Transaction Attributes
 
    A default and vendor-agnostic set of transaction attributes is
    defined in this section.
@@ -699,7 +622,7 @@ Table of Contents
 
                                   Table 1
 
-4.2.1.  nonce
+4.1.1.  nonce
 
    The nonce attribute is used to provide "freshness" quality as to the
    information provided by the Attester (HSM) in the PkixAttestation
@@ -707,7 +630,7 @@ Table of Contents
    nonce value as part of the request.  This nonce value, if provided,
    SHOULD be repeated as an attribute to the transaction entity.
 
-4.2.2.  time
+4.1.2.  time
 
    The time at which this attestation was generated, according to the
    internal system clock of the HSM.
@@ -723,7 +646,7 @@ Table of Contents
    protocol that makes use of the nonce attribute is a far more reliable
    way of establishing freshness.
 
-4.3.  Platform Attributes
+4.2.  Platform Attributes
 
    A default and vendor-agnostic set of platform attributes is defined
    in this section.
@@ -749,14 +672,14 @@ Table of Contents
    |         |              |                   |        |        |line of the hardware|
    |         |              |                   |        |        |module.             |
    +---------+--------------+-------------------+--------+--------+--------------------+
-   |hwserial |asciiString   |RFCthis            |No      |MUST NOT|Serial number of the|
+   |hwserial |utf8String    |RFCthis            |No      |MUST NOT|Serial number of the|
    |         |              |                   |        |        |hardware module,    |
    |         |              |                   |        |        |often matches the   |
    |         |              |                   |        |        |number engraved or  |
    |         |              |                   |        |        |stickered on the    |
    |         |              |                   |        |        |case.               |
    +---------+--------------+-------------------+--------+--------+--------------------+
-   |swversion|asciiString   |[I-D.ietf-rats-eat]|No      |MUST NOT|A text string       |
+   |swversion|utf8String    |[I-D.ietf-rats-eat]|No      |MUST NOT|A text string       |
    |         |              |                   |        |        |identifying the     |
    |         |              |                   |        |        |firmware or software|
    |         |              |                   |        |        |running on the HSM. |
@@ -796,7 +719,22 @@ Table of Contents
    |         |              |                   |        |        |currently running in|
    |         |              |                   |        |        |FIPS mode.          |
    +---------+--------------+-------------------+--------+--------+--------------------+
-   |envid    |asciiString   |RFCthis            |Yes     |MAY     |An environment ID,  |
+   |fipsver  |utf8String    |[FIPS.140-3]       |No      |MUST NOT|Indicates the       |
+   |         |              |                   |        |        |version of the FIPS |
+   |         |              |                   |        |        |CMVP standard that  |
+   |         |              |                   |        |        |is being enforced.  |
+   |         |              |                   |        |        |At time of writing  |
+   |         |              |                   |        |        |this is typically   |
+   |         |              |                   |        |        |"FIPS 140-2" or     |
+   |         |              |                   |        |        |"FIPS 140-3".       |
+   +---------+--------------+-------------------+--------+--------+--------------------+
+   |fipslevel|int           |[FIPS.140-3]       |No      |MUST NOT|Indicates the FIPS  |
+   |         |              |                   |        |        |Level to which the  |
+   |         |              |                   |        |        |device is currently |
+   |         |              |                   |        |        |operating in        |
+   |         |              |                   |        |        |compliance with.    |
+   +---------+--------------+-------------------+--------+--------+--------------------+
+   |envid    |utf8String    |RFCthis            |Yes     |MAY     |An environment ID,  |
    |         |              |                   |        |        |which will typically|
    |         |              |                   |        |        |be a URI, UUID, or  |
    |         |              |                   |        |        |similar.            |
@@ -811,12 +749,12 @@ Table of Contents
    not define it (at least not the 11 page useless version of 140-3 that
    I found).
 
-   Each attribute has an assigned OID, see Section 8.
+   Each attribute has an assigned OID, see Section 9.
 
    Some of the attributes defined in this specification have further
    details below.
 
-4.3.1.  usermods
+4.2.1.  usermods
 
    Most HSMs have some concept of trusted execution environment where
    user software modules can be loaded inside the HSM to run with some
@@ -824,31 +762,47 @@ Table of Contents
    lists user modules currently loaded onto the HSM in a human readable
    format, preferably JSON.
 
-4.3.2.  fipsboot
+4.2.2.  fipsboot, fipsver and fipslevel
 
-   FIPS 140-3 CMVP validation places stringent requirements on the
-   cryptography offered by the module, including only enabling FIPS-
-   approved algorithms, certain requirements on entropy sources, and
-   extensive start-up self-tests.  Many HSMs include a configuration
-   setting that allows the device to be taken out of FIPS mode and thus
-   enable additional functionality or performance.
+   FIPS 140-3 CMVP validation places stringent requirements on the mode
+   of operation of the device and the cryptography offered by the
+   module, including only enabling FIPS-approved algorithms, certain
+   requirements on entropy sources, and extensive start-up self-tests.
+   FIPS 140-3 offers compliance levels 1 through 4 with increasingly
+   strict requirements.  Many HSMs include a configuration setting that
+   allows the device to be taken out of FIPS mode and thus enable
+   additional functionality or performance, and some offer configuration
+   settings to change between compliance levels.
 
-   This boolean attribute indicates whether the device is currently
-   operating in FIPS mode.  For most HSMs, changing this configuration
-   setting from fipsboot=true to fips-boos=false is destructive and will
-   result in zeroization of all cryptographic keys held within the
-   module.
+   The boolean attribute fipsboot indicates whether the device is
+   currently operating in FIPS mode.  For most HSMs, changing this
+   configuration setting from fipsboot=true to fips-boos=false is
+   destructive and will result in zeroization of all cryptographic keys
+   held within the module.
 
-   Whether the device is currently running in FIPS mode is completely
-   independent from whether the device has a valid and active FIPS CMVP
-   certification.  For example, some devices may have a FIPS mode
-   configuration, and some operators may choose to enable it, even if
-   that particular model was never submitted for certification.  In
-   fact, the device has no way to know whether it has an active
-   certification or not.  This information is available on the NIST CMVP
-   website or by contacting the device vendor.
+   The UTF8String attribet fipsver indicates the version of the FIPS
+   CMVP specification with which the device's operational mode is
+   compliant.  At the time of writing, the strings "FIPS 140-2" or "FIPS
+   140-3" SHOULD be used.
 
-4.3.3.  envid
+   The integer attribute fipslevel indicates the compliance level to
+   which the device is currently operating and MUST only be 1, 2, 3, or
+   4.  The fipslevel attribute has no meaning if fipsboot is absent or
+   false.
+
+   The FIPS status information in a PKIX Attestation indicates only the
+   mode of operation of the device and is not authoritative of its
+   validation status.  This information is available on the NIST CMVP
+   website or by contacting the device vendor.  As an example, some
+   devices may have the option to enable FIPS mode in configuration even
+   if the vendor has not sumbitted this model for validation.  As
+   another example, a device may be running in a mode consistent with
+   FIPS Level 3 but the device was only validated and certified to Level
+   2.  A Relying Party wishing to know the validation status of the
+   device MUST couple the device state information contained in the
+   attestation with a valid FIPS CMVP certificate for the device.
+
+4.2.3.  envid
 
    An identifier for an environment to which the attested keys belong.
    These will be an a vendor-chosen format, but are constrained to ASCII
@@ -867,14 +821,14 @@ Table of Contents
    Presenter is requesting that only keys belogning to the given
    environment be included in the returned attestation.
 
-4.3.4.  envdesc
+4.2.4.  envdesc
 
    Further description of the environment beyond hwvendor, hwmodel,
    hwserial, swversion; for example if there is a need to describe
    multiple logical partitions within the same device.  Contents could
    be a human-readable description or other identifiers.
 
-4.4.  Key Attributes
+4.3.  Key Attributes
 
    A default and vendor-agnostic set of key attributes is defined in
    this section.
@@ -911,6 +865,13 @@ Table of Contents
    |           |              |         |        |        |to PKCS#11            |
    |           |              |         |        |        |CKA_EXTRACTABLE.      |
    +-----------+--------------+---------+--------+--------+----------------------+
+   |sensitive  |bool          |[PKCS11] |No      |MAY     |Indicates that the key|
+   |           |              |         |        |        |cannot leave the      |
+   |           |              |         |        |        |module in plaintext.  |
+   |           |              |         |        |        |Corresponds directly  |
+   |           |              |         |        |        |to PKCS#11            |
+   |           |              |         |        |        |CKA_SENSITIVE.        |
+   +-----------+--------------+---------+--------+--------+----------------------+
    |never-     |bool          |[PKCS11] |No      |MAY     |Indicates if the key  |
    |extractable|              |         |        |        |was able to be        |
    |           |              |         |        |        |exported from the     |
@@ -933,12 +894,30 @@ Table of Contents
 
                                   Table 3
 
-4.4.1.  purpose
+   PKCS#11 private key attributes can be somewhat complex to parse,
+   especially as their exact meanings can vary by the key type and the
+   exact details of key export mechanisms supported by the HSM.
+
+   In most cases, the Verifier of a PKIX Attestation will want to know
+   simply that the key is in hardware and cannot be extracted to be used
+   with a software cryptographic module.  A setting of extractable=false
+   satisfies this requirement.  Generally extractable=true &&
+   sensitive=true also satisfies this requirement as the key cannot be
+   extracted in plaintext, but only under key wrap.  This is common in
+   HSM clustering scenarios, and is also common in scenarios where keys
+   are exported under wrap so that they can be stored in an off-board
+   database for re-import later, thus allowing the HSM to protect and
+   manage a much larger set of keys than it has internal memory for.
+   The never-extractable and local attributes give additional assurance
+   than the key has always been in hardware and was not imported from
+   software.
+
+4.3.1.  purpose
 
    TODO: probably need to define a mapping from PKCS#11 CKA enums to a
    bit-indexed byte array.
 
-4.4.2.  protection
+4.3.2.  protection
 
    Indicates any additional key protection properties around use or
    modification of this key.  These are generalized properties and will
@@ -953,7 +932,7 @@ Table of Contents
    We may need to say that the first X are reserved for use by future
    RFCs that update this specification, and beyond that is private use.
 
-4.5.  Additional Entity and Attribute Types
+4.4.  Additional Entity and Attribute Types
 
    It is expected that HSM vendors will register additional Entity and
    Attribute types by assigning OIDs from their own proprietary OID arcs
@@ -965,7 +944,7 @@ Table of Contents
    A Verifier which encounters an unrecognized Entity or Attribute type
    MAY ignore it.
 
-4.6.  Encoding
+4.5.  Encoding
 
    A PKIXAttestation is to be DER encoded [X.690].
 
@@ -1018,14 +997,103 @@ Table of Contents
    an attacker can remove a SignatureBlock without leaving any artifact.
    See {#sec-detached-sigs} for further discussion.
 
-7.  Appraisal Policies and Profiles
+7.  Attestation Requests
+
+   EDNOTE: MikeO: this is complex, but I'm not really sure how to define
+   a request format in any simpler way.  Ideas are welcome!
+
+   This section specifies a standardized format that a Presenter can use
+   to request a PKIX Attestation about a specific key or set of keys, a
+   specific environment, or containing specific attributes.
+
+   Hardware Security Modules range greatly in size and complexity from
+   personal cryptographic tokens containing a single application key
+   such as a smartcard acting as a personal ID card, up to clusters of
+   enterprise-grade HSMs serving an entire cloud service.
+
+   The manufacturer of a HSM device with limited capabilities may
+   implement a response to the attestation request which includes a
+   fixed set of reported entities, each with a fixed set of reported
+   attributes and parses an Attestion Request object only for the
+   purposes of extracting the nonce.
+
+   On the other hand, an enterprise grade HSM with the capability to
+   hold a large number of private keys is expected to be capable of
+   parsing attestation requests such that a Presenter can request
+   attestation of specific key(s) by their identifier, or request
+   attestation of all keys with given key attributes within a given sub-
+   environment of the HSM.  A full implementation will also create a
+   PKIX Attestation containing exactly the set of requested attributes
+   so that the Presenter can fine-tune the information that it wishes to
+   disclose to the Recipient.
+
+   A PKIX Attestation Request consists of a un-signed TbsPkixAttestation
+   object containing a single ReportedEntity identified with id-pkix-
+   attest-entity-request, called a request entity.  A TbsPkixAttestation
+   containing a request entity MUST NOT contain any other type of
+   entities.  Request entities MAY contain Attributes of any type;
+   transaction, platform, key, or any additional attribute type.  Any
+   attribute contained in a request entity is called a request
+   attribute.  Request entities MUST NOT appear in PKIX Attestation
+   response objects.  The TbsPkixAttestation object of an attestation
+   request MAY appear inside a signed PKIXAttestation for the purposes
+   of authenticating and authorizing the requester, but the semantics of
+   doing so are left to the implementer.
+
+   An Attester that supports Attestation Requests MUST, at the minimum,
+   support extracting the value from a nonce attribute and echoing it
+   into a nonce attribute within a TransactionEntity.
+
+   Some request attributes contain a value that the HSM uses as a filter
+   or search parameter in constructing the PKIX Attestation; these are
+   called valued requests attributes.  Other requests attributes omit
+   the optional value field so that they consist of only the attribute
+   type OID and indicate that the HSM SHOULD collect and return the
+   appropriate measurement; these are called un-valued request
+   attributes.  An Attester SHOULD return a PKIX Attestation containing
+   exactly the set of attributes listed in the request, including both
+   valued and un-valued request attributes but MAY omit requested
+   attributes if it cannot be measured in the current device
+   configuration.  Note that an Attestation Request will contain all
+   request attributes inside a single request entity, but the HSM MUST
+   sort the attributes in the response PKIX Attestation into the
+   appropriate entity types.  For example, if the request contains the
+   key purpose attribute (either valued or un-valued), then all returned
+   key entities will contain the purpose attribute when this data is
+   available for the given key.  The tables in the following sections
+   indicate whether an attribute of the given type MUST, MAY, or MUST
+   NOT contain a value when included in a request entity.
+
+   Generally errors should be handled gracefully by simply omitting an
+   unfulfillable request attribute from the response.  An example would
+   be if the hwserial attribute was requested but the devices does not
+   have a serial number.  However in some cases a fatal error MAY be
+   returned, for example if attestation of a specific key is requested
+   by key identifier or SubjectPublicKeyInfo but the HSM does not
+   contain a matching key.  HSMs SHOULD ignore request attributes with
+   unrecognized type OIDs.
+
+   Generally, the Attester SHOULD NOT include additional attributes
+   beyond those that were requested.  This is to allow the Presenter to
+   fine-tune the information that will be disclosed to the Recipient.
+   Further privacy concerns are discussed in Section 11.3.  However, in
+   some contexts this MAY be appropriate, for example, a request
+   containing only a key identifier attribute could be responded to with
+   the full set of platform and key attributes that apply to that key.
+   Discretion is left to implementers.
+
+   For both error handling and privacy reasons, the Presenter SHOULD
+   check that the returned PKIX Attestation contains the expected
+   attributes prior to forwarding it to the Recipient.
+
+8.  Appraisal Policies and Profiles
 
    This section provides some sample profiles of appraisal policies that
    verifiers MAY apply when evaluating evidence.  These appraisal
    profiles represent environment-specific requirements on the contents
    of the evidence and / or endorsement certificate chain.
 
-7.1.  Key Import into an HSM
+8.1.  Key Import into an HSM
 
    An HSM which is compliant with this draft SHOULD validate any PKIX
    Key Attestations that are provided along with the key being imported.
@@ -1052,7 +1120,7 @@ Table of Contents
    or a prompt MAY be given to the user administrator, or any similar
    reasonable error handling logic.
 
-7.2.  CA/Browser Forum Code-Signing
+8.2.  CA/Browser Forum Code-Signing
 
    TODO: ... intro text
 
@@ -1088,7 +1156,7 @@ Table of Contents
       there is at least one fipsboot=true and no fipsboot=false on that
       path.
 
-8.  ASN.1 Module
+9.  ASN.1 Module
 
    <CODE STARTS>
 
@@ -1119,13 +1187,12 @@ Table of Contents
    }
 
    AttributeValue :== CHOICE {
-      bytes       [0] IMPLICIT OCTET STRING,
-      asciiString [1] IMPLICIT IA5String,
-      utf8String  [2] IMPLICIT UTF8String,
-      bool        [3] IMPLICIT BOOLEAN,
-      time        [4] IMPLICIT GeneralizedTime,
-      int         [5] IMPLICIT INTEGER,
-      oid         [6] IMPLICIT OBJECT IDENTIFIER
+      bytes       [0] IMPLICIT OCTET STRING
+      utf8String  [1] IMPLICIT UTF8String,
+      bool        [2] IMPLICIT BOOLEAN,
+      time        [3] IMPLICIT GeneralizedTime,
+      int         [4] IMPLICIT INTEGER,
+      oid         [5] IMPLICIT OBJECT IDENTIFIER
    }
 
    SignatureBlock ::= SEQUENCE {
@@ -1158,8 +1225,11 @@ Table of Contents
    id-pkix-attest-attribute-platform-uptime     OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 8 }
    id-pkix-attest-attribute-platform-bootcount  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 9 }
    id-pkix-attest-attribute-platform-usermods   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 8 }
-   id-pkix-attest-attribute-platform-envid    OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 9 }
+   id-pkix-attest-attribute-platform-envid      OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 9 }
    id-pkix-attest-attribute-platform-envdesc    OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 10 }
+   id-pkix-attest-attribute-platform-fipsver  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 11 }
+   id-pkix-attest-attribute-platform-fipslevel  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 12 }
+
 
 
    id-pkix-attest-attribute-key                   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 2 }
@@ -1174,14 +1244,14 @@ Table of Contents
 
    <CODE ENDS>
 
-9.  IANA Considerations
+10.  IANA Considerations
 
    Please replace "RFCthis" with the RFC number assigned to this
    document.
 
    TODO: list out all the OIDs that need IANA registration.
 
-10.  Security Considerations
+11.  Security Considerations
 
    A Verifier MAY reject a PKIX Attestation if it lacks required
    attributes per their appraisal policy.  For example, if a Relying
@@ -1189,7 +1259,7 @@ Table of Contents
    lacking sufficient information to verify the device's FIPS
    certification status.
 
-10.1.  Simple to implement
+11.1.  Simple to implement
 
    The nature of attestation requires the attestation service to be
    implemented in an extremely privileged position within the HSM so
@@ -1212,7 +1282,7 @@ Table of Contents
    attribute value other than the nonce to be echoed from the request
    into the attestation object.
 
-10.2.  Detached Signatures
+11.2.  Detached Signatures
 
    TODO beef this up
 
@@ -1226,7 +1296,7 @@ Table of Contents
    counter-signatures, note that the counter signature only covers the
    tbs content and not existing SignatureBlocks.
 
-10.3.  Privacy
+11.3.  Privacy
 
    Often, a TPM will host cryptographic keys for both the kernel and
    userspace of a local operating system but a Presenter may only
@@ -1252,12 +1322,12 @@ Table of Contents
 
    Furthermore, enterprise and cloud-services grade HSMs SHOULD support
    the full set of attestation request functionality described in
-   Section 4.1 so that Presenters can fine-tune the content of a PKIX
+   Section 7 so that Presenters can fine-tune the content of a PKIX
    Attestation such that it is appropriate for the intended Recipient.
 
-11.  References
+12.  References
 
-11.1.  Normative References
+12.1.  Normative References
 
    [I-D.ietf-rats-eat]
               Lundblade, L., Mandyam, G., O'Donoghue, J., and C.
@@ -1266,9 +1336,9 @@ Table of Contents
               September 2024, <https://datatracker.ietf.org/doc/html/
               draft-ietf-rats-eat-31>.
 
-   [PKCS11]   OASIS PKCS 11 TC, "PKCS #11 Specification Version 3.1",
-              n.d., <https://docs.oasis-open.org/pkcs11/pkcs11-
-              spec/v3.1/csd01/pkcs11-spec-v3.1-csd01.html>.
+   [PKCS11]   Cox, T., "PKCS #11 Specification Version 3.1", n.d.,
+              <https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/
+              pkcs11-spec-v3.1-cs01.html>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -1298,7 +1368,7 @@ Table of Contents
               Encoding Rules (CER) and Distinguished Encoding Rules
               (DER)", ISO/IEC 8825-1:2015, November 2015.
 
-11.2.  Informative References
+12.2.  Informative References
 
    [I-D.bft-rats-kat]
               Brossard, M., Fossati, T., Tschofenig, H., and H.
@@ -1327,9 +1397,9 @@ Table of Contents
    [I-D.ietf-rats-msg-wrap]
               Birkholz, H., Smith, N., Fossati, T., Tschofenig, H., and
               D. Glaze, "RATS Conceptual Messages Wrapper (CMW)", Work
-              in Progress, Internet-Draft, draft-ietf-rats-msg-wrap-11,
-              15 November 2024, <https://datatracker.ietf.org/doc/html/
-              draft-ietf-rats-msg-wrap-11>.
+              in Progress, Internet-Draft, draft-ietf-rats-msg-wrap-12,
+              28 February 2025, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-rats-msg-wrap-12>.
 
    [RFC2986]  Nystrom, M. and B. Kaliski, "PKCS #10: Certification
               Request Syntax Specification Version 1.7", RFC 2986,
