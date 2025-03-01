@@ -216,6 +216,17 @@ Key Attestation Entity:
 protected by the HSM. The key attestation service is part
 of the root of trust (RoT).
 
+
+Trust Anchor:
+: As defined in [!RFC6024] and [!RFC9019], a Trust Anchor
+"represents an authoritative entity via a public key and
+associated data.  The public key is used to verify digital
+signatures, and the associated data is used to constrain the types
+of information for which the trust anchor is authoritative." The
+Trust Anchor may be a certificate, a raw public key, or other
+structure, as appropriate.  It can be a non-root certificate when
+it is a certificate.
+  
 Presenter:
 : Party that proves possession of a private key to a recipient of a key
 attestation token. Typically this will be an application layer entity,
