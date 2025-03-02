@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-27T00:40:38.175175+00:00",
+  "timestamp": "2025-03-02T00:43:41.637660+00:00",
   "repo": "hannestschofenig/key-attestation",
   "labels": [
     {
@@ -78,7 +78,7 @@
       "labels": [],
       "body": "At the minimum, we need a non-normative section describing the properties that an AK key MUST have. Things like:\n\n* Only ever signs attestation objects (ie cannot be a signing fool).\n* Is either injected and certified at manufacture time and chains to a vendor manufacture root, or else is injected at network onboarding time and chains to a network operator root.\n\nDiscussion point: should we, in this specification, be prescriptive about the structure of an AK certificate (ie prescribing v3 extensions that it must have), or should we describe non-normatively the properties that this should have, and then leave this to be vendor-specific?\n(I think the HSM vendors would prefer flexibility here)",
       "createdAt": "2025-01-27T17:59:30Z",
-      "updatedAt": "2025-01-28T21:40:38Z",
+      "updatedAt": "2025-02-28T00:00:33Z",
       "closedAt": null,
       "comments": [
         {
@@ -87,6 +87,13 @@
           "body": "> * Is either injected and certified at manufacture time and chains to a vendor manufacture root, or else is injected at network onboarding time and chains to a network operator root.\n\nIs this to say that an attestation signing key can't be generated within the HSM? Some customers prefer this over having to trust a vendor's key injection process (which they can't easily audit).",
           "createdAt": "2025-01-28T21:40:37Z",
           "updatedAt": "2025-01-28T21:40:37Z"
+        },
+        {
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> > * Is either injected and certified at manufacture time and chains to a vendor manufacture root, or else is injected at network onboarding time and chains to a network operator root.\n> \n> Is this to say that an attestation signing key can't be generated within the HSM? Some customers prefer this over having to trust a vendor's key injection process (which they can't easily audit).\n\nSorry, I meant to say that the AK _certificate_ is injected at network onboarding time; ie the device would do a CSR to a CA run by its new owner, for an AK generated internally to the device.",
+          "createdAt": "2025-02-28T00:00:32Z",
+          "updatedAt": "2025-02-28T00:00:32Z"
         }
       ]
     },
@@ -95,15 +102,15 @@
       "id": "I_kwDONUAin86ntaoX",
       "title": "We need a section on Root-of-Trust endorsements",
       "url": "https://github.com/hannestschofenig/key-attestation/issues/7",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "ounsworth",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "I the \"big HSM\" world, you fully trust the entirety of the hardware boundary because it has been validated by FIPS CMVP, or Common Criteria. This is an \"endorsement\" in RATS terminology, but may not come in an automated format; ie a human may have to take the hardware_oem, hardware_model, and sw_version claims from the evidence and go find that thing on the NIST CMVP website.\n\nThis should be described in the document.",
       "createdAt": "2025-01-27T18:02:48Z",
-      "updatedAt": "2025-01-28T21:35:20Z",
-      "closedAt": null,
+      "updatedAt": "2025-02-27T23:58:24Z",
+      "closedAt": "2025-02-27T23:58:23Z",
       "comments": [
         {
           "author": "nedmsmith",
@@ -111,6 +118,13 @@
           "body": "The endorsement document could be a certificate which binds an instance identifier (public key) to a device type or model (these are class identifiers). \n\nThen endorsement document for a CC or FIPS certified entity is a class identifier that binds the class of device with a rating. \n\nIf the class identifiers between the two documents are the same type. Then a verifier can relate the two documents even if they have difrerent signers and different lifecycles.",
           "createdAt": "2025-01-28T21:35:18Z",
           "updatedAt": "2025-01-28T21:35:18Z"
+        },
+        {
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Addressed in re-write.",
+          "createdAt": "2025-02-27T23:58:23Z",
+          "updatedAt": "2025-02-27T23:58:23Z"
         }
       ]
     },
@@ -119,15 +133,15 @@
       "id": "I_kwDONUAin86ntctl",
       "title": "Should we flip the order of nesting?",
       "url": "https://github.com/hannestschofenig/key-attestation/issues/8",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "ounsworth",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Mike's samples have the KAT claims is the inner signed objects, and then are placed within an outer PAT signed object. From an HSM perspective, this makes sense. But from a RATS / DICE perspective it usually goes the other way where lower-level platforms (ex.: secure boot) produces its signed statement, and then this is included in a higher-level signed statement (ex.: OS boot)\n\nShould we flip the order?\n\nDo we actually need to do prescriptive about this, or we do only need to define a flexible syntax and then let HSM vendors use it either way?",
       "createdAt": "2025-01-27T18:06:25Z",
-      "updatedAt": "2025-01-28T21:29:42Z",
-      "closedAt": null,
+      "updatedAt": "2025-02-27T23:58:56Z",
+      "closedAt": "2025-02-27T23:58:53Z",
       "comments": [
         {
           "author": "nedmsmith",
@@ -135,6 +149,13 @@
           "body": "> But from a RATS / DICE perspective\n\nI disagree. RATS doesn't equate nesting with idenitity. DICE keys are derived from environmental attributes, but once an identifier is generated, it doesn't NEED to be nested for it to make sense. \nHaving globally unique identfiers for environments means you don't depend on nesting (local name space scoping) contexts for disambiguation. A flat list of tuples : (environment identifier, attribute value) offers sufficient disambiguation if _environment identifier_ is globally unique. \n\nI'm not asking you to go look, but if you don't believe me you can look at the internal representation of claims in the corim draft which is modeled as a flat list of claims.\n\nGiven attestation pretty much requires attestation keys to assert claims, keys can be a reasonable instance specific identifiers for environments. This is what a device cert is doing already. It's often helpful to have a class specific identifier for cases where an attribute applies to multiple devices/environments at the same time (such as a model or versioned thing). If the class identifiers are also globally unique, then they don't depend on nesting for disambiguation. A key can also be a class identifier if it is a group key. \n\nHSMs are not different from other embedded computing environments in that they have both class-based and instance-based objects for which it makes sense to produce attested claims that describes them. If I have a preference, it is that the objects be identified with globally unique identifiers to minimize the need for composite nested identifiers. ",
           "createdAt": "2025-01-28T21:29:41Z",
           "updatedAt": "2025-01-28T21:29:41Z"
+        },
+        {
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "body": "No longer applies since we now have no nesting.",
+          "createdAt": "2025-02-27T23:58:53Z",
+          "updatedAt": "2025-02-27T23:58:53Z"
         }
       ]
     },
@@ -175,16 +196,24 @@
       "id": "I_kwDONUAin86pArfa",
       "title": "Format of the public key",
       "url": "https://github.com/hannestschofenig/key-attestation/issues/11",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "thomas-fossati",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Currently, `pub-key` is `OCTET STRING` in ASN.1 and `bstr` in CBOR.\n\nTwo observations:\n\n1. There is no equivalent JSON type, which EAT requires.  (But this seems to be a general problem with the EAT claims.)\n2. The claim is untyped.  The document should be clear about what type of public key is expected (`SubjectPublicKeyInfo`, `COSE_Key`, `JWK`, etc.).",
       "createdAt": "2025-02-06T13:24:10Z",
-      "updatedAt": "2025-02-06T13:24:10Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2025-02-28T00:02:03Z",
+      "closedAt": "2025-02-28T00:02:02Z",
+      "comments": [
+        {
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "body": "It will be `SubjectPublicKeyInfo`, and the new version makes this clear. This draft does not provide any CBOR or JOSE encoding, so I think I can close this issue.",
+          "createdAt": "2025-02-28T00:02:02Z",
+          "updatedAt": "2025-02-28T00:02:02Z"
+        }
+      ]
     },
     {
       "number": 14,
@@ -223,6 +252,56 @@
       "body": "> JWT \"iat\"  The time at which this token was generated. EDNOTE: Surely such a thing already exists in EAT?\n\nYes, the IAT Claim is specified inf [RFC 7519](https://datatracker.ietf.org/doc/html/rfc7519) and in [RFC 8392](https://datatracker.ietf.org/doc/html/rfc8392) respectively.",
       "createdAt": "2025-02-11T09:28:19Z",
       "updatedAt": "2025-02-11T09:28:19Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 16,
+      "id": "I_kwDONUAin86sA7lf",
+      "title": "If Platform and Transaction Entities can only appear once, then why not make them explicitly part of the TBS struct?",
+      "url": "https://github.com/hannestschofenig/key-attestation/issues/16",
+      "state": "OPEN",
+      "author": "ounsworth",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "It seems like it's adding complexity to make Platform Entities and Transaction Entities part of the Entity list, and then in text restrict them to \"_MAY contain only one\"._\n\nIn this case, wouldn't it be better to do this so that this constraint can be enforced by the ASN.1 parser?\n\n```\nTbsPkixAttestation ::= SEQUENCE {\n    version INTEGER,\n    reportedEntities SEQUENCE SIZE (1..MAX) OF ReportedEntity,\n    platformEntity        OPTIONAL [0] PlatformEntity,\n    transactionEntity    OPTIONAL [1] TransactionEntity\n}\n```\n\nWe can use the fancy new ASN.1 syntax .&Type({AttrSet}{@type} -- or whatever -- to restrict the valid types for ReportedEntity, and in this document we only register KeyEntity as a valid type for ReportedEntity.",
+      "createdAt": "2025-02-28T00:54:37Z",
+      "updatedAt": "2025-02-28T00:54:37Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 18,
+      "id": "I_kwDONUAin86sH7W6",
+      "title": "TODO: Pre-122 edits",
+      "url": "https://github.com/hannestschofenig/key-attestation/issues/18",
+      "state": "CLOSED",
+      "author": "ounsworth",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "- aasvg should be HSM?\n- asn.1 extensions markers on the extensible structures?\n- Be careful about MUSTs in the request section\n- broken link {#sec-cons-privacy}\n- Think about moving the Request stuff to its own section at the end.\n- take out the asciiString and just make utf8String\n- Comments from Richard\n  - add a fipslevel pa\n\n\nFrom Richard:\n\n> A PKIX Attestation containing more than one platform entity is considered a fatal error by a parser\n\nCan we make this into a MUST statement about parsers?\n\n\n> A PKIX Attestation can contain at most one transaction entity\n\nHere too.\n\n\n> fipsboot\n\nThere's some structure to FIPS compliance:\nstandard version (present FIPS 140-3 but could be others in the future)\nlevel\nDo we want to express any of that?\n\n\n\n> Corresponds directly to PKCS#11 CKA_EXTRACTABLE.\n\nCKA_EXTRACTABLE means wrappable. But we need to take into account CKA_SENSITIVE too. For example a key with CKA_EXTRACTABLE=false, CKA_SENSITIVE=false could be read out of an HSM simply by calling C_GetAttributeValue. \n\nSo I think we need to define the property here a bit differently. For attestation purposes you mostly want to know if the key cannot be extracted from the HSM in any form (i.e. wrapped or plaintext).\n\n(I guess someone might be interested in \"can be wrapped but no plaintext export\" but that opens a rather large can of worms about what key(s) and mechanism(s) can be used to wrap it. Let's not.)\n\nMikeO: For now I'll just add an EDNOTE for future design team discussion.",
+      "createdAt": "2025-02-28T17:51:05Z",
+      "updatedAt": "2025-03-01T05:58:31Z",
+      "closedAt": "2025-03-01T05:58:31Z",
+      "comments": []
+    },
+    {
+      "number": 23,
+      "id": "I_kwDONUAin86sM5no",
+      "title": "How to use the format with the CSR Attestation Draft",
+      "url": "https://github.com/hannestschofenig/key-attestation/issues/23",
+      "state": "OPEN",
+      "author": "hannestschofenig",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "ounsworth"
+      ],
+      "labels": [],
+      "body": "It is unclear to me how I would use the structure with a CSR attestation draft where I can only proof possession of a single application key and that proof of possessoin is actually part of the signature computed over the CSR itself.\n\nWould therefore the application private key proof of possession happen twice - once for the CSR and then again for the structure defined in the draft or does the structure in the draft only get signed by the attestation key.\n\nThis part is not clear for me from reading the spec. \n",
+      "createdAt": "2025-03-01T18:01:38Z",
+      "updatedAt": "2025-03-01T18:01:49Z",
       "closedAt": null,
       "comments": []
     }
@@ -401,6 +480,138 @@
       "mergeCommit": {
         "oid": "0654849562e3d04d4c5dd74bc622d79fa5a856fa"
       },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 17,
+      "id": "PR_kwDONUAin86M5IKU",
+      "title": "MikeO big editing pass",
+      "url": "https://github.com/hannestschofenig/key-attestation/pull/17",
+      "state": "MERGED",
+      "author": "ounsworth",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-02-28T06:00:40Z",
+      "updatedAt": "2025-02-28T06:23:18Z",
+      "baseRepository": "hannestschofenig/key-attestation",
+      "baseRefName": "main",
+      "baseRefOid": "0654849562e3d04d4c5dd74bc622d79fa5a856fa",
+      "headRepository": "hannestschofenig/key-attestation",
+      "headRefName": "mikeo_edits",
+      "headRefOid": "5bfbc872bfa28062be6b7ab43b930407bee81ef8",
+      "closedAt": "2025-02-28T06:23:04Z",
+      "mergedAt": "2025-02-28T06:23:04Z",
+      "mergedBy": "ounsworth",
+      "mergeCommit": {
+        "oid": "02f911bfd1d68084991746560546abeef61d2435"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 19,
+      "id": "PR_kwDONUAin86NCiaz",
+      "title": "Terminology Update",
+      "url": "https://github.com/hannestschofenig/key-attestation/pull/19",
+      "state": "OPEN",
+      "author": "hannestschofenig",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Attempt to clean up the terminology section",
+      "createdAt": "2025-03-01T17:32:53Z",
+      "updatedAt": "2025-03-01T17:55:35Z",
+      "baseRepository": "hannestschofenig/key-attestation",
+      "baseRefName": "main",
+      "baseRefOid": "1fabe29d8c4b8e1aabbf037546f406bde5ff480d",
+      "headRepository": "hannestschofenig/key-attestation",
+      "headRefName": "hannestschofenig-patch-1",
+      "headRefOid": "9f8b2e84f160d94eb5d9df9f2b3f0be92e3a9bef",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 20,
+      "id": "PR_kwDONUAin86NCkxt",
+      "title": "Figure fix",
+      "url": "https://github.com/hannestschofenig/key-attestation/pull/20",
+      "state": "OPEN",
+      "author": "hannestschofenig",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": ".... the application key (which I called the Identity Key) is not mentioned in the RATS architecture since it relates to key attestation.",
+      "createdAt": "2025-03-01T17:48:22Z",
+      "updatedAt": "2025-03-01T17:48:22Z",
+      "baseRepository": "hannestschofenig/key-attestation",
+      "baseRefName": "main",
+      "baseRefOid": "1fabe29d8c4b8e1aabbf037546f406bde5ff480d",
+      "headRepository": "hannestschofenig/key-attestation",
+      "headRefName": "hannestschofenig-patch-2",
+      "headRefOid": "aa169661fed2f268f630c6cefd20391090767c85",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 21,
+      "id": "PR_kwDONUAin86NClRg",
+      "title": "Attestation Key Section Update",
+      "url": "https://github.com/hannestschofenig/key-attestation/pull/21",
+      "state": "OPEN",
+      "author": "hannestschofenig",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-03-01T17:53:21Z",
+      "updatedAt": "2025-03-01T17:53:21Z",
+      "baseRepository": "hannestschofenig/key-attestation",
+      "baseRefName": "main",
+      "baseRefOid": "1fabe29d8c4b8e1aabbf037546f406bde5ff480d",
+      "headRepository": "hannestschofenig/key-attestation",
+      "headRefName": "hannestschofenig-patch-3",
+      "headRefOid": "e2d7ccd37d8af072751391e91c7752dcb3a77bba",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 22,
+      "id": "PR_kwDONUAin86NCl2P",
+      "title": "Information Model",
+      "url": "https://github.com/hannestschofenig/key-attestation/pull/22",
+      "state": "OPEN",
+      "author": "hannestschofenig",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-03-01T17:58:56Z",
+      "updatedAt": "2025-03-01T17:58:56Z",
+      "baseRepository": "hannestschofenig/key-attestation",
+      "baseRefName": "main",
+      "baseRefOid": "1fabe29d8c4b8e1aabbf037546f406bde5ff480d",
+      "headRepository": "hannestschofenig/key-attestation",
+      "headRefName": "hannestschofenig-patch-4",
+      "headRefOid": "81b58e786f0749222226e0d4baac4973cf425fcc",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
       "comments": [],
       "reviews": []
     }
