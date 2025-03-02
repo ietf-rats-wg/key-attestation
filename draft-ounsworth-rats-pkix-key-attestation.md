@@ -1,7 +1,7 @@
 ---
 title: PKIX Key Attestation
 abbrev: PKIX Key Attestation
-docname: draft-ounsworth-rats-key-attestation-latest
+docname: draft-ounsworth-rats-pkix-key-attestation-latest
 
 category: std
 consensus: true
