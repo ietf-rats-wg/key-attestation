@@ -135,7 +135,7 @@ See {{sec-data-model}} for the full information model.
 As described below in {{sec-arch}} "Architecture and Conceptual Model", this specification
 uses a simplification of the Remote ATtestation procedureS (RATS) Architecture [!RFC9443]
 by assuming that the attesting environment and the target environment
-are the same environment, and that this environment only produces self-attested evidence as this aligns with the
+are the same environment, and that this environment only produces evidence as this aligns with the
 target hardware platforms. As such, the attestation data format specified in {{sec-data-model}} only contains
 evidence (referred to in this document as "attributes") and does not provide for any form of endorsement except for
 endorsement of the device's attestation signing key which is endorsed via an X.509 certificate chain rooted
