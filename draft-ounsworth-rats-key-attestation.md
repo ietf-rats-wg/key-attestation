@@ -46,7 +46,6 @@ author:
     code: K1Z 7T2
     email: jp@crypto4a.com
 
-
   - name: Hannes Tschofenig
     organization: University of Applied Sciences Bonn-Rhein-Sieg
     abbrev: H-BRS
@@ -70,6 +69,7 @@ author:
 normative:
   RFC2119:
   RFC9334:
+  RFC5280:
   RFC8949:
   I-D.ietf-rats-eat:
   X.680:
@@ -97,6 +97,8 @@ normative:
 informative:
   RFC5912:
   RFC2986:
+  RFC6024:
+  RFC9019:
   RFC4211:
   I-D.bft-rats-kat:
   I-D.ietf-lamps-csr-attestation:
@@ -122,8 +124,6 @@ Typically an HSM or TPM holds an uses cryptographic keys on behalf of an applica
 However, also included in the scope of this draft are single-purpose cryptographic devices such as smartcards which may hold only a single application key for a single purpose such as authenticating to a near-field "tap" terminal.
 Within this specification we will generically refer to the attesting device as an "HSM", and to the cryptographic keys that it holds an operates on behalf of some other application as "application keys".
 
-EDNOTE: is "application keys" a bad choice since "AK" already means "attestation key"?
-
 The goal of this specification is to provide a standardized format in which an HSM can attest that one or more application keys are contained within a hardware module, and attest to any additional attributes relating to the protection of this key material.
 
 This requires providing evidence to the key protection properties of that key, referred to in
@@ -133,7 +133,7 @@ See {{sec-data-model}} for the full information model.
 
 
 As described below in {{sec-arch}} "Architecture and Conceptual Model", this specification
-uses a simplification of the Remote ATtestation procedureS (RATS) Architecture [!RFC9443]
+uses a simplification of the Remote ATtestation procedureS (RATS) Architecture {{RFC9443}}
 by assuming that the attesting environment and the target environment
 are the same environment, and that this environment only produces self-attested evidence as this aligns with the
 target hardware platforms. As such, the attestation data format specified in {{sec-data-model}} only contains
@@ -145,12 +145,12 @@ Unlike other attestation data formats defined by the RATS working group, the for
 document is targeting devices designed to operate within Public Key Infrastructure (PKI) ecosystems;
 this motivates the following design choices:
 
-* Attestation data structure defined in ASN.1 [X680] and encoded in Distinguished Encoding Rules (DER) [X.690].
-* Endorsement of attesting key uses an X.509 certificate chain [!RFC5280].
-* Key attributes are mostly just a mapping of the private key properties from PKCS#11 [PKCS11].
+* Attestation data structure defined in ASN.1 {{X680}} and encoded in Distinguished Encoding Rules (DER) {{X.690}}.
+* Endorsement of attesting key uses an X.509 certificate chain {{RFC5280}}.
+* Key attributes are mostly just a mapping of the private key properties from PKCS#11 {{PKCS11}}.
 
 For these reasons, this attestation format is called "PKIX Key Attestation" and may be used,
-for example within a Certificate Signing Request (CSR) object; [{{I-D.ietf-lamps-csr-attestation}}] specifies how to carry evidence within PKCS#10 [{{RFC2986}}] or Certificate Request Message Format (CRMF) [{{RFC4211}}].
+for example within a Certificate Signing Request (CSR) object; {{I-D.ietf-lamps-csr-attestation}} specifies how to carry evidence within PKCS#10 {{RFC2986}} or Certificate Request Message Format (CRMF) {{RFC4211}}.
 
 This document provides a vendor-agnostic format for attesting to the logical and physical protection properties of a cryptographic key and it envisions uses such as providing evidence to a Certification Authority that a key is being protected in accordance with the requested certificate profile, or that HSMs can perform key import and maintain the private key protection properties in a robust way even when migrating keys across HSMs from different vendors.
 
@@ -223,7 +223,7 @@ Attestation Token. The Key Attestation Entity makes claims about the
 protection of this key.
 
 Trust Anchor:
-: As defined in [!RFC6024] and [!RFC9019], a Trust Anchor
+: As defined in {{RFC6024}} and {{RFC9019}}, a Trust Anchor
 "represents an authoritative entity via a public key and
 associated data.  The public key is used to verify digital
 signatures, and the associated data is used to constrain the types
@@ -401,7 +401,7 @@ This envelope format is not extensible; future specifications which make compati
 
 EDNOTE: do we want extension marks on the TbsAttestation object? I can see pros and cons to doing that.
 
-`SignatureBlock.certChain` MUST contain at least one X.509 certificate as per [!RFC5280].
+`SignatureBlock.certChain` MUST contain at least one X.509 certificate as per {{RFC5280}}.
 While there might exist attesting environments which use out-of-band or non-X.509 mechanisms for communicating
 the AK public key to the Verifier, these SHALL be considered non-compliant with this specification.
 
