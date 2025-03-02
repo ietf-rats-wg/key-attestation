@@ -5,7 +5,7 @@
 Remote ATtestation procedureS                               M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 2 September 2025                                       Crypto4A
+Expires: 3 September 2025                                       Crypto4A
                                                            H. Tschofenig
                                                                    H-BRS
                                                              H. Birkholz
@@ -14,7 +14,7 @@ Expires: 2 September 2025                                       Crypto4A
                                                          Beyond Identity
                                                                 N. Smith
                                                        Intel Corporation
-                                                            1 March 2025
+                                                            2 March 2025
 
 
                           PKIX Key Attestation
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 2 September 2025.
+   This Internet-Draft will expire on 3 September 2025.
 
 Copyright Notice
 
@@ -136,9 +136,6 @@ Table of Contents
    device as an "HSM", and to the cryptographic keys that it holds an
    operates on behalf of some other application as "application keys".
 
-   EDNOTE: is "application keys" a bad choice since "AK" already means
-   "attestation key"?
-
    The goal of this specification is to provide a standardized format in
    which an HSM can attest that one or more application keys are
    contained within a hardware module, and attest to any additional
@@ -156,7 +153,7 @@ Table of Contents
 
    As described below in Section 3 "Architecture and Conceptual Model",
    this specification uses a simplification of the Remote ATtestation
-   procedureS (RATS) Architecture [!RFC9443] by assuming that the
+   procedureS (RATS) Architecture [RFC9334] by assuming that the
    attesting environment and the target environment are the same
    environment, and that this environment only produces self-attested
    evidence as this aligns with the target hardware platforms.  As such,
@@ -173,20 +170,20 @@ Table of Contents
    designed to operate within Public Key Infrastructure (PKI)
    ecosystems; this motivates the following design choices:
 
-   *  Attestation data structure defined in ASN.1 [X680] and encoded in
+   *  Attestation data structure defined in ASN.1 [X.680] and encoded in
       Distinguished Encoding Rules (DER) [X.690].
 
    *  Endorsement of attesting key uses an X.509 certificate chain
-      [!RFC5280].
+      [RFC5280].
 
    *  Key attributes are mostly just a mapping of the private key
       properties from PKCS#11 [PKCS11].
 
    For these reasons, this attestation format is called "PKIX Key
    Attestation" and may be used, for example within a Certificate
-   Signing Request (CSR) object; [[I-D.ietf-lamps-csr-attestation]]
-   specifies how to carry evidence within PKCS#10 [[RFC2986]] or
-   Certificate Request Message Format (CRMF) [[RFC4211]].
+   Signing Request (CSR) object; [I-D.ietf-lamps-csr-attestation]
+   specifies how to carry evidence within PKCS#10 [RFC2986] or
+   Certificate Request Message Format (CRMF) [RFC4211].
 
    This document provides a vendor-agnostic format for attesting to the
    logical and physical protection properties of a cryptographic key and
@@ -261,6 +258,22 @@ Table of Contents
       key protected by the HSM.  The key attestation service is part of
       the root of trust (RoT).
 
+   Application Key:
+      The application key consists of a private and a public key.  The
+      private key is used by the usage protocol.  The public key is
+      included in the Key Attestation Token.  The Key Attestation Entity
+      makes claims about the protection of this key.
+
+   Trust Anchor:
+      As defined in [RFC6024] and [RFC9019], a Trust Anchor "represents
+      an authoritative entity via a public key and associated data.  The
+      public key is used to verify digital signatures, and the
+      associated data is used to constrain the types of information for
+      which the trust anchor is authoritative."  The Trust Anchor may be
+      a certificate, a raw public key, or other structure, as
+      appropriate.  It can be a non-root certificate when it is a
+      certificate.
+
    Presenter:
       Party that proves possession of a private key to a recipient of a
       key attestation token.  Typically this will be an application
@@ -321,12 +334,8 @@ Table of Contents
    device producing evidence in the specified format requires to also
    carry nested attestation statements or endorsements, then it must be
    achieved by placing the attestation from this draft within another
-   wrapper layer such as RATS Conceptual Message Wrapper (CMW) [I-
-   D.ietf-rats-msg-wrap-11].
-
-   TODO: for the RATS audience, we probably need to clarify what exactly
-   an "Application Key" is.  Add to glossary?  Potentially we need a Use
-   Cases section: CA keys, TLS keys, etc.
+   wrapper layer such as RATS Conceptual Message Wrapper (CMW)
+   [I-D.ietf-rats-msg-wrap].
 
          .-------------------------------------.
          | Hardware Security Module                       |
@@ -456,7 +465,7 @@ Table of Contents
    can see pros and cons to doing that.
 
    SignatureBlock.certChain MUST contain at least one X.509 certificate
-   as per [!RFC5280].  While there might exist attesting environments
+   as per [RFC5280].  While there might exist attesting environments
    which use out-of-band or non-X.509 mechanisms for communicating the
    AK public key to the Verifier, these SHALL be considered non-
    compliant with this specification.
@@ -1325,6 +1334,12 @@ Table of Contents
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/rfc/rfc2119>.
 
+   [RFC5280]  Cooper, D., Santesson, S., Farrell, S., Boeyen, S.,
+              Housley, R., and W. Polk, "Internet X.509 Public Key
+              Infrastructure Certificate and Certificate Revocation List
+              (CRL) Profile", RFC 5280, DOI 10.17487/RFC5280, May 2008,
+              <https://www.rfc-editor.org/rfc/rfc5280>.
+
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
@@ -1395,6 +1410,15 @@ Table of Contents
               Public Key Infrastructure Using X.509 (PKIX)", RFC 5912,
               DOI 10.17487/RFC5912, June 2010,
               <https://www.rfc-editor.org/rfc/rfc5912>.
+
+   [RFC6024]  Reddy, R. and C. Wallace, "Trust Anchor Management
+              Requirements", RFC 6024, DOI 10.17487/RFC6024, October
+              2010, <https://www.rfc-editor.org/rfc/rfc6024>.
+
+   [RFC9019]  Moran, B., Tschofenig, H., Brown, D., and M. Meriac, "A
+              Firmware Update Architecture for Internet of Things",
+              RFC 9019, DOI 10.17487/RFC9019, April 2021,
+              <https://www.rfc-editor.org/rfc/rfc9019>.
 
 Appendix A.  Samples
 
