@@ -356,11 +356,12 @@ requires third-party endorsement in order to establish trust. This endorsement
 comes in the form of an X.509 certificate chain where the SubjectPublicKey of
 the leaf certificate is the HSM's attestation key (AK) which signs the evidence,
 and this AK certificate chains to a trust anchor which is trusted by the Recipient
-as authoritative to vouch for the authenticity of the device. In practice the
-trust anchor will usually be a manufacturing CA belonging to the device vendor which proves
-that the device is genuine and not counterfeit. The Trust Anchor can also belong
-to the device operator as would be the case when the AK certificate is replaced
-as part of on-boarding the device into a new operational network.
+as authoritative to vouch for the authenticity of the device. In practice the typical
+scenarios are that the AK is generated inside the device during manufacturing and the
+AK certificate is injected at manufacture time and chains to a vendor CA which proves
+that the device is genuine and not counterfit, or the AK certificate is injected as part
+of onboarding the device into an operational environment and chains to a CA within
+the operational network.
 
 Note that the data format specified in {{sec-data-model}} allows for zero, one, or multiple
 'SignatureBlock's, so a single evidence statement could be un-protected, or could be endorsed by multiple
