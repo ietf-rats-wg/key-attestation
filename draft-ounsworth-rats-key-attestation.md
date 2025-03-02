@@ -89,7 +89,7 @@ normative:
     title: "PKCS #11 Specification Version 3.1"
     author:
       name: Dieter Bong
-      name: TOny Cox
+      name: Tony Cox
       org: OASIS PKCS 11 TC
       date: 11 August 2022
     target: https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/pkcs11-spec-v3.1-cs01.html
@@ -216,6 +216,11 @@ Key Attestation Entity:
 protected by the HSM. The key attestation service is part
 of the root of trust (RoT).
 
+Application Key:
+: The application key consists of a private and a public key.  The private key is
+used by the usage protocol.  The public key is included in the Key
+Attestation Token. The Key Attestation Entity makes claims about the
+protection of this key.
 
 Trust Anchor:
 : As defined in [!RFC6024] and [!RFC9019], a Trust Anchor
@@ -282,9 +287,7 @@ capture the full functionality of the RATS architecture. If a device producing
 evidence in the specified format requires to also carry nested attestation
 statements or endorsements, then it must
 be achieved by placing the attestation from this draft within another wrapper
-layer such as RATS Conceptual Message Wrapper (CMW) [I-D.ietf-rats-msg-wrap-11].
-
-TODO: for the RATS audience, we probably need to clarify what exactly an "Application Key" is. Add to glossary? Potentially we need a Use Cases section: CA keys, TLS keys, etc.
+layer such as RATS Conceptual Message Wrapper (CMW) {{I-D.ietf-rats-msg-wrap}}.
 
 ~~~aasvg
       .-------------------------------------.
