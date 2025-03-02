@@ -46,7 +46,6 @@ author:
     code: K1Z 7T2
     email: jp@crypto4a.com
 
-
   - name: Hannes Tschofenig
     organization: University of Applied Sciences Bonn-Rhein-Sieg
     abbrev: H-BRS
@@ -70,6 +69,7 @@ author:
 normative:
   RFC2119:
   RFC9334:
+  RFC5280:
   RFC8949:
   I-D.ietf-rats-eat:
   X.680:
@@ -89,7 +89,7 @@ normative:
     title: "PKCS #11 Specification Version 3.1"
     author:
       name: Dieter Bong
-      name: TOny Cox
+      name: Tony Cox
       org: OASIS PKCS 11 TC
       date: 11 August 2022
     target: https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/pkcs11-spec-v3.1-cs01.html
@@ -97,6 +97,8 @@ normative:
 informative:
   RFC5912:
   RFC2986:
+  RFC6024:
+  RFC9019:
   RFC4211:
   I-D.bft-rats-kat:
   I-D.ietf-lamps-csr-attestation:
@@ -122,8 +124,6 @@ Typically an HSM or TPM holds an uses cryptographic keys on behalf of an applica
 However, also included in the scope of this draft are single-purpose cryptographic devices such as smartcards which may hold only a single application key for a single purpose such as authenticating to a near-field "tap" terminal.
 Within this specification we will generically refer to the attesting device as an "HSM", and to the cryptographic keys that it holds an operates on behalf of some other application as "application keys".
 
-EDNOTE: is "application keys" a bad choice since "AK" already means "attestation key"?
-
 The goal of this specification is to provide a standardized format in which an HSM can attest that one or more application keys are contained within a hardware module, and attest to any additional attributes relating to the protection of this key material.
 
 This requires providing evidence to the key protection properties of that key, referred to in
@@ -133,9 +133,9 @@ See {{sec-data-model}} for the full information model.
 
 
 As described below in {{sec-arch}} "Architecture and Conceptual Model", this specification
-uses a simplification of the Remote ATtestation procedureS (RATS) Architecture [!RFC9443]
+uses a simplification of the Remote ATtestation procedureS (RATS) Architecture {{RFC9334}}
 by assuming that the attesting environment and the target environment
-are the same environment, and that this environment only produces self-attested evidence as this aligns with the
+are the same environment, and that this environment only produces evidence as this aligns with the
 target hardware platforms. As such, the attestation data format specified in {{sec-data-model}} only contains
 evidence (referred to in this document as "attributes") and does not provide for any form of endorsement except for
 endorsement of the device's attestation signing key which is endorsed via an X.509 certificate chain rooted
@@ -145,22 +145,17 @@ Unlike other attestation data formats defined by the RATS working group, the for
 document is targeting devices designed to operate within Public Key Infrastructure (PKI) ecosystems;
 this motivates the following design choices:
 
-* Attestation data structure defined in ASN.1 [X680] and encoded in Distinguished Encoding Rules (DER) [X.690].
-* Endorsement of attesting key uses an X.509 certificate chain [!RFC5280].
-* Key attributes are mostly just a mapping of the private key properties from PKCS#11 [PKCS11].
+* Attestation data structure defined in ASN.1 {{X.680}} and encoded in Distinguished Encoding Rules (DER) {{X.690}}.
+* Endorsement of attesting key uses an X.509 certificate chain {{RFC5280}}.
+* Key attributes are mostly just a mapping of the private key properties from PKCS#11 {{PKCS11}}.
 
 For these reasons, this attestation format is called "PKIX Key Attestation" and may be used,
-for example within a Certificate Signing Request (CSR) object; [{{I-D.ietf-lamps-csr-attestation}}] specifies how to carry evidence within PKCS#10 [{{RFC2986}}] or Certificate Request Message Format (CRMF) [{{RFC4211}}].
+for example within a Certificate Signing Request (CSR) object; {{I-D.ietf-lamps-csr-attestation}} specifies how to carry evidence within PKCS#10 {{RFC2986}} or Certificate Request Message Format (CRMF) {{RFC4211}}.
 
 This document provides a vendor-agnostic format for attesting to the logical and physical protection properties of a cryptographic key and it envisions uses such as providing evidence to a Certification Authority that a key is being protected in accordance with the requested certificate profile, or that HSMs can perform key import and maintain the private key protection properties in a robust way even when migrating keys across HSMs from different vendors.
 
 
 # Terminology
-
-TODO: I think some of this terminology is not needed.
-TODO: JP believes that PAK, KAK and KAS should be removed.
-TODO: these should be sorted alphabetically
-
 
 The reader is assumed to be familiar with the vocabulary and concepts
 defined in {{RFC9334}}.
@@ -174,9 +169,9 @@ Root of Trust (RoT):
 to act as a security foundation required for accomplishing the security
 goals of a system. In our case, the RoT is expected to offer the
 functionality for attesting to the state of the platform, and to attest
-the properties of the identity key (IK). More precisely, it has to attest
-the integrity of the IK (public as well as private key) and the
-confidentiality of the IK private key. This document makes a simplifying
+the properties of the application key. More precisely, it has to attest
+the integrity of the application key (public as well as private key) and the
+confidentiality of the private part of the application key. This document makes a simplifying
 assumption that the RoT, the attesting environment holding the
 attestation key, and the target environment being measured and attested
 are all the same environment.
@@ -184,10 +179,6 @@ are all the same environment.
 Attestation Key (AK):
 : Cryptographic key belonging to the RoT that is only used to sign
 attestation tokens.
-
-Platform Attestation Key (PAK):
-: An AK used specifically for signing attestation tokens relating to the
-state of the platform.
 
 Hardware Security Module (HSM):
 : a physical computing device that safeguards and manages secrets (most importantly cryptographic keys),
@@ -205,18 +196,9 @@ keys are generated and stored. For example, a Relying Party may want to know whe
 a private key is stored in a hardware security module and cannot be
 exported in cleartext.
 
-Key Attestation Key (KAK):
-: An AK used specifically for signing KATs. In some systems only a
-single AK is used. In that case the AK is used as a PAK and a KAK.
-
-Identity Key (IK):
-: The IK consists of a private and a public key. The private key is used
-by the usage protocol. The public key is included in the Key Attestation
-Token.  The IK is protected by the RoT.
-
 Usage Protocol:
 : A (security) protocol that requires demonstrating possession of the
-private component of the IK.
+private component of the application key.
 
 Attestation Token (AT):
 : A collection of claims that a RoT assembles (and signs) with the
@@ -231,19 +213,35 @@ data during measured boot.
 
 Key Attestation Entity:
 : An Entity containing attributes relating to a specific application key
-protected by the HSM. The key attestation service, which is part
-of the platform root of trust (RoT), conceptually acts as a local
-certification authority since the KAT behaves like a certificate.
+protected by the HSM. The key attestation service is part
+of the root of trust (RoT).
+
+Application Key:
+: The application key consists of a private and a public key.  The private key is
+used by the usage protocol.  The public key is included in the Key
+Attestation Token. The Key Attestation Entity makes claims about the
+protection of this key.
+
+Trust Anchor:
+: As defined in {{RFC6024}} and {{RFC9019}}, a Trust Anchor
+"represents an authoritative entity via a public key and
+associated data.  The public key is used to verify digital
+signatures, and the associated data is used to constrain the types
+of information for which the trust anchor is authoritative." The
+Trust Anchor may be a certificate, a raw public key, or other
+structure, as appropriate.  It can be a non-root certificate when
+it is a certificate.
 
 Presenter:
-: Party that proves possession of a private key to a recipient of a KAT.
-Typically this will be an application layer entity such as a cryptographic
-library constructing a Certificate Signing Request that must embed a
-key attestation, or a TLS library attempting to perform attested TLS.
-The Presenter is not fulfilling any roles in the RATS architecture.
+: Party that proves possession of a private key to a recipient of a key
+attestation token. Typically this will be an application layer entity,
+such as a cryptographiclibrary constructing a Certificate Signing Request
+that must embed attestation evidence, or a TLS library attempting to
+perform attested TLS. The Presenter is not fulfilling any roles in the
+RATS architecture.
 
 Recipient:
-: Party that receives the KAT containing the proof-of-possession key
+: Party that receives the attestation evidence containing the proof-of-possession key
 information from the presenter. The Recipient is likely fulfilling
 the roles of Verifier and Relying Party in the RATS architecture,
 but the exact details of this arrangement is out-of-scope for this
@@ -258,7 +256,6 @@ Attester in the RATS architecture.
 Note that real HSMs may or may not implement the Attester as a
 single internal module, but this abstraction is used for the
 design and security analysis of this specification.
-
 
 {::boilerplate bcp14-tagged}
 
@@ -354,11 +351,12 @@ requires third-party endorsement in order to establish trust. This endorsement
 comes in the form of an X.509 certificate chain where the SubjectPublicKey of
 the leaf certificate is the HSM's attestation key (AK) which signs the evidence,
 and this AK certificate chains to a trust anchor which is trusted by the Recipient
-as authoritative to vouch for the authenticity of the device. In practice the
-trust anchor will usually be a manufacturing CA belonging to the device vendor which proves
-that the device is genuine and not counterfeit. The Trust Anchor can also belong
-to the device operator as would be the case when the AK certificate is replaced
-as part of on-boarding the device into a new operational network.
+as authoritative to vouch for the authenticity of the device. In practice the typical
+scenarios are that the AK is generated inside the device during manufacturing and the
+AK certificate is injected at manufacture time and chains to a vendor CA which proves
+that the device is genuine and not counterfit, or the AK certificate is injected as part
+of onboarding the device into an operational environment and chains to a CA within
+the operational network.
 
 Note that the data format specified in {{sec-data-model}} allows for zero, one, or multiple
 'SignatureBlock's, so a single evidence statement could be un-protected, or could be endorsed by multiple
@@ -404,7 +402,7 @@ This envelope format is not extensible; future specifications which make compati
 
 EDNOTE: do we want extension marks on the TbsAttestation object? I can see pros and cons to doing that.
 
-`SignatureBlock.certChain` MUST contain at least one X.509 certificate as per [!RFC5280].
+`SignatureBlock.certChain` MUST contain at least one X.509 certificate as per {{RFC5280}}.
 While there might exist attesting environments which use out-of-band or non-X.509 mechanisms for communicating
 the AK public key to the Verifier, these SHALL be considered non-compliant with this specification.
 
@@ -765,7 +763,7 @@ it SHOULD reject evidence lacking sufficient information to verify the device's 
 certification status.
 
 
-## Simple to implement
+## Simple to Implement {#sec-cons-simple}
 
 The nature of attestation requires the attestation service to be implemented in an extremely privileged position within the HSM so that it can collect measurements of both the hardware environment and the application keys being attested. For many HSM and TPM architectures, this will place the Attestation Service inside the "HSM kernel" and potentially subject to FIPS 140-3 or Common Criteria validation and change control. For both security and compliance reasons there is incentive for the emitting and parsing logic to be simple and easy to implement correctly. Additionally, when the data formats contained in this specification are parsed within an HSM boundary -- that would be parsing a request entity, or parsing an attestation produced by a different HSM -- implementers SHOULD opt for simple logic that rejects any data that does not match the expected format instead of attempting to be flexible.
 
@@ -787,10 +785,40 @@ Often, a TPM will host cryptographic keys for both the kernel and userspace of a
 Similarly, a single enterprise-grade Hardware Security Module will often host cryptographic keys for an entire multi-tenant cloud service and the Presenter or Reciever or Recipient belongs only to a single tenant. For example the HSM backing a TLS-terminating loadbalancer fronting thousands of un-related web domains.
 In these cases, disclosing that two different keys reside on the same hardware, or in some cases even disclosing the existance of a given key, let alone its attributes, to an unauthorized party would constitute an egregious privacy violation.
 
-Implementions SHOULD be careful to avoid over-disclosure of information, for example by authenticating the Presenter and only returning results for keys and envirnments for which it is authorized.
+Implementions SHOULD be careful to avoid over-disclosure of information, for example by authenticating the Presenter as described in {{sec-cons-auth-the-presenter}} and only returning results for keys and envirnments for which it is authorized.
 In absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request MAY be authenticated by embedding the TbsPkixAttestation of the request inside a PKIXAttestation signed with a certificate belogning to the Presenter.
 
 Furthermore, enterprise and cloud-services grade HSMs SHOULD support the full set of attestation request functionality described in {{sec-reqs}} so that Presenters can fine-tune the content of a PKIX Attestation such that it is appropriate for the intended Recipient.
+
+
+## Authenticating and Authorizing the Presenter {#sec-cons-auth-the-presenter}
+
+The Presenter represents a priviledged role within the architecture of this specification as it gets to learn about the existence of application keys and their protection properties, as well as details of the platform.
+The Presenter is in the position of deciding how much information to disclose to the Recipient, and to request a suitably redacted attestation from the HSM.
+
+For personal cryptographic tokens it might be appropriate for the attestation request interface to be un-authenticated. However, for enterprise and cloud-services grade HSMs the Presenter SHOULD be authenticated using the HSM's native authentication mechanism. The details will be HSM-specific and are thus left up to the implementer, however it is RECOMMENDED to implement an authorization framework similar to the following.
+
+A Presenter SHOULD be allowed to request attestation for any application keys which it is allowed to use.
+For example, a TLS application that is correctly authenticated to the HSM in order to use its TLS keys SHOULD be able to request attestation of those same keys without needing to perform any additional authentication or requiring any additional roles or permissions.
+HSMs that wish to allow a Presenter to request attestation of keys which is not allowed to use, for example for the purposes of displaying HSM status information on an administrative console or UI, SHOULD have a "Attestation Requester" role or permission and SHOULD enforce the HSM's native access controls such that the Presenter can only retrieve attestations for keys for which it has read access.
+
+
+## Proof-of-Possession of Application Keys
+
+With asymmetric keys within a Public Key Infrastructure (PKI) it is common to require a key holder to prove that they are in control of the private key by using it. This is called "proof-of-possession (PoP)". This specification intentionally does not provide a mechnaism for PoP of application keys and relies on the Presenter, Recipient, Verifier, and Relying Party trusting the Attester to correctly report the cryptographic keys that it is holding.
+
+It would be easy to add a PoP Key Attribute that uses the attested application key to sign over, for example, the Transaction Entity, however this is a bad idea and MUST NOT be added as a custom attribute for several reasons.
+
+First, an application key intended, for example, for TLS SHOULD only be used with the TLS protocol and introducing a signature oracle whereby the TLS application key is used to sign attestation content could lead to cross-protocol attacks whereby the attacker submits a nonce value which is in fact not random but is crafted in such a way as to appear as a valid message in some other protocol context or exploit some other weakness in the signature algorithm.
+
+Second, the Presenter who has connected to the HSM to request an attestation may have permissions to view the requested application keys but not permission to use them, as in the case where the Presenter is an administrative UI displaying HSM status information to an systems administrator or auditor.
+Requiring the Attestation Service to use the attested application keys could, in some architectures, require the Attestation Service to resolve complex access control logic and handle complex error conditions for each requested key, which violates the "simple to implement" design principle outlined in {{sec-cons-simple}}. More discussion of authenticating the Presenter can be found in {{sec-cons-auth-the-presenter}}.
+
+
+In cases where explicit PoP is required for a given attested application key, it MUST be done as part of the regular usage protocol for which that key is intended and performed through the HSM's regular application interface, not its attestation interface. For example, PoP could be performed by signing a Certificate Signing Request (CSR), through a PKI enrollment protocol such as Certificate Management Protocol (CMP) which includes a challenge-response PoP, by using the key within a TLS handshake, or some other protocol which is part of the key's intended usage.
+
+
+
 
 --- back
 
