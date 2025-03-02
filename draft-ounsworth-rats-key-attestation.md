@@ -133,7 +133,7 @@ See {{sec-data-model}} for the full information model.
 
 
 As described below in {{sec-arch}} "Architecture and Conceptual Model", this specification
-uses a simplification of the Remote ATtestation procedureS (RATS) Architecture {{RFC9443}}
+uses a simplification of the Remote ATtestation procedureS (RATS) Architecture {{RFC9334}}
 by assuming that the attesting environment and the target environment
 are the same environment, and that this environment only produces self-attested evidence as this aligns with the
 target hardware platforms. As such, the attestation data format specified in {{sec-data-model}} only contains
@@ -145,7 +145,7 @@ Unlike other attestation data formats defined by the RATS working group, the for
 document is targeting devices designed to operate within Public Key Infrastructure (PKI) ecosystems;
 this motivates the following design choices:
 
-* Attestation data structure defined in ASN.1 {{X680}} and encoded in Distinguished Encoding Rules (DER) {{X.690}}.
+* Attestation data structure defined in ASN.1 {{X.680}} and encoded in Distinguished Encoding Rules (DER) {{X.690}}.
 * Endorsement of attesting key uses an X.509 certificate chain {{RFC5280}}.
 * Key attributes are mostly just a mapping of the private key properties from PKCS#11 {{PKCS11}}.
 
