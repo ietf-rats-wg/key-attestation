@@ -160,15 +160,14 @@ Table of Contents
    this specification uses a simplification of the Remote ATtestation
    procedureS (RATS) Architecture [!RFC9443] by assuming that the
    attesting environment and the target environment are the same
-   environment, and that this environment only produces self-attested
-   evidence as this aligns with the target hardware platforms.  As such,
-   the attestation data format specified in Section 4 only contains
-   evidence (referred to in this document as "attributes") and does not
-   provide for any form of endorsement except for endorsement of the
-   device's attestation signing key which is endorsed via an X.509
-   certificate chain rooted in a trust anchor belonging either to the
-   device manufacturer or to the device operator, as described in
-   Section 3.1.
+   environment, and that this environment only produces evidence as this
+   aligns with the target hardware platforms.  As such, the attestation
+   data format specified in Section 4 only contains evidence (referred
+   to in this document as "attributes") and does not provide for any
+   form of endorsement except for endorsement of the device's
+   attestation signing key which is endorsed via an X.509 certificate
+   chain rooted in a trust anchor belonging either to the device
+   manufacturer or to the device operator, as described in Section 3.1.
 
    Unlike other attestation data formats defined by the RATS working
    group, the format defined in this document is targeting devices
