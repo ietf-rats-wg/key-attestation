@@ -231,7 +231,7 @@ of information for which the trust anchor is authoritative." The
 Trust Anchor may be a certificate, a raw public key, or other
 structure, as appropriate.  It can be a non-root certificate when
 it is a certificate.
-  
+
 Presenter:
 : Party that proves possession of a private key to a recipient of a key
 attestation token. Typically this will be an application layer entity,
