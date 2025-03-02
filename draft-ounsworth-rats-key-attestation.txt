@@ -5,7 +5,7 @@
 Remote ATtestation procedureS                               M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 2 September 2025                                       Crypto4A
+Expires: 3 September 2025                                       Crypto4A
                                                            H. Tschofenig
                                                                    H-BRS
                                                              H. Birkholz
@@ -14,7 +14,7 @@ Expires: 2 September 2025                                       Crypto4A
                                                          Beyond Identity
                                                                 N. Smith
                                                        Intel Corporation
-                                                            1 March 2025
+                                                            2 March 2025
 
 
                           PKIX Key Attestation
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 2 September 2025.
+   This Internet-Draft will expire on 3 September 2025.
 
 Copyright Notice
 
@@ -106,9 +106,11 @@ Table of Contents
    9.  ASN.1 Module
    10. IANA Considerations
    11. Security Considerations
-     11.1.  Simple to implement
+     11.1.  Simple to Implement
      11.2.  Detached Signatures
      11.3.  Privacy
+     11.4.  Authenticating and Authorizing the Presenter
+     11.5.  Proof-of-Possession of Application Keys
    12. References
      12.1.  Normative References
      12.2.  Informative References
@@ -1259,7 +1261,7 @@ Table of Contents
    lacking sufficient information to verify the device's FIPS
    certification status.
 
-11.1.  Simple to implement
+11.1.  Simple to Implement
 
    The nature of attestation requires the attestation service to be
    implemented in an extremely privileged position within the HSM so
@@ -1312,11 +1314,11 @@ Table of Contents
    violation.
 
    Implementions SHOULD be careful to avoid over-disclosure of
-   information, for example by authenticating the Presenter and only
-   returning results for keys and envirnments for which it is
-   authorized.  In absence of an existing mechanism for authenticating
-   and authorizing administrative connections to the HSM, the
-   attestation request MAY be authenticated by embedding the
+   information, for example by authenticating the Presenter as described
+   in Section 11.4 and only returning results for keys and envirnments
+   for which it is authorized.  In absence of an existing mechanism for
+   authenticating and authorizing administrative connections to the HSM,
+   the attestation request MAY be authenticated by embedding the
    TbsPkixAttestation of the request inside a PKIXAttestation signed
    with a certificate belogning to the Presenter.
 
@@ -1324,6 +1326,76 @@ Table of Contents
    the full set of attestation request functionality described in
    Section 7 so that Presenters can fine-tune the content of a PKIX
    Attestation such that it is appropriate for the intended Recipient.
+
+11.4.  Authenticating and Authorizing the Presenter
+
+   The Presenter represents a priviledged role within the architecture
+   of this specification as it gets to learn about the existence of
+   application keys and their protection properties, as well as details
+   of the platform.  The Presenter is in the position of deciding how
+   much information to disclose to the Recipient and request a suitably
+   redacted attestation from the HSM.
+
+   For personal cryptographic tokens it might be appropriate for the
+   attestation request interface to be un-authenticated.  However for
+   enterprise and cloud-services grade HSMs the Presenter SHOULD be
+   authenticated using the HSM's native authentication mechanism.  The
+   details will be HSM-specific and are thus left up to the implementer,
+   however it is RECOMMENDED to implement an authorization framework
+   similar to the following.
+
+   A Presenter SHOULD be allowed to request attestation for any
+   application keys which it is allowed to use.  For example, a TLS
+   application that is correctly authenticated to the HSM in order to
+   use its TLS keys SHOULD be able to request attestation of those same
+   keys without needing to perform any additional authentication or
+   requiring any additional roles or permissions.  HSMs that wish to
+   allow Presenters to request attestation of keys which is not allowed
+   to use, for example for the purposes of displaying HSM status
+   information on an administrative console or UI, SHOULD have a
+   "Attestation Requester" role or permission and SHOULD enforce the
+   HSM's native access controls such that the Presenter can only
+   retrieve attestations for keys to which it has read access.
+
+11.5.  Proof-of-Possession of Application Keys
+
+   With asymmetric keys within a it is common to require a key holder to
+   use their private key in order to prove that they are in control of
+   the private key.  This is called "proof-of-possession (PoP)".  This
+   specification intentionally does not provide a mechnaism for PoP of
+   application keys and relies on the Presenter, Recipient, Verifier,
+   and Relying Party having confidence that the Attester has the keys it
+   claims by virtue of their trust in the Attester.
+
+   It would be easy to add a PoP Key Attribute that uses the attested
+   application key to sign over, for example, the Transaction Entity,
+   however this is a bad idea NOT RECOMMENDED to be added as a custom
+   attribute for several reasons.
+
+   First, an application key intended, for example, for TLS SHOULD only
+   be used with the TLS protocol and introducing a signature oracle
+   whereby the TLS application key is used to sign attestation content
+   could lead to cross-protocol attacks whereby the attacker submits a
+   nonce value which is in fact not random but is crafted in such a way
+   as to appear as a valid message in some other protocol context.
+
+   Second, the Presenter who has connected to the HSM to request an
+   attestation may have permissions to view the requested application
+   keys but not permission to use them.  Requiring the Attestation
+   Service to use the attested application keys could, in some
+   architectures, require the Attestation Service to resolve complex
+   access control logic and handle complex error conditions, which
+   violates the "simple to implement" design principle outlined in
+   Section 11.1.  More discussion of authenticating the Presenter can be
+   found in Section 11.4.
+
+   In cases where explicit PoP is required for a given attested
+   application key, it MUST be done as part of the regular usage
+   protocol for which that key is intended.  For example by signing a
+   Certificate Signing Request (CSR), through a PKI enrollment protocol
+   such as Certificate Management Protocol (CMP) which includes a
+   challenge-response PoP, by using the key within a TLS handshake, or
+   some other protocol which is part of the key's intended usage.
 
 12.  References
 

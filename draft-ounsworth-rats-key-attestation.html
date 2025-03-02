@@ -1053,7 +1053,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Ounsworth, et al.</td>
-<td class="center">Expires 2 September 2025</td>
+<td class="center">Expires 3 September 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1066,12 +1066,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ounsworth-rats-key-attestation-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-03-01" class="published">1 March 2025</time>
+<time datetime="2025-03-02" class="published">2 March 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-09-02">2 September 2025</time></dd>
+<dd class="expires"><time datetime="2025-09-03">3 September 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1136,7 +1136,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 2 September 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 3 September 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1259,13 +1259,19 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.1">
-                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="auto internal xref">11.1</a>.  <a href="#name-simple-to-implement" class="internal xref">Simple to implement</a></p>
+                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="auto internal xref">11.1</a>.  <a href="#name-simple-to-implement" class="internal xref">Simple to Implement</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.2">
                 <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="auto internal xref">11.2</a>.  <a href="#name-detached-signatures" class="internal xref">Detached Signatures</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.3">
                 <p id="section-toc.1-1.11.2.3.1"><a href="#section-11.3" class="auto internal xref">11.3</a>.  <a href="#name-privacy" class="internal xref">Privacy</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.4">
+                <p id="section-toc.1-1.11.2.4.1"><a href="#section-11.4" class="auto internal xref">11.4</a>.  <a href="#name-authenticating-and-authoriz" class="internal xref">Authenticating and Authorizing the Presenter</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.5">
+                <p id="section-toc.1-1.11.2.5.1"><a href="#section-11.5" class="auto internal xref">11.5</a>.  <a href="#name-proof-of-possession-of-appl" class="internal xref">Proof-of-Possession of Application Keys</a></p>
 </li>
             </ul>
 </li>
@@ -2390,10 +2396,10 @@ id-pkix-attest-attribute-key-protection        OBJECT IDENTIFIER ::= { id-pkix-a
 appraisal policy. For example, if a Relying Party mandates a FIPS-certified device,
 it <span class="bcp14">SHOULD</span> reject evidence lacking sufficient information to verify the device's FIPS
 certification status.<a href="#section-11-1" class="pilcrow">¶</a></p>
-<div id="simple-to-implement">
+<div id="sec-cons-simple">
 <section id="section-11.1">
         <h3 id="name-simple-to-implement">
-<a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-simple-to-implement" class="section-name selfRef">Simple to implement</a>
+<a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-simple-to-implement" class="section-name selfRef">Simple to Implement</a>
         </h3>
 <p id="section-11.1-1">The nature of attestation requires the attestation service to be implemented in an extremely privileged position within the HSM so that it can collect measurements of both the hardware environment and the application keys being attested. For many HSM and TPM architectures, this will place the Attestation Service inside the "HSM kernel" and potentially subject to FIPS 140-3 or Common Criteria validation and change control. For both security and compliance reasons there is incentive for the emitting and parsing logic to be simple and easy to implement correctly. Additionally, when the data formats contained in this specification are parsed within an HSM boundary -- that would be parsing a request entity, or parsing an attestation produced by a different HSM -- implementers <span class="bcp14">SHOULD</span> opt for simple logic that rejects any data that does not match the expected format instead of attempting to be flexible.<a href="#section-11.1-1" class="pilcrow">¶</a></p>
 <p id="section-11.1-2">In particular, Attesting Services <span class="bcp14">SHOULD</span> generate the attestation object from scratch and avoid copying any content from the request. Attesting Services <span class="bcp14">MUST NOT</span> allow unrecognized attributes or any attribute value other than the nonce to be echoed from the request into the attestation object.<a href="#section-11.1-2" class="pilcrow">¶</a></p>
@@ -2418,9 +2424,35 @@ certification status.<a href="#section-11-1" class="pilcrow">¶</a></p>
 <p id="section-11.3-1">Often, a TPM will host cryptographic keys for both the kernel and userspace of a local operating system but a Presenter may only represents a single user or application.
 Similarly, a single enterprise-grade Hardware Security Module will often host cryptographic keys for an entire multi-tenant cloud service and the Presenter or Reciever or Recipient belongs only to a single tenant. For example the HSM backing a TLS-terminating loadbalancer fronting thousands of un-related web domains.
 In these cases, disclosing that two different keys reside on the same hardware, or in some cases even disclosing the existance of a given key, let alone its attributes, to an unauthorized party would constitute an egregious privacy violation.<a href="#section-11.3-1" class="pilcrow">¶</a></p>
-<p id="section-11.3-2">Implementions <span class="bcp14">SHOULD</span> be careful to avoid over-disclosure of information, for example by authenticating the Presenter and only returning results for keys and envirnments for which it is authorized.
+<p id="section-11.3-2">Implementions <span class="bcp14">SHOULD</span> be careful to avoid over-disclosure of information, for example by authenticating the Presenter as described in <a href="#sec-cons-auth-the-presenter" class="auto internal xref">Section 11.4</a> and only returning results for keys and envirnments for which it is authorized.
 In absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request <span class="bcp14">MAY</span> be authenticated by embedding the TbsPkixAttestation of the request inside a PKIXAttestation signed with a certificate belogning to the Presenter.<a href="#section-11.3-2" class="pilcrow">¶</a></p>
 <p id="section-11.3-3">Furthermore, enterprise and cloud-services grade HSMs <span class="bcp14">SHOULD</span> support the full set of attestation request functionality described in <a href="#sec-reqs" class="auto internal xref">Section 7</a> so that Presenters can fine-tune the content of a PKIX Attestation such that it is appropriate for the intended Recipient.<a href="#section-11.3-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-cons-auth-the-presenter">
+<section id="section-11.4">
+        <h3 id="name-authenticating-and-authoriz">
+<a href="#section-11.4" class="section-number selfRef">11.4. </a><a href="#name-authenticating-and-authoriz" class="section-name selfRef">Authenticating and Authorizing the Presenter</a>
+        </h3>
+<p id="section-11.4-1">The Presenter represents a priviledged role within the architecture of this specification as it gets to learn about the existence of application keys and their protection properties, as well as details of the platform.
+The Presenter is in the position of deciding how much information to disclose to the Recipient and request a suitably redacted attestation from the HSM.<a href="#section-11.4-1" class="pilcrow">¶</a></p>
+<p id="section-11.4-2">For personal cryptographic tokens it might be appropriate for the attestation request interface to be un-authenticated. However for enterprise and cloud-services grade HSMs the Presenter <span class="bcp14">SHOULD</span> be authenticated using the HSM's native authentication mechanism. The details will be HSM-specific and are thus left up to the implementer, however it is <span class="bcp14">RECOMMENDED</span> to implement an authorization framework similar to the following.<a href="#section-11.4-2" class="pilcrow">¶</a></p>
+<p id="section-11.4-3">A Presenter <span class="bcp14">SHOULD</span> be allowed to request attestation for any application keys which it is allowed to use.
+For example, a TLS application that is correctly authenticated to the HSM in order to use its TLS keys <span class="bcp14">SHOULD</span> be able to request attestation of those same keys without needing to perform any additional authentication or requiring any additional roles or permissions.
+HSMs that wish to allow Presenters to request attestation of keys which is not allowed to use, for example for the purposes of displaying HSM status information on an administrative console or UI, <span class="bcp14">SHOULD</span> have a "Attestation Requester" role or permission and <span class="bcp14">SHOULD</span> enforce the HSM's native access controls such that the Presenter can only retrieve attestations for keys to which it has read access.<a href="#section-11.4-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="proof-of-possession-of-application-keys">
+<section id="section-11.5">
+        <h3 id="name-proof-of-possession-of-appl">
+<a href="#section-11.5" class="section-number selfRef">11.5. </a><a href="#name-proof-of-possession-of-appl" class="section-name selfRef">Proof-of-Possession of Application Keys</a>
+        </h3>
+<p id="section-11.5-1">With asymmetric keys within a it is common to require a key holder to use their private key in order to prove that they are in control of the private key. This is called "proof-of-possession (PoP)". This specification intentionally does not provide a mechnaism for PoP of application keys and relies on the Presenter, Recipient, Verifier, and Relying Party having confidence that the Attester has the keys it claims by virtue of their trust in the Attester.<a href="#section-11.5-1" class="pilcrow">¶</a></p>
+<p id="section-11.5-2">It would be easy to add a PoP Key Attribute that uses the attested application key to sign over, for example, the Transaction Entity, however this is a bad idea <span class="bcp14">NOT RECOMMENDED</span> to be added as a custom attribute for several reasons.<a href="#section-11.5-2" class="pilcrow">¶</a></p>
+<p id="section-11.5-3">First, an application key intended, for example, for TLS <span class="bcp14">SHOULD</span> only be used with the TLS protocol and introducing a signature oracle whereby the TLS application key is used to sign attestation content could lead to cross-protocol attacks whereby the attacker submits a nonce value which is in fact not random but is crafted in such a way as to appear as a valid message in some other protocol context.<a href="#section-11.5-3" class="pilcrow">¶</a></p>
+<p id="section-11.5-4">Second, the Presenter who has connected to the HSM to request an attestation may have permissions to view the requested application keys but not permission to use them.
+Requiring the Attestation Service to use the attested application keys could, in some architectures, require the Attestation Service to resolve complex access control logic and handle complex error conditions, which violates the "simple to implement" design principle outlined in <a href="#sec-cons-simple" class="auto internal xref">Section 11.1</a>. More discussion of authenticating the Presenter can be found in <a href="#sec-cons-auth-the-presenter" class="auto internal xref">Section 11.4</a>.<a href="#section-11.5-4" class="pilcrow">¶</a></p>
+<p id="section-11.5-5">In cases where explicit PoP is required for a given attested application key, it <span class="bcp14">MUST</span> be done as part of the regular usage protocol for which that key is intended. For example by signing a Certificate Signing Request (CSR), through a PKI enrollment protocol such as Certificate Management Protocol (CMP) which includes a challenge-response PoP, by using the key within a TLS handshake, or some other protocol which is part of the key's intended usage.<a href="#section-11.5-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
