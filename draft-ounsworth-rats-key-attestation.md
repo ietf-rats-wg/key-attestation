@@ -360,7 +360,7 @@ Note that the data format specified in {{sec-data-model}} allows for zero, one, 
 AK chains leading to different trust anchors. See {{sec-verif-proc}} for a discussion of handling multiple SignatureBlocks.
 
 
-# Data Model {#sec-data-model}
+# Information Model {#sec-data-model}
 
 This section describes the semantics of the key claims as part of the information
 model.
