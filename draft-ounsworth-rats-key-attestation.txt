@@ -1333,11 +1333,11 @@ Table of Contents
    of this specification as it gets to learn about the existence of
    application keys and their protection properties, as well as details
    of the platform.  The Presenter is in the position of deciding how
-   much information to disclose to the Recipient and request a suitably
-   redacted attestation from the HSM.
+   much information to disclose to the Recipient, and to request a
+   suitably redacted attestation from the HSM.
 
    For personal cryptographic tokens it might be appropriate for the
-   attestation request interface to be un-authenticated.  However for
+   attestation request interface to be un-authenticated.  However, for
    enterprise and cloud-services grade HSMs the Presenter SHOULD be
    authenticated using the HSM's native authentication mechanism.  The
    details will be HSM-specific and are thus left up to the implementer,
@@ -1350,26 +1350,26 @@ Table of Contents
    use its TLS keys SHOULD be able to request attestation of those same
    keys without needing to perform any additional authentication or
    requiring any additional roles or permissions.  HSMs that wish to
-   allow Presenters to request attestation of keys which is not allowed
+   allow a Presenter to request attestation of keys which is not allowed
    to use, for example for the purposes of displaying HSM status
    information on an administrative console or UI, SHOULD have a
    "Attestation Requester" role or permission and SHOULD enforce the
    HSM's native access controls such that the Presenter can only
-   retrieve attestations for keys to which it has read access.
+   retrieve attestations for keys for which it has read access.
 
 11.5.  Proof-of-Possession of Application Keys
 
-   With asymmetric keys within a it is common to require a key holder to
-   use their private key in order to prove that they are in control of
-   the private key.  This is called "proof-of-possession (PoP)".  This
-   specification intentionally does not provide a mechnaism for PoP of
-   application keys and relies on the Presenter, Recipient, Verifier,
-   and Relying Party having confidence that the Attester has the keys it
-   claims by virtue of their trust in the Attester.
+   With asymmetric keys within a Public Key Infrastructure (PKI) it is
+   common to require a key holder to prove that they are in control of
+   the private key by using it.  This is called "proof-of-possession
+   (PoP)".  This specification intentionally does not provide a
+   mechnaism for PoP of application keys and relies on the Presenter,
+   Recipient, Verifier, and Relying Party trusting the Attester to
+   correctly report the cryptographic keys that it is holding.
 
    It would be easy to add a PoP Key Attribute that uses the attested
    application key to sign over, for example, the Transaction Entity,
-   however this is a bad idea NOT RECOMMENDED to be added as a custom
+   however this is a bad idea and MUST NOT be added as a custom
    attribute for several reasons.
 
    First, an application key intended, for example, for TLS SHOULD only
@@ -1377,25 +1377,30 @@ Table of Contents
    whereby the TLS application key is used to sign attestation content
    could lead to cross-protocol attacks whereby the attacker submits a
    nonce value which is in fact not random but is crafted in such a way
-   as to appear as a valid message in some other protocol context.
+   as to appear as a valid message in some other protocol context or
+   exploit some other weakness in the signature algorithm.
 
    Second, the Presenter who has connected to the HSM to request an
    attestation may have permissions to view the requested application
-   keys but not permission to use them.  Requiring the Attestation
+   keys but not permission to use them, as in the case where the
+   Presenter is an administrative UI displaying HSM status information
+   to an systems administrator or auditor.  Requiring the Attestation
    Service to use the attested application keys could, in some
    architectures, require the Attestation Service to resolve complex
-   access control logic and handle complex error conditions, which
-   violates the "simple to implement" design principle outlined in
-   Section 11.1.  More discussion of authenticating the Presenter can be
-   found in Section 11.4.
+   access control logic and handle complex error conditions for each
+   requested key, which violates the "simple to implement" design
+   principle outlined in Section 11.1.  More discussion of
+   authenticating the Presenter can be found in Section 11.4.
 
    In cases where explicit PoP is required for a given attested
    application key, it MUST be done as part of the regular usage
-   protocol for which that key is intended.  For example by signing a
-   Certificate Signing Request (CSR), through a PKI enrollment protocol
-   such as Certificate Management Protocol (CMP) which includes a
-   challenge-response PoP, by using the key within a TLS handshake, or
-   some other protocol which is part of the key's intended usage.
+   protocol for which that key is intended and performed through the
+   HSM's regular application interface, not its attestation interface.
+   For example, PoP could be performed by signing a Certificate Signing
+   Request (CSR), through a PKI enrollment protocol such as Certificate
+   Management Protocol (CMP) which includes a challenge-response PoP, by
+   using the key within a TLS handshake, or some other protocol which is
+   part of the key's intended usage.
 
 12.  References
 
