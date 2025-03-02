@@ -287,11 +287,11 @@ capture the full functionality of the RATS architecture. If a device producing
 evidence in the specified format requires to also carry nested attestation
 statements or endorsements, then it must
 be achieved by placing the attestation from this draft within another wrapper
-layer such as RATS Conceptual Message Wrapper (CMW) {{I-D.ietf-rats-msg-wrap}}.
+layer such as RATS Conceptual Message Wrapper (CMW) [I-D.ietf-rats-msg-wrap-11].
 
 ~~~aasvg
       .-------------------------------------.
-      | Hardware Security Module                       |
+      | Hardware Security Module            |
       |                                     |
       |   Platform environment              |
       |        ^        .-------------.     |
