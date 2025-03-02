@@ -83,7 +83,7 @@ Table of Contents
    2.  Terminology
    3.  Architecture and Conceptual Model
      3.1.  Attestation Key Certificate Chain
-   4.  Data Model
+   4.  Information Model
      4.1.  Transaction Attributes
        4.1.1.  nonce
        4.1.2.  time
@@ -415,7 +415,7 @@ Table of Contents
    leading to different trust anchors.  See Section 6 for a discussion
    of handling multiple SignatureBlocks.
 
-4.  Data Model
+4.  Information Model
 
    This section describes the semantics of the key claims as part of the
    information model.
