@@ -9,7 +9,7 @@ submissiontype: IETF
 
 ipr: trust200902
 area: "Security"
-workgroup: "Remote ATtestation procedureS"
+workgroup: "RATS"
 keyword: Internet-Draft
 coding: utf-8
 
