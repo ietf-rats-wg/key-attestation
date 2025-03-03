@@ -2,7 +2,7 @@
 
 
 
-Remote ATtestation procedureS                               M. Ounsworth
+RATS                                                        M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             J.-P. Fiset
 Expires: 4 September 2025                                       Crypto4A
