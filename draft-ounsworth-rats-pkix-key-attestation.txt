@@ -5,7 +5,7 @@
 Remote ATtestation procedureS                               M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 3 September 2025                                       Crypto4A
+Expires: 4 September 2025                                       Crypto4A
                                                            H. Tschofenig
                                                                    H-BRS
                                                              H. Birkholz
@@ -14,7 +14,7 @@ Expires: 3 September 2025                                       Crypto4A
                                                          Beyond Identity
                                                                 N. Smith
                                                        Intel Corporation
-                                                            2 March 2025
+                                                            3 March 2025
 
 
                           PKIX Key Attestation
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 3 September 2025.
+   This Internet-Draft will expire on 4 September 2025.
 
 Copyright Notice
 
@@ -335,8 +335,8 @@ Table of Contents
    device producing evidence in the specified format requires to also
    carry nested attestation statements or endorsements, then it must be
    achieved by placing the attestation from this draft within another
-   wrapper layer such as RATS Conceptual Message Wrapper (CMW) [I-
-   D.ietf-rats-msg-wrap-11].
+   wrapper layer such as RATS Conceptual Message Wrapper (CMW)
+   [I-D.ietf-rats-msg-wrap].
 
          .-------------------------------------.
          | Hardware Security Module            |
@@ -1384,6 +1384,12 @@ Table of Contents
 
 12.1.  Normative References
 
+   [FIPS.140-3]
+              NIST - Information Technology Laboratory, "SECURITY
+              REQUIREMENTS FOR CRYPTOGRAPHIC MODULES", FIPS 140-3, n.d.,
+              <https://nvlpubs.nist.gov/nistpubs/FIPS/
+              NIST.FIPS.140-3.pdf>.
+
    [I-D.ietf-rats-eat]
               Lundblade, L., Mandyam, G., O'Donoghue, J., and C.
               Wallace, "The Entity Attestation Token (EAT)", Work in
@@ -1410,11 +1416,6 @@ Table of Contents
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
 
-   [RFC8949]  Bormann, C. and P. Hoffman, "Concise Binary Object
-              Representation (CBOR)", STD 94, RFC 8949,
-              DOI 10.17487/RFC8949, December 2020,
-              <https://www.rfc-editor.org/rfc/rfc8949>.
-
    [RFC9334]  Birkholz, H., Thaler, D., Richardson, M., Smith, N., and
               W. Pan, "Remote ATtestation procedureS (RATS)
               Architecture", RFC 9334, DOI 10.17487/RFC9334, January
@@ -1431,13 +1432,6 @@ Table of Contents
 
 12.2.  Informative References
 
-   [I-D.bft-rats-kat]
-              Brossard, M., Fossati, T., Tschofenig, H., and H.
-              Birkholz, "An EAT-based Key Attestation Token", Work in
-              Progress, Internet-Draft, draft-bft-rats-kat-05, 21
-              November 2024, <https://datatracker.ietf.org/doc/html/
-              draft-bft-rats-kat-05>.
-
    [I-D.fossati-tls-attestation]
               Tschofenig, H., Sheffer, Y., Howard, P., Mihalcea, I.,
               Deshpande, Y., Niemi, A., and T. Fossati, "Using
@@ -1451,9 +1445,9 @@ Table of Contents
               Ounsworth, M., Tschofenig, H., Birkholz, H., Wiseman, M.,
               and N. Smith, "Use of Remote Attestation with
               Certification Signing Requests", Work in Progress,
-              Internet-Draft, draft-ietf-lamps-csr-attestation-16, 1
-              February 2025, <https://datatracker.ietf.org/doc/html/
-              draft-ietf-lamps-csr-attestation-16>.
+              Internet-Draft, draft-ietf-lamps-csr-attestation-17, 2
+              March 2025, <https://datatracker.ietf.org/doc/html/draft-
+              ietf-lamps-csr-attestation-17>.
 
    [I-D.ietf-rats-msg-wrap]
               Birkholz, H., Smith, N., Fossati, T., Tschofenig, H., and
@@ -1471,11 +1465,6 @@ Table of Contents
               Certificate Request Message Format (CRMF)", RFC 4211,
               DOI 10.17487/RFC4211, September 2005,
               <https://www.rfc-editor.org/rfc/rfc4211>.
-
-   [RFC5912]  Hoffman, P. and J. Schaad, "New ASN.1 Modules for the
-              Public Key Infrastructure Using X.509 (PKIX)", RFC 5912,
-              DOI 10.17487/RFC5912, June 2010,
-              <https://www.rfc-editor.org/rfc/rfc5912>.
 
    [RFC6024]  Reddy, R. and C. Wallace, "Trust Anchor Management
               Requirements", RFC 6024, DOI 10.17487/RFC6024, October
@@ -1775,7 +1764,7 @@ Authors' Addresses
 
    Mike Ounsworth
    Entrust Limited
-   2500 Solandt Road – Suite 100
+   2500 Solandt Road - Suite 100
    Ottawa, Ontario  K2K 3G5
    Canada
    Email: mike.ounsworth@entrust.com
