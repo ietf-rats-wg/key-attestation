@@ -491,7 +491,7 @@ These attribute types MAY be contained within a transaction entity; i.e. an enti
 | Attribute       | AttributeValue  | Reference           | Multiple Allowed | Request Contains a Value | Description     |
 | ---             | ---             | ---                 | ---              | ---           | ---             |
 | nonce           | bytes           | {{&SELF}}           | No               | MUST          | Repeats a "nonce" provided during the atttestation request. |
-| timestamp       | time            | {{-eat}}| No        | MUST NOT      | The time at which this attestation was generated. Corresponds to EAT IAT claim. |
+| timestamp       | time            | {{-eat}} | No        | MUST NOT      | The time at which this attestation was generated. Corresponds to EAT IAT claim. |
 
 ### nonce
 
@@ -515,7 +515,7 @@ These attribute types MAY be contained within a platform entity; i.e. an entity 
 | Attribute| AttributeValue| Reference| Multiple Allowed| Request Contains a Value| Description|
 | ---      | ---           | ---      | ---             | ---                     | ---        |
 | vendor          | utf8String      | {{&SELF}}           | No               | MUST NOT  | A human-readable string by which the vendor identifies themself. |
-| oemid           | bytes           | {{-eat}} | No               | MUST NOT  | The EAT OEM ID as defined in [I-D.ietf-rats-eat]. |
+| oemid           | bytes           | {{-eat}} | No               | MUST NOT  | The EAT OEM ID as defined in {{-eat}}. |
 | hwmodel         | utf8String      | {{-eat}} | No               | MUST NOT  | Model or product line of the hardware module. |
 | hwserial        | utf8String      | {{&SELF}}           | No               | MUST NOT  | Serial number of the hardware module, often matches the number engraved or stickered on the case. |
 | swversion       | utf8String      | {{-eat}} | No               | MUST NOT  | A text string identifying the firmware or software running on the HSM. |
