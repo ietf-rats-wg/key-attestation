@@ -23,3 +23,5 @@ package-lock.json
 report.xml
 !requirements.txt
 draft-ounsworth-rats-key-attestation.txt
+draft-ounsworth-rats-pkix-key-attestation.txt
+Gemfile

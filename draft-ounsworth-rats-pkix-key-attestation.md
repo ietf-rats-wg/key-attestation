@@ -31,7 +31,7 @@ author:
   - name: Mike Ounsworth
     org: Entrust Limited
     abbrev: Entrust
-    street: 2500 Solandt Road – Suite 100
+    street: 2500 Solandt Road - Suite 100
     city: Ottawa, Ontario
     country: Canada
     code: K2K 3G5
@@ -70,8 +70,7 @@ normative:
   RFC2119:
   RFC9334:
   RFC5280:
-  RFC8949:
-  I-D.ietf-rats-eat:
+  I-D.ietf-rats-eat: eat
   X.680:
      title: "Information technology -- Abstract Syntax Notation One (ASN.1): Specification of basic notation"
      author:
@@ -93,17 +92,23 @@ normative:
       org: OASIS PKCS 11 TC
       date: 11 August 2022
     target: https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/pkcs11-spec-v3.1-cs01.html
+  FIPS.140-3:
+    -: fips
+    title: SECURITY REQUIREMENTS FOR CRYPTOGRAPHIC MODULES
+    author:
+      org: NIST - Information Technology Laboratory
+    seriesinfo:
+      FIPS: 140-3
+    target: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-3.pdf
 
 informative:
-  RFC5912:
   RFC2986:
   RFC6024:
   RFC9019:
   RFC4211:
-  I-D.bft-rats-kat:
   I-D.ietf-lamps-csr-attestation:
-  I-D.ietf-rats-msg-wrap:
   I-D.fossati-tls-attestation:
+  I-D.ietf-rats-msg-wrap:
 
 entity:
   SELF: "RFCthis"
@@ -287,7 +292,7 @@ capture the full functionality of the RATS architecture. If a device producing
 evidence in the specified format requires to also carry nested attestation
 statements or endorsements, then it must
 be achieved by placing the attestation from this draft within another wrapper
-layer such as RATS Conceptual Message Wrapper (CMW) [I-D.ietf-rats-msg-wrap-11].
+layer such as RATS Conceptual Message Wrapper (CMW) [I-D.ietf-rats-msg-wrap].
 
 ~~~aasvg
       .-------------------------------------.
@@ -486,7 +491,7 @@ These attribute types MAY be contained within a transaction entity; i.e. an enti
 | Attribute       | AttributeValue  | Reference           | Multiple Allowed | Request Contains a Value | Description     |
 | ---             | ---             | ---                 | ---              | ---           | ---             |
 | nonce           | bytes           | {{&SELF}}           | No               | MUST          | Repeats a "nonce" provided during the atttestation request. |
-| timestamp       | time            | [I-D.ietf-rats-eat] | No               | MUST NOT      | The time at which this attestation was generated. Corresponds to EAT IAT claim. |
+| timestamp       | time            | {{-eat}} | No        | MUST NOT      | The time at which this attestation was generated. Corresponds to EAT IAT claim. |
 
 ### nonce
 
@@ -496,7 +501,9 @@ The nonce attribute is used to provide "freshness" quality as to the information
 
 The time at which this attestation was generated, according to the internal system clock of the HSM.
 
-Note that it is common for HSMs to not have an accurate system clock; consider an HSM for a root CA kept offline and booted up infrequently in an local network segregated from all other network, or a smart card which boots up only when held against an NFC reader. Implementers of emitters SHOULD include this attribute only if the device reliably knows its own time (for example has had recent contact with an NTP server). Implementers of parsers SHOULD be wary of trusting the contents of this attribute. A challenge-response protocol that makes use of the nonce attribute is a far more reliable way of establishing freshness.
+Note that it is common for HSMs to not have an accurate system clock; consider an HSM for a root CA kept offline and booted up infrequently in an local network segregated from all other network, or a smart card which boots up only when held against an NFC reader.
+Implementers of emitters SHOULD include this attribute only if the device reliably knows its own time (for example has had recent contact with an NTP server).
+Implementers of parsers SHOULD be wary of trusting the contents of this attribute. A challenge-response protocol that makes use of the nonce attribute is a far more reliable way of establishing freshness.
 
 
 ## Platform Attributes
@@ -505,20 +512,20 @@ A default and vendor-agnostic set of platform attributes is defined in this sect
 
 These attribute types MAY be contained within a platform entity; i.e. an entity identified by `id-pkix-attest-entity-platform`.
 
-| Attribute       | AttributeValue  | Reference           | Multiple Allowed | Request Contains a Value | Description     |
-| ---             | ---             | ---                 | ---              | ---                      | ---             |
+| Attribute| AttributeValue| Reference| Multiple Allowed| Request Contains a Value| Description|
+| ---      | ---           | ---      | ---             | ---                     | ---        |
 | vendor          | utf8String      | {{&SELF}}           | No               | MUST NOT  | A human-readable string by which the vendor identifies themself. |
-| oemid           | bytes           | [I-D.ietf-rats-eat] | No               | MUST NOT  | The EAT OEM ID as defined in [I-D.ietf-rats-eat]. |
-| hwmodel         | utf8String      | [I-D.ietf-rats-eat] | No               | MUST NOT  | Model or product line of the hardware module. |
+| oemid           | bytes           | {{-eat}} | No               | MUST NOT  | The EAT OEM ID as defined in {{-eat}}. |
+| hwmodel         | utf8String      | {{-eat}} | No               | MUST NOT  | Model or product line of the hardware module. |
 | hwserial        | utf8String      | {{&SELF}}           | No               | MUST NOT  | Serial number of the hardware module, often matches the number engraved or stickered on the case. |
-| swversion       | utf8String      | [I-D.ietf-rats-eat] | No               | MUST NOT  | A text string identifying the firmware or software running on the HSM. |
-| dbgstat         | int             | [I-D.ietf-rats-eat] | No               | MUST NOT  | Indicates whether the HSM is currently in a debug state, or is capable in the future of being turned to a debug state. Semantics and integer codes are defined in [I-D.ietf-rats-eat]. |
-| uptime          | int             | [I-D.ietf-rats-eat] | No               | MUST NOT  | Contains the number of seconds that have elapsed since the entity was last booted. |
-| bootcount       | int             | [I-D.ietf-rats-eat] | No               | MUST NOT  | Contains a count of the number of times the entity has been booted. |
+| swversion       | utf8String      | {{-eat}} | No               | MUST NOT  | A text string identifying the firmware or software running on the HSM. |
+| dbgstat         | int             | {{-eat}} | No               | MUST NOT  | Indicates whether the HSM is currently in a debug state, or is capable in the future of being turned to a debug state. Semantics and integer codes are defined in {{-eat}}. |
+| uptime          | int             | {{-eat}} | No               | MUST NOT  | Contains the number of seconds that have elapsed since the entity was last booted. |
+| bootcount       | int             | {{-eat}} | No               | MUST NOT  | Contains a count of the number of times the entity has been booted. |
 | usermods        | utf8String      | {{&SELF}}           | Yes              | MUST NOT  | This attribute lists user modules currently loaded onto the HSM in a human readable format, preferabbly JSON. |
-| fipsboot        | bool            | [FIPS.140-3]        | No               | MUST NOT  | Indicates whether the devices is currently running in FIPS mode. |
-| fipsver         | utf8String      | [FIPS.140-3]        | No               | MUST NOT  | Indicates the version of the FIPS CMVP standard that is being enforced. At time of writing this is typically "FIPS 140-2" or "FIPS 140-3". |
-| fipslevel       | int             | [FIPS.140-3]        | No               | MUST NOT  | Indicates the FIPS Level to which the device is currently operating in compliance with. |
+| fipsboot        | bool            | {{-fips}}        | No               | MUST NOT  | Indicates whether the devices is currently running in FIPS mode. |
+| fipsver         | utf8String      | {{-fips}}        | No               | MUST NOT  | Indicates the version of the FIPS CMVP standard that is being enforced. At time of writing this is typically "FIPS 140-2" or "FIPS 140-3". |
+| fipslevel       | int             | {{-fips}}        | No               | MUST NOT  | Indicates the FIPS Level to which the device is currently operating in compliance with. |
 | envid           | utf8String      | {{&SELF}}           | Yes              | MAY       | An environment ID, which will typically be a URI, UUID, or similar. |
 | envdesc         | utf8String      | {{&SELF}}           | Yes              | MUST NOT  | Further description of the environment. |
 
