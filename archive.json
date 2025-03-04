@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-02T00:43:41.637660+00:00",
+  "timestamp": "2025-03-04T00:41:26.649394+00:00",
   "repo": "hannestschofenig/key-attestation",
   "labels": [
     {
@@ -55,15 +55,15 @@
       "id": "I_kwDONUAin86hstFV",
       "title": "Security Consideration: FIPS Mode",
       "url": "https://github.com/hannestschofenig/key-attestation/issues/1",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "hannestschofenig",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "Time at which the attester collected information from the target environment(s) is important with regards to the properties included in the cert. \r\n\r\nFor example, a device may obtain a certificate from a CA after it was booted in FIPS mode. Then, the device reboots in non-FIPS mode. \r\n\r\nLikely implementation: FIPS mode changes are destructive, which means that the certificate and the private key will get deleted. The device will have to obtain a new certificate.\r\n",
       "createdAt": "2024-12-02T17:53:08Z",
-      "updatedAt": "2024-12-02T17:54:53Z",
-      "closedAt": null,
+      "updatedAt": "2025-03-02T20:09:20Z",
+      "closedAt": "2025-03-02T20:09:20Z",
       "comments": []
     },
     {
@@ -71,15 +71,15 @@
       "id": "I_kwDONUAin86ntY25",
       "title": "We need a section on AK restrictions",
       "url": "https://github.com/hannestschofenig/key-attestation/issues/6",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "ounsworth",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "At the minimum, we need a non-normative section describing the properties that an AK key MUST have. Things like:\n\n* Only ever signs attestation objects (ie cannot be a signing fool).\n* Is either injected and certified at manufacture time and chains to a vendor manufacture root, or else is injected at network onboarding time and chains to a network operator root.\n\nDiscussion point: should we, in this specification, be prescriptive about the structure of an AK certificate (ie prescribing v3 extensions that it must have), or should we describe non-normatively the properties that this should have, and then leave this to be vendor-specific?\n(I think the HSM vendors would prefer flexibility here)",
       "createdAt": "2025-01-27T17:59:30Z",
-      "updatedAt": "2025-02-28T00:00:33Z",
-      "closedAt": null,
+      "updatedAt": "2025-03-02T20:16:04Z",
+      "closedAt": "2025-03-02T20:16:04Z",
       "comments": [
         {
           "author": "nedmsmith",
@@ -180,16 +180,24 @@
       "id": "I_kwDONUAin86o6kOD",
       "title": "Declaring Attester and Attesting Environment as interchangeable term",
       "url": "https://github.com/hannestschofenig/key-attestation/issues/10",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "henkbirkholz",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "In order to avoid confusion about nesting and cardinality of environments, I'd like to propose to limit the numbers of Attesting Environments per Attester to one. That way the terms automatically become interchangeable.",
       "createdAt": "2025-02-05T20:43:45Z",
-      "updatedAt": "2025-02-12T23:29:00Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2025-03-02T20:16:50Z",
+      "closedAt": "2025-03-02T20:16:48Z",
+      "comments": [
+        {
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "body": "We now have a concept of \"Attestation Service\", which is made clear by the architecture diagram.",
+          "createdAt": "2025-03-02T20:16:49Z",
+          "updatedAt": "2025-03-02T20:16:49Z"
+        }
+      ]
     },
     {
       "number": 11,
@@ -220,15 +228,15 @@
       "id": "I_kwDONUAin86pj_UD",
       "title": "There is no such thing as \"self-attested evidence\"",
       "url": "https://github.com/hannestschofenig/key-attestation/issues/14",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "henkbirkholz",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Maybe I am missing something super obvious - so please correct me, if I am wrong, but either pick \"signed self-assertion\" or \"evidence\" (as evidence shall be specified by some source, maybe RATS). Self-attested evidence reads like a paradox to me.",
       "createdAt": "2025-02-11T09:20:24Z",
-      "updatedAt": "2025-02-11T09:22:31Z",
-      "closedAt": null,
+      "updatedAt": "2025-03-02T20:57:53Z",
+      "closedAt": "2025-03-02T20:57:53Z",
       "comments": [
         {
           "author": "henkbirkholz",
@@ -236,6 +244,20 @@
           "body": "https://github.com/hannestschofenig/key-attestation/blob/45306fe2af211a21783f029f4b0ef379eefc14e3/sampledata/idea3/readme.md?plain=1#L3",
           "createdAt": "2025-02-11T09:21:41Z",
           "updatedAt": "2025-02-11T09:21:41Z"
+        },
+        {
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The sentence in question is now:\n\n> The data format in this specification represents self-attested evidence and therefore requires third-party endorsement in order to establish trust.\n\nIs \"self-attested evidence\" a paradox (contradiction) or redundant?\n\nIn the same way that this draft must over-explain PKI and HSM concepts for a RATS audience, I think it is ok to over-explain RATS concepts to a PKI and HSM audience.",
+          "createdAt": "2025-03-02T20:19:33Z",
+          "updatedAt": "2025-03-02T20:19:33Z"
+        },
+        {
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Ah. Hannes fixed this in #21 ",
+          "createdAt": "2025-03-02T20:56:09Z",
+          "updatedAt": "2025-03-02T20:56:09Z"
         }
       ]
     },
@@ -292,7 +314,7 @@
       "id": "I_kwDONUAin86sM5no",
       "title": "How to use the format with the CSR Attestation Draft",
       "url": "https://github.com/hannestschofenig/key-attestation/issues/23",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "hannestschofenig",
       "authorAssociation": "OWNER",
       "assignees": [
@@ -301,8 +323,8 @@
       "labels": [],
       "body": "It is unclear to me how I would use the structure with a CSR attestation draft where I can only proof possession of a single application key and that proof of possessoin is actually part of the signature computed over the CSR itself.\n\nWould therefore the application private key proof of possession happen twice - once for the CSR and then again for the structure defined in the draft or does the structure in the draft only get signed by the attestation key.\n\nThis part is not clear for me from reading the spec. \n",
       "createdAt": "2025-03-01T18:01:38Z",
-      "updatedAt": "2025-03-01T18:01:49Z",
-      "closedAt": null,
+      "updatedAt": "2025-03-02T16:07:04Z",
+      "closedAt": "2025-03-02T16:07:03Z",
       "comments": []
     }
   ],
@@ -516,77 +538,119 @@
       "id": "PR_kwDONUAin86NCiaz",
       "title": "Terminology Update",
       "url": "https://github.com/hannestschofenig/key-attestation/pull/19",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "hannestschofenig",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "Attempt to clean up the terminology section",
       "createdAt": "2025-03-01T17:32:53Z",
-      "updatedAt": "2025-03-01T17:55:35Z",
+      "updatedAt": "2025-03-02T20:53:07Z",
       "baseRepository": "hannestschofenig/key-attestation",
       "baseRefName": "main",
       "baseRefOid": "1fabe29d8c4b8e1aabbf037546f406bde5ff480d",
       "headRepository": "hannestschofenig/key-attestation",
       "headRefName": "hannestschofenig-patch-1",
-      "headRefOid": "9f8b2e84f160d94eb5d9df9f2b3f0be92e3a9bef",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "d1c7ffb52c22ae77d914f74dde7411161fa874b1",
+      "closedAt": "2025-03-02T20:53:04Z",
+      "mergedAt": "2025-03-02T20:53:04Z",
+      "mergedBy": "ounsworth",
+      "mergeCommit": {
+        "oid": "bdb62eac3692a438a5f480212b4b2a63915203e8"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDONUAin86eHrt8",
+          "commit": {
+            "abbreviatedOid": "d1c7ffb"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-03-02T20:52:59Z",
+          "updatedAt": "2025-03-02T20:52:59Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 20,
       "id": "PR_kwDONUAin86NCkxt",
       "title": "Figure fix",
       "url": "https://github.com/hannestschofenig/key-attestation/pull/20",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "hannestschofenig",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": ".... the application key (which I called the Identity Key) is not mentioned in the RATS architecture since it relates to key attestation.",
       "createdAt": "2025-03-01T17:48:22Z",
-      "updatedAt": "2025-03-01T17:48:22Z",
+      "updatedAt": "2025-03-02T20:57:07Z",
       "baseRepository": "hannestschofenig/key-attestation",
       "baseRefName": "main",
-      "baseRefOid": "1fabe29d8c4b8e1aabbf037546f406bde5ff480d",
+      "baseRefOid": "bdb62eac3692a438a5f480212b4b2a63915203e8",
       "headRepository": "hannestschofenig/key-attestation",
       "headRefName": "hannestschofenig-patch-2",
-      "headRefOid": "aa169661fed2f268f630c6cefd20391090767c85",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "81688934683cf8bb32a8e959bea36d289a7cb6c6",
+      "closedAt": "2025-03-02T20:57:01Z",
+      "mergedAt": "2025-03-02T20:57:01Z",
+      "mergedBy": "ounsworth",
+      "mergeCommit": {
+        "oid": "808e74f0012ea3007aa9196f0d28392ea4f3b598"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDONUAin86eHslq",
+          "commit": {
+            "abbreviatedOid": "8168893"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-03-02T20:56:56Z",
+          "updatedAt": "2025-03-02T20:56:56Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 21,
       "id": "PR_kwDONUAin86NClRg",
       "title": "Attestation Key Section Update",
       "url": "https://github.com/hannestschofenig/key-attestation/pull/21",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "hannestschofenig",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2025-03-01T17:53:21Z",
-      "updatedAt": "2025-03-01T17:53:21Z",
+      "updatedAt": "2025-03-02T20:56:38Z",
       "baseRepository": "hannestschofenig/key-attestation",
       "baseRefName": "main",
-      "baseRefOid": "1fabe29d8c4b8e1aabbf037546f406bde5ff480d",
+      "baseRefOid": "bdb62eac3692a438a5f480212b4b2a63915203e8",
       "headRepository": "hannestschofenig/key-attestation",
       "headRefName": "hannestschofenig-patch-3",
-      "headRefOid": "e2d7ccd37d8af072751391e91c7752dcb3a77bba",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
-      "comments": [],
+      "headRefOid": "9ba9698b1d730a950fa119f97581622bb2871db8",
+      "closedAt": "2025-03-02T20:56:34Z",
+      "mergedAt": "2025-03-02T20:56:34Z",
+      "mergedBy": "ounsworth",
+      "mergeCommit": {
+        "oid": "ff9efeb71766fe72b9e64e80f7662057a33e8815"
+      },
+      "comments": [
+        {
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Closes #14 ",
+          "createdAt": "2025-03-02T20:56:28Z",
+          "updatedAt": "2025-03-02T20:56:28Z"
+        }
+      ],
       "reviews": []
     },
     {
@@ -594,20 +658,106 @@
       "id": "PR_kwDONUAin86NCl2P",
       "title": "Information Model",
       "url": "https://github.com/hannestschofenig/key-attestation/pull/22",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "hannestschofenig",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2025-03-01T17:58:56Z",
-      "updatedAt": "2025-03-01T17:58:56Z",
+      "updatedAt": "2025-03-02T20:57:36Z",
       "baseRepository": "hannestschofenig/key-attestation",
       "baseRefName": "main",
       "baseRefOid": "1fabe29d8c4b8e1aabbf037546f406bde5ff480d",
       "headRepository": "hannestschofenig/key-attestation",
       "headRefName": "hannestschofenig-patch-4",
       "headRefOid": "81b58e786f0749222226e0d4baac4973cf425fcc",
+      "closedAt": "2025-03-02T20:57:33Z",
+      "mergedAt": "2025-03-02T20:57:33Z",
+      "mergedBy": "ounsworth",
+      "mergeCommit": {
+        "oid": "4ea46835188a45d6b8a56e04c0649c26d411222e"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDONUAin86eHsm6",
+          "commit": {
+            "abbreviatedOid": "81b58e7"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-03-02T20:57:27Z",
+          "updatedAt": "2025-03-02T20:57:27Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 24,
+      "id": "PR_kwDONUAin86NMdZA",
+      "title": "misc changes to get idnits to be quiet",
+      "url": "https://github.com/hannestschofenig/key-attestation/pull/24",
+      "state": "MERGED",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "nedmsmith"
+      ],
+      "labels": [],
+      "body": "Some of these are benign changes. The street on line 34 seems like the main culprit. There were also errors due to unreferenced references. Added reference tags for simpler citing within the doc.\r\n\r\nAdded .txt file to gitignore.\r\n\r\nThere are still a ton of idnits due to lines that are too long. Not sure if there's away to fix this.",
+      "createdAt": "2025-03-03T18:49:23Z",
+      "updatedAt": "2025-03-03T20:02:46Z",
+      "baseRepository": "hannestschofenig/key-attestation",
+      "baseRefName": "main",
+      "baseRefOid": "620bf6d0bcdbb1061dd6c290192604dd28097bb3",
+      "headRepository": "hannestschofenig/key-attestation",
+      "headRefName": "nms/lintfix",
+      "headRefOid": "3dae8cb863e8b034ee8d7a5a27d45217fb900b38",
+      "closedAt": "2025-03-03T20:02:45Z",
+      "mergedAt": "2025-03-03T20:02:45Z",
+      "mergedBy": "ounsworth",
+      "mergeCommit": {
+        "oid": "19240db918ccee6d53fa2d0e604074b91e98ef0a"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDONUAin86eQqmE",
+          "commit": {
+            "abbreviatedOid": "3dae8cb"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-03-03T20:02:37Z",
+          "updatedAt": "2025-03-03T20:02:37Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 25,
+      "id": "PR_kwDONUAin86NNGRi",
+      "title": "Update draft-ounsworth-rats-pkix-key-attestation.md",
+      "url": "https://github.com/hannestschofenig/key-attestation/pull/25",
+      "state": "OPEN",
+      "author": "nedmsmith",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "fixed warning using name: in reference twice.",
+      "createdAt": "2025-03-03T20:15:45Z",
+      "updatedAt": "2025-03-03T20:15:56Z",
+      "baseRepository": "hannestschofenig/key-attestation",
+      "baseRefName": "main",
+      "baseRefOid": "19240db918ccee6d53fa2d0e604074b91e98ef0a",
+      "headRepository": "hannestschofenig/key-attestation",
+      "headRefName": "nms/pk11-ref-name",
+      "headRefOid": "b46db351d959b57d4a106b707524c5ce844f6db1",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
