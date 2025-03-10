@@ -136,7 +136,6 @@ this specification as "key attributes", as well as to the operational state of t
 referred to as "platform attributes". This specification also provides a format for requesting that a cryptographic module produce a key attestation about a specific application key, the application keys in a specific sub-environment of the HSM, or that the returned attestation contain a specific set of attributes.
 See {{sec-data-model}} for the full information model.
 
-
 As described below in {{sec-arch}} "Architecture and Conceptual Model", this specification
 uses a simplification of the Remote ATtestation procedureS (RATS) Architecture {{RFC9334}}
 by assuming that the attesting environment and the target environment
