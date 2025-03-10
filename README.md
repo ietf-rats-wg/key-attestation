@@ -2,16 +2,16 @@
 
 This is the working area for the individual Internet-Draft, "Key Attestation".
 
-* [Editor's Copy](https://hannestschofenig.github.io/key-attestation/#go.draft-ounsworth-rats-key-attestation.html)
-* [Datatracker Page](https://datatracker.ietf.org/doc/draft-ounsworth-rats-key-attestation)
+* [Editor's Copy](https://ietf-rats-wg.github.io/key-attestation/#go.draft-ietf-rats-pkix-key-attestation.html)
+* [Datatracker Page](https://datatracker.ietf.org/doc/draft-ietf-rats-pkix-key-attestation)
 * [Individual Draft](https://datatracker.ietf.org/doc/html/draft-ounsworth-rats-key-attestation)
-* [Compare Editor's Copy to Individual Draft](https://hannestschofenig.github.io/key-attestation/#go.draft-ounsworth-rats-key-attestation.diff)
+* [Compare Editor's Copy to Individual Draft](https://ietf-rats-wg.github.io/key-attestation/#go.draft-ietf-rats-pkix-key-attestation.diff)
 
 
 ## Contributing
 
 See the
-[guidelines for contributions](https://github.com/hannestschofenig/key-attestation/blob/main/CONTRIBUTING.md).
+[guidelines for contributions](https://github.com/ietf-rats-wg/key-attestation/blob/main/CONTRIBUTING.md).
 
 Contributions can be made by creating pull requests.
 The GitHub interface supports creating pull requests using the Edit (✏) button.
