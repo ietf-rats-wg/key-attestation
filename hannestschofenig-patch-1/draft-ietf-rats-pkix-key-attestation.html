@@ -2291,18 +2291,18 @@ key import <span class="bcp14">MAY</span> be aborted, or a prompt <span class="b
 <pre>
 &lt;CODE STARTS&gt;
 
-PKIX-Key-Attest-2025
+PKIX-Evidence-2025
       { iso(1) identified-organization(3) dod(6) internet(1)
         security(5) mechanisms(5) pkix(7) id-mod(0)
-        id-mod-pkik-key-attest-2025(TBDMOD) }
+        id-mod-pkix-evidence-2025(TBDMOD) }
 
 
-PkixAttestation ::= SEQUENCE {
+PkixEvidence ::= SEQUENCE {
     tbs TbsPkixAttestation,
     signatures SEQUENCE SIZE (0..MAX) of SignatureBlock
 }
 
-TbsPkixAttestation ::= SEQUENCE {
+TbsPkixEvidence ::= SEQUENCE {
     version INTEGER,
     reportedEntities SEQUENCE SIZE (1..MAX) OF ReportedEntity
 }
@@ -2332,46 +2332,46 @@ SignatureBlock ::= SEQUENCE {
    signatureValue OCTET STRING
 }
 
-id-pkix-attest OBJECT IDENTIFIER ::= { 1 2 3 999 }
+id-pkix-evidence OBJECT IDENTIFIER ::= { 1 2 3 999 }
 
-id-pkix-attest-entity-type        OBJECT IDENTIFIER ::= { id-pkix-attest 0 }
-id-pkix-attest-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 0 }
-id-pkix-attest-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 1 }
-id-pkix-attest-entity-key         OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 2 }
+id-pkix-evidence-entity-type        OBJECT IDENTIFIER ::= { id-pkix-evidence- 0 }
+id-pkix-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 0 }
+id-pkix-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 1 }
+id-pkix-evidence-entity-key         OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 2 }
 
-id-pkix-attest-attribute-type OBJECT IDENTIFIER ::= { id-pkix-attest 1 }
+id-pkix-evidence-attribute-type OBJECT IDENTIFIER ::= { id-pkix-evidence- 1 }
 
-id-pkix-attest-attribute-transaction       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 0 }
-id-pkix-attest-attribute-transaction-nonce OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-transaction 0 }
+id-pkix-evidence-attribute-transaction       OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-type 0 }
+id-pkix-evidence-attribute-transaction-nonce OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-transaction 0 }
 
-id-pkix-attest-attribute-platform            OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 1 }
-id-pkix-attest-attribute-platform-vendor     OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 0 }
-id-pkix-attest-attribute-platform-hwserial   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 1 }
-id-pkix-attest-attribute-platform-fipsboot   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 2 }
-id-pkix-attest-attribute-platform-desc       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 3 }
-id-pkix-attest-attribute-platform-time       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 4 }
-id-pkix-attest-attribute-platform-swversion  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 5 }
-id-pkix-attest-attribute-platform-oemid      OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 6 }
-id-pkix-attest-attribute-platform-debugstat  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 7 }
-id-pkix-attest-attribute-platform-uptime     OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 8 }
-id-pkix-attest-attribute-platform-bootcount  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 9 }
-id-pkix-attest-attribute-platform-usermods   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 8 }
-id-pkix-attest-attribute-platform-envid      OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 9 }
-id-pkix-attest-attribute-platform-envdesc    OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 10 }
-id-pkix-attest-attribute-platform-fipsver  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 11 }
-id-pkix-attest-attribute-platform-fipslevel  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 12 }
+id-pkix-evidence-attribute-platform            OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-type 1 }
+id-pkix-evidence-attribute-platform-vendor     OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 0 }
+id-pkix-evidence-attribute-platform-hwserial   OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 1 }
+id-pkix-evidence-attribute-platform-fipsboot   OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 2 }
+id-pkix-evidence-attribute-platform-desc       OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 3 }
+id-pkix-evidence-attribute-platform-time       OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 4 }
+id-pkix-evidence-attribute-platform-swversion  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 5 }
+id-pkix-evidence-attribute-platform-oemid      OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 6 }
+id-pkix-evidence-attribute-platform-debugstat  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 7 }
+id-pkix-evidence-attribute-platform-uptime     OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 8 }
+id-pkix-evidence-attribute-platform-bootcount  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 9 }
+id-pkix-evidence-attribute-platform-usermods   OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 8 }
+id-pkix-evidence-attribute-platform-envid      OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 9 }
+id-pkix-evidence-attribute-platform-envdesc    OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 10 }
+id-pkix-evidence-attribute-platform-fipsver    OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 11 }
+id-pkix-evidence-attribute-platform-fipslevel  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 12 }
 
 
 
-id-pkix-attest-attribute-key                   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 2 }
-id-pkix-attest-attribute-key-identifier        OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 0 }
-id-pkix-attest-attribute-key-spki              OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 1 }
-id-pkix-attest-attribute-key-purpose           OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 2 }
-id-pkix-attest-attribute-key-extractable       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 3 }
-id-pkix-attest-attribute-key-never-extractable OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 4 }
-id-pkix-attest-attribute-key-local             OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 5 }
-id-pkix-attest-attribute-key-expiry            OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 6 }
-id-pkix-attest-attribute-key-protection        OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 7 }
+id-pkix-evidence-attribute-key                   OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-type 2 }
+id-pkix-evidence-attribute-key-identifier        OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 0 }
+id-pkix-evidence-attribute-key-spki              OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 1 }
+id-pkix-evidence-attribute-key-purpose           OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 2 }
+id-pkix-evidence-attribute-key-extractable       OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 3 }
+id-pkix-evidence-attribute-key-never-extractable OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 4 }
+id-pkix-evidence-attribute-key-local             OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 5 }
+id-pkix-evidence-attribute-key-expiry            OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 6 }
+id-pkix-evidence-attribute-key-protection        OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 7 }
 
 &lt;CODE ENDS&gt;
 
