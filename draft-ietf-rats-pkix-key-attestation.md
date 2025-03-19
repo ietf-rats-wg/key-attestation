@@ -295,32 +295,39 @@ be achieved by placing the attestation from this draft within another wrapper
 layer such as RATS Conceptual Message Wrapper (CMW) [I-D.ietf-rats-msg-wrap].
 
 ~~~aasvg
-      .-------------------------------------.
-      | Hardware Security Module            |
-      |                                     |
-      |   Platform environment              |
-      |        ^        .-------------.     |
-      |        |        | Application |     |
-      |        |        | Keys        |     |
-      |        |        '-------------'     |
-      |        |              ^             |
-      |        |              |             |
-      |        | measurements |             |
-      | .------------------------------.    |
-      | | Attestation                  |    |
-      | | Service                      |    |
-      | '------------------------------'    |
-      |     ^    |                          |
-      |     |    |                          |
-      '-----+----+--------------------------'
-Attestation |    | PKIX
-    Request |    | Attestation
-            |    v
-     .-----------------.                 .-----------------.
-     |                 | Usage Protocol  |                 |
-     |    Presenter    +---------------->|    Recipient    |
-     |                 |                 |                 |
-     '-----------------'                 '-----------------'
+                   .-------------.
+                   |             |
+                   |  Verifier   |
+                   |             |
+                   '-------------'
+                          |
+                  PKIX    | Attestation
+                  Evidence| Request
+                          | (optional)
+                          |   |
+                          |   |
+.-------------------------|---+------.
+|                         |   |      |
+|    .----------------.   |   |      |
+|    | Target         |   |   |      |
+|    | Environment    |   |   |      |
+|    | (Platform &    |   |   |      |
+|    | Application    |   |   |      |
+|    | Keys)          |   |   |      |
+|    '--------------+-'   |   |      |
+|                   |     |   |      |
+|                   |     |   |      |
+|           Collect |     |   |      |
+|            Claims |     |   |      |
+|                   |     |   |      |
+|                   v     |   v      |
+|                 .-------+-----.    |
+|                 | Attesting   |    |
+|                 | Environment |    |
+|                 |             |    |
+|                 '-------------'    |
+|               Attester (HSM)       |
+'------------------------------------'
 ~~~
 {: #fig-arch title="Architecture"}
 
