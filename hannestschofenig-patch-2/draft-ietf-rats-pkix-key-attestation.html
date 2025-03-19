@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta content="Common,Latin" name="scripts">
 <meta content="initial-scale=1.0" name="viewport">
-<title>PKIX Key Attestation</title>
+<title>PKIX Evidence for Remote Attestation</title>
 <meta content="Mike Ounsworth" name="author">
 <meta content="Jean-Pierre Fiset" name="author">
 <meta content="Hannes Tschofenig" name="author">
@@ -12,18 +12,19 @@
 <meta content="Monty Wiseman" name="author">
 <meta content="Ned Smith" name="author">
 <meta content='
-       This document specifies a vendor-agnostic format for attesting to the protection properties of a symmetric or asymmetric cryptographic key within a hardware cryptographic module to support applications such as providing evidence to a Certification Authority that a key is being protected in accordance with the requested certificate profile, or that HSMs can perform key import and maintain the private key protection properties in a robust way even when migrating keys across HSM vendors. This specification includes a format for requesting a key attestation containing certain attributes. This specification is called "PKIX Attestation" because it is designed to be easy to implement on top of a code base that already supports X.509 and PKCS#11 data models. 
+       This document specifies a vendor-agnostic format for attesting to the protection properties of a symmetric or asymmetric cryptographic key within a hardware cryptographic module to support applications, such as providing evidence to a Certification Authority that a key is being protected in accordance with the requested certificate profile, or that HSMs can perform key import and maintain the private key protection properties in a robust way even when migrating keys across HSM vendors. This specification also includes a format for requesting evidence. 
+       This specification is called "PKIX Attestation" because it is designed to be easy to implement on top of a code base that already supports X.509 and PKCS#11 data models in hardware cryptographic modules. 
     ' name="description">
-<meta content="xml2rfc 3.27.0" name="generator">
+<meta content="xml2rfc 3.28.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
-<meta content="draft-ounsworth-rats-key-attestation-latest" name="ietf.draft">
+<meta content="draft-ietf-rats-pkix-key-attestation-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.27.0
+  xml2rfc 3.28.0
     Python 3.12.9
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
-    Jinja2 3.1.5
+    Jinja2 3.1.6
     lxml 5.3.0
     platformdirs 4.3.6
     pycountry 24.6.1
@@ -32,7 +33,7 @@
     setuptools 70.3.0
     wcwidth 0.2.13
 -->
-<link href="draft-ounsworth-rats-key-attestation.xml" rel="alternate" type="application/rfc+xml">
+<link href="draft-ietf-rats-pkix-key-attestation.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
 <style type="text/css">@font-face {
   font-family: 'Lora';
@@ -1048,12 +1049,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <table class="ears">
 <thead><tr>
 <td class="left">Internet-Draft</td>
-<td class="center">PKIX Key Attestation</td>
+<td class="center">PKIX Evidence for Remote Attestation</td>
 <td class="right">March 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Ounsworth, et al.</td>
-<td class="center">Expires 3 September 2025</td>
+<td class="center">Expires 20 September 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1061,17 +1062,17 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <div id="internal-metadata" class="document-information">
 <dl id="identifiers">
 <dt class="label-workgroup">Workgroup:</dt>
-<dd class="workgroup">Remote ATtestation procedureS</dd>
+<dd class="workgroup">RATS</dd>
 <dt class="label-internet-draft">Internet-Draft:</dt>
-<dd class="internet-draft">draft-ounsworth-rats-key-attestation-latest</dd>
+<dd class="internet-draft">draft-ietf-rats-pkix-key-attestation-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-03-02" class="published">2 March 2025</time>
+<time datetime="2025-03-19" class="published">19 March 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-09-03">3 September 2025</time></dd>
+<dd class="expires"><time datetime="2025-09-20">20 September 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1101,10 +1102,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </dd>
 </dl>
 </div>
-<h1 id="title">PKIX Key Attestation</h1>
+<h1 id="title">PKIX Evidence for Remote Attestation</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document specifies a vendor-agnostic format for attesting to the protection properties of a symmetric or asymmetric cryptographic key within a hardware cryptographic module to support applications such as providing evidence to a Certification Authority that a key is being protected in accordance with the requested certificate profile, or that HSMs can perform key import and maintain the private key protection properties in a robust way even when migrating keys across HSM vendors. This specification includes a format for requesting a key attestation containing certain attributes. This specification is called "PKIX Attestation" because it is designed to be easy to implement on top of a code base that already supports X.509 and PKCS#11 data models.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document specifies a vendor-agnostic format for attesting to the protection properties of a symmetric or asymmetric cryptographic key within a hardware cryptographic module to support applications, such as providing evidence to a Certification Authority that a key is being protected in accordance with the requested certificate profile, or that HSMs can perform key import and maintain the private key protection properties in a robust way even when migrating keys across HSM vendors. This specification also includes a format for requesting evidence.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">This specification is called "PKIX Attestation" because it is designed to be easy to implement on top of a code base that already supports X.509 and PKCS#11 data models in hardware cryptographic modules.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-discussion-venues">
@@ -1136,7 +1138,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 3 September 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 20 September 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1180,7 +1182,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
-            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-data-model" class="internal xref">Data Model</a></p>
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-information-model" class="internal xref">Information Model</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
                 <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-transaction-attributes" class="internal xref">Transaction Attributes</a></p>
@@ -1508,61 +1510,53 @@ capture the full functionality of the RATS architecture. If a device producing
 evidence in the specified format requires to also carry nested attestation
 statements or endorsements, then it must
 be achieved by placing the attestation from this draft within another wrapper
-layer such as RATS Conceptual Message Wrapper (CMW) [I-D.ietf-rats-msg-wrap-11].<a href="#section-3-2" class="pilcrow">¶</a></p>
+layer such as RATS Conceptual Message Wrapper (CMW) <span>[<a href="#I-D.ietf-rats-msg-wrap" class="cite xref">I-D.ietf-rats-msg-wrap</a>]</span>.<a href="#section-3-2" class="pilcrow">¶</a></p>
 <span id="name-architecture"></span><div id="fig-arch">
 <figure id="figure-1">
         <div id="section-3-3.1">
           <div class="alignLeft art-svg artwork" id="section-3-3.1.1">
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="448" width="488" viewBox="0 0 488 448" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
-              <path d="M 48,368 L 48,432" fill="none" stroke="black"></path>
-              <path d="M 56,32 L 56,304" fill="none" stroke="black"></path>
-              <path d="M 72,208 L 72,256" fill="none" stroke="black"></path>
-              <path d="M 104,264 L 104,360" fill="none" stroke="black"></path>
-              <path d="M 128,96 L 128,200" fill="none" stroke="black"></path>
-              <path d="M 144,264 L 144,360" fill="none" stroke="black"></path>
-              <path d="M 192,368 L 192,432" fill="none" stroke="black"></path>
-              <path d="M 200,96 L 200,144" fill="none" stroke="black"></path>
-              <path d="M 248,152 L 248,200" fill="none" stroke="black"></path>
-              <path d="M 312,96 L 312,144" fill="none" stroke="black"></path>
-              <path d="M 320,208 L 320,256" fill="none" stroke="black"></path>
-              <path d="M 336,368 L 336,432" fill="none" stroke="black"></path>
-              <path d="M 360,32 L 360,304" fill="none" stroke="black"></path>
-              <path d="M 480,368 L 480,432" fill="none" stroke="black"></path>
-              <path d="M 56,32 L 360,32" fill="none" stroke="black"></path>
-              <path d="M 200,96 L 312,96" fill="none" stroke="black"></path>
-              <path d="M 200,144 L 312,144" fill="none" stroke="black"></path>
-              <path d="M 72,208 L 320,208" fill="none" stroke="black"></path>
-              <path d="M 72,256 L 320,256" fill="none" stroke="black"></path>
-              <path d="M 56,304 L 360,304" fill="none" stroke="black"></path>
-              <path d="M 48,368 L 192,368" fill="none" stroke="black"></path>
-              <path d="M 336,368 L 480,368" fill="none" stroke="black"></path>
-              <path d="M 192,400 L 328,400" fill="none" stroke="black"></path>
-              <path d="M 48,432 L 192,432" fill="none" stroke="black"></path>
-              <path d="M 336,432 L 480,432" fill="none" stroke="black"></path>
-              <polygon class="arrowhead" points="336,400 324,394.4 324,405.6" fill="black" transform="rotate(0,328,400)"></polygon>
-              <polygon class="arrowhead" points="256,152 244,146.4 244,157.6" fill="black" transform="rotate(270,248,152)"></polygon>
-              <polygon class="arrowhead" points="152,360 140,354.4 140,365.6" fill="black" transform="rotate(90,144,360)"></polygon>
-              <polygon class="arrowhead" points="136,96 124,90.4 124,101.6" fill="black" transform="rotate(270,128,96)"></polygon>
-              <polygon class="arrowhead" points="112,264 100,258.4 100,269.6" fill="black" transform="rotate(270,104,264)"></polygon>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="560" width="320" viewBox="0 0 320 560" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
+              <path d="M 8,208 L 8,544" fill="none" stroke="black"></path>
+              <path d="M 48,240 L 48,336" fill="none" stroke="black"></path>
+              <path d="M 152,448 L 152,512" fill="none" stroke="black"></path>
+              <path d="M 160,32 L 160,96" fill="none" stroke="black"></path>
+              <path d="M 168,336 L 168,440" fill="none" stroke="black"></path>
+              <path d="M 184,240 L 184,336" fill="none" stroke="black"></path>
+              <path d="M 216,104 L 216,448" fill="none" stroke="black"></path>
+              <path d="M 248,176 L 248,440" fill="none" stroke="black"></path>
+              <path d="M 264,448 L 264,512" fill="none" stroke="black"></path>
+              <path d="M 272,32 L 272,96" fill="none" stroke="black"></path>
+              <path d="M 304,208 L 304,544" fill="none" stroke="black"></path>
+              <path d="M 160,32 L 272,32" fill="none" stroke="black"></path>
+              <path d="M 160,96 L 272,96" fill="none" stroke="black"></path>
+              <path d="M 8,208 L 208,208" fill="none" stroke="black"></path>
+              <path d="M 224,208 L 304,208" fill="none" stroke="black"></path>
+              <path d="M 48,240 L 184,240" fill="none" stroke="black"></path>
+              <path d="M 48,336 L 184,336" fill="none" stroke="black"></path>
+              <path d="M 152,448 L 264,448" fill="none" stroke="black"></path>
+              <path d="M 152,512 L 264,512" fill="none" stroke="black"></path>
+              <path d="M 8,544 L 304,544" fill="none" stroke="black"></path>
+              <polygon class="arrowhead" points="256,440 244,434.4 244,445.6" fill="black" transform="rotate(90,248,440)"></polygon>
+              <polygon class="arrowhead" points="176,440 164,434.4 164,445.6" fill="black" transform="rotate(90,168,440)"></polygon>
               <g class="text">
-                <text x="100" y="52">Hardware</text>
-                <text x="172" y="52">Security</text>
-                <text x="236" y="52">Module</text>
-                <text x="116" y="84">Platform</text>
-                <text x="200" y="84">environment</text>
-                <text x="256" y="116">Application</text>
-                <text x="228" y="132">Keys</text>
-                <text x="188" y="196">measurements</text>
-                <text x="128" y="228">Attestation</text>
-                <text x="112" y="244">Service</text>
-                <text x="48" y="324">Attestation</text>
-                <text x="172" y="324">PKIX</text>
-                <text x="64" y="340">Request</text>
-                <text x="200" y="340">Attestation</text>
-                <text x="224" y="388">Usage</text>
-                <text x="284" y="388">Protocol</text>
-                <text x="120" y="404">Presenter</text>
-                <text x="408" y="404">Recipient</text>
+                <text x="212" y="68">Verifier</text>
+                <text x="164" y="132">PKIX</text>
+                <text x="272" y="132">Attestation</text>
+                <text x="180" y="148">Evidence</text>
+                <text x="256" y="148">Request</text>
+                <text x="268" y="164">(optional)</text>
+                <text x="84" y="260">Target</text>
+                <text x="104" y="276">Environment</text>
+                <text x="96" y="292">(Platform</text>
+                <text x="144" y="292">&amp;</text>
+                <text x="104" y="308">Application</text>
+                <text x="80" y="324">Keys)</text>
+                <text x="128" y="388">Collect</text>
+                <text x="132" y="404">Claims</text>
+                <text x="200" y="468">Attesting</text>
+                <text x="208" y="484">Environment</text>
+                <text x="164" y="532">Attester</text>
+                <text x="224" y="532">(HSM)</text>
               </g>
             </svg><a href="#section-3-3.1.1" class="pilcrow">¶</a>
 </div>
@@ -1598,30 +1592,25 @@ will feel familiar to implementers with experience with PKI and PKCS#11.<a href=
         <h3 id="name-attestation-key-certificate">
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-attestation-key-certificate" class="section-name selfRef">Attestation Key Certificate Chain</a>
         </h3>
-<p id="section-3.1-1">The data format in this specification represents self-attested evidence and therefore
-requires third-party endorsement in order to establish trust. This endorsement
-comes in the form of an X.509 certificate chain where the SubjectPublicKey of
-the leaf certificate is the HSM's attestation key (AK) which signs the evidence,
-and this AK certificate chains to a trust anchor which is trusted by the Recipient
-as authoritative to vouch for the authenticity of the device. In practice the typical
-scenarios are that the AK is generated inside the device during manufacturing and the
-AK certificate is injected at manufacture time and chains to a vendor CA which proves
-that the device is genuine and not counterfit, or the AK certificate is injected as part
-of onboarding the device into an operational environment and chains to a CA within
-the operational network.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-1">The data format in this specification represents attestation evidence and
+requires third-party endorsement in order to establish trust. Part of this
+endorsement is a trust anchor that chains to the HSM's attestation key (AK)
+which signs the evidence. In practice the trust anchor will usually be a
+manufacturing CA belonging to the device vendor which proves
+that the device is genuine and not counterfeit. The trust anchor can also belong
+to the device operator as would be the case when the AK certificate is replaced
+as part of onboarding the device into a new operational network.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 <p id="section-3.1-2">Note that the data format specified in <a href="#sec-data-model" class="auto internal xref">Section 4</a> allows for zero, one, or multiple
 'SignatureBlock's, so a single evidence statement could be un-protected, or could be endorsed by multiple
 AK chains leading to different trust anchors. See <a href="#sec-verif-proc" class="auto internal xref">Section 6</a> for a discussion of handling multiple SignatureBlocks.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
-<p id="section-3.1-3">TODO: should this specification provide specific X.509 extensions that should be present in this AK Certificate to carry specific information about the device?<a href="#section-3.1-3" class="pilcrow">¶</a></p>
-<p id="section-3.1-4">TODO: should CPS be mentioned here?<a href="#section-3.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
 <div id="sec-data-model">
 <section id="section-4">
-      <h2 id="name-data-model">
-<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-data-model" class="section-name selfRef">Data Model</a>
+      <h2 id="name-information-model">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-information-model" class="section-name selfRef">Information Model</a>
       </h2>
 <p id="section-4-1">This section describes the semantics of the key claims as part of the information
 model.<a href="#section-4-1" class="pilcrow">¶</a></p>
@@ -1771,7 +1760,9 @@ when the given attribute appears in a request, whether it is to be a valued or u
 <a href="#section-4.1.2" class="section-number selfRef">4.1.2. </a><a href="#name-time" class="section-name selfRef">time</a>
           </h4>
 <p id="section-4.1.2-1">The time at which this attestation was generated, according to the internal system clock of the HSM.<a href="#section-4.1.2-1" class="pilcrow">¶</a></p>
-<p id="section-4.1.2-2">Note that it is common for HSMs to not have an accurate system clock; consider an HSM for a root CA kept offline and booted up infrequently in an local network segregated from all other network, or a smart card which boots up only when held against an NFC reader. Implementers of emitters <span class="bcp14">SHOULD</span> include this attribute only if the device reliably knows its own time (for example has had recent contact with an NTP server). Implementers of parsers <span class="bcp14">SHOULD</span> be wary of trusting the contents of this attribute. A challenge-response protocol that makes use of the nonce attribute is a far more reliable way of establishing freshness.<a href="#section-4.1.2-2" class="pilcrow">¶</a></p>
+<p id="section-4.1.2-2">Note that it is common for HSMs to not have an accurate system clock; consider an HSM for a root CA kept offline and booted up infrequently in an local network segregated from all other network, or a smart card which boots up only when held against an NFC reader.
+Implementers of emitters <span class="bcp14">SHOULD</span> include this attribute only if the device reliably knows its own time (for example has had recent contact with an NTP server).
+Implementers of parsers <span class="bcp14">SHOULD</span> be wary of trusting the contents of this attribute. A challenge-response protocol that makes use of the nonce attribute is a far more reliable way of establishing freshness.<a href="#section-4.1.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1901,7 +1892,9 @@ when the given attribute appears in a request, whether it is to be a valued or u
             <tr>
               <td class="text-left" rowspan="1" colspan="1">fipsboot</td>
               <td class="text-left" rowspan="1" colspan="1">bool</td>
-              <td class="text-left" rowspan="1" colspan="1">[FIPS.140-3]</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span>[<a href="#FIPS.140-3" class="cite xref">FIPS.140-3</a>]</span>
+</td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
               <td class="text-left" rowspan="1" colspan="1">
                 <span class="bcp14">MUST NOT</span>
@@ -1911,7 +1904,9 @@ when the given attribute appears in a request, whether it is to be a valued or u
             <tr>
               <td class="text-left" rowspan="1" colspan="1">fipsver</td>
               <td class="text-left" rowspan="1" colspan="1">utf8String</td>
-              <td class="text-left" rowspan="1" colspan="1">[FIPS.140-3]</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span>[<a href="#FIPS.140-3" class="cite xref">FIPS.140-3</a>]</span>
+</td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
               <td class="text-left" rowspan="1" colspan="1">
                 <span class="bcp14">MUST NOT</span>
@@ -1921,7 +1916,9 @@ when the given attribute appears in a request, whether it is to be a valued or u
             <tr>
               <td class="text-left" rowspan="1" colspan="1">fipslevel</td>
               <td class="text-left" rowspan="1" colspan="1">int</td>
-              <td class="text-left" rowspan="1" colspan="1">[FIPS.140-3]</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span>[<a href="#FIPS.140-3" class="cite xref">FIPS.140-3</a>]</span>
+</td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
               <td class="text-left" rowspan="1" colspan="1">
                 <span class="bcp14">MUST NOT</span>
@@ -2286,18 +2283,18 @@ key import <span class="bcp14">MAY</span> be aborted, or a prompt <span class="b
 <pre>
 &lt;CODE STARTS&gt;
 
-PKIX-Key-Attest-2025
+PKIX-Evidence-2025
       { iso(1) identified-organization(3) dod(6) internet(1)
         security(5) mechanisms(5) pkix(7) id-mod(0)
-        id-mod-pkik-key-attest-2025(TBDMOD) }
+        id-mod-pkix-evidence-2025(TBDMOD) }
 
 
-PkixAttestation ::= SEQUENCE {
+PkixEvidence ::= SEQUENCE {
     tbs TbsPkixAttestation,
     signatures SEQUENCE SIZE (0..MAX) of SignatureBlock
 }
 
-TbsPkixAttestation ::= SEQUENCE {
+TbsPkixEvidence ::= SEQUENCE {
     version INTEGER,
     reportedEntities SEQUENCE SIZE (1..MAX) OF ReportedEntity
 }
@@ -2327,46 +2324,46 @@ SignatureBlock ::= SEQUENCE {
    signatureValue OCTET STRING
 }
 
-id-pkix-attest OBJECT IDENTIFIER ::= { 1 2 3 999 }
+id-pkix-evidence OBJECT IDENTIFIER ::= { 1 2 3 999 }
 
-id-pkix-attest-entity-type        OBJECT IDENTIFIER ::= { id-pkix-attest 0 }
-id-pkix-attest-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 0 }
-id-pkix-attest-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 1 }
-id-pkix-attest-entity-key         OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 2 }
+id-pkix-evidence-entity-type        OBJECT IDENTIFIER ::= { id-pkix-evidence- 0 }
+id-pkix-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 0 }
+id-pkix-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 1 }
+id-pkix-evidence-entity-key         OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 2 }
 
-id-pkix-attest-attribute-type OBJECT IDENTIFIER ::= { id-pkix-attest 1 }
+id-pkix-evidence-attribute-type OBJECT IDENTIFIER ::= { id-pkix-evidence- 1 }
 
-id-pkix-attest-attribute-transaction       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 0 }
-id-pkix-attest-attribute-transaction-nonce OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-transaction 0 }
+id-pkix-evidence-attribute-transaction       OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-type 0 }
+id-pkix-evidence-attribute-transaction-nonce OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-transaction 0 }
 
-id-pkix-attest-attribute-platform            OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 1 }
-id-pkix-attest-attribute-platform-vendor     OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 0 }
-id-pkix-attest-attribute-platform-hwserial   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 1 }
-id-pkix-attest-attribute-platform-fipsboot   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 2 }
-id-pkix-attest-attribute-platform-desc       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 3 }
-id-pkix-attest-attribute-platform-time       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 4 }
-id-pkix-attest-attribute-platform-swversion  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 5 }
-id-pkix-attest-attribute-platform-oemid      OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 6 }
-id-pkix-attest-attribute-platform-debugstat  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 7 }
-id-pkix-attest-attribute-platform-uptime     OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 8 }
-id-pkix-attest-attribute-platform-bootcount  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 9 }
-id-pkix-attest-attribute-platform-usermods   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 8 }
-id-pkix-attest-attribute-platform-envid      OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 9 }
-id-pkix-attest-attribute-platform-envdesc    OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 10 }
-id-pkix-attest-attribute-platform-fipsver  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 11 }
-id-pkix-attest-attribute-platform-fipslevel  OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 12 }
+id-pkix-evidence-attribute-platform            OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-type 1 }
+id-pkix-evidence-attribute-platform-vendor     OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 0 }
+id-pkix-evidence-attribute-platform-hwserial   OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 1 }
+id-pkix-evidence-attribute-platform-fipsboot   OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 2 }
+id-pkix-evidence-attribute-platform-desc       OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 3 }
+id-pkix-evidence-attribute-platform-time       OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 4 }
+id-pkix-evidence-attribute-platform-swversion  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 5 }
+id-pkix-evidence-attribute-platform-oemid      OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 6 }
+id-pkix-evidence-attribute-platform-debugstat  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 7 }
+id-pkix-evidence-attribute-platform-uptime     OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 8 }
+id-pkix-evidence-attribute-platform-bootcount  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 9 }
+id-pkix-evidence-attribute-platform-usermods   OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 8 }
+id-pkix-evidence-attribute-platform-envid      OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 9 }
+id-pkix-evidence-attribute-platform-envdesc    OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 10 }
+id-pkix-evidence-attribute-platform-fipsver    OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 11 }
+id-pkix-evidence-attribute-platform-fipslevel  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 12 }
 
 
 
-id-pkix-attest-attribute-key                   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 2 }
-id-pkix-attest-attribute-key-identifier        OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 0 }
-id-pkix-attest-attribute-key-spki              OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 1 }
-id-pkix-attest-attribute-key-purpose           OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 2 }
-id-pkix-attest-attribute-key-extractable       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 3 }
-id-pkix-attest-attribute-key-never-extractable OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 4 }
-id-pkix-attest-attribute-key-local             OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 5 }
-id-pkix-attest-attribute-key-expiry            OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 6 }
-id-pkix-attest-attribute-key-protection        OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 7 }
+id-pkix-evidence-attribute-key                   OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-type 2 }
+id-pkix-evidence-attribute-key-identifier        OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 0 }
+id-pkix-evidence-attribute-key-spki              OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 1 }
+id-pkix-evidence-attribute-key-purpose           OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 2 }
+id-pkix-evidence-attribute-key-extractable       OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 3 }
+id-pkix-evidence-attribute-key-never-extractable OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 4 }
+id-pkix-evidence-attribute-key-local             OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 5 }
+id-pkix-evidence-attribute-key-expiry            OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 6 }
+id-pkix-evidence-attribute-key-protection        OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 7 }
 
 &lt;CODE ENDS&gt;
 
@@ -2464,6 +2461,10 @@ Requiring the Attestation Service to use the attested application keys could, in
 <a href="#section-12.1" class="section-number selfRef">12.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
+<dt id="FIPS.140-3">[FIPS.140-3]</dt>
+        <dd>
+<span class="refAuthor">NIST - Information Technology Laboratory</span>, <span class="refTitle">"SECURITY REQUIREMENTS FOR CRYPTOGRAPHIC MODULES"</span>, <span class="seriesInfo">FIPS 140-3</span>, <span>n.d.</span>, <span>&lt;<a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-3.pdf">https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-3.pdf</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="I-D.ietf-rats-eat">[I-D.ietf-rats-eat]</dt>
         <dd>
 <span class="refAuthor">Lundblade, L.</span>, <span class="refAuthor">Mandyam, G.</span>, <span class="refAuthor">O'Donoghue, J.</span>, and <span class="refAuthor">C. Wallace</span>, <span class="refTitle">"The Entity Attestation Token (EAT)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-rats-eat-31</span>, <time datetime="2024-09-06" class="refDate">6 September 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-rats-eat-31">https://datatracker.ietf.org/doc/html/draft-ietf-rats-eat-31</a>&gt;</span>. </dd>
@@ -2483,10 +2484,6 @@ Requiring the Attestation Service to use the attested application keys could, in
 <dt id="RFC8174">[RFC8174]</dt>
         <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC8949">[RFC8949]</dt>
-        <dd>
-<span class="refAuthor">Bormann, C.</span> and <span class="refAuthor">P. Hoffman</span>, <span class="refTitle">"Concise Binary Object Representation (CBOR)"</span>, <span class="seriesInfo">STD 94</span>, <span class="seriesInfo">RFC 8949</span>, <span class="seriesInfo">DOI 10.17487/RFC8949</span>, <time datetime="2020-12" class="refDate">December 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8949">https://www.rfc-editor.org/rfc/rfc8949</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC9334">[RFC9334]</dt>
         <dd>
@@ -2509,17 +2506,13 @@ Requiring the Attestation Service to use the attested application keys could, in
 <a href="#section-12.2" class="section-number selfRef">12.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <dl class="references">
-<dt id="I-D.bft-rats-kat">[I-D.bft-rats-kat]</dt>
-        <dd>
-<span class="refAuthor">Brossard, M.</span>, <span class="refAuthor">Fossati, T.</span>, <span class="refAuthor">Tschofenig, H.</span>, and <span class="refAuthor">H. Birkholz</span>, <span class="refTitle">"An EAT-based Key Attestation Token"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-bft-rats-kat-05</span>, <time datetime="2024-11-21" class="refDate">21 November 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-bft-rats-kat-05">https://datatracker.ietf.org/doc/html/draft-bft-rats-kat-05</a>&gt;</span>. </dd>
-<dd class="break"></dd>
 <dt id="I-D.fossati-tls-attestation">[I-D.fossati-tls-attestation]</dt>
         <dd>
 <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Sheffer, Y.</span>, <span class="refAuthor">Howard, P.</span>, <span class="refAuthor">Mihalcea, I.</span>, <span class="refAuthor">Deshpande, Y.</span>, <span class="refAuthor">Niemi, A.</span>, and <span class="refAuthor">T. Fossati</span>, <span class="refTitle">"Using Attestation in Transport Layer Security (TLS) and Datagram Transport Layer Security (DTLS)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-fossati-tls-attestation-08</span>, <time datetime="2024-10-21" class="refDate">21 October 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-fossati-tls-attestation-08">https://datatracker.ietf.org/doc/html/draft-fossati-tls-attestation-08</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-lamps-csr-attestation">[I-D.ietf-lamps-csr-attestation]</dt>
         <dd>
-<span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Wiseman, M.</span>, and <span class="refAuthor">N. Smith</span>, <span class="refTitle">"Use of Remote Attestation with Certification Signing Requests"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-lamps-csr-attestation-16</span>, <time datetime="2025-02-01" class="refDate">1 February 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-16">https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-16</a>&gt;</span>. </dd>
+<span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Wiseman, M.</span>, and <span class="refAuthor">N. Smith</span>, <span class="refTitle">"Use of Remote Attestation with Certification Signing Requests"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-lamps-csr-attestation-17</span>, <time datetime="2025-03-02" class="refDate">2 March 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-17">https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-17</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-rats-msg-wrap">[I-D.ietf-rats-msg-wrap]</dt>
         <dd>
@@ -2532,10 +2525,6 @@ Requiring the Attestation Service to use the attested application keys could, in
 <dt id="RFC4211">[RFC4211]</dt>
         <dd>
 <span class="refAuthor">Schaad, J.</span>, <span class="refTitle">"Internet X.509 Public Key Infrastructure Certificate Request Message Format (CRMF)"</span>, <span class="seriesInfo">RFC 4211</span>, <span class="seriesInfo">DOI 10.17487/RFC4211</span>, <time datetime="2005-09" class="refDate">September 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4211">https://www.rfc-editor.org/rfc/rfc4211</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC5912">[RFC5912]</dt>
-        <dd>
-<span class="refAuthor">Hoffman, P.</span> and <span class="refAuthor">J. Schaad</span>, <span class="refTitle">"New ASN.1 Modules for the Public Key Infrastructure Using X.509 (PKIX)"</span>, <span class="seriesInfo">RFC 5912</span>, <span class="seriesInfo">DOI 10.17487/RFC5912</span>, <time datetime="2010-06" class="refDate">June 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5912">https://www.rfc-editor.org/rfc/rfc5912</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC6024">[RFC6024]</dt>
         <dd>
@@ -2852,7 +2841,7 @@ input taken from discussions on the RATS mailing list.<a href="#appendix-B-1" cl
 <address class="vcard">
         <div dir="auto" class="left"><span class="fn nameRole">Mike Ounsworth</span></div>
 <div dir="auto" class="left"><span class="org">Entrust Limited</span></div>
-<div dir="auto" class="left"><span class="street-address">2500 Solandt Road – Suite 100</span></div>
+<div dir="auto" class="left"><span class="street-address">2500 Solandt Road - Suite 100</span></div>
 <div dir="auto" class="left">
 <span class="locality">Ottawa, Ontario</span>  <span class="postal-code">K2K 3G5</span>
 </div>
