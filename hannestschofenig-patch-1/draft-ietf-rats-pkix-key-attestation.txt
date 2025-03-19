@@ -2,10 +2,10 @@
 
 
 
-Remote ATtestation procedureS                               M. Ounsworth
+RATS                                                        M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 3 September 2025                                       Crypto4A
+Expires: 20 September 2025                                      Crypto4A
                                                            H. Tschofenig
                                                                    H-BRS
                                                              H. Birkholz
@@ -14,26 +14,28 @@ Expires: 3 September 2025                                       Crypto4A
                                                          Beyond Identity
                                                                 N. Smith
                                                        Intel Corporation
-                                                            2 March 2025
+                                                           19 March 2025
 
 
-                          PKIX Key Attestation
-              draft-ounsworth-rats-key-attestation-latest
+                  PKIX Evidence for Remote Attestation
+              draft-ietf-rats-pkix-key-attestation-latest
 
 Abstract
 
    This document specifies a vendor-agnostic format for attesting to the
    protection properties of a symmetric or asymmetric cryptographic key
-   within a hardware cryptographic module to support applications such
+   within a hardware cryptographic module to support applications, such
    as providing evidence to a Certification Authority that a key is
    being protected in accordance with the requested certificate profile,
    or that HSMs can perform key import and maintain the private key
    protection properties in a robust way even when migrating keys across
-   HSM vendors.  This specification includes a format for requesting a
-   key attestation containing certain attributes.  This specification is
-   called "PKIX Attestation" because it is designed to be easy to
-   implement on top of a code base that already supports X.509 and
-   PKCS#11 data models.
+   HSM vendors.  This specification also includes a format for
+   requesting evidence.
+
+   This specification is called "PKIX Attestation" because it is
+   designed to be easy to implement on top of a code base that already
+   supports X.509 and PKCS#11 data models in hardware cryptographic
+   modules.
 
 Discussion Venues
 
@@ -61,7 +63,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 3 September 2025.
+   This Internet-Draft will expire on 20 September 2025.
 
 Copyright Notice
 
@@ -83,7 +85,7 @@ Table of Contents
    2.  Terminology
    3.  Architecture and Conceptual Model
      3.1.  Attestation Key Certificate Chain
-   4.  Data Model
+   4.  Information Model
      4.1.  Transaction Attributes
        4.1.1.  nonce
        4.1.2.  time
@@ -106,9 +108,11 @@ Table of Contents
    9.  ASN.1 Module
    10. IANA Considerations
    11. Security Considerations
-     11.1.  Simple to implement
+     11.1.  Simple to Implement
      11.2.  Detached Signatures
      11.3.  Privacy
+     11.4.  Authenticating and Authorizing the Presenter
+     11.5.  Proof-of-Possession of Application Keys
    12. References
      12.1.  Normative References
      12.2.  Informative References
@@ -155,15 +159,14 @@ Table of Contents
    this specification uses a simplification of the Remote ATtestation
    procedureS (RATS) Architecture [RFC9334] by assuming that the
    attesting environment and the target environment are the same
-   environment, and that this environment only produces self-attested
-   evidence as this aligns with the target hardware platforms.  As such,
-   the attestation data format specified in Section 4 only contains
-   evidence (referred to in this document as "attributes") and does not
-   provide for any form of endorsement except for endorsement of the
-   device's attestation signing key which is endorsed via an X.509
-   certificate chain rooted in a trust anchor belonging either to the
-   device manufacturer or to the device operator, as described in
-   Section 3.1.
+   environment, and that this environment only produces evidence as this
+   aligns with the target hardware platforms.  As such, the attestation
+   data format specified in Section 4 only contains evidence (referred
+   to in this document as "attributes") and does not provide for any
+   form of endorsement except for endorsement of the device's
+   attestation signing key which is endorsed via an X.509 certificate
+   chain rooted in a trust anchor belonging either to the device
+   manufacturer or to the device operator, as described in Section 3.1.
 
    Unlike other attestation data formats defined by the RATS working
    group, the format defined in this document is targeting devices
@@ -338,7 +341,7 @@ Table of Contents
    [I-D.ietf-rats-msg-wrap].
 
          .-------------------------------------.
-         | Hardware Security Module                       |
+         | Hardware Security Module            |
          |                                     |
          |   Platform environment              |
          |        ^        .-------------.     |
@@ -398,19 +401,15 @@ Table of Contents
 
 3.1.  Attestation Key Certificate Chain
 
-   The data format in this specification represents self-attested
-   evidence and therefore requires third-party endorsement in order to
-   establish trust.  This endorsement comes in the form of an X.509
-   certificate chain where the SubjectPublicKey of the leaf certificate
-   is the HSM's attestation key (AK) which signs the evidence, and this
-   AK certificate chains to a trust anchor which is trusted by the
-   Recipient as authoritative to vouch for the authenticity of the
-   device.  In practice the trust anchor will usually be a manufacturing
-   CA belonging to the device vendor which proves that the device is
-   genuine and not counterfeit.  The Trust Anchor can also belong to the
-   device operator as would be the case when the AK certificate is
-   replaced as part of on-boarding the device into a new operational
-   network.
+   The data format in this specification represents attestation evidence
+   and requires third-party endorsement in order to establish trust.
+   Part of this endorsement is a trust anchor that chains to the HSM's
+   attestation key (AK) which signs the evidence.  In practice the trust
+   anchor will usually be a manufacturing CA belonging to the device
+   vendor which proves that the device is genuine and not counterfeit.
+   The trust anchor can also belong to the device operator as would be
+   the case when the AK certificate is replaced as part of onboarding
+   the device into a new operational network.
 
    Note that the data format specified in Section 4 allows for zero,
    one, or multiple 'SignatureBlock's, so a single evidence statement
@@ -418,13 +417,7 @@ Table of Contents
    leading to different trust anchors.  See Section 6 for a discussion
    of handling multiple SignatureBlocks.
 
-   TODO: should this specification provide specific X.509 extensions
-   that should be present in this AK Certificate to carry specific
-   information about the device?
-
-   TODO: should CPS be mentioned here?
-
-4.  Data Model
+4.  Information Model
 
    This section describes the semantics of the key claims as part of the
    information model.
@@ -1248,7 +1241,7 @@ Table of Contents
    lacking sufficient information to verify the device's FIPS
    certification status.
 
-11.1.  Simple to implement
+11.1.  Simple to Implement
 
    The nature of attestation requires the attestation service to be
    implemented in an extremely privileged position within the HSM so
@@ -1301,11 +1294,11 @@ Table of Contents
    violation.
 
    Implementions SHOULD be careful to avoid over-disclosure of
-   information, for example by authenticating the Presenter and only
-   returning results for keys and envirnments for which it is
-   authorized.  In absence of an existing mechanism for authenticating
-   and authorizing administrative connections to the HSM, the
-   attestation request MAY be authenticated by embedding the
+   information, for example by authenticating the Presenter as described
+   in Section 11.4 and only returning results for keys and envirnments
+   for which it is authorized.  In absence of an existing mechanism for
+   authenticating and authorizing administrative connections to the HSM,
+   the attestation request MAY be authenticated by embedding the
    TbsPkixAttestation of the request inside a PKIXAttestation signed
    with a certificate belogning to the Presenter.
 
@@ -1314,9 +1307,90 @@ Table of Contents
    Section 7 so that Presenters can fine-tune the content of a PKIX
    Attestation such that it is appropriate for the intended Recipient.
 
+11.4.  Authenticating and Authorizing the Presenter
+
+   The Presenter represents a priviledged role within the architecture
+   of this specification as it gets to learn about the existence of
+   application keys and their protection properties, as well as details
+   of the platform.  The Presenter is in the position of deciding how
+   much information to disclose to the Recipient, and to request a
+   suitably redacted attestation from the HSM.
+
+   For personal cryptographic tokens it might be appropriate for the
+   attestation request interface to be un-authenticated.  However, for
+   enterprise and cloud-services grade HSMs the Presenter SHOULD be
+   authenticated using the HSM's native authentication mechanism.  The
+   details will be HSM-specific and are thus left up to the implementer,
+   however it is RECOMMENDED to implement an authorization framework
+   similar to the following.
+
+   A Presenter SHOULD be allowed to request attestation for any
+   application keys which it is allowed to use.  For example, a TLS
+   application that is correctly authenticated to the HSM in order to
+   use its TLS keys SHOULD be able to request attestation of those same
+   keys without needing to perform any additional authentication or
+   requiring any additional roles or permissions.  HSMs that wish to
+   allow a Presenter to request attestation of keys which is not allowed
+   to use, for example for the purposes of displaying HSM status
+   information on an administrative console or UI, SHOULD have a
+   "Attestation Requester" role or permission and SHOULD enforce the
+   HSM's native access controls such that the Presenter can only
+   retrieve attestations for keys for which it has read access.
+
+11.5.  Proof-of-Possession of Application Keys
+
+   With asymmetric keys within a Public Key Infrastructure (PKI) it is
+   common to require a key holder to prove that they are in control of
+   the private key by using it.  This is called "proof-of-possession
+   (PoP)".  This specification intentionally does not provide a
+   mechnaism for PoP of application keys and relies on the Presenter,
+   Recipient, Verifier, and Relying Party trusting the Attester to
+   correctly report the cryptographic keys that it is holding.
+
+   It would be easy to add a PoP Key Attribute that uses the attested
+   application key to sign over, for example, the Transaction Entity,
+   however this is a bad idea and MUST NOT be added as a custom
+   attribute for several reasons.
+
+   First, an application key intended, for example, for TLS SHOULD only
+   be used with the TLS protocol and introducing a signature oracle
+   whereby the TLS application key is used to sign attestation content
+   could lead to cross-protocol attacks whereby the attacker submits a
+   nonce value which is in fact not random but is crafted in such a way
+   as to appear as a valid message in some other protocol context or
+   exploit some other weakness in the signature algorithm.
+
+   Second, the Presenter who has connected to the HSM to request an
+   attestation may have permissions to view the requested application
+   keys but not permission to use them, as in the case where the
+   Presenter is an administrative UI displaying HSM status information
+   to an systems administrator or auditor.  Requiring the Attestation
+   Service to use the attested application keys could, in some
+   architectures, require the Attestation Service to resolve complex
+   access control logic and handle complex error conditions for each
+   requested key, which violates the "simple to implement" design
+   principle outlined in Section 11.1.  More discussion of
+   authenticating the Presenter can be found in Section 11.4.
+
+   In cases where explicit PoP is required for a given attested
+   application key, it MUST be done as part of the regular usage
+   protocol for which that key is intended and performed through the
+   HSM's regular application interface, not its attestation interface.
+   For example, PoP could be performed by signing a Certificate Signing
+   Request (CSR), through a PKI enrollment protocol such as Certificate
+   Management Protocol (CMP) which includes a challenge-response PoP, by
+   using the key within a TLS handshake, or some other protocol which is
+   part of the key's intended usage.
+
 12.  References
 
 12.1.  Normative References
+
+   [FIPS.140-3]
+              NIST - Information Technology Laboratory, "SECURITY
+              REQUIREMENTS FOR CRYPTOGRAPHIC MODULES", FIPS 140-3, n.d.,
+              <https://nvlpubs.nist.gov/nistpubs/FIPS/
+              NIST.FIPS.140-3.pdf>.
 
    [I-D.ietf-rats-eat]
               Lundblade, L., Mandyam, G., O'Donoghue, J., and C.
@@ -1344,11 +1418,6 @@ Table of Contents
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
 
-   [RFC8949]  Bormann, C. and P. Hoffman, "Concise Binary Object
-              Representation (CBOR)", STD 94, RFC 8949,
-              DOI 10.17487/RFC8949, December 2020,
-              <https://www.rfc-editor.org/rfc/rfc8949>.
-
    [RFC9334]  Birkholz, H., Thaler, D., Richardson, M., Smith, N., and
               W. Pan, "Remote ATtestation procedureS (RATS)
               Architecture", RFC 9334, DOI 10.17487/RFC9334, January
@@ -1365,13 +1434,6 @@ Table of Contents
 
 12.2.  Informative References
 
-   [I-D.bft-rats-kat]
-              Brossard, M., Fossati, T., Tschofenig, H., and H.
-              Birkholz, "An EAT-based Key Attestation Token", Work in
-              Progress, Internet-Draft, draft-bft-rats-kat-05, 21
-              November 2024, <https://datatracker.ietf.org/doc/html/
-              draft-bft-rats-kat-05>.
-
    [I-D.fossati-tls-attestation]
               Tschofenig, H., Sheffer, Y., Howard, P., Mihalcea, I.,
               Deshpande, Y., Niemi, A., and T. Fossati, "Using
@@ -1385,9 +1447,9 @@ Table of Contents
               Ounsworth, M., Tschofenig, H., Birkholz, H., Wiseman, M.,
               and N. Smith, "Use of Remote Attestation with
               Certification Signing Requests", Work in Progress,
-              Internet-Draft, draft-ietf-lamps-csr-attestation-16, 1
-              February 2025, <https://datatracker.ietf.org/doc/html/
-              draft-ietf-lamps-csr-attestation-16>.
+              Internet-Draft, draft-ietf-lamps-csr-attestation-17, 2
+              March 2025, <https://datatracker.ietf.org/doc/html/draft-
+              ietf-lamps-csr-attestation-17>.
 
    [I-D.ietf-rats-msg-wrap]
               Birkholz, H., Smith, N., Fossati, T., Tschofenig, H., and
@@ -1405,11 +1467,6 @@ Table of Contents
               Certificate Request Message Format (CRMF)", RFC 4211,
               DOI 10.17487/RFC4211, September 2005,
               <https://www.rfc-editor.org/rfc/rfc4211>.
-
-   [RFC5912]  Hoffman, P. and J. Schaad, "New ASN.1 Modules for the
-              Public Key Infrastructure Using X.509 (PKIX)", RFC 5912,
-              DOI 10.17487/RFC5912, June 2010,
-              <https://www.rfc-editor.org/rfc/rfc5912>.
 
    [RFC6024]  Reddy, R. and C. Wallace, "Trust Anchor Management
               Requirements", RFC 6024, DOI 10.17487/RFC6024, October
@@ -1709,7 +1766,7 @@ Authors' Addresses
 
    Mike Ounsworth
    Entrust Limited
-   2500 Solandt Road – Suite 100
+   2500 Solandt Road - Suite 100
    Ottawa, Ontario  K2K 3G5
    Canada
    Email: mike.ounsworth@entrust.com
