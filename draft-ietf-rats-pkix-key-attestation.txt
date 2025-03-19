@@ -376,6 +376,12 @@ Table of Contents
 
                            Figure 1: Architecture
 
+   MikeO: While I understand that this image matches exactly the RATS
+   architecture, I feel that we have lost something in that we no longer
+   have the Attesting Environment collecting Claims about both the HSM
+   itself and about application keys.  I would like to go back to the
+   original diagram.
+
    Figure 1 depicts a typical workflow where an external tool queries
    the HSM for the status of one or more cryptographic keys that it is
    protecting ("Application Keys").  The "Presenter" may be, for
@@ -417,6 +423,9 @@ Table of Contents
    The trust anchor can also belong to the device operator as would be
    the case when the AK certificate is replaced as part of onboarding
    the device into a new operational network.
+
+   The AK certificate that signs the evidence MUST have the Extended Key
+   Usage id-kp-attest defined in [TODO-submit-2-pager-to-lamps].
 
    Note that the data format specified in Section 4 allows for zero,
    one, or multiple 'SignatureBlock's, so a single evidence statement
@@ -1454,9 +1463,9 @@ Table of Contents
               Ounsworth, M., Tschofenig, H., Birkholz, H., Wiseman, M.,
               and N. Smith, "Use of Remote Attestation with
               Certification Signing Requests", Work in Progress,
-              Internet-Draft, draft-ietf-lamps-csr-attestation-17, 2
+              Internet-Draft, draft-ietf-lamps-csr-attestation-18, 19
               March 2025, <https://datatracker.ietf.org/doc/html/draft-
-              ietf-lamps-csr-attestation-17>.
+              ietf-lamps-csr-attestation-18>.
 
    [I-D.ietf-rats-msg-wrap]
               Birkholz, H., Smith, N., Fossati, T., Tschofenig, H., and

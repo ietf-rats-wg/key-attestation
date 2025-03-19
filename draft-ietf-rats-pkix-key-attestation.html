@@ -1565,14 +1565,15 @@ layer such as RATS Conceptual Message Wrapper (CMW) <span>[<a href="#I-D.ietf-ra
 <a href="#name-architecture" class="selfRef">Architecture</a>
         </figcaption></figure>
 </div>
-<p id="section-3-4"><a href="#fig-arch" class="auto internal xref">Figure 1</a> depicts a typical workflow where an external tool queries the HSM
+<p id="section-3-4">MikeO: While I understand that this image matches exactly the RATS architecture, I feel that we have lost something in that we no longer have the Attesting Environment collecting Claims about both the HSM itself and about application keys. I would like to go back to the original diagram.<a href="#section-3-4" class="pilcrow">¶</a></p>
+<p id="section-3-5"><a href="#fig-arch" class="auto internal xref">Figure 1</a> depicts a typical workflow where an external tool queries the HSM
 for the status of one or more cryptographic keys that it is protecting ("Application Keys").
 The "Presenter" may be, for example, a command-line or graphical user interface which will display
 the evidence to an operator or auditor; a cryptographic library which will include
 the evidence in a CSR for transmission to a Certification Authority; a TLS library
 which will include the evidence in at attested TLS session <span>[<a href="#I-D.fossati-tls-attestation" class="cite xref">I-D.fossati-tls-attestation</a>]</span>;
-or similar applications, refered to as the "Usage Protocol".<a href="#section-3-4" class="pilcrow">¶</a></p>
-<p id="section-3-5">This model does not assume any internal structure or logical separation within the HSM
+or similar applications, refered to as the "Usage Protocol".<a href="#section-3-5" class="pilcrow">¶</a></p>
+<p id="section-3-6">This model does not assume any internal structure or logical separation within the HSM
 except for the existence of some kind of attestation service which may or may not be logically separate
 from the overall HSM Root of Trust, and that this attestation service measures the
 required evidence about both the hardware environment and the application keys
@@ -1586,7 +1587,7 @@ FIPS 140-3 or Common Criteria, which motivates a design requirement to keep the 
 data format as simple as possible and as close as possible to existing functionality
 and data models of existing HSM and TPM products.
 As such, the information model presented in <a href="#sec-data-model" class="auto internal xref">Section 4</a>
-will feel familiar to implementers with experience with PKI and PKCS#11.<a href="#section-3-5" class="pilcrow">¶</a></p>
+will feel familiar to implementers with experience with PKI and PKCS#11.<a href="#section-3-6" class="pilcrow">¶</a></p>
 <div id="sec-ak-chain">
 <section id="section-3.1">
         <h3 id="name-attestation-key-certificate">
@@ -1600,9 +1601,11 @@ manufacturing CA belonging to the device vendor which proves
 that the device is genuine and not counterfeit. The trust anchor can also belong
 to the device operator as would be the case when the AK certificate is replaced
 as part of onboarding the device into a new operational network.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
-<p id="section-3.1-2">Note that the data format specified in <a href="#sec-data-model" class="auto internal xref">Section 4</a> allows for zero, one, or multiple
+<p id="section-3.1-2">The AK certificate that signs the evidence <span class="bcp14">MUST</span> have the Extended Key Usage
+<code>id-kp-attest</code> defined in [TODO-submit-2-pager-to-lamps].<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.1-3">Note that the data format specified in <a href="#sec-data-model" class="auto internal xref">Section 4</a> allows for zero, one, or multiple
 'SignatureBlock's, so a single evidence statement could be un-protected, or could be endorsed by multiple
-AK chains leading to different trust anchors. See <a href="#sec-verif-proc" class="auto internal xref">Section 6</a> for a discussion of handling multiple SignatureBlocks.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+AK chains leading to different trust anchors. See <a href="#sec-verif-proc" class="auto internal xref">Section 6</a> for a discussion of handling multiple SignatureBlocks.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2512,7 +2515,7 @@ Requiring the Attestation Service to use the attested application keys could, in
 <dd class="break"></dd>
 <dt id="I-D.ietf-lamps-csr-attestation">[I-D.ietf-lamps-csr-attestation]</dt>
         <dd>
-<span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Wiseman, M.</span>, and <span class="refAuthor">N. Smith</span>, <span class="refTitle">"Use of Remote Attestation with Certification Signing Requests"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-lamps-csr-attestation-17</span>, <time datetime="2025-03-02" class="refDate">2 March 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-17">https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-17</a>&gt;</span>. </dd>
+<span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Wiseman, M.</span>, and <span class="refAuthor">N. Smith</span>, <span class="refTitle">"Use of Remote Attestation with Certification Signing Requests"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-lamps-csr-attestation-18</span>, <time datetime="2025-03-19" class="refDate">19 March 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-18">https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-18</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-rats-msg-wrap">[I-D.ietf-rats-msg-wrap]</dt>
         <dd>
