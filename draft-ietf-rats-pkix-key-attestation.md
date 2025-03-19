@@ -1,6 +1,6 @@
 ---
-title: PKIX Key Attestation
-abbrev: PKIX Key Attestation
+title: PKIX Evidence for Remote Attestation
+abbrev: PKIX Evidence for Remote Attestation
 docname: draft-ietf-rats-pkix-key-attestation-latest
 
 category: std
@@ -114,7 +114,9 @@ entity:
 
 --- abstract
 
-This document specifies a vendor-agnostic format for attesting to the protection properties of a symmetric or asymmetric cryptographic key within a hardware cryptographic module to support applications such as providing evidence to a Certification Authority that a key is being protected in accordance with the requested certificate profile, or that HSMs can perform key import and maintain the private key protection properties in a robust way even when migrating keys across HSM vendors. This specification includes a format for requesting a key attestation containing certain attributes. This specification is called "PKIX Attestation" because it is designed to be easy to implement on top of a code base that already supports X.509 and PKCS#11 data models.
+This document specifies a vendor-agnostic format for attesting to the protection properties of a symmetric or asymmetric cryptographic key within a hardware cryptographic module to support applications, such as providing evidence to a Certification Authority that a key is being protected in accordance with the requested certificate profile, or that HSMs can perform key import and maintain the private key protection properties in a robust way even when migrating keys across HSM vendors. This specification also includes a format for requesting evidence.
+
+This specification is called "PKIX Attestation" because it is designed to be easy to implement on top of a code base that already supports X.509 and PKCS#11 data models in hardware cryptographic modules.
 
 --- middle
 
