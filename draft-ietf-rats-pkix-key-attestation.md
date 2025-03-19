@@ -331,6 +331,8 @@ layer such as RATS Conceptual Message Wrapper (CMW) [I-D.ietf-rats-msg-wrap].
 ~~~
 {: #fig-arch title="Architecture"}
 
+MikeO: While I understand that this image matches exactly the RATS architecture, I feel that we have lost something in that we no longer have the Attesting Environment collecting Claims about both the HSM itself and about application keys. I would like to go back to the original diagram.
+
 {{fig-arch}} depicts a typical workflow where an external tool queries the HSM
 for the status of one or more cryptographic keys that it is protecting ("Application Keys").
 The "Presenter" may be, for example, a command-line or graphical user interface which will display
@@ -366,6 +368,9 @@ manufacturing CA belonging to the device vendor which proves
 that the device is genuine and not counterfeit. The trust anchor can also belong
 to the device operator as would be the case when the AK certificate is replaced
 as part of onboarding the device into a new operational network.
+
+The AK certificate that signs the evidence MUST have the Extended Key Usage
+`id-kp-attest` defined in \[TODO-submit-2-pager-to-lamps\].
 
 Note that the data format specified in {{sec-data-model}} allows for zero, one, or multiple
 'SignatureBlock's, so a single evidence statement could be un-protected, or could be endorsed by multiple
