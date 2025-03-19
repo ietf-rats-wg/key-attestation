@@ -5,7 +5,7 @@
 RATS                                                        M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 11 September 2025                                      Crypto4A
+Expires: 20 September 2025                                      Crypto4A
                                                            H. Tschofenig
                                                                    H-BRS
                                                              H. Birkholz
@@ -14,7 +14,7 @@ Expires: 11 September 2025                                      Crypto4A
                                                          Beyond Identity
                                                                 N. Smith
                                                        Intel Corporation
-                                                           10 March 2025
+                                                           19 March 2025
 
 
                           PKIX Key Attestation
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 September 2025.
+   This Internet-Draft will expire on 20 September 2025.
 
 Copyright Notice
 
@@ -1397,7 +1397,7 @@ Table of Contents
               September 2024, <https://datatracker.ietf.org/doc/html/
               draft-ietf-rats-eat-31>.
 
-   [PKCS11]   Cox, T., "PKCS #11 Specification Version 3.1", n.d.,
+   [PKCS11]   Cox, D. B. T., "PKCS #11 Specification Version 3.1", n.d.,
               <https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/
               pkcs11-spec-v3.1-cs01.html>.
 
