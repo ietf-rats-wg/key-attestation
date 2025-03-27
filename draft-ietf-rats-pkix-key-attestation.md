@@ -134,7 +134,7 @@ environment. This environment refers to the components generally used to support
 such as Certification Authorities and their clients.
 
 Within this specification, the concepts found in the Remote Attestation Procedures (RATS {{!RFC9334}}) are
-mapped to the PKIX environment. There are many other specifications that are based on the RATS architecture 
+mapped to the PKIX environment. There are many other specifications that are based on the RATS architecture
 which offer formats to carry evidence. This specification deals with peculiar aspects of the PKIX environment
 which discourage the use of other specifications:
 
@@ -370,7 +370,7 @@ The PKIX Evidence format is composed of two main sections:
 
 * A signature section where digital signature are offered to prove the origin of the
   claims and maintain their integrity.
-  
+
 The details of the signature section is left to the data model. The remainder of this section
 deals with the way the information is organized to form the claims.
 
@@ -410,7 +410,7 @@ An entity is defined by its type. This specification defines three entity types:
 * Transaction : This is an entity logical in nature since it is associated with attributes
   that are not found in the Target Environment. The attributes found in this entity relate
   to the current request for Evidence such as a nonce to support freshness.
-  
+
 Although this document defines a short list of entity types, this list should be extensible
 to allow implementers to report on entities found in their implementation and not
 covered by this specification.
@@ -419,7 +419,7 @@ covered by this specification.
 
 Each attribute found in an entity is composed of a type, the attribute type, and a value.
 Each attribute describes a portion of the state of the associated entity. For example,
-a platform entity could have an attribute with the firmware version current running. 
+a platform entity could have an attribute with the firmware version current running.
 Another example is a key entity with an attribute that reports whether the key is extractable
 or not.
 
