@@ -114,118 +114,126 @@ entity:
 
 --- abstract
 
-This document specifies a vendor-agnostic format for attesting to the protection properties of a symmetric or asymmetric cryptographic key within a hardware cryptographic module to support applications, such as providing evidence to a Certification Authority that a key is being protected in accordance with the requested certificate profile, or that HSMs can perform key import and maintain the private key protection properties in a robust way even when migrating keys across HSM vendors. This specification also includes a format for requesting evidence.
+This document specifies a vendor-agnostic format for evidence produced and verified within a PKIX context.
+The evidence produced this way includes claims collected in a cryptographic module about itself and elements
+found within it such as cryptographic keys.
 
-This specification is called "PKIX Attestation" because it is designed to be easy to implement on top of a code base that already supports X.509 and PKCS#11 data models in hardware cryptographic modules.
+One scenario envisaged is that the evidence produced in that manner can be appraised in the context of a
+Certificate Authority to help determining whether the issuance of a certificate is warranted.
+
+This specification also offers a format for requesting a cryptographic module to produce evidence tailored for
+expected use.
+
 
 --- middle
 
 # Introduction
 
-This specification is targeted at attesting to the storage of cryptographic key
-material -- symmetric keys or asymmetric private keys -- within a hardware cryptographic
-module such as a Hardware Security Module (HSM) or Trusted Platform Module (TPM).
-HSMs and TPMs are devices whose primary purpose is to hold cryptographic keys and support interfaces whereby they can be used to perform encrypt, decrypt, sign, MAC and other keyed cryptographic operations on provided data without the key material ever leaving the hardware module.
-Typically an HSM or TPM holds an uses cryptographic keys on behalf of an application such as a Certification Authority, a code signing service, a TLS server.
-However, also included in the scope of this draft are single-purpose cryptographic devices such as smartcards which may hold only a single application key for a single purpose such as authenticating to a near-field "tap" terminal.
-Within this specification we will generically refer to the attesting device as an "HSM", and to the cryptographic keys that it holds an operates on behalf of some other application as "application keys".
+This specification defines a format to transmit Evidence from an Attester to a Verifer within a PKIX
+environment. This environment refers to the components generally used to support a PKI applications
+such as Certification Authorities and their clients.
 
-The goal of this specification is to provide a standardized format in which an HSM can attest that one or more application keys are contained within a hardware module, and attest to any additional attributes relating to the protection of this key material.
+Within this specification, the concepts found in the Remote Attestation Procedures (RATS {{!RFC9334}}) are
+mapped to the PKIX environment. There are many other specifications that are based on the RATS architecture 
+which offer formats to carry evidence. This specification deals with peculiar aspects of the PKIX environment
+which discourage the use of other specifications:
 
-This requires providing evidence to the key protection properties of that key, referred to in
-this specification as "key attributes", as well as to the operational state of the hardware platform,
-referred to as "platform attributes". This specification also provides a format for requesting that a cryptographic module produce a key attestation about a specific application key, the application keys in a specific sub-environment of the HSM, or that the returned attestation contain a specific set of attributes.
-See {{sec-data-model}} for the full information model.
+* ASN.1 is the preferred encoding format in this environment. X.509 certificates ({{!RFC5280}}) are used
+widely within this environment and the majority of tools are designed to support ASN.1. There are
+many specialized devices (Hardware Security Modules) that are inflexible in adopting other formats because
+of internal constraints or validation difficulties. This specification defines the format in ASN.1 to ease the
+adoption within the community.
 
-As described below in {{sec-arch}} "Architecture and Conceptual Model", this specification
-uses a simplification of the Remote ATtestation procedureS (RATS) Architecture {{RFC9334}}
-by assuming that the attesting environment and the target environment
-are the same environment, and that this environment only produces evidence as this aligns with the
-target hardware platforms. As such, the attestation data format specified in {{sec-data-model}} only contains
-evidence (referred to in this document as "attributes") and does not provide for any form of endorsement except for
-endorsement of the device's attestation signing key which is endorsed via an X.509 certificate chain rooted
-in a trust anchor belonging either to the device manufacturer or to the device operator, as described in {{sec-ak-chain}}.
+* The claims within the Evidence are more about entities such as "platforms" and "keys". Although the concept
+of "measurement" is present within the PKIX environment, it is not as prevalent as in the environments targeted
+by other specifications based on RATS. Therefore, the emphasis of this specifications is adjusted accordingly.
 
-Unlike other attestation data formats defined by the RATS working group, the format defined in this
-document is targeting devices designed to operate within Public Key Infrastructure (PKI) ecosystems;
-this motivates the following design choices:
+* The devices found in the PKIX environment are developed by different vendors and are heterogeneous in features
+and capabilities. Therefore, this specification assumes that the Attesting Environment and the Target Environment,
+as outlined in {{!RFC9334}}, are the same. This might not be the case for all devices encountered, but is
+sufficient for the proposed specification.
 
-* Attestation data structure defined in ASN.1 {{X.680}} and encoded in Distinguished Encoding Rules (DER) {{X.690}}.
-* Endorsement of attesting key uses an X.509 certificate chain {{RFC5280}}.
-* Key attributes are mostly just a mapping of the private key properties from PKCS#11 {{PKCS11}}.
+This specification also aims at providing an extensible framework to encode within Evidence claims other than
+the one proposed in this document. This allows implementations to introduce new claims and their associated
+semantics to the Evidence produced.
 
-For these reasons, this attestation format is called "PKIX Key Attestation" and may be used,
-for example within a Certificate Signing Request (CSR) object; {{I-D.ietf-lamps-csr-attestation}} specifies how to carry evidence within PKCS#10 {{RFC2986}} or Certificate Request Message Format (CRMF) {{RFC4211}}.
+# Use Cases
 
-This document provides a vendor-agnostic format for attesting to the logical and physical protection properties of a cryptographic key and it envisions uses such as providing evidence to a Certification Authority that a key is being protected in accordance with the requested certificate profile, or that HSMs can perform key import and maintain the private key protection properties in a robust way even when migrating keys across HSMs from different vendors.
+This section covers use cases that motivated the development of this specification.
 
+## Attesting subject of a certificate issuance
+
+Prior to a Certification Authority (CA) issuing a certificate on behalf of a subject, a number of procedures
+are required to verify that the subject of the certificate is associated with the key that is certified.
+In some cases, such as issuing a code signing certificate (need reference to CNSA 2.0), a CA must ensure that
+the subject key is located in a Hardware Security Module (HSM).
+
+The Evidence format offered by this specification is designed to carry the information necessary for a CA to
+assess the location of the subject key along a number of required attributes. More specifically, a CA could
+determine which HSM was used to generate the subject key, whether this device adheres
+to certain jurisdiction policies (like FIPS mode) and the constraints applied to the key (is it extractable).
+
+## Remote audit of a Hardware Security Module (HSM)
+
+There are situations where it is necessary to verify the current running state of a HSM as part of auditing
+procedures. For example, there are devices that are certified to work in an environment only if certain versions
+of the firmware are loaded.
+
+The Evidence format offered by this specification allows a platform to report its firmware level along with
+other collected claims necessary in critical deployments.
 
 # Terminology
 
 The reader is assumed to be familiar with the vocabulary and concepts
-defined in {{RFC9334}}.
+defined in the RATS architecture ({{!RFC9334}}).
 
 The following terms are used in this document:
 
 {: vspace="0"}
 
-Root of Trust (RoT):
-: A set of software and/or hardware components that need to be trusted
-to act as a security foundation required for accomplishing the security
-goals of a system. In our case, the RoT is expected to offer the
-functionality for attesting to the state of the platform, and to attest
-the properties of the application key. More precisely, it has to attest
-the integrity of the application key (public as well as private key) and the
-confidentiality of the private part of the application key. This document makes a simplifying
-assumption that the RoT, the attesting environment holding the
-attestation key, and the target environment being measured and attested
-are all the same environment.
+Application Key:
+: An application key consists of a key hosted by a HSM (the platform) and intended to be used by a client
+of the HSM. The access and operations on an application key is controlled by the HSM.
 
 Attestation Key (AK):
-: Cryptographic key belonging to the RoT that is only used to sign
-attestation tokens.
+: Cryptographic key controlled solely by the Attester and used only for the purpose
+of producing Evidence. In other words, it is used to digitally sign the claims collected by
+the Attester.
+
+Attestation Service (AttS):
+: A logical module within the HSM that is responsible for generating Evidence compatible with the
+format outlined in this specification. It collects claims from the platform and uses the Attestation
+Key to digitally sign the collection.
+
+Attester :
+: The term Attester respects the definition offered in {{!RFC9334}}. In this specification, it
+is also interchangeable with "platform" or "HSM".
+
+Evidence :
+: The term Evidence respects the definition offered in {{!RFC9334}}. In this specification, it
+refers to claims, encoded according to the format defined within this document, and signed using
+the Attestation Key.
 
 Hardware Security Module (HSM):
-: a physical computing device that safeguards and manages secrets (most importantly cryptographic keys),
-and performs encryption, decryption, signing, MACing and other cryptographic operations with the managed
-cryptographic keys. HSMs can sometimes host user applications within a secure enclave environment within
-the HSM that are often used to extend the cryptographic functionality of the HSM.
+: A physical computing device that safeguards and manages secrets (most importantly cryptographic keys),
+and performs cryptographic operations based on those secrets.
 This specification takes a broad definition of what counts as an HSM to include smartcards,
-USB tokens, and similar devices which this specification refers to as "personal cryptographic tokens",
-as well as TPMs, in addition to the usual PCI card, rack-mount, and blade server form-factor
-of HSM which this specification refers to as "enterprise-grade" or "cloud-service grade" HSMs.
+USB tokens, TPMs, cryptographic co-processors (PCI cards) and "enterprise-grade" or "cloud-service grade" HSMs
+(possibly rack mounted). In this specification, it is interchangeable with "platform" or "Attester".
 
 Key Attestation:
-: Evidence containing properties of the environment(s) in which the private
-keys are generated and stored. For example, a Relying Party may want to know whether
-a private key is stored in a hardware security module and cannot be
-exported in cleartext.
+: Process of producing Evidence containing claims pertaining to application keys found within a HSM. In
+general, the claims includes enough information about an application key and its hosting platform to allow
+a Relying Party to make judicial decisions about the key, such as issuing a certificate.
 
-Usage Protocol:
-: A (security) protocol that requires demonstrating possession of the
-private component of the application key.
+Platform:
+: The module or device that embodies the Attester. In this specification, it is interchangeable with
+"Attester" or "HSM".
 
-Attestation Token (AT):
-: A collection of claims that a RoT assembles (and signs) with the
-purpose of informing - in a verifiable way - relying parties about the
-identity and state of the platform. Essentially a type of Evidence as
-per the RATS architecture terminology {{RFC9334}}.
-
-Platform Attestation Entity:
-: An Entity containing attributes relating to the security state of the
-platform,. The process of generating a platform entity typically involves gathering
-data during measured boot.
-
-Key Attestation Entity:
-: An Entity containing attributes relating to a specific application key
-protected by the HSM. The key attestation service is part
-of the root of trust (RoT).
-
-Application Key:
-: The application key consists of a private and a public key.  The private key is
-used by the usage protocol.  The public key is included in the Key
-Attestation Token. The Key Attestation Entity makes claims about the
-protection of this key.
+Platform Attestation:
+: Evidence containing claims pertaining to an attesting platform. In general, the claims includes
+enough information about the platform to allow a Relying Party to make judicial decisions about the
+platform, such as audit reviews.
 
 Trust Anchor:
 : As defined in {{RFC6024}} and {{RFC9019}}, a Trust Anchor
@@ -237,34 +245,11 @@ Trust Anchor may be a certificate, a raw public key, or other
 structure, as appropriate.  It can be a non-root certificate when
 it is a certificate.
 
-Presenter:
-: Party that proves possession of a private key to a recipient of a key
-attestation token. Typically this will be an application layer entity,
-such as a cryptographiclibrary constructing a Certificate Signing Request
-that must embed attestation evidence, or a TLS library attempting to
-perform attested TLS. The Presenter is not fulfilling any roles in the
-RATS architecture.
-
-Recipient:
-: Party that receives the attestation evidence containing the proof-of-possession key
-information from the presenter. The Recipient is likely fulfilling
-the roles of Verifier and Relying Party in the RATS architecture,
-but the exact details of this arrangement is out-of-scope for this
-specification.
-
-Key Attestation Service (KAS):
-: The module within the HSM that is responsible for parsing the
-PKIX Attestation Request, measuring the
-Platform and the Key attributes, constructing the PKIX Attestation
-object, and signing it with the AK. The KAS fulfills the role of
-Attester in the RATS architecture.
-Note that real HSMs may or may not implement the Attester as a
-single internal module, but this abstraction is used for the
-design and security analysis of this specification.
-
 {::boilerplate bcp14-tagged}
 
 # Architecture and Conceptual Model {#sec-arch}
+
+JPF: Note sure what in this section needs to be saved.
 
 Key attestation is an extension to the attestation functionality
 described in {{RFC9334}}. In the general RATS Architecture, an attesting device
@@ -377,7 +362,84 @@ Note that the data format specified in {{sec-data-model}} allows for zero, one, 
 AK chains leading to different trust anchors. See {{sec-verif-proc}} for a discussion of handling multiple SignatureBlocks.
 
 
-# Information Model {#sec-data-model}
+# Information Model {#sec-info-model}
+
+The PKIX Evidence format is composed of two main sections:
+
+* A claim description section which describes the information transmitted as Evidence.
+
+* A signature section where digital signature are offered to prove the origin of the
+  claims and maintain their integrity.
+  
+The details of the signature section is left to the data model. The remainder of this section
+deals with the way the information is organized to form the claims.
+
+The claims are organized into a set of entities to help with the organization and comprehension
+of the information. Entities are elements observed in the Target Environment by the Attester.
+Each entity, in turn, is associated with a set of attributes.
+
+Therefore, the claim description section is a set of entities and each entity is composed
+of a set of attributes.
+
+## Entity
+
+An entity is composed of a type, the entity type, and a set of attributes. The entity type
+describes the class of the entity while its attributes defines its state.
+
+An entity SHOULD be reported only once in a claim description. The claim description can
+have multiple entities of the same type (for example reporting multiple keys), but each
+entity MUST be relating to different elements. This restriction is to ease the implementation
+of Verifiers for the provided Evidence.
+
+The number of entities reported in a claim description, and their respective type, is
+left to the implementer. For a simple device where there is only one key, the list of
+reported entities could be fixed. For larger and more complex devices, the list of
+reported entities should be tailored to the demands of the requesting party.
+
+## Entity Type
+
+An entity is defined by its type. This specification defines three entity types:
+
+* Platform : This entity holds attributes relating to the state of the platform, or device,
+  where the Attester is located. Entities of this type holds attributes that are global
+  in nature within the Target Environment.
+
+* Key : The entities of this type represent a cryptographic key protected within the
+  Target Environment and hold attributes relating to that key.
+
+* Transaction : This is an entity logical in nature since it is associated with attributes
+  that are not found in the Target Environment. The attributes found in this entity relate
+  to the current request for Evidence such as a nonce to support freshness.
+  
+Although this document defines a short list of entity types, this list should be extensible
+to allow implementers to report on entities found in their implementation and not
+covered by this specification.
+
+## Attribute and Attribute Type
+
+Each attribute found in an entity is composed of a type, the attribute type, and a value.
+Each attribute describes a portion of the state of the associated entity. For example,
+a platform entity could have an attribute with the firmware version current running. 
+Another example is a key entity with an attribute that reports whether the key is extractable
+or not.
+
+The interpretation of a value provided by an attribute must be considered within the context
+of its entity and in relation to the attribute type.
+
+It is RECOMMENDED that an attribute type be defined for a specific entity type, to reduce
+confusion when it comes to interpretation of the value.
+
+The nature of the value (boolean, integer, string, bytes) is dependent on the attribute type.
+
+This specification defines a limited number of attribute types. However, this list should be
+extensible to allow implementers to report attributes not covered by this specification.
+
+The number of attributes reported within an entity, and their respective type, is
+left to the implementer. For a simple device, the reported list of attributes for an entity
+might be fixed. However, larger and more complex devices, the list of reported attributes
+should be tailored to the demands of the requesting party.
+
+# Data Model {#sec-data-model}
 
 This section describes the semantics of the key claims as part of the information
 model.
