@@ -519,7 +519,6 @@ In turn, entities are composed of attributes. Each attribute is composed of a ty
 The attribute types are represented by object identifiers (OIDs). The
 following ASN.1 definition defines the structures associated with attributes:
 
-
 ~~~asn.1
 ReportedAttribute ::= SEQUENCE {
     attributeType      OBJECT IDENTIFIER,
