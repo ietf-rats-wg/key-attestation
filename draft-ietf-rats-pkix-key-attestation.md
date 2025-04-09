@@ -108,6 +108,14 @@ informative:
   I-D.ietf-lamps-csr-attestation:
   I-D.fossati-tls-attestation:
   I-D.ietf-rats-msg-wrap:
+  CNSA2.0:
+    title: "Commercial National Security Algorithm Suite 2.0"
+    org: National Security Agency
+    target: https://media.defense.gov/2022/Sep/07/2003071834/-1/-1/0/CSA_CNSA_2.0_ALGORITHMS_.PDF
+  codesigningbrsv3.8:
+    title: "Baseline Requirements for the Issuance and Management of Publicly‐Trusted Code Signing Certificates Version 3.8.0"
+    org: CA/Browser Forum
+    target: https://cabforum.org/working-groups/code-signing/documents/
 
 entity:
   SELF: "RFCthis"
@@ -118,8 +126,10 @@ This document specifies a vendor-agnostic format for evidence produced and verif
 The evidence produced this way includes claims collected in a cryptographic module about itself and elements
 found within it such as cryptographic keys.
 
-One scenario envisaged is that the evidence produced in that manner can be appraised in the context of a
-Certificate Authority to help determining whether the issuance of a certificate is warranted.
+One scenario envisaged is that the state inforamtion about the cryptographic module can be securely presented
+to a remote operator or auditor in a vendor-agnostic verifiable format.
+A more complex scenario would be to submit this evidence to a Certification Authority to aid in determining
+whether the storage properties of this key meets the requirements of a given certificate profile.
 
 This specification also offers a format for requesting a cryptographic module to produce evidence tailored for
 expected use.
@@ -131,12 +141,14 @@ expected use.
 
 This specification defines a format to transmit Evidence from an Attester to a Verifer within a PKIX
 environment. This environment refers to the components generally used to support a PKI applications
-such as Certification Authorities and their clients.
+such as Certification Authorities and their clients, or more generally that relies upon X.509 certificates.
+As outlined in {{sec-terminology}}, this specification uses a necessary mixture of RATS and PKI terminology
+in order to map concepts between the two domains.
 
 Within this specification, the concepts found in the Remote Attestation Procedures (RATS {{!RFC9334}}) are
 mapped to the PKIX environment. There are many other specifications that are based on the RATS architecture
 which offer formats to carry evidence. This specification deals with peculiar aspects of the PKIX environment
-which discourage the use of other specifications:
+which make the existing evidence formats inappropriate:
 
 * ASN.1 is the preferred encoding format in this environment. X.509 certificates ({{!RFC5280}}) are used
 widely within this environment and the majority of tools are designed to support ASN.1. There are
@@ -144,12 +156,12 @@ many specialized devices (Hardware Security Modules) that are inflexible in adop
 of internal constraints or validation difficulties. This specification defines the format in ASN.1 to ease the
 adoption within the community.
 
-* The claims within the Evidence are more about entities such as "platforms" and "keys". Although the concept
-of "measurement" is present within the PKIX environment, it is not as prevalent as in the environments targeted
-by other specifications based on RATS. Therefore, the emphasis of this specifications is adjusted accordingly.
-
-* The devices found in the PKIX environment are developed by different vendors and are heterogeneous in features
-and capabilities. Therefore, this specification assumes that the Attesting Environment and the Target Environment,
+* The claims within the Evidence are about internal entities such as "platforms" and "keys" which are not
+necessarily distinct from the Attesting Environment. Therefore, although the concept
+of "measurement" is present within the PKIX environment, it is not always clear that you have one attesting environment
+measuring another distinct target environment the way it is envisioned in the RATS Architecture.
+Therefore, the emphasis and structure of this specifications is adjusted accordingly.
+Specifically, this specification assumes that the Attesting Environment and the Target Environment,
 as outlined in {{!RFC9334}}, are the same. This might not be the case for all devices encountered, but is
 sufficient for the proposed specification.
 
@@ -157,35 +169,87 @@ This specification also aims at providing an extensible framework to encode with
 the one proposed in this document. This allows implementations to introduce new claims and their associated
 semantics to the Evidence produced.
 
+
 # Use Cases
 
 This section covers use cases that motivated the development of this specification.
+
+
+## Remote audit of a Hardware Security Module (HSM)
+
+There are situations where it is necessary to verify the current running state of a HSM as part of operational or 
+auditing procedures. For example, there are devices that are certified to work in an environment only if certain 
+versions of the firmware are loaded or only if application keys are protected in with a certain set of protection policies.
+
+The Evidence format offered by this specification allows a platform to report its firmware level along with
+other collected claims necessary in critical deployments.
+
+
+## Key import and HSM clustering
+
+Consider that an HSM is being added to a logical HSM cluster. Part of the onboarding process could involve
+the newly-added HSM providing proof of its running state, for example that it is a genuine device from
+the same manufacturer as the existing clustered HSMs, firmware patch level, FIPS mode, etc.
+It could also be required to provide attestation of any system-level keys required for secure establishment
+of cluster communication. In this scenario, the Verifier and Relying Party will be the other HSMs in the cluster
+deciding whether or not to admit the new HSM.
+
+A related scenario is when performing a key export-import across HSMs.
+If the key is being imported with certain properties, for example an environment running in FIPS mode at
+FIPS Level 3, and the key is set to certain protection properties such as Non-Exportable and Dual-Control,
+then the HSM might wish to verify that the key was previously stored under the same properties.
+This specification even provides a way to do this across HSM vendors.
+
+These scenarios motivate the design requirements to have an ASN.1 based Evidence format and a data model that
+more closely matches typical HSM architecture since in both scenarios
+an HSM is acting as Verifier and Relying Party.
+
 
 ## Attesting subject of a certificate issuance
 
 Prior to a Certification Authority (CA) issuing a certificate on behalf of a subject, a number of procedures
 are required to verify that the subject of the certificate is associated with the key that is certified.
-In some cases, such as issuing a code signing certificate (need reference to CNSA 2.0), a CA must ensure that
+In some cases, such as issuing a code signing certificate [CNSA2.0], [codesigningbrsv3.8], a CA must ensure that
 the subject key is located in a Hardware Security Module (HSM).
 
 The Evidence format offered by this specification is designed to carry the information necessary for a CA to
-assess the location of the subject key along a number of required attributes. More specifically, a CA could
+assess the location of the subject key along a number of commonly-required attributes. More specifically, a CA could
 determine which HSM was used to generate the subject key, whether this device adheres
-to certain jurisdiction policies (like FIPS mode) and the constraints applied to the key (is it extractable).
+to certain jurisdiction policies (such as FIPS mode) and the constraints applied to the key (such as whether is it extractable).
 
-## Remote audit of a Hardware Security Module (HSM)
+For relatively simple HSM devices such as TPM-like devices, storage properties such as Extractable may always be true for all keys
+since the devices is not capable of key export and so the attestation could be essentially a hard-coded template asserting these
+immutable attributes. However, more complex HSM devices require a more complex key attestation format that encompases the
+mutability of these attributes.
+Also, the client requesting the key attestation might wish to scope-down the content of the key attestation, for example
+maybe the HSM contains many keys and only a certain subset are relevant for attesting the given transaction, or maybe only
+certain claims are relevant.
+Lack of ability to scope-down the key attestation contents could, in some scenarios, constitute a grave privacy violation.
+This motivates the design choice for a key attestation request mechanism.
+The same objective could have been accomplished via a selective disclosure mechanism, however since an attestation request
+is necessary anyway to transmit an attestation nonce to the HSM, a standardized request format fits the usecase better
+and is generally simpler.
 
-There are situations where it is necessary to verify the current running state of a HSM as part of auditing
-procedures. For example, there are devices that are certified to work in an environment only if certain versions
-of the firmware are loaded.
 
-The Evidence format offered by this specification allows a platform to report its firmware level along with
-other collected claims necessary in critical deployments.
 
-# Terminology
+# Terminology {#sec-terminology}
+
+This specification uses a necessary mixture of RATS and PKI terminology
+in order to map concepts between the two domains.
 
 The reader is assumed to be familiar with the vocabulary and concepts
-defined in the RATS architecture ({{!RFC9334}}).
+defined in the RATS architecture ({{!RFC9334}}) such as Attester, 
+Relying Party, Verifier.
+
+The reader is assumed to be familiar with common vocabulary and concepts
+defined in {{!RFC5280}} such as certificate, signature, attribute, verifier.
+
+In order to avoid confusion, this document generally
+capitalizes RATS terms such as Attester, Relying Party, and Claim. 
+Therefore, for example, a "Verifier" 
+should be assumed to be an entity that checks the validity of Evidence as per {{!RFC9334}},
+whereas a "verifier" could be a more general refence, for example, to a PKI entity that checks
+the validity of an X.509 certificate or other digital signature as per {{!RFC5280}}.
 
 The following terms are used in this document:
 
@@ -194,6 +258,7 @@ The following terms are used in this document:
 Application Key:
 : An application key consists of a key hosted by a HSM (the platform) and intended to be used by a client
 of the HSM. The access and operations on an application key is controlled by the HSM.
+MikeO: I don't love that we have two "AK"s. Maybe we can find a different term for this?
 
 Attestation Key (AK):
 : Cryptographic key controlled solely by the Attester and used only for the purpose
@@ -368,7 +433,7 @@ The PKIX Evidence format is composed of two main sections:
 
 * A claim description section which describes the information transmitted as Evidence.
 
-* A signature section where digital signature are offered to prove the origin of the
+* A signature section where one ore  more digital signatures are offered to prove the origin of the
   claims and maintain their integrity.
 
 The details of the signature section is left to the data model. The remainder of this section
@@ -378,7 +443,7 @@ The claims are organized into a set of entities to help with the organization an
 of the information. Entities are elements observed in the Target Environment by the Attester.
 Each entity, in turn, is associated with a set of attributes.
 
-Therefore, the claim description section is a set of entities and each entity is composed
+Therefore, the Claim description section is a set of entities and each entity is composed
 of a set of attributes.
 
 ## Entity
@@ -388,13 +453,25 @@ describes the class of the entity while its attributes defines its state.
 
 An entity SHOULD be reported only once in a claim description. The claim description can
 have multiple entities of the same type (for example reporting multiple keys), but each
-entity MUST be relating to different elements. This restriction is to ease the implementation
-of Verifiers for the provided Evidence.
+entity MUST be relating to different elements.
+For example, if a given application public key appears in two different entities, these
+MUST be interpreted as two distinct and independent entities that happen to have the
+same public key, and MUST NOT be interpreted as adding attidional attributes to the
+already-described entity.
+This restriction is to ease the implementation of Verifiers for the provided Evidence.
 
 The number of entities reported in a claim description, and their respective type, is
 left to the implementer. For a simple device where there is only one key, the list of
 reported entities could be fixed. For larger and more complex devices, the list of
 reported entities should be tailored to the demands of the requesting party.
+
+In particular, note that the nonce attribute contained with the Transaction entity is optional,
+and therefore it is possible that an extremely simple device that holds one static key
+could have its key attestation object generated at manufacture time and injected
+statically into the device and acting as a kind of certificate instead of
+being generated on-demand. This model would essentially
+off-board the Attesting Environment to being part of the manufacturing infrastructure.
+
 
 ## Entity Type
 
@@ -413,23 +490,35 @@ An entity is defined by its type. This specification defines three entity types:
 
 Although this document defines a short list of entity types, this list should be extensible
 to allow implementers to report on entities found in their implementation and not
-covered by this specification.
+covered by this specification. By using an Object Identifier (OID) based system for identifying both entity types
+and the attribute types that they contain, this format is inherently extensible;
+implementers of Attesters MAY define new custom or proprietary entity types and
+place them along-side the standardized entities, or define new attribute types
+and place them inside standardized entities.
 
-If a Verifier encounters an entity with an unrecognized entity type, it may ignore it.
+Verifiers SHOULD ignore and skip over
+unrecognized entity or attribute types and continue processing normally.
+In other words, if a given Evidence would have been acceptable without the
+unrecognized entity or attribute, then it SHOULD still be acceptable.
+In PKI terminology, all custom entities and attributes not defined in this document
+SHOULD be considered non-critical unless a further specification indicates differently.
+
+
 
 ## Attribute and Attribute Type
 
 Each attribute found in an entity is composed of a type, the attribute type, and a value.
 Each attribute describes a portion of the state of the associated entity. For example,
-a platform entity could have an attribute with the firmware version current running.
+a platform entity could have an attribute which indicates the firmware version currently running.
 Another example is a key entity with an attribute that reports whether the key is extractable
 or not.
 
-The interpretation of a value provided by an attribute must be considered within the context
+A value provided by an attribute is to be interpreted within the context
 of its entity and in relation to the attribute type.
 
 It is RECOMMENDED that an attribute type be defined for a specific entity type, to reduce
 confusion when it comes to interpretation of the value.
+MikeO: I don't understand this sentence. I think it needs better words.
 
 The nature of the value (boolean, integer, string, bytes) is dependent on the attribute type.
 
@@ -437,31 +526,33 @@ This specification defines a limited number of attribute types. However, this li
 extensible to allow implementers to report attributes not covered by this specification.
 
 If a Verifier encounters an attribute with an unrecognized attribute type, it may ignore it.
+In PKI terminology, all custom attributes not defined in this document
+SHOULD be considered non-critical unless a further specification indicates differently.
 
 The number of attributes reported within an entity, and their respective type, is
 left to the implementer. For a simple device, the reported list of attributes for an entity
 might be fixed. However, larger and more complex devices, the list of reported attributes
 should be tailored to the demands of the requesting party.
 
-Some attributes might be repeated within an entity while others may not. For example, for a
-platform entity, there can only be one "firmware version". Therefore, the associated attribute
-should not be repeated as it may lead to confusion. However, an attribute relating to
-a "loaded module" might be repeated, each attribute describing a different loaded module.
-Therefore, the definition of an attribute should specify whether or not the attribute can
-be repeated within an entity.
+Some attributes MAY be repeated within an entity while others MUST NOT. For example, for a
+platform entity, there can only be one "firmware version" attribute. Therefore, the associated attribute
+MUST NOT be repeated as it may lead to confusion. However, an attribute relating to
+a "loaded module" MAY be repeated, each attribute describing a different loaded module.
+Therefore, the definition of an attribute specifies whether or not multiple copies of that
+attribute are allowed.
 
-If a Verifier encounters, within the context of an entity, a repeated attribute when it expects
-a unique value, it MAY reject the Evidence.
+If a Verifier encounters, within a single entity, multiple copies of an attribute specified as
+"Multiple Allowed: No", it MUST reject the evidence as mal-formed.
 
 If a Verifier encounters, within the context of an entity, a repeated attribute for a type where
 multiple attributes are allowed, it MUST treat each one as an independent attribute and MUST NOT
-consider later ones to overwrite the previous one.
+consider later ones to overwrite or extend the previous one.
 
 # Data Model {#sec-data-model}
 
 This section describes the data model associated with PKIX Evidence. For ease of
 deployment within the target ecosystem, ASN.1 definitions and DER encoding
-are used.
+are used. A complete ASN.1 module is provided in {{sec-asn1-mod}}.
 
 The top-level structures are:
 
@@ -485,7 +576,19 @@ SignatureBlock ::= SEQUENCE {
 
 A PkixEvidence message is composed of a protected section known as the To-Be-Signed (TBS) where the claim
 description is reported. The integrity of the TBS section is ensured with one or multiple cryptographic signatures
-over the content of the section. There is a provision to carry the X.509 certificates supporting the signature(s).
+over the content of the section. There is a provision to carry the X.509 certificates supporting each signature.
+The SEQUENCE OF SignatureBlock allows for both multi-algorithm protection and for counter-signatures
+of the evidence.
+In an effort to keep the evidence format simple, distinguishing between these two cases is left up to Verifier policy,
+potentially by making use of the certificates that accompany each signature.
+Thes design also does not prevent against stripping attacks where an attacker removes a signature without leaving evidence
+in the message that an additional signature had been there or signature re-ordering attacks.
+Again, this is left up to Verifier policy to know how many
+algorithms or counter-signatures it is expecting.
+Consequently, Verifiers MUST NOT make any inferences about the lack of a signature. For example, enumerating
+counter-signatures on an Evidence MUST NOT be considered to be a complete list of HSMs in a given cluster.
+Similarly, the presense and order of counter-signatures MUST NOT be taken as proof of the path that the evidence traversed
+over the network.
 
 The TBS section is composed of a version number, to ensure future extensibility, and a sequence of reported entities.
 
@@ -543,18 +646,21 @@ definition must include the type of the value, its semantic and interpretation.
 
 The remainder of this section describes the entity types and their associated attributes.
 
+
 ## Platform Entity
 
-A platform entity is associated with the type `id-pkix-attest-entity-platform`. It is composed
+A platform entity is associated with the type identifier `id-pkix-attest-entity-platform`. It is composed
 of a set of attributes that are global to the Target Environment.
 
-A platform entity, if provided, should be included only once within the reported entities. If a
+A platform entity, if provided, MUST be included only once within the reported entities. If a
 Verifier encounters multiple entities of type `id-pkix-attest-entity-platform`, it MUST
-reject the Evidence.
+reject the Evidence as mal-formed.
 
 The following table lists the attributes for a platform entity (platform attributes) defined
-within this specification. The "Reference" column refers to the specification where the semantics
+within this specification. In cases where the attribute is borrowed from another specification,
+the "Reference" column refers to the specification where the semantics
 for the attribute value can be found.
+Attributes defined in this specification have further details below.
 
 | Attribute       | AttributeValue  | Reference  | Multiple Allowed | Description|
 | ---             | ---             | ---        | ---              | ---        |
@@ -577,7 +683,6 @@ TODO: find the actual reference for "FIPS Mode" -- FIPS 140-3 does not define it
 
 Each attribute has an assigned OID, see {{sec-asn1-mod}}.
 
-The platform attributes defined in this specification have further details below.
 
 ### vendor
 
