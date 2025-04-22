@@ -951,7 +951,7 @@ The CA / RA / RP / Verifier MUST:
 
 EDNOTE: MikeO: this is complex, but I'm not really sure how to define a request format in any simpler way. Ideas are welcome!
 
-This section specifies a standardized format that a Presenter can use to request a PKIX Attestation about a specific key or set of keys, a specific environment, or containing specific attributes. The role of the presenter in the architecture is shown in {{#fig-arch}}.
+This section specifies a standardized format that a Presenter can use to request a PKIX Attestation about a specific key or set of keys, a specific environment, or containing specific attributes. The role of the presenter in the architecture is shown in {{fig-arch}}.
 
 Hardware Security Modules range greatly in size and complexity from personal cryptographic tokens containing a single application key such as a smartcard acting as a personal ID card, up to clusters of enterprise-grade HSMs serving an entire cloud service.
 
