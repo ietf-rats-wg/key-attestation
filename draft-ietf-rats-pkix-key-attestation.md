@@ -893,47 +893,6 @@ Note that each SignatureBlock is a fully detached signature over the tbs content
 counter-signature of the evidence after the fact, or an attacker can remove a SignatureBlock without leaving any artifact. See {#sec-detached-sigs} for further discussion.
 
 
-
-# Attestation Requests {#sec-reqs}
-
-EDNOTE: MikeO: this is complex, but I'm not really sure how to define a request format in any simpler way. Ideas are welcome!
-
-This section specifies a standardized format that a Presenter can use to request a PKIX Attestation about a specific key or set of keys, a specific environment, or containing specific attributes.
-
-Hardware Security Modules range greatly in size and complexity from personal cryptographic tokens containing a single application key such as a smartcard acting as a personal ID card, up to clusters of enterprise-grade HSMs serving an entire cloud service.
-
-
-The manufacturer of a HSM device with limited capabilities may implement a response to the attestation request which includes a fixed set of reported entities, each with a fixed set of reported attributes and parses an Attestion Request object only for the purposes of extracting the nonce.
-
-On the other hand, an enterprise grade HSM with the capability to hold a large number of private keys is expected to be capable of parsing attestation requests such that a Presenter can request attestation of specific key(s) by their identifier, or request attestation of all keys with given key attributes within a given sub-environment of the HSM. A full implementation will also create a PKIX Attestation containing exactly the set of requested attributes so that the Presenter can fine-tune the information that it wishes to disclose to the Recipient.
-
-A PKIX Attestation Request consists of a un-signed ClaimDescriptionTbs object containing a single `ReportedEntity` identified with `id-pkix-attest-entity-request`, called a request entity. A ClaimDescriptionTbs containing a request entity MUST NOT contain any other type of entities. Request entities MAY contain Attributes of any type; transaction, platform, key, or any additional attribute type. Any attribute contained in a request entity is called a request attribute. Request entities MUST NOT appear in PKIX Attestation response objects. The ClaimDescriptionTbs object of an attestation request MAY appear inside a signed PkixEvidence for the purposes of authenticating and authorizing the requester, but the semantics of doing so are left to the implementer.
-
-An Attester that supports Attestation Requests MUST, at the minimum, support extracting the value from a `nonce` attribute and echoing it into a `nonce` attribute within a TransactionEntity.
-
-Some request attributes contain a value that the HSM uses as a filter or search parameter in constructing the PKIX Attestation; these are called valued requests attributes.
-Other requests attributes omit the optional `value` field so that they consist of only the attribute type OID and indicate that the HSM SHOULD collect and return the appropriate measurement; these are called un-valued request attributes.
-An Attester SHOULD return a PKIX Attestation containing exactly the set of attributes listed in the request, including both valued and un-valued request attributes but MAY omit requested attributes if it cannot be measured in the current device configuration.
-Note that an Attestation Request will contain all request attributes inside a single request entity, but the HSM MUST sort the attributes in the response PKIX Attestation into the appropriate entity types.
-For example, if the request contains the key `purpose` attribute (either valued or un-valued), then all returned key entities will contain the `purpose` attribute when this data is available for the given key.
-The tables in the following sections indicate whether an attribute of the given type MUST, MAY, or MUST NOT contain a value when included in a request entity.
-
-Generally errors should be handled gracefully by simply omitting an unfulfillable request attribute from the response.
-An example would be if the `hwserial` attribute was requested but the devices does not have a serial number.
-However in some cases a fatal error MAY be returned, for example if attestation of a specific key is requested by key identifier or SubjectPublicKeyInfo but the HSM does not contain a matching key.
-HSMs SHOULD ignore request attributes with unrecognized type OIDs.
-
-Generally, the Attester SHOULD NOT include additional attributes beyond those that were requested. This is to allow the Presenter to fine-tune the information that will be disclosed to the Recipient.
-Further privacy concerns are discussed in {{sec-cons-privacy}}.
-However, in some contexts this MAY be appropriate, for example, a request containing only a key `identifier` attribute could be responded to with the full set of platform and key attributes that apply to that key.
-Discretion is left to implementers.
-
-For both error handling and privacy reasons, the Presenter SHOULD check that the returned PKIX Attestation contains the expected attributes prior to forwarding it to the Recipient.
-
-
-
-
-
 # Appraisal Policies and Profiles {#sec-profiles}
 
 This section provides some sample profiles of appraisal policies that verifiers
@@ -976,7 +935,76 @@ The CA / RA / RP / Verifier MUST:
 * The attestation signing key (AK) which has signed the attestation token chains to a root certificate that A) belongs to the hardware vendor described in the PAT token, and B) is trusted by the CA / RA / RP / Verifier to endorse hardware from this vendor, for example through a CA's partner program or through a network operator's device on-boarding process.
 * The key is protected by a module running in FIPS mode. The parsing logic is to start at the leaf KAT token that matches the key in the CSR and parsing towards the root PAT ensuring that there is at least one `fipsboot=true` and no `fipsboot=false` on that path.
 
+# Attestation Requests {#sec-reqs}
 
+EDNOTE: MikeO: this is complex, but I'm not really sure how to define a request format in any simpler way. Ideas are welcome!
+
+This section specifies a standardized format that a Presenter can use to request a PKIX Attestation about a specific key or set of keys, a specific environment, or containing specific attributes. The role of the presenter in the architecture is shown in {{#fig-arch}}.
+
+Hardware Security Modules range greatly in size and complexity from personal cryptographic tokens containing a single application key such as a smartcard acting as a personal ID card, up to clusters of enterprise-grade HSMs serving an entire cloud service.
+
+
+~~~aasvg
+                   .-------------.
+                   |  Verifier   |
+                   '-------------'
+                  PKIX    |
+                  Evidence|
+.-------------------------|----------.
+| Attester (HSM)          |          |
+|    .----------------.   |          |
+|    | Target         |   |          |
+|    | Environment    |   |          |
+|    | (Platform &    |   |          |
+|    | Application    |   |          |
+|    | Keys)          |   |          |
+|    '--------------+-'   |          |
+|                   |     |          |
+|           Collect |     |          |
+|            Claims |     |          |
+|                   |     |          |
+|                   v     |          |
+|       .-----------------+-----.    |
+|       |      Attesting        |    |
+|       |     Environment       |    |
+|       '-----------------------'    |
+|              ^    |                |
+'--------------+----+----------------'
+   Attestation |    | PKIX
+       Request |    | Attestation
+               |    v
+        .-----------------.                 .-----------------.
+        |    Presenter    +---------------->|    Recipient    |
+        '-----------------' Usage Protocol  '-----------------'
+~~~
+{: #fig-arch title="Architecture"}
+
+The manufacturer of a HSM device with limited capabilities may implement a response to the attestation request which includes a fixed set of reported entities, each with a fixed set of reported attributes and parses an Attestion Request object only for the purposes of extracting the nonce.
+
+On the other hand, an enterprise grade HSM with the capability to hold a large number of private keys is expected to be capable of parsing attestation requests such that a Presenter can request attestation of specific key(s) by their identifier, or request attestation of all keys with given key attributes within a given sub-environment of the HSM. A full implementation will also create a PKIX Attestation containing exactly the set of requested attributes so that the Presenter can fine-tune the information that it wishes to disclose to the Recipient.
+
+A PKIX Attestation Request consists of a un-signed ClaimDescriptionTbs object containing a single `ReportedEntity` identified with `id-pkix-attest-entity-request`, called a request entity. A ClaimDescriptionTbs containing a request entity MUST NOT contain any other type of entities. Request entities MAY contain Attributes of any type; transaction, platform, key, or any additional attribute type. Any attribute contained in a request entity is called a request attribute. Request entities MUST NOT appear in PKIX Attestation response objects. The ClaimDescriptionTbs object of an attestation request MAY appear inside a signed PkixEvidence for the purposes of authenticating and authorizing the requester, but the semantics of doing so are left to the implementer.
+
+An Attester that supports Attestation Requests MUST, at the minimum, support extracting the value from a `nonce` attribute and echoing it into a `nonce` attribute within a TransactionEntity.
+
+Some request attributes contain a value that the HSM uses as a filter or search parameter in constructing the PKIX Attestation; these are called valued requests attributes.
+Other requests attributes omit the optional `value` field so that they consist of only the attribute type OID and indicate that the HSM SHOULD collect and return the appropriate measurement; these are called un-valued request attributes.
+An Attester SHOULD return a PKIX Attestation containing exactly the set of attributes listed in the request, including both valued and un-valued request attributes but MAY omit requested attributes if it cannot be measured in the current device configuration.
+Note that an Attestation Request will contain all request attributes inside a single request entity, but the HSM MUST sort the attributes in the response PKIX Attestation into the appropriate entity types.
+For example, if the request contains the key `purpose` attribute (either valued or un-valued), then all returned key entities will contain the `purpose` attribute when this data is available for the given key.
+The tables in the following sections indicate whether an attribute of the given type MUST, MAY, or MUST NOT contain a value when included in a request entity.
+
+Generally errors should be handled gracefully by simply omitting an unfulfillable request attribute from the response.
+An example would be if the `hwserial` attribute was requested but the devices does not have a serial number.
+However in some cases a fatal error MAY be returned, for example if attestation of a specific key is requested by key identifier or SubjectPublicKeyInfo but the HSM does not contain a matching key.
+HSMs SHOULD ignore request attributes with unrecognized type OIDs.
+
+Generally, the Attester SHOULD NOT include additional attributes beyond those that were requested. This is to allow the Presenter to fine-tune the information that will be disclosed to the Recipient.
+Further privacy concerns are discussed in {{sec-cons-privacy}}.
+However, in some contexts this MAY be appropriate, for example, a request containing only a key `identifier` attribute could be responded to with the full set of platform and key attributes that apply to that key.
+Discretion is left to implementers.
+
+For both error handling and privacy reasons, the Presenter SHOULD check that the returned PKIX Attestation contains the expected attributes prior to forwarding it to the Recipient.
 
 # ASN.1 Module {#sec-asn1-mod}
 
