@@ -15,23 +15,25 @@
        This document specifies a vendor-agnostic format for evidence produced and verified within a PKIX context.
 The evidence produced this way includes claims collected in a cryptographic module about itself and elements
 found within it such as cryptographic keys. 
-       One scenario envisaged is that the evidence produced in that manner can be appraised in the context of a
-Certificate Authority to help determining whether the issuance of a certificate is warranted. 
+       One scenario envisaged is that the state inforamtion about the cryptographic module can be securely presented
+to a remote operator or auditor in a vendor-agnostic verifiable format.
+A more complex scenario would be to submit this evidence to a Certification Authority to aid in determining
+whether the storage properties of this key meets the requirements of a given certificate profile. 
        This specification also offers a format for requesting a cryptographic module to produce evidence tailored for
 expected use. 
     " name="description">
-<meta content="xml2rfc 3.28.0" name="generator">
+<meta content="xml2rfc 3.28.1" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-ietf-rats-pkix-key-attestation-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.28.0
-    Python 3.12.9
+  xml2rfc 3.28.1
+    Python 3.12.10
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
     Jinja2 3.1.6
     lxml 5.3.0
-    platformdirs 4.3.6
+    platformdirs 4.3.7
     pycountry 24.6.1
     PyYAML 6.0.2
     requests 2.32.3
@@ -1055,11 +1057,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">PKIX Evidence for Remote Attestation</td>
-<td class="right">March 2025</td>
+<td class="right">April 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Ounsworth, et al.</td>
-<td class="center">Expires 28 September 2025</td>
+<td class="center">Expires 24 October 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1072,12 +1074,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-rats-pkix-key-attestation-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-03-27" class="published">27 March 2025</time>
+<time datetime="2025-04-22" class="published">22 April 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-09-28">28 September 2025</time></dd>
+<dd class="expires"><time datetime="2025-10-24">24 October 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1113,8 +1115,10 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <p id="section-abstract-1">This document specifies a vendor-agnostic format for evidence produced and verified within a PKIX context.
 The evidence produced this way includes claims collected in a cryptographic module about itself and elements
 found within it such as cryptographic keys.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
-<p id="section-abstract-2">One scenario envisaged is that the evidence produced in that manner can be appraised in the context of a
-Certificate Authority to help determining whether the issuance of a certificate is warranted.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">One scenario envisaged is that the state inforamtion about the cryptographic module can be securely presented
+to a remote operator or auditor in a vendor-agnostic verifiable format.
+A more complex scenario would be to submit this evidence to a Certification Authority to aid in determining
+whether the storage properties of this key meets the requirements of a given certificate profile.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
 <p id="section-abstract-3">This specification also offers a format for requesting a cryptographic module to produce evidence tailored for
 expected use.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
 </section>
@@ -1148,7 +1152,7 @@ expected use.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 28 September 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 24 October 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1184,10 +1188,13 @@ expected use.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
             <p id="section-toc.1-1.2.1"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-use-cases" class="internal xref">Use Cases</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.1">
-                <p id="section-toc.1-1.2.2.1.1" class="keepWithNext"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-attesting-subject-of-a-cert" class="internal xref">Attesting subject of a certificate issuance</a></p>
+                <p id="section-toc.1-1.2.2.1.1" class="keepWithNext"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-remote-audit-of-a-hardware-" class="internal xref">Remote audit of a Hardware Security Module (HSM)</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2">
-                <p id="section-toc.1-1.2.2.2.1" class="keepWithNext"><a href="#section-2.2" class="auto internal xref">2.2</a>.  <a href="#name-remote-audit-of-a-hardware-" class="internal xref">Remote audit of a Hardware Security Module (HSM)</a></p>
+                <p id="section-toc.1-1.2.2.2.1" class="keepWithNext"><a href="#section-2.2" class="auto internal xref">2.2</a>.  <a href="#name-key-import-and-hsm-clusteri" class="internal xref">Key import and HSM clustering</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.3">
+                <p id="section-toc.1-1.2.2.3.1"><a href="#section-2.3" class="auto internal xref">2.3</a>.  <a href="#name-attesting-subject-of-a-cert" class="internal xref">Attesting subject of a certificate issuance</a></p>
 </li>
             </ul>
 </li>
@@ -1220,41 +1227,59 @@ expected use.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
             <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-data-model" class="internal xref">Data Model</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
-                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-transaction-attributes" class="internal xref">Transaction Attributes</a></p>
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-platform-entity" class="internal xref">Platform Entity</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1.2.1">
-                    <p id="section-toc.1-1.6.2.1.2.1.1"><a href="#section-6.1.1" class="auto internal xref">6.1.1</a>.  <a href="#name-nonce" class="internal xref">nonce</a></p>
+                    <p id="section-toc.1-1.6.2.1.2.1.1"><a href="#section-6.1.1" class="auto internal xref">6.1.1</a>.  <a href="#name-vendor" class="internal xref">vendor</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1.2.2">
-                    <p id="section-toc.1-1.6.2.1.2.2.1"><a href="#section-6.1.2" class="auto internal xref">6.1.2</a>.  <a href="#name-time" class="internal xref">time</a></p>
+                    <p id="section-toc.1-1.6.2.1.2.2.1"><a href="#section-6.1.2" class="auto internal xref">6.1.2</a>.  <a href="#name-hwserial" class="internal xref">hwserial</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1.2.3">
+                    <p id="section-toc.1-1.6.2.1.2.3.1"><a href="#section-6.1.3" class="auto internal xref">6.1.3</a>.  <a href="#name-usermods" class="internal xref">usermods</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1.2.4">
+                    <p id="section-toc.1-1.6.2.1.2.4.1"><a href="#section-6.1.4" class="auto internal xref">6.1.4</a>.  <a href="#name-fipsboot-fipsver-and-fipsle" class="internal xref">fipsboot, fipsver and fipslevel</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1.2.5">
+                    <p id="section-toc.1-1.6.2.1.2.5.1"><a href="#section-6.1.5" class="auto internal xref">6.1.5</a>.  <a href="#name-envid" class="internal xref">envid</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1.2.6">
+                    <p id="section-toc.1-1.6.2.1.2.6.1"><a href="#section-6.1.6" class="auto internal xref">6.1.6</a>.  <a href="#name-envdesc" class="internal xref">envdesc</a></p>
 </li>
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
-                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-platform-attributes" class="internal xref">Platform Attributes</a></p>
+                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-key-entity" class="internal xref">Key Entity</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2.2.1">
-                    <p id="section-toc.1-1.6.2.2.2.1.1"><a href="#section-6.2.1" class="auto internal xref">6.2.1</a>.  <a href="#name-usermods" class="internal xref">usermods</a></p>
+                    <p id="section-toc.1-1.6.2.2.2.1.1"><a href="#section-6.2.1" class="auto internal xref">6.2.1</a>.  <a href="#name-identifier" class="internal xref">identifier</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2.2.2">
-                    <p id="section-toc.1-1.6.2.2.2.2.1"><a href="#section-6.2.2" class="auto internal xref">6.2.2</a>.  <a href="#name-fipsboot-fipsver-and-fipsle" class="internal xref">fipsboot, fipsver and fipslevel</a></p>
+                    <p id="section-toc.1-1.6.2.2.2.2.1"><a href="#section-6.2.2" class="auto internal xref">6.2.2</a>.  <a href="#name-spki" class="internal xref">spki</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2.2.3">
-                    <p id="section-toc.1-1.6.2.2.2.3.1"><a href="#section-6.2.3" class="auto internal xref">6.2.3</a>.  <a href="#name-envid" class="internal xref">envid</a></p>
+                    <p id="section-toc.1-1.6.2.2.2.3.1"><a href="#section-6.2.3" class="auto internal xref">6.2.3</a>.  <a href="#name-purpose" class="internal xref">purpose</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2.2.4">
-                    <p id="section-toc.1-1.6.2.2.2.4.1"><a href="#section-6.2.4" class="auto internal xref">6.2.4</a>.  <a href="#name-envdesc" class="internal xref">envdesc</a></p>
+                    <p id="section-toc.1-1.6.2.2.2.4.1"><a href="#section-6.2.4" class="auto internal xref">6.2.4</a>.  <a href="#name-local" class="internal xref">local</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2.2.5">
+                    <p id="section-toc.1-1.6.2.2.2.5.1"><a href="#section-6.2.5" class="auto internal xref">6.2.5</a>.  <a href="#name-expiry" class="internal xref">expiry</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2.2.6">
+                    <p id="section-toc.1-1.6.2.2.2.6.1"><a href="#section-6.2.6" class="auto internal xref">6.2.6</a>.  <a href="#name-protection" class="internal xref">protection</a></p>
 </li>
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3">
-                <p id="section-toc.1-1.6.2.3.1"><a href="#section-6.3" class="auto internal xref">6.3</a>.  <a href="#name-key-attributes" class="internal xref">Key Attributes</a></p>
+                <p id="section-toc.1-1.6.2.3.1"><a href="#section-6.3" class="auto internal xref">6.3</a>.  <a href="#name-transaction-entity" class="internal xref">Transaction Entity</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3.2.1">
-                    <p id="section-toc.1-1.6.2.3.2.1.1"><a href="#section-6.3.1" class="auto internal xref">6.3.1</a>.  <a href="#name-purpose" class="internal xref">purpose</a></p>
+                    <p id="section-toc.1-1.6.2.3.2.1.1"><a href="#section-6.3.1" class="auto internal xref">6.3.1</a>.  <a href="#name-nonce" class="internal xref">nonce</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3.2.2">
-                    <p id="section-toc.1-1.6.2.3.2.2.1"><a href="#section-6.3.2" class="auto internal xref">6.3.2</a>.  <a href="#name-protection" class="internal xref">protection</a></p>
+                    <p id="section-toc.1-1.6.2.3.2.2.1"><a href="#section-6.3.2" class="auto internal xref">6.3.2</a>.  <a href="#name-timestamp" class="internal xref">timestamp</a></p>
 </li>
                 </ul>
 </li>
@@ -1343,11 +1368,13 @@ expected use.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
       </h2>
 <p id="section-1-1">This specification defines a format to transmit Evidence from an Attester to a Verifer within a PKIX
 environment. This environment refers to the components generally used to support a PKI applications
-such as Certification Authorities and their clients.<a href="#section-1-1" class="pilcrow">¶</a></p>
+such as Certification Authorities and their clients, or more generally that relies upon X.509 certificates.
+As outlined in <a href="#sec-terminology" class="auto internal xref">Section 3</a>, this specification uses a necessary mixture of RATS and PKI terminology
+in order to map concepts between the two domains.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <p id="section-1-2">Within this specification, the concepts found in the Remote Attestation Procedures (RATS <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>) are
 mapped to the PKIX environment. There are many other specifications that are based on the RATS architecture
 which offer formats to carry evidence. This specification deals with peculiar aspects of the PKIX environment
-which discourage the use of other specifications:<a href="#section-1-2" class="pilcrow">¶</a></p>
+which make the existing evidence formats inappropriate:<a href="#section-1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1-3.1">
           <p id="section-1-3.1.1">ASN.1 is the preferred encoding format in this environment. X.509 certificates (<span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>) are used
@@ -1357,15 +1384,14 @@ of internal constraints or validation difficulties. This specification defines t
 adoption within the community.<a href="#section-1-3.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-1-3.2">
-          <p id="section-1-3.2.1">The claims within the Evidence are more about entities such as "platforms" and "keys". Although the concept
-of "measurement" is present within the PKIX environment, it is not as prevalent as in the environments targeted
-by other specifications based on RATS. Therefore, the emphasis of this specifications is adjusted accordingly.<a href="#section-1-3.2.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="section-1-3.3">
-          <p id="section-1-3.3.1">The devices found in the PKIX environment are developed by different vendors and are heterogeneous in features
-and capabilities. Therefore, this specification assumes that the Attesting Environment and the Target Environment,
+          <p id="section-1-3.2.1">The claims within the Evidence are about internal entities such as "platforms" and "keys" which are not
+necessarily distinct from the Attesting Environment. Therefore, although the concept
+of "measurement" is present within the PKIX environment, it is not always clear that you have one attesting environment
+measuring another distinct target environment the way it is envisioned in the RATS Architecture.
+Therefore, the emphasis and structure of this specifications is adjusted accordingly.
+Specifically, this specification assumes that the Attesting Environment and the Target Environment,
 as outlined in <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>, are the same. This might not be the case for all devices encountered, but is
-sufficient for the proposed specification.<a href="#section-1-3.3.1" class="pilcrow">¶</a></p>
+sufficient for the proposed specification.<a href="#section-1-3.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-1-4">This specification also aims at providing an extensible framework to encode within Evidence claims other than
@@ -1379,123 +1405,168 @@ semantics to the Evidence produced.<a href="#section-1-4" class="pilcrow">¶</a>
 <a href="#section-2" class="section-number selfRef">2. </a><a href="#name-use-cases" class="section-name selfRef">Use Cases</a>
       </h2>
 <p id="section-2-1">This section covers use cases that motivated the development of this specification.<a href="#section-2-1" class="pilcrow">¶</a></p>
-<div id="attesting-subject-of-a-certificate-issuance">
-<section id="section-2.1">
-        <h3 id="name-attesting-subject-of-a-cert">
-<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-attesting-subject-of-a-cert" class="section-name selfRef">Attesting subject of a certificate issuance</a>
-        </h3>
-<p id="section-2.1-1">Prior to a Certification Authority (CA) issuing a certificate on behalf of a subject, a number of procedures
-are required to verify that the subject of the certificate is associated with the key that is certified.
-In some cases, such as issuing a code signing certificate (need reference to CNSA 2.0), a CA must ensure that
-the subject key is located in a Hardware Security Module (HSM).<a href="#section-2.1-1" class="pilcrow">¶</a></p>
-<p id="section-2.1-2">The Evidence format offered by this specification is designed to carry the information necessary for a CA to
-assess the location of the subject key along a number of required attributes. More specifically, a CA could
-determine which HSM was used to generate the subject key, whether this device adheres
-to certain jurisdiction policies (like FIPS mode) and the constraints applied to the key (is it extractable).<a href="#section-2.1-2" class="pilcrow">¶</a></p>
-</section>
-</div>
 <div id="remote-audit-of-a-hardware-security-module-hsm">
-<section id="section-2.2">
+<section id="section-2.1">
         <h3 id="name-remote-audit-of-a-hardware-">
-<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-remote-audit-of-a-hardware-" class="section-name selfRef">Remote audit of a Hardware Security Module (HSM)</a>
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-remote-audit-of-a-hardware-" class="section-name selfRef">Remote audit of a Hardware Security Module (HSM)</a>
         </h3>
-<p id="section-2.2-1">There are situations where it is necessary to verify the current running state of a HSM as part of auditing
-procedures. For example, there are devices that are certified to work in an environment only if certain versions
-of the firmware are loaded.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
-<p id="section-2.2-2">The Evidence format offered by this specification allows a platform to report its firmware level along with
-other collected claims necessary in critical deployments.<a href="#section-2.2-2" class="pilcrow">¶</a></p>
+<p id="section-2.1-1">There are situations where it is necessary to verify the current running state of a HSM as part of operational or
+auditing procedures. For example, there are devices that are certified to work in an environment only if certain
+versions of the firmware are loaded or only if application keys are protected in with a certain set of protection policies.<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.1-2">The Evidence format offered by this specification allows a platform to report its firmware level along with
+other collected claims necessary in critical deployments.<a href="#section-2.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="key-import-and-hsm-clustering">
+<section id="section-2.2">
+        <h3 id="name-key-import-and-hsm-clusteri">
+<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-key-import-and-hsm-clusteri" class="section-name selfRef">Key import and HSM clustering</a>
+        </h3>
+<p id="section-2.2-1">Consider that an HSM is being added to a logical HSM cluster. Part of the onboarding process could involve
+the newly-added HSM providing proof of its running state, for example that it is a genuine device from
+the same manufacturer as the existing clustered HSMs, firmware patch level, FIPS mode, etc.
+It could also be required to provide attestation of any system-level keys required for secure establishment
+of cluster communication. In this scenario, the Verifier and Relying Party will be the other HSMs in the cluster
+deciding whether or not to admit the new HSM.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.2-2">A related scenario is when performing a key export-import across HSMs.
+If the key is being imported with certain properties, for example an environment running in FIPS mode at
+FIPS Level 3, and the key is set to certain protection properties such as Non-Exportable and Dual-Control,
+then the HSM might wish to verify that the key was previously stored under the same properties.
+This specification even provides a way to do this across HSM vendors.<a href="#section-2.2-2" class="pilcrow">¶</a></p>
+<p id="section-2.2-3">These scenarios motivate the design requirements to have an ASN.1 based Evidence format and a data model that
+more closely matches typical HSM architecture since in both scenarios
+an HSM is acting as Verifier and Relying Party.<a href="#section-2.2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="attesting-subject-of-a-certificate-issuance">
+<section id="section-2.3">
+        <h3 id="name-attesting-subject-of-a-cert">
+<a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-attesting-subject-of-a-cert" class="section-name selfRef">Attesting subject of a certificate issuance</a>
+        </h3>
+<p id="section-2.3-1">Prior to a Certification Authority (CA) issuing a certificate on behalf of a subject, a number of procedures
+are required to verify that the subject of the certificate is associated with the key that is certified.
+In some cases, such as issuing a code signing certificate <span>[<a href="#CNSA2.0" class="cite xref">CNSA2.0</a>]</span>, <span>[<a href="#codesigningbrsv3.8" class="cite xref">codesigningbrsv3.8</a>]</span>, a CA must ensure that
+the subject key is located in a Hardware Security Module (HSM).<a href="#section-2.3-1" class="pilcrow">¶</a></p>
+<p id="section-2.3-2">The Evidence format offered by this specification is designed to carry the information necessary for a CA to
+assess the location of the subject key along a number of commonly-required attributes. More specifically, a CA could
+determine which HSM was used to generate the subject key, whether this device adheres
+to certain jurisdiction policies (such as FIPS mode) and the constraints applied to the key (such as whether is it extractable).<a href="#section-2.3-2" class="pilcrow">¶</a></p>
+<p id="section-2.3-3">For relatively simple HSM devices such as TPM-like devices, storage properties such as Extractable may always be true for all keys
+since the devices is not capable of key export and so the attestation could be essentially a hard-coded template asserting these
+immutable attributes. However, more complex HSM devices require a more complex key attestation format that encompases the
+mutability of these attributes.
+Also, the client requesting the key attestation might wish to scope-down the content of the key attestation, for example
+maybe the HSM contains many keys and only a certain subset are relevant for attesting the given transaction, or maybe only
+certain claims are relevant.
+Lack of ability to scope-down the key attestation contents could, in some scenarios, constitute a grave privacy violation.
+This motivates the design choice for a key attestation request mechanism.
+The same objective could have been accomplished via a selective disclosure mechanism, however since an attestation request
+is necessary anyway to transmit an attestation nonce to the HSM, a standardized request format fits the usecase better
+and is generally simpler.<a href="#section-2.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
-<div id="terminology">
+<div id="sec-terminology">
 <section id="section-3">
       <h2 id="name-terminology">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-terminology" class="section-name selfRef">Terminology</a>
       </h2>
-<p id="section-3-1">The reader is assumed to be familiar with the vocabulary and concepts
-defined in the RATS architecture (<span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>).<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2">The following terms are used in this document:<a href="#section-3-2" class="pilcrow">¶</a></p>
-<span class="break"></span><dl class="dlNewline" id="section-3-3">
-        <dt id="section-3-3.1">Application Key:</dt>
-        <dd style="margin-left: 1.5em" id="section-3-3.2">
-          <p id="section-3-3.2.1">An application key consists of a key hosted by a HSM (the platform) and intended to be used by a client
-of the HSM. The access and operations on an application key is controlled by the HSM.<a href="#section-3-3.2.1" class="pilcrow">¶</a></p>
+<p id="section-3-1">This specification uses a necessary mixture of RATS and PKI terminology
+in order to map concepts between the two domains.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">The reader is assumed to be familiar with the vocabulary and concepts
+defined in the RATS architecture (<span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>) such as Attester,
+Relying Party, Verifier.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">The reader is assumed to be familiar with common vocabulary and concepts
+defined in <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span> such as certificate, signature, attribute, verifier.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-4">In order to avoid confusion, this document generally
+capitalizes RATS terms such as Attester, Relying Party, and Claim.
+Therefore, for example, a "Verifier"
+should be assumed to be an entity that checks the validity of Evidence as per <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>,
+whereas a "verifier" could be a more general refence, for example, to a PKI entity that checks
+the validity of an X.509 certificate or other digital signature as per <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>.<a href="#section-3-4" class="pilcrow">¶</a></p>
+<p id="section-3-5">The following terms are used in this document:<a href="#section-3-5" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlNewline" id="section-3-6">
+        <dt id="section-3-6.1">Application Key:</dt>
+        <dd style="margin-left: 1.5em" id="section-3-6.2">
+          <p id="section-3-6.2.1">An application key consists of a key hosted by a HSM (the platform) and intended to be used by a client
+of the HSM. The access and operations on an application key is controlled by the HSM.
+MikeO: I don't love that we have two "AK"s. Maybe we can find a different term for this?<a href="#section-3-6.2.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-3.3">Attestation Key (AK):</dt>
-        <dd style="margin-left: 1.5em" id="section-3-3.4">
-          <p id="section-3-3.4.1">Cryptographic key controlled solely by the Attester and used only for the purpose
+<dt id="section-3-6.3">Attestation Key (AK):</dt>
+        <dd style="margin-left: 1.5em" id="section-3-6.4">
+          <p id="section-3-6.4.1">Cryptographic key controlled solely by the Attester and used only for the purpose
 of producing Evidence. In other words, it is used to digitally sign the claims collected by
-the Attester.<a href="#section-3-3.4.1" class="pilcrow">¶</a></p>
+the Attester.<a href="#section-3-6.4.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-3.5">Attestation Service (AttS):</dt>
-        <dd style="margin-left: 1.5em" id="section-3-3.6">
-          <p id="section-3-3.6.1">A logical module within the HSM that is responsible for generating Evidence compatible with the
+<dt id="section-3-6.5">Attestation Service (AttS):</dt>
+        <dd style="margin-left: 1.5em" id="section-3-6.6">
+          <p id="section-3-6.6.1">A logical module within the HSM that is responsible for generating Evidence compatible with the
 format outlined in this specification. It collects claims from the platform and uses the Attestation
-Key to digitally sign the collection.<a href="#section-3-3.6.1" class="pilcrow">¶</a></p>
+Key to digitally sign the collection.<a href="#section-3-6.6.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-3.7">Attester :</dt>
-        <dd style="margin-left: 1.5em" id="section-3-3.8">
-          <p id="section-3-3.8.1">The term Attester respects the definition offered in <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>. In this specification, it
-is also interchangeable with "platform" or "HSM".<a href="#section-3-3.8.1" class="pilcrow">¶</a></p>
+<dt id="section-3-6.7">Attester :</dt>
+        <dd style="margin-left: 1.5em" id="section-3-6.8">
+          <p id="section-3-6.8.1">The term Attester respects the definition offered in <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>. In this specification, it
+is also interchangeable with "platform" or "HSM".<a href="#section-3-6.8.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-3.9">Evidence :</dt>
-        <dd style="margin-left: 1.5em" id="section-3-3.10">
-          <p id="section-3-3.10.1">The term Evidence respects the definition offered in <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>. In this specification, it
+<dt id="section-3-6.9">Evidence :</dt>
+        <dd style="margin-left: 1.5em" id="section-3-6.10">
+          <p id="section-3-6.10.1">The term Evidence respects the definition offered in <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>. In this specification, it
 refers to claims, encoded according to the format defined within this document, and signed using
-the Attestation Key.<a href="#section-3-3.10.1" class="pilcrow">¶</a></p>
+the Attestation Key.<a href="#section-3-6.10.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-3.11">Hardware Security Module (HSM):</dt>
-        <dd style="margin-left: 1.5em" id="section-3-3.12">
-          <p id="section-3-3.12.1">A physical computing device that safeguards and manages secrets (most importantly cryptographic keys),
+<dt id="section-3-6.11">Hardware Security Module (HSM):</dt>
+        <dd style="margin-left: 1.5em" id="section-3-6.12">
+          <p id="section-3-6.12.1">A physical computing device that safeguards and manages secrets (most importantly cryptographic keys),
 and performs cryptographic operations based on those secrets.
 This specification takes a broad definition of what counts as an HSM to include smartcards,
 USB tokens, TPMs, cryptographic co-processors (PCI cards) and "enterprise-grade" or "cloud-service grade" HSMs
-(possibly rack mounted). In this specification, it is interchangeable with "platform" or "Attester".<a href="#section-3-3.12.1" class="pilcrow">¶</a></p>
+(possibly rack mounted). In this specification, it is interchangeable with "platform" or "Attester".<a href="#section-3-6.12.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-3.13">Key Attestation:</dt>
-        <dd style="margin-left: 1.5em" id="section-3-3.14">
-          <p id="section-3-3.14.1">Process of producing Evidence containing claims pertaining to application keys found within a HSM. In
+<dt id="section-3-6.13">Key Attestation:</dt>
+        <dd style="margin-left: 1.5em" id="section-3-6.14">
+          <p id="section-3-6.14.1">Process of producing Evidence containing claims pertaining to application keys found within a HSM. In
 general, the claims includes enough information about an application key and its hosting platform to allow
-a Relying Party to make judicial decisions about the key, such as issuing a certificate.<a href="#section-3-3.14.1" class="pilcrow">¶</a></p>
+a Relying Party to make judicial decisions about the key, such as issuing a certificate.<a href="#section-3-6.14.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-3.15">Platform:</dt>
-        <dd style="margin-left: 1.5em" id="section-3-3.16">
-          <p id="section-3-3.16.1">The module or device that embodies the Attester. In this specification, it is interchangeable with
-"Attester" or "HSM".<a href="#section-3-3.16.1" class="pilcrow">¶</a></p>
+<dt id="section-3-6.15">Platform:</dt>
+        <dd style="margin-left: 1.5em" id="section-3-6.16">
+          <p id="section-3-6.16.1">The module or device that embodies the Attester. In this specification, it is interchangeable with
+"Attester" or "HSM".<a href="#section-3-6.16.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-3.17">Platform Attestation:</dt>
-        <dd style="margin-left: 1.5em" id="section-3-3.18">
-          <p id="section-3-3.18.1">Evidence containing claims pertaining to an attesting platform. In general, the claims includes
+<dt id="section-3-6.17">Platform Attestation:</dt>
+        <dd style="margin-left: 1.5em" id="section-3-6.18">
+          <p id="section-3-6.18.1">Evidence containing claims pertaining to an attesting platform. In general, the claims includes
 enough information about the platform to allow a Relying Party to make judicial decisions about the
-platform, such as audit reviews.<a href="#section-3-3.18.1" class="pilcrow">¶</a></p>
+platform, such as audit reviews.<a href="#section-3-6.18.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-3.19">Trust Anchor:</dt>
-        <dd style="margin-left: 1.5em" id="section-3-3.20">
-          <p id="section-3-3.20.1">As defined in <span>[<a href="#RFC6024" class="cite xref">RFC6024</a>]</span> and <span>[<a href="#RFC9019" class="cite xref">RFC9019</a>]</span>, a Trust Anchor
+<dt id="section-3-6.19">Trust Anchor:</dt>
+        <dd style="margin-left: 1.5em" id="section-3-6.20">
+          <p id="section-3-6.20.1">As defined in <span>[<a href="#RFC6024" class="cite xref">RFC6024</a>]</span> and <span>[<a href="#RFC9019" class="cite xref">RFC9019</a>]</span>, a Trust Anchor
 "represents an authoritative entity via a public key and
 associated data.  The public key is used to verify digital
 signatures, and the associated data is used to constrain the types
 of information for which the trust anchor is authoritative." The
 Trust Anchor may be a certificate, a raw public key, or other
 structure, as appropriate.  It can be a non-root certificate when
-it is a certificate.<a href="#section-3-3.20.1" class="pilcrow">¶</a></p>
+it is a certificate.<a href="#section-3-6.20.1" class="pilcrow">¶</a></p>
 </dd>
       <dd class="break"></dd>
 </dl>
-<p id="section-3-4">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+<p id="section-3-7">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
 "<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
 described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
-appear in all capitals, as shown here.<a href="#section-3-4" class="pilcrow">¶</a></p>
+appear in all capitals, as shown here.<a href="#section-3-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-arch">
@@ -1503,7 +1574,7 @@ appear in all capitals, as shown here.<a href="#section-3-4" class="pilcrow">¶<
       <h2 id="name-architecture-and-conceptual">
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-architecture-and-conceptual" class="section-name selfRef">Architecture and Conceptual Model</a>
       </h2>
-<p id="section-4-1">JPF: Note sure what in this section needs to be saved.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-1">EDNOTE: JPF Note sure what in this section needs to be saved.<a href="#section-4-1" class="pilcrow">¶</a></p>
 <p id="section-4-2">Key attestation is an extension to the attestation functionality
 described in <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>. In the general RATS Architecture, an attesting device
 consists of a hardware Root of Trust (RoT) which provides the basis for trust in the device,
@@ -1640,7 +1711,7 @@ AK chains leading to different trust anchors. See <a href="#sec-verif-proc" clas
           <p id="section-5-2.1.1">A claim description section which describes the information transmitted as Evidence.<a href="#section-5-2.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-5-2.2">
-          <p id="section-5-2.2.1">A signature section where digital signature are offered to prove the origin of the
+          <p id="section-5-2.2.1">A signature section where one ore  more digital signatures are offered to prove the origin of the
 claims and maintain their integrity.<a href="#section-5-2.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
@@ -1649,7 +1720,7 @@ deals with the way the information is organized to form the claims.<a href="#sec
 <p id="section-5-4">The claims are organized into a set of entities to help with the organization and comprehension
 of the information. Entities are elements observed in the Target Environment by the Attester.
 Each entity, in turn, is associated with a set of attributes.<a href="#section-5-4" class="pilcrow">¶</a></p>
-<p id="section-5-5">Therefore, the claim description section is a set of entities and each entity is composed
+<p id="section-5-5">Therefore, the Claim description section is a set of entities and each entity is composed
 of a set of attributes.<a href="#section-5-5" class="pilcrow">¶</a></p>
 <div id="entity">
 <section id="section-5.1">
@@ -1660,12 +1731,22 @@ of a set of attributes.<a href="#section-5-5" class="pilcrow">¶</a></p>
 describes the class of the entity while its attributes defines its state.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
 <p id="section-5.1-2">An entity <span class="bcp14">SHOULD</span> be reported only once in a claim description. The claim description can
 have multiple entities of the same type (for example reporting multiple keys), but each
-entity <span class="bcp14">MUST</span> be relating to different elements. This restriction is to ease the implementation
-of Verifiers for the provided Evidence.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
+entity <span class="bcp14">MUST</span> be relating to different elements.
+For example, if a given application public key appears in two different entities, these
+<span class="bcp14">MUST</span> be interpreted as two distinct and independent entities that happen to have the
+same public key, and <span class="bcp14">MUST NOT</span> be interpreted as adding attidional attributes to the
+already-described entity.
+This restriction is to ease the implementation of Verifiers for the provided Evidence.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
 <p id="section-5.1-3">The number of entities reported in a claim description, and their respective type, is
 left to the implementer. For a simple device where there is only one key, the list of
 reported entities could be fixed. For larger and more complex devices, the list of
 reported entities should be tailored to the demands of the requesting party.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+<p id="section-5.1-4">In particular, note that the nonce attribute contained with the Transaction entity is optional,
+and therefore it is possible that an extremely simple device that holds one static key
+could have its key attestation object generated at manufacture time and injected
+statically into the device and acting as a kind of certificate instead of
+being generated on-demand. This model would essentially
+off-board the Attesting Environment to being part of the manufacturing infrastructure.<a href="#section-5.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="entity-type">
@@ -1692,7 +1773,17 @@ to the current request for Evidence such as a nonce to support freshness.<a href
         </ul>
 <p id="section-5.2-3">Although this document defines a short list of entity types, this list should be extensible
 to allow implementers to report on entities found in their implementation and not
-covered by this specification.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+covered by this specification. By using an Object Identifier (OID) based system for identifying both entity types
+and the attribute types that they contain, this format is inherently extensible;
+implementers of Attesters <span class="bcp14">MAY</span> define new custom or proprietary entity types and
+place them along-side the standardized entities, or define new attribute types
+and place them inside standardized entities.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+<p id="section-5.2-4">Verifiers <span class="bcp14">SHOULD</span> ignore and skip over
+unrecognized entity or attribute types and continue processing normally.
+In other words, if a given Evidence would have been acceptable without the
+unrecognized entity or attribute, then it <span class="bcp14">SHOULD</span> still be acceptable.
+In PKI terminology, all custom entities and attributes not defined in this document
+<span class="bcp14">SHOULD</span> be considered non-critical unless a further specification indicates differently.<a href="#section-5.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="attribute-and-attribute-type">
@@ -1702,20 +1793,35 @@ covered by this specification.<a href="#section-5.2-3" class="pilcrow">¶</a></p
         </h3>
 <p id="section-5.3-1">Each attribute found in an entity is composed of a type, the attribute type, and a value.
 Each attribute describes a portion of the state of the associated entity. For example,
-a platform entity could have an attribute with the firmware version current running.
+a platform entity could have an attribute which indicates the firmware version currently running.
 Another example is a key entity with an attribute that reports whether the key is extractable
 or not.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
-<p id="section-5.3-2">The interpretation of a value provided by an attribute must be considered within the context
+<p id="section-5.3-2">A value provided by an attribute is to be interpreted within the context
 of its entity and in relation to the attribute type.<a href="#section-5.3-2" class="pilcrow">¶</a></p>
 <p id="section-5.3-3">It is <span class="bcp14">RECOMMENDED</span> that an attribute type be defined for a specific entity type, to reduce
-confusion when it comes to interpretation of the value.<a href="#section-5.3-3" class="pilcrow">¶</a></p>
+confusion when it comes to interpretation of the value.
+MikeO: I don't understand this sentence. I think it needs better words.<a href="#section-5.3-3" class="pilcrow">¶</a></p>
 <p id="section-5.3-4">The nature of the value (boolean, integer, string, bytes) is dependent on the attribute type.<a href="#section-5.3-4" class="pilcrow">¶</a></p>
 <p id="section-5.3-5">This specification defines a limited number of attribute types. However, this list should be
 extensible to allow implementers to report attributes not covered by this specification.<a href="#section-5.3-5" class="pilcrow">¶</a></p>
-<p id="section-5.3-6">The number of attributes reported within an entity, and their respective type, is
+<p id="section-5.3-6">If a Verifier encounters an attribute with an unrecognized attribute type, it may ignore it.
+In PKI terminology, all custom attributes not defined in this document
+<span class="bcp14">SHOULD</span> be considered non-critical unless a further specification indicates differently.<a href="#section-5.3-6" class="pilcrow">¶</a></p>
+<p id="section-5.3-7">The number of attributes reported within an entity, and their respective type, is
 left to the implementer. For a simple device, the reported list of attributes for an entity
 might be fixed. However, larger and more complex devices, the list of reported attributes
-should be tailored to the demands of the requesting party.<a href="#section-5.3-6" class="pilcrow">¶</a></p>
+should be tailored to the demands of the requesting party.<a href="#section-5.3-7" class="pilcrow">¶</a></p>
+<p id="section-5.3-8">Some attributes <span class="bcp14">MAY</span> be repeated within an entity while others <span class="bcp14">MUST NOT</span>. For example, for a
+platform entity, there can only be one "firmware version" attribute. Therefore, the associated attribute
+<span class="bcp14">MUST NOT</span> be repeated as it may lead to confusion. However, an attribute relating to
+a "loaded module" <span class="bcp14">MAY</span> be repeated, each attribute describing a different loaded module.
+Therefore, the definition of an attribute specifies whether or not multiple copies of that
+attribute are allowed.<a href="#section-5.3-8" class="pilcrow">¶</a></p>
+<p id="section-5.3-9">If a Verifier encounters, within a single entity, multiple copies of an attribute specified as
+"Multiple Allowed: No", it <span class="bcp14">MUST</span> reject the evidence as mal-formed.<a href="#section-5.3-9" class="pilcrow">¶</a></p>
+<p id="section-5.3-10">If a Verifier encounters, within the context of an entity, a repeated attribute for a type where
+multiple attributes are allowed, it <span class="bcp14">MUST</span> treat each one as an independent attribute and <span class="bcp14">MUST NOT</span>
+consider later ones to overwrite or extend the previous one.<a href="#section-5.3-10" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1725,17 +1831,18 @@ should be tailored to the demands of the requesting party.<a href="#section-5.3-
       <h2 id="name-data-model">
 <a href="#section-6" class="section-number selfRef">6. </a><a href="#name-data-model" class="section-name selfRef">Data Model</a>
       </h2>
-<p id="section-6-1">This section describes the semantics of the key claims as part of the information
-model.<a href="#section-6-1" class="pilcrow">¶</a></p>
-<p id="section-6-2">The envelop structure is:<a href="#section-6-2" class="pilcrow">¶</a></p>
+<p id="section-6-1">This section describes the data model associated with PKIX Evidence. For ease of
+deployment within the target ecosystem, ASN.1 definitions and DER encoding
+are used. A complete ASN.1 module is provided in <a href="#sec-asn1-mod" class="auto internal xref">Section 11</a>.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-2">The top-level structures are:<a href="#section-6-2" class="pilcrow">¶</a></p>
 <div class="lang-asn.1 sourcecode" id="section-6-3">
 <pre>
-PkixAttestation ::= SEQUENCE {
-    tbs TbsPkixAttestation,
+PkixEvidence ::= SEQUENCE {
+    tbs ClaimDescriptionTbs,
     signatures SEQUENCE SIZE (0..MAX) of SignatureBlock
 }
 
-TbsPkixAttestation ::= SEQUENCE {
+ClaimDescriptionTbs ::= SEQUENCE {
     version INTEGER,
     reportedEntities SEQUENCE SIZE (1..MAX) OF ReportedEntity
 }
@@ -1747,50 +1854,49 @@ SignatureBlock ::= SEQUENCE {
 }
 </pre><a href="#section-6-3" class="pilcrow">¶</a>
 </div>
-<p id="section-6-4">A PkixAttestation message is composed of a protected section known as the To-Be-Signed or TBS. The integrity of the To-Be-Signed section is ensured with one or multiple cryptographic signatures over the content of the section. There is a provision to carry the X.509 certificates supporting the signature(s).<a href="#section-6-4" class="pilcrow">¶</a></p>
+<p id="section-6-4">A PkixEvidence message is composed of a protected section known as the To-Be-Signed (TBS) where the claim
+description is reported. The integrity of the TBS section is ensured with one or multiple cryptographic signatures
+over the content of the section. There is a provision to carry the X.509 certificates supporting each signature.
+The SEQUENCE OF SignatureBlock allows for both multi-algorithm protection and for counter-signatures
+of the evidence.
+In an effort to keep the evidence format simple, distinguishing between these two cases is left up to Verifier policy,
+potentially by making use of the certificates that accompany each signature.
+Thes design also does not prevent against stripping attacks where an attacker removes a signature without leaving evidence
+in the message that an additional signature had been there or signature re-ordering attacks.
+Again, this is left up to Verifier policy to know how many
+algorithms or counter-signatures it is expecting.
+Consequently, Verifiers <span class="bcp14">MUST NOT</span> make any inferences about the lack of a signature. For example, enumerating
+counter-signatures on an Evidence <span class="bcp14">MUST NOT</span> be considered to be a complete list of HSMs in a given cluster.
+Similarly, the presense and order of counter-signatures <span class="bcp14">MUST NOT</span> be taken as proof of the path that the evidence traversed
+over the network.<a href="#section-6-4" class="pilcrow">¶</a></p>
 <p id="section-6-5">The TBS section is composed of a version number, to ensure future extensibility, and a sequence of reported entities.<a href="#section-6-5" class="pilcrow">¶</a></p>
-<p id="section-6-6">For compliance with this specification, <code>TbsPkixAttestation.version</code> <span class="bcp14">MUST</span> be <code>1</code>.
+<p id="section-6-6">For compliance with this specification, <code>ClaimDescriptionTbs.version</code> <span class="bcp14">MUST</span> be <code>1</code>.
 This envelope format is not extensible; future specifications which make compatibility-breaking changes <span class="bcp14">MUST</span> increment the version number.<a href="#section-6-6" class="pilcrow">¶</a></p>
 <p id="section-6-7">EDNOTE: do we want extension marks on the TbsAttestation object? I can see pros and cons to doing that.<a href="#section-6-7" class="pilcrow">¶</a></p>
 <p id="section-6-8"><code>SignatureBlock.certChain</code> <span class="bcp14">MUST</span> contain at least one X.509 certificate as per <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>.
 While there might exist attesting environments which use out-of-band or non-X.509 mechanisms for communicating
 the AK public key to the Verifier, these <span class="bcp14">SHALL</span> be considered non-compliant with this specification.<a href="#section-6-8" class="pilcrow">¶</a></p>
-<p id="section-6-9">The attribute format is intended to be generic, flexible, and extensible with a default set of attributes defined in this document. Attributes are grouped into entities; an entity can be either a key, a platform, or a request containing a set of claims that are requested to be filled by the attesting environment.<a href="#section-6-9" class="pilcrow">¶</a></p>
+<p id="section-6-9">As described in the <a href="#sec-info-model" class="auto internal xref">Section 5</a> section, the claim description is a set of entities. Each entity
+is associated with a type that defines its class. The entity types are represented by object identifiers
+(OIDs). The following ASN.1 definition defines the structures associated with entities:<a href="#section-6-9" class="pilcrow">¶</a></p>
 <div class="lang-asn.1 sourcecode" id="section-6-10">
 <pre>
 ReportedEntity ::= SEQUENCE {
     entityType         OBJECT IDENTIFIER,
     reportedAttributes SEQUENCE SIZE (1..MAX) OF ReportedAttribute
 }
-</pre><a href="#section-6-10" class="pilcrow">¶</a>
-</div>
-<p id="section-6-11">A reported entity is a unit of observation measured by the Attester (the HSM). In this specification, there are three types of entities defined:
-- Platform Entity : An entity that reports attributes about the platform, itself. A PKIX Attestation <span class="bcp14">MAY</span> contain only one Platform Entity.
-- Key Entity : An entity that represents a single cryptographic key found in a HSM ad its associated attributes. A PKIX Attestation <span class="bcp14">MAY</span> contain one or more Key Entities.
-- Transaction Entity : An entity reporting attributes observed from the request itself. A PKIX Attestation <span class="bcp14">MAY</span> contain only one Transaction Entity.<a href="#section-6-11" class="pilcrow">¶</a></p>
-<p id="section-6-12">A reported entity is composed of an Object Identifier (OID), specifying the entity type, and a sequence of reported attributes associated with the entity.<a href="#section-6-12" class="pilcrow">¶</a></p>
-<p id="section-6-13">Although this specification defines only three types of entities, implementations <span class="bcp14">MAY</span> define additional entity types by registering additional OIDs.<a href="#section-6-13" class="pilcrow">¶</a></p>
-<p id="section-6-14">An Attester (HSM) which is requested to provide information about unrecognized entity types <span class="bcp14">MUST</span> fail the operation.<a href="#section-6-14" class="pilcrow">¶</a></p>
-<p id="section-6-15">A Verifier which encounters an unrecognized entity type <span class="bcp14">MAY</span> ignore it.<a href="#section-6-15" class="pilcrow">¶</a></p>
-<div class="lang-asn.1 sourcecode" id="section-6-16">
-<pre>
+
 id-pkix-attest                    OBJECT IDENTIFIER ::= { 1 2 3 999 }
 id-pkix-attest-entity-type        OBJECT IDENTIFIER ::= { id-pkix-attest 0 }
 id-pkix-attest-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 0 }
 id-pkix-attest-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 1 }
 id-pkix-attest-entity-key         OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 2 }
-id-pkix-attest-entity-request     OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 3 }
-</pre><a href="#section-6-16" class="pilcrow">¶</a>
+</pre><a href="#section-6-10" class="pilcrow">¶</a>
 </div>
-<p id="section-6-17">TODO: do we need entity types for "platform policy" and "key policy" ?<a href="#section-6-17" class="pilcrow">¶</a></p>
-<p id="section-6-18">A PKIX Attestation <span class="bcp14">MUST NOT</span> contain more than one platform entity since duplicate and conflicting platform claims across multiple platform entities can easily lead to security bugs.
-A parser <span class="bcp14">MUST</span> fail with an error if it encouters multiple platform entities.<a href="#section-6-18" class="pilcrow">¶</a></p>
-<p id="section-6-19">A PKIX Attestation <span class="bcp14">MUST NOT</span> contain more than one transaction entity. A transaction entity contains attributes that are related to the request such as a "nonce".
-A parser <span class="bcp14">MUST</span> fail with an error if it encouters multiple transaction entities.<a href="#section-6-19" class="pilcrow">¶</a></p>
-<p id="section-6-20">A PKIX Attestation <span class="bcp14">MAY</span> contain one or more application key entities. Each key entity <span class="bcp14">SHOULD</span> describe a unique application key. Multiple ReportedEntity objects of type <code>entity-key</code> that describe the same application key <span class="bcp14">SHOULD</span> be avoided since different or conflicting claims could lead to security issues on the part of the Verifier or Relying Party.<a href="#section-6-20" class="pilcrow">¶</a></p>
-<p id="section-6-21">TODO: note that we need to be careful about whether it is allowed to include the AK(s) and other "platform-owned" keys in the set of keys you can attest, or only attesting application keys.<a href="#section-6-21" class="pilcrow">¶</a></p>
-<p id="section-6-22">Each reported attribute is composed of an Object Identifier (OID), identifying the type of the attribute, and a value which must be one of the prescribed data types.<a href="#section-6-22" class="pilcrow">¶</a></p>
-<div class="lang-asn.1 sourcecode" id="section-6-23">
+<p id="section-6-11">In turn, entities are composed of attributes. Each attribute is composed of a type and a value.
+The attribute types are represented by object identifiers (OIDs). The
+following ASN.1 definition defines the structures associated with attributes:<a href="#section-6-11" class="pilcrow">¶</a></p>
+<div class="lang-asn.1 sourcecode" id="section-6-12">
 <pre>
 ReportedAttribute ::= SEQUENCE {
     attributeType      OBJECT IDENTIFIER,
@@ -1805,23 +1911,28 @@ AttributeValue :== CHOICE {
    int         [4] IMPLICIT INTEGER,
    oid         [5] IMPLICIT OBJECT IDENTIFIER
 }
-</pre><a href="#section-6-23" class="pilcrow">¶</a>
+</pre><a href="#section-6-12" class="pilcrow">¶</a>
 </div>
-<p id="section-6-24">An attribute type is generally associated with a single entity type. In the following sub-sections, defined attributes are grouped according to their related entity types.<a href="#section-6-24" class="pilcrow">¶</a></p>
-<p id="section-6-25">There are circumstances where an attribute type can be repeated for a given entity while other attribute types are unique.
-For example, the <code>hwmodel</code>, <code>uptime</code>, and <code>fipsboot</code> attributes are not allowed to have multiple instances since these are global measurements of the platform. However, other attribute types such as <code>usermods</code> allow multiple instances as an HSM can have more than one user module loaded. The tables below list for each attribute type whether multiples are allowed.
-For attribute types that do not allow multiples, a parser <span class="bcp14">MUST</span> fail with an error if it encouters multiple instances.
-For attribute types that allow multiples, a parser <span class="bcp14">MUST</span> treat each one as an independent attribute and <span class="bcp14">MUST NOT</span>, for example, consider later ones to overwrite the previous one. Appraisal policies and profiles <span class="bcp14">SHOULD</span> be clear about how to handle multiples when requiring attribute types that allow multiples.<a href="#section-6-25" class="pilcrow">¶</a></p>
-<p id="section-6-26">PKIX Attestation Requests are discussed in <a href="#sec-reqs" class="auto internal xref">Section 9</a>.
-In the tables in the sections that follow, the column "Request Contains a Value" specifies whether,
-when the given attribute appears in a request, whether it is to be a valued or un-valued request attribute as described in <a href="#sec-reqs" class="auto internal xref">Section 9</a>.<a href="#section-6-26" class="pilcrow">¶</a></p>
-<div id="transaction-attributes">
+<p id="section-6-13">The attributes associated with an entity are dependent on the type of entity. Therefore, it is encouraged
+to define attribute types grouped with their respective entity type.<a href="#section-6-13" class="pilcrow">¶</a></p>
+<p id="section-6-14">The type of an attribute value is dictated by the attribute type. When an attribute type is defined, the
+definition must include the type of the value, its semantic and interpretation.<a href="#section-6-14" class="pilcrow">¶</a></p>
+<p id="section-6-15">The remainder of this section describes the entity types and their associated attributes.<a href="#section-6-15" class="pilcrow">¶</a></p>
+<div id="platform-entity">
 <section id="section-6.1">
-        <h3 id="name-transaction-attributes">
-<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-transaction-attributes" class="section-name selfRef">Transaction Attributes</a>
+        <h3 id="name-platform-entity">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-platform-entity" class="section-name selfRef">Platform Entity</a>
         </h3>
-<p id="section-6.1-1">A default and vendor-agnostic set of transaction attributes is defined in this section.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
-<p id="section-6.1-2">These attribute types <span class="bcp14">MAY</span> be contained within a transaction entity; i.e. an entity identified by <code>id-pkix-attest-entity-transaction</code>.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
+<p id="section-6.1-1">A platform entity is associated with the type identifier <code>id-pkix-attest-entity-platform</code>. It is composed
+of a set of attributes that are global to the Target Environment.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1-2">A platform entity, if provided, <span class="bcp14">MUST</span> be included only once within the reported entities. If a
+Verifier encounters multiple entities of type <code>id-pkix-attest-entity-platform</code>, it <span class="bcp14">MUST</span>
+reject the Evidence as mal-formed.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
+<p id="section-6.1-3">The following table lists the attributes for a platform entity (platform attributes) defined
+within this specification. In cases where the attribute is borrowed from another specification,
+the "Reference" column refers to the specification where the semantics
+for the attribute value can be found.
+Attributes defined in this specification have further details below.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
 <table class="center" id="table-1">
           <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
 <thead>
@@ -1830,72 +1941,6 @@ when the given attribute appears in a request, whether it is to be a valued or u
               <th class="text-left" rowspan="1" colspan="1">AttributeValue</th>
               <th class="text-left" rowspan="1" colspan="1">Reference</th>
               <th class="text-left" rowspan="1" colspan="1">Multiple Allowed</th>
-              <th class="text-left" rowspan="1" colspan="1">Request Contains a Value</th>
-              <th class="text-left" rowspan="1" colspan="1">Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="text-left" rowspan="1" colspan="1">nonce</td>
-              <td class="text-left" rowspan="1" colspan="1">bytes</td>
-              <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
-              <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MUST</span>
-</td>
-              <td class="text-left" rowspan="1" colspan="1">Repeats a "nonce" provided during the atttestation request.</td>
-            </tr>
-            <tr>
-              <td class="text-left" rowspan="1" colspan="1">timestamp</td>
-              <td class="text-left" rowspan="1" colspan="1">time</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span>[<a href="#I-D.ietf-rats-eat" class="cite xref">I-D.ietf-rats-eat</a>]</span>
-</td>
-              <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MUST NOT</span>
-</td>
-              <td class="text-left" rowspan="1" colspan="1">The time at which this attestation was generated. Corresponds to EAT IAT claim.</td>
-            </tr>
-          </tbody>
-        </table>
-<div id="nonce">
-<section id="section-6.1.1">
-          <h4 id="name-nonce">
-<a href="#section-6.1.1" class="section-number selfRef">6.1.1. </a><a href="#name-nonce" class="section-name selfRef">nonce</a>
-          </h4>
-<p id="section-6.1.1-1">The nonce attribute is used to provide "freshness" quality as to the information provided by the Attester (HSM) in the PkixAttestation message. A client requesting a PkixAttestation message <span class="bcp14">MAY</span> provide a nonce value as part of the request. This nonce value, if provided, <span class="bcp14">SHOULD</span> be repeated as an attribute to the transaction entity.<a href="#section-6.1.1-1" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="time">
-<section id="section-6.1.2">
-          <h4 id="name-time">
-<a href="#section-6.1.2" class="section-number selfRef">6.1.2. </a><a href="#name-time" class="section-name selfRef">time</a>
-          </h4>
-<p id="section-6.1.2-1">The time at which this attestation was generated, according to the internal system clock of the HSM.<a href="#section-6.1.2-1" class="pilcrow">¶</a></p>
-<p id="section-6.1.2-2">Note that it is common for HSMs to not have an accurate system clock; consider an HSM for a root CA kept offline and booted up infrequently in an local network segregated from all other network, or a smart card which boots up only when held against an NFC reader.
-Implementers of emitters <span class="bcp14">SHOULD</span> include this attribute only if the device reliably knows its own time (for example has had recent contact with an NTP server).
-Implementers of parsers <span class="bcp14">SHOULD</span> be wary of trusting the contents of this attribute. A challenge-response protocol that makes use of the nonce attribute is a far more reliable way of establishing freshness.<a href="#section-6.1.2-2" class="pilcrow">¶</a></p>
-</section>
-</div>
-</section>
-</div>
-<div id="platform-attributes">
-<section id="section-6.2">
-        <h3 id="name-platform-attributes">
-<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-platform-attributes" class="section-name selfRef">Platform Attributes</a>
-        </h3>
-<p id="section-6.2-1">A default and vendor-agnostic set of platform attributes is defined in this section.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
-<p id="section-6.2-2">These attribute types <span class="bcp14">MAY</span> be contained within a platform entity; i.e. an entity identified by <code>id-pkix-attest-entity-platform</code>.<a href="#section-6.2-2" class="pilcrow">¶</a></p>
-<table class="center" id="table-2">
-          <caption><a href="#table-2" class="selfRef">Table 2</a></caption>
-<thead>
-            <tr>
-              <th class="text-left" rowspan="1" colspan="1">Attribute</th>
-              <th class="text-left" rowspan="1" colspan="1">AttributeValue</th>
-              <th class="text-left" rowspan="1" colspan="1">Reference</th>
-              <th class="text-left" rowspan="1" colspan="1">Multiple Allowed</th>
-              <th class="text-left" rowspan="1" colspan="1">Request Contains a Value</th>
               <th class="text-left" rowspan="1" colspan="1">Description</th>
             </tr>
           </thead>
@@ -1905,9 +1950,6 @@ Implementers of parsers <span class="bcp14">SHOULD</span> be wary of trusting th
               <td class="text-left" rowspan="1" colspan="1">utf8String</td>
               <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MUST NOT</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">A human-readable string by which the vendor identifies themself.</td>
             </tr>
             <tr>
@@ -1917,9 +1959,6 @@ Implementers of parsers <span class="bcp14">SHOULD</span> be wary of trusting th
                 <span>[<a href="#I-D.ietf-rats-eat" class="cite xref">I-D.ietf-rats-eat</a>]</span>
 </td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MUST NOT</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">The EAT OEM ID as defined in <span>[<a href="#I-D.ietf-rats-eat" class="cite xref">I-D.ietf-rats-eat</a>]</span>.</td>
             </tr>
             <tr>
@@ -1929,9 +1968,6 @@ Implementers of parsers <span class="bcp14">SHOULD</span> be wary of trusting th
                 <span>[<a href="#I-D.ietf-rats-eat" class="cite xref">I-D.ietf-rats-eat</a>]</span>
 </td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MUST NOT</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">Model or product line of the hardware module.</td>
             </tr>
             <tr>
@@ -1939,9 +1975,6 @@ Implementers of parsers <span class="bcp14">SHOULD</span> be wary of trusting th
               <td class="text-left" rowspan="1" colspan="1">utf8String</td>
               <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MUST NOT</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">Serial number of the hardware module, often matches the number engraved or stickered on the case.</td>
             </tr>
             <tr>
@@ -1951,9 +1984,6 @@ Implementers of parsers <span class="bcp14">SHOULD</span> be wary of trusting th
                 <span>[<a href="#I-D.ietf-rats-eat" class="cite xref">I-D.ietf-rats-eat</a>]</span>
 </td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MUST NOT</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">A text string identifying the firmware or software running on the HSM.</td>
             </tr>
             <tr>
@@ -1963,9 +1993,6 @@ Implementers of parsers <span class="bcp14">SHOULD</span> be wary of trusting th
                 <span>[<a href="#I-D.ietf-rats-eat" class="cite xref">I-D.ietf-rats-eat</a>]</span>
 </td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MUST NOT</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">Indicates whether the HSM is currently in a debug state, or is capable in the future of being turned to a debug state. Semantics and integer codes are defined in <span>[<a href="#I-D.ietf-rats-eat" class="cite xref">I-D.ietf-rats-eat</a>]</span>.</td>
             </tr>
             <tr>
@@ -1975,9 +2002,6 @@ Implementers of parsers <span class="bcp14">SHOULD</span> be wary of trusting th
                 <span>[<a href="#I-D.ietf-rats-eat" class="cite xref">I-D.ietf-rats-eat</a>]</span>
 </td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MUST NOT</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">Contains the number of seconds that have elapsed since the entity was last booted.</td>
             </tr>
             <tr>
@@ -1987,9 +2011,6 @@ Implementers of parsers <span class="bcp14">SHOULD</span> be wary of trusting th
                 <span>[<a href="#I-D.ietf-rats-eat" class="cite xref">I-D.ietf-rats-eat</a>]</span>
 </td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MUST NOT</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">Contains a count of the number of times the entity has been booted.</td>
             </tr>
             <tr>
@@ -1997,10 +2018,7 @@ Implementers of parsers <span class="bcp14">SHOULD</span> be wary of trusting th
               <td class="text-left" rowspan="1" colspan="1">utf8String</td>
               <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
               <td class="text-left" rowspan="1" colspan="1">Yes</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MUST NOT</span>
-</td>
-              <td class="text-left" rowspan="1" colspan="1">This attribute lists user modules currently loaded onto the HSM in a human readable format, preferabbly JSON.</td>
+              <td class="text-left" rowspan="1" colspan="1">This attribute lists user modules currently loaded onto the HSM in a human readable format.</td>
             </tr>
             <tr>
               <td class="text-left" rowspan="1" colspan="1">fipsboot</td>
@@ -2009,9 +2027,6 @@ Implementers of parsers <span class="bcp14">SHOULD</span> be wary of trusting th
                 <span>[<a href="#FIPS.140-3" class="cite xref">FIPS.140-3</a>]</span>
 </td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MUST NOT</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">Indicates whether the devices is currently running in FIPS mode.</td>
             </tr>
             <tr>
@@ -2021,9 +2036,6 @@ Implementers of parsers <span class="bcp14">SHOULD</span> be wary of trusting th
                 <span>[<a href="#FIPS.140-3" class="cite xref">FIPS.140-3</a>]</span>
 </td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MUST NOT</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">Indicates the version of the FIPS CMVP standard that is being enforced. At time of writing this is typically "FIPS 140-2" or "FIPS 140-3".</td>
             </tr>
             <tr>
@@ -2033,9 +2045,6 @@ Implementers of parsers <span class="bcp14">SHOULD</span> be wary of trusting th
                 <span>[<a href="#FIPS.140-3" class="cite xref">FIPS.140-3</a>]</span>
 </td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MUST NOT</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">Indicates the FIPS Level to which the device is currently operating in compliance with.</td>
             </tr>
             <tr>
@@ -2043,9 +2052,6 @@ Implementers of parsers <span class="bcp14">SHOULD</span> be wary of trusting th
               <td class="text-left" rowspan="1" colspan="1">utf8String</td>
               <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
               <td class="text-left" rowspan="1" colspan="1">Yes</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MAY</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">An environment ID, which will typically be a URI, UUID, or similar.</td>
             </tr>
             <tr>
@@ -2053,76 +2059,100 @@ Implementers of parsers <span class="bcp14">SHOULD</span> be wary of trusting th
               <td class="text-left" rowspan="1" colspan="1">utf8String</td>
               <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
               <td class="text-left" rowspan="1" colspan="1">Yes</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MUST NOT</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">Further description of the environment.</td>
             </tr>
           </tbody>
         </table>
-<p id="section-6.2-4">TODO: find the actual reference for "FIPS Mode" -- FIPS 140-3 does not define it (at least not the 11 page useless version of 140-3 that I found).<a href="#section-6.2-4" class="pilcrow">¶</a></p>
-<p id="section-6.2-5">Each attribute has an assigned OID, see <a href="#sec-asn1-mod" class="auto internal xref">Section 11</a>.<a href="#section-6.2-5" class="pilcrow">¶</a></p>
-<p id="section-6.2-6">Some of the attributes defined in this specification have further details below.<a href="#section-6.2-6" class="pilcrow">¶</a></p>
-<div id="usermods">
-<section id="section-6.2.1">
-          <h4 id="name-usermods">
-<a href="#section-6.2.1" class="section-number selfRef">6.2.1. </a><a href="#name-usermods" class="section-name selfRef">usermods</a>
+<p id="section-6.1-5">TODO: find the actual reference for "FIPS Mode" -- FIPS 140-3 does not define it (at least not the 11 page useless version of 140-3 that I found).<a href="#section-6.1-5" class="pilcrow">¶</a></p>
+<p id="section-6.1-6">Each attribute has an assigned OID, see <a href="#sec-asn1-mod" class="auto internal xref">Section 11</a>.<a href="#section-6.1-6" class="pilcrow">¶</a></p>
+<div id="vendor">
+<section id="section-6.1.1">
+          <h4 id="name-vendor">
+<a href="#section-6.1.1" class="section-number selfRef">6.1.1. </a><a href="#name-vendor" class="section-name selfRef">vendor</a>
           </h4>
-<p id="section-6.2.1-1">Most HSMs have some concept of trusted execution environment where user software modules can be loaded inside the HSM to run with some level of privileged access to the application keys. This attribute lists user modules currently loaded onto the HSM in a human readable format, preferably JSON.<a href="#section-6.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1.1-1">A human-readable string that reports the name of the device's manufacturer.<a href="#section-6.1.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="hwserial">
+<section id="section-6.1.2">
+          <h4 id="name-hwserial">
+<a href="#section-6.1.2" class="section-number selfRef">6.1.2. </a><a href="#name-hwserial" class="section-name selfRef">hwserial</a>
+          </h4>
+<p id="section-6.1.2-1">A human-readable string that reports the serial number of the hardware module. This serial number often matches the number engraved
+on the case or on an applied sticker.<a href="#section-6.1.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="usermods">
+<section id="section-6.1.3">
+          <h4 id="name-usermods">
+<a href="#section-6.1.3" class="section-number selfRef">6.1.3. </a><a href="#name-usermods" class="section-name selfRef">usermods</a>
+          </h4>
+<p id="section-6.1.3-1">Most HSMs have some concept of trusted execution environment where user software modules can be loaded inside the HSM to run with some level of privileged access to the application keys. This attribute lists user modules currently loaded onto the HSM in a human readable format, preferably JSON.<a href="#section-6.1.3-1" class="pilcrow">¶</a></p>
+<p id="section-6.1.3-2">EDNOTE: JPF if JSON, why have multiple attributes.<a href="#section-6.1.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="fipsboot-fipsver-and-fipslevel">
-<section id="section-6.2.2">
+<section id="section-6.1.4">
           <h4 id="name-fipsboot-fipsver-and-fipsle">
-<a href="#section-6.2.2" class="section-number selfRef">6.2.2. </a><a href="#name-fipsboot-fipsver-and-fipsle" class="section-name selfRef">fipsboot, fipsver and fipslevel</a>
+<a href="#section-6.1.4" class="section-number selfRef">6.1.4. </a><a href="#name-fipsboot-fipsver-and-fipsle" class="section-name selfRef">fipsboot, fipsver and fipslevel</a>
           </h4>
-<p id="section-6.2.2-1">FIPS 140-3 CMVP validation places stringent requirements on the mode of operation of the device and the cryptography offered by the module, including only enabling FIPS-approved algorithms, certain requirements on entropy sources, and extensive start-up self-tests. FIPS 140-3 offers compliance levels 1 through 4 with increasingly strict requirements. Many HSMs include a configuration setting that allows the device to be taken out of FIPS mode and thus enable additional functionality or performance, and some offer configuration settings to change between compliance levels.<a href="#section-6.2.2-1" class="pilcrow">¶</a></p>
-<p id="section-6.2.2-2">The boolean attribute <code>fipsboot</code> indicates whether the device is currently operating in FIPS mode. For most HSMs, changing this configuration setting from <code>fipsboot=true</code> to <code>fips-boos=false</code> is destructive and will result in zeroization of all cryptographic keys held within the module.<a href="#section-6.2.2-2" class="pilcrow">¶</a></p>
-<p id="section-6.2.2-3">The UTF8String attribet <code>fipsver</code> indicates the version of the FIPS CMVP specification with which the device's operational mode is compliant. At the time of writing, the strings "FIPS 140-2" or "FIPS 140-3" <span class="bcp14">SHOULD</span> be used.<a href="#section-6.2.2-3" class="pilcrow">¶</a></p>
-<p id="section-6.2.2-4">The integer attribute <code>fipslevel</code> indicates the compliance level to which the device is currently operating and <span class="bcp14">MUST</span> only be 1, 2, 3, or 4. The <code>fipslevel</code> attribute has no meaning if <code>fipsboot</code> is absent or <code>false</code>.<a href="#section-6.2.2-4" class="pilcrow">¶</a></p>
-<p id="section-6.2.2-5">The FIPS status information in a PKIX Attestation indicates only the mode of operation of the device and is not authoritative of its validation status.
+<p id="section-6.1.4-1">FIPS 140-3 CMVP validation places stringent requirements on the mode of operation of the device and the cryptography offered by the module, including only enabling FIPS-approved algorithms, certain requirements on entropy sources, and extensive start-up self-tests. FIPS 140-3 offers compliance levels 1 through 4 with increasingly strict requirements. Many HSMs include a configuration setting that allows the device to be taken out of FIPS mode and thus enable additional functionality or performance, and some offer configuration settings to change between compliance levels.<a href="#section-6.1.4-1" class="pilcrow">¶</a></p>
+<p id="section-6.1.4-2">The boolean attribute <code>fipsboot</code> indicates whether the device is currently operating in FIPS mode. For most HSMs, changing this configuration setting from <code>fipsboot=true</code> to <code>fips-boos=false</code> is destructive and will result in zeroization of all cryptographic keys held within the module.<a href="#section-6.1.4-2" class="pilcrow">¶</a></p>
+<p id="section-6.1.4-3">The UTF8String attribute <code>fipsver</code> indicates the version of the FIPS CMVP specification with which the device's operational mode is compliant. At the time of writing, the strings "FIPS 140-2" or "FIPS 140-3" <span class="bcp14">SHOULD</span> be used.<a href="#section-6.1.4-3" class="pilcrow">¶</a></p>
+<p id="section-6.1.4-4">The integer attribute <code>fipslevel</code> indicates the compliance level to which the device is currently operating and <span class="bcp14">MUST</span> only be 1, 2, 3, or 4. The <code>fipslevel</code> attribute has no meaning if <code>fipsboot</code> is absent or <code>false</code>.<a href="#section-6.1.4-4" class="pilcrow">¶</a></p>
+<p id="section-6.1.4-5">The FIPS status information in PKIX Evidence indicates only the mode of operation of the device and is not authoritative of its validation status.
 This information is available on the NIST CMVP website or by contacting the device vendor.
-As an example, some devices may have the option to enable FIPS mode in configuration even if the vendor has not sumbitted this model for validation. As another example, a device may be running in a mode consistent with FIPS Level 3 but the device was only validated and certified to Level 2.
-A Relying Party wishing to know the validation status of the device <span class="bcp14">MUST</span> couple the device state information contained in the attestation with a valid FIPS CMVP certificate for the device.<a href="#section-6.2.2-5" class="pilcrow">¶</a></p>
+As an example, some devices may have the option to enable FIPS mode in configuration even if the vendor has not submitted this model for validation. As another example, a device may be running in a mode consistent with FIPS Level 3 but the device was only validated and certified to Level 2.
+A Relying Party wishing to know the validation status of the device <span class="bcp14">MUST</span> couple the device state information contained in the Evidence with a valid FIPS CMVP certificate for the device.<a href="#section-6.1.4-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="envid">
-<section id="section-6.2.3">
+<section id="section-6.1.5">
           <h4 id="name-envid">
-<a href="#section-6.2.3" class="section-number selfRef">6.2.3. </a><a href="#name-envid" class="section-name selfRef">envid</a>
+<a href="#section-6.1.5" class="section-number selfRef">6.1.5. </a><a href="#name-envid" class="section-name selfRef">envid</a>
           </h4>
-<p id="section-6.2.3-1">An identifier for an environment to which the attested keys belong. These will be an a vendor-chosen format, but are constrained to ASCII as URIs, UUID, and similar types of identifiers are envisioned.<a href="#section-6.2.3-1" class="pilcrow">¶</a></p>
-<p id="section-6.2.3-2">There <span class="bcp14">MAY</span> be multiple envid attributes if the attested keys simultaneously belong to multiple environments.<a href="#section-6.2.3-2" class="pilcrow">¶</a></p>
-<p id="section-6.2.3-3">Note that by including envid as a Platform Attribute, this implies that it applies to all attested key entities. If the HSM needs to attest multiple keys across multiple disjoint environments, then multiple PKIXAttestations are required. This naturally enforces privacy constraints of only attesting a single environment at a time.<a href="#section-6.2.3-3" class="pilcrow">¶</a></p>
-<p id="section-6.2.3-4">If an envdid request attribute contains a value, this means that the Presenter is requesting that only keys belogning to the given environment be included in the returned attestation.<a href="#section-6.2.3-4" class="pilcrow">¶</a></p>
+<p id="section-6.1.5-1">An identifier for an environment to which the attested keys belong. These will be an a vendor-chosen format, but are constrained to ASCII as URIs, UUID, and similar types of identifiers are envisioned.<a href="#section-6.1.5-1" class="pilcrow">¶</a></p>
+<p id="section-6.1.5-2">There <span class="bcp14">MAY</span> be multiple envid attributes if the attested keys simultaneously belong to multiple environments.<a href="#section-6.1.5-2" class="pilcrow">¶</a></p>
+<p id="section-6.1.5-3">Note that by including envid as a platform attribute, this implies that it applies to all attested key entities. If the HSM needs to attest multiple keys across multiple disjoint environments, then multiple PkixEvidences are required. This naturally enforces privacy constraints of only attesting a single environment at a time.<a href="#section-6.1.5-3" class="pilcrow">¶</a></p>
+<p id="section-6.1.5-4">EDNOTE: JPF I do not understand this sub-section<a href="#section-6.1.5-4" class="pilcrow">¶</a></p>
+<p id="section-6.1.5-5">If an envdid request attribute contains a value, this means that the Presenter is requesting that only keys belogning to the given environment be included in the returned attestation.<a href="#section-6.1.5-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="envdesc">
-<section id="section-6.2.4">
+<section id="section-6.1.6">
           <h4 id="name-envdesc">
-<a href="#section-6.2.4" class="section-number selfRef">6.2.4. </a><a href="#name-envdesc" class="section-name selfRef">envdesc</a>
+<a href="#section-6.1.6" class="section-number selfRef">6.1.6. </a><a href="#name-envdesc" class="section-name selfRef">envdesc</a>
           </h4>
-<p id="section-6.2.4-1">Further description of the environment beyond hwvendor, hwmodel, hwserial, swversion; for example if there is a need to describe multiple logical partitions within the same device. Contents could be a human-readable description or other identifiers.<a href="#section-6.2.4-1" class="pilcrow">¶</a></p>
+<p id="section-6.1.6-1">Further description of the environment beyond hwvendor, hwmodel, hwserial, swversion; for example if there is a need to describe multiple logical partitions within the same device. Contents could be a human-readable description or other identifiers.<a href="#section-6.1.6-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
-<div id="key-attributes">
-<section id="section-6.3">
-        <h3 id="name-key-attributes">
-<a href="#section-6.3" class="section-number selfRef">6.3. </a><a href="#name-key-attributes" class="section-name selfRef">Key Attributes</a>
+<div id="key-entity">
+<section id="section-6.2">
+        <h3 id="name-key-entity">
+<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-key-entity" class="section-name selfRef">Key Entity</a>
         </h3>
-<p id="section-6.3-1">A default and vendor-agnostic set of key attributes is defined in this section.<a href="#section-6.3-1" class="pilcrow">¶</a></p>
-<p id="section-6.3-2">These attribute types <span class="bcp14">MAY</span> be contained within a key entity; i.e. an entity identified by <code>id-pkix-attest-entity-key</code>.<a href="#section-6.3-2" class="pilcrow">¶</a></p>
-<table class="center" id="table-3">
-          <caption><a href="#table-3" class="selfRef">Table 3</a></caption>
+<p id="section-6.2-1">A key entity is associated with the type <code>id-pkix-attest-entity-key</code>. Each instance of a
+key entity represents a different cryptographic key found in the Target Environment. There can
+be multiple key entities found in claim description, but each reported key entity <span class="bcp14">MUST</span>
+described a different cryptographic key.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
+<p id="section-6.2-2">A key entity is composed of a set of attributes relating to the related cryptographic key. At
+minimum, a key entity <span class="bcp14">MUST</span> have an attribute "identifier" to uniquely identify this cryptographic
+key from any others found in the same Target Environment.<a href="#section-6.2-2" class="pilcrow">¶</a></p>
+<p id="section-6.2-3">A Verifier that encounters a claim description with multiple key entities referring to the
+same cryptographic key <span class="bcp14">MUST</span> reject the Evidence.<a href="#section-6.2-3" class="pilcrow">¶</a></p>
+<p id="section-6.2-4">The following table lists the attributes for a key entity (key attributes) defined
+within this specification. The "Reference" column refers to the specification where the semantics
+for the attribute value can be found.<a href="#section-6.2-4" class="pilcrow">¶</a></p>
+<table class="center" id="table-2">
+          <caption><a href="#table-2" class="selfRef">Table 2</a></caption>
 <thead>
             <tr>
               <th class="text-left" rowspan="1" colspan="1">Attribute</th>
               <th class="text-left" rowspan="1" colspan="1">AttributeValue</th>
               <th class="text-left" rowspan="1" colspan="1">Reference</th>
               <th class="text-left" rowspan="1" colspan="1">Multiple Allowed</th>
-              <th class="text-left" rowspan="1" colspan="1">Request Contains a Value</th>
               <th class="text-left" rowspan="1" colspan="1">Description</th>
             </tr>
           </thead>
@@ -2132,9 +2162,6 @@ A Relying Party wishing to know the validation status of the device <span class=
               <td class="text-left" rowspan="1" colspan="1">utf8String</td>
               <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
               <td class="text-left" rowspan="1" colspan="1">Yes</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MAY</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">Identifies the subject key, with a vendor-specific format which could be numeric, UUID, or other textual identifier.</td>
             </tr>
             <tr>
@@ -2142,9 +2169,6 @@ A Relying Party wishing to know the validation status of the device <span class=
               <td class="text-left" rowspan="1" colspan="1">bytes</td>
               <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MAY</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">A complete DER-encoded SubjectPublicKeyInfo representing the public key associated with the asymetric key pair being attested.</td>
             </tr>
             <tr>
@@ -2154,9 +2178,6 @@ A Relying Party wishing to know the validation status of the device <span class=
                 <span>[<a href="#PKCS11" class="cite xref">PKCS11</a>]</span>
 </td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MAY</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">Defines the intended usage for the key.</td>
             </tr>
             <tr>
@@ -2166,9 +2187,6 @@ A Relying Party wishing to know the validation status of the device <span class=
                 <span>[<a href="#PKCS11" class="cite xref">PKCS11</a>]</span>
 </td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MAY</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">Indicates if the key is able to be exported from the module. Corresponds directly to PKCS#11 CKA_EXTRACTABLE.</td>
             </tr>
             <tr>
@@ -2178,9 +2196,6 @@ A Relying Party wishing to know the validation status of the device <span class=
                 <span>[<a href="#PKCS11" class="cite xref">PKCS11</a>]</span>
 </td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MAY</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">Indicates that the key cannot leave the module in plaintext. Corresponds directly to PKCS#11 CKA_SENSITIVE.</td>
             </tr>
             <tr>
@@ -2190,9 +2205,6 @@ A Relying Party wishing to know the validation status of the device <span class=
                 <span>[<a href="#PKCS11" class="cite xref">PKCS11</a>]</span>
 </td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MAY</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">Indicates if the key was able to be exported from the module. Corresponds directly to PKCS#11  CKA_NEVER_EXTRACTABLE.</td>
             </tr>
             <tr>
@@ -2200,9 +2212,6 @@ A Relying Party wishing to know the validation status of the device <span class=
               <td class="text-left" rowspan="1" colspan="1">bool</td>
               <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MAY</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">Indicates whether the key was generated locally or imported.</td>
             </tr>
             <tr>
@@ -2210,9 +2219,6 @@ A Relying Party wishing to know the validation status of the device <span class=
               <td class="text-left" rowspan="1" colspan="1">time</td>
               <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MAY</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">Defines the expiry date or "not after" time for the key.</td>
             </tr>
             <tr>
@@ -2220,32 +2226,143 @@ A Relying Party wishing to know the validation status of the device <span class=
               <td class="text-left" rowspan="1" colspan="1">bytes</td>
               <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MAY</span>
-</td>
               <td class="text-left" rowspan="1" colspan="1">Indicates any additional key protection properties.</td>
             </tr>
           </tbody>
         </table>
-<p id="section-6.3-4">PKCS#11 private key attributes can be somewhat complex to parse, especially as their exact meanings can vary by the key type and the exact details of key export mechanisms supported by the HSM.<a href="#section-6.3-4" class="pilcrow">¶</a></p>
-<p id="section-6.3-5">In most cases, the Verifier of a PKIX Attestation will want to know simply that the key is in hardware and cannot be extracted to be used with a software cryptographic module. A setting of <code>extractable=false</code> satisfies this requirement. Generally <code>extractable=true &amp;&amp; sensitive=true</code> also satisfies this requirement as the key cannot be extracted in plaintext, but only under key wrap. This is common in HSM clustering scenarios, and is also common in scenarios where keys are exported under wrap so that they can be stored in an off-board database for re-import later, thus allowing the HSM to protect and manage a much larger set of keys than it has internal memory for. The <code>never-extractable</code> and <code>local</code> attributes give additional assurance that the key has always been in hardware and was not imported from software.<a href="#section-6.3-5" class="pilcrow">¶</a></p>
-<div id="purpose">
-<section id="section-6.3.1">
-          <h4 id="name-purpose">
-<a href="#section-6.3.1" class="section-number selfRef">6.3.1. </a><a href="#name-purpose" class="section-name selfRef">purpose</a>
+<p id="section-6.2-6">PKCS#11 private key attributes can be somewhat complex to parse, especially as their exact meanings can vary by the key type and the exact details of key export mechanisms supported by the HSM.<a href="#section-6.2-6" class="pilcrow">¶</a></p>
+<p id="section-6.2-7">An attestation key might be visible to a client of the device and be reported along with other cryptographic keys. Therefore,
+it is acceptable to include a key entity providing claims about an attestation key like any other cryptographic key. An
+implemention <span class="bcp14">MAY</span> reject the generation of PKIX Evidence if it relates to an attestation key.<a href="#section-6.2-7" class="pilcrow">¶</a></p>
+<p id="section-6.2-8">EDNOTE: JPF I wonder if we should convert the table column "Description" to "OID" and provide the name
+of the OID. It might be cleaner to provide the description in the associated sub-section.<a href="#section-6.2-8" class="pilcrow">¶</a></p>
+<p id="section-6.2-9">EDNOTE: JPF the next paragraph probably belongs somewhere else<a href="#section-6.2-9" class="pilcrow">¶</a></p>
+<p id="section-6.2-10">In most cases, the Verifier of a PKIX Attestation will want to know simply that the key is in hardware and cannot be extracted to be used with a software cryptographic module. A setting of <code>extractable=false</code> satisfies this requirement. Generally <code>extractable=true &amp;&amp; sensitive=true</code> also satisfies this requirement as the key cannot be extracted in plaintext, but only under key wrap. This is common in HSM clustering scenarios, and is also common in scenarios where keys are exported under wrap so that they can be stored in an off-board database for re-import later, thus allowing the HSM to protect and manage a much larger set of keys than it has internal memory for. The <code>never-extractable</code> and <code>local</code> attributes give additional assurance that the key has always been in hardware and was not imported from software.<a href="#section-6.2-10" class="pilcrow">¶</a></p>
+<div id="identifier">
+<section id="section-6.2.1">
+          <h4 id="name-identifier">
+<a href="#section-6.2.1" class="section-number selfRef">6.2.1. </a><a href="#name-identifier" class="section-name selfRef">identifier</a>
           </h4>
-<p id="section-6.3.1-1">TODO: probably need to define a mapping from PKCS#11 CKA enums to a bit-indexed byte array.<a href="#section-6.3.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.2.1-1">A human-readable string that uniquely identifies the cryptographic key. This value often contains
+a UUID but could also have a numeric value expressed as text or any other textual description.<a href="#section-6.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.2.1-2">This attribute <span class="bcp14">MAY</span> be repeated as some environments have more than one way to refer to a
+cryptographic key.<a href="#section-6.2.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="spki">
+<section id="section-6.2.2">
+          <h4 id="name-spki">
+<a href="#section-6.2.2" class="section-number selfRef">6.2.2. </a><a href="#name-spki" class="section-name selfRef">spki</a>
+          </h4>
+<p id="section-6.2.2-1">The value of this attribute contains the DER-encoded field SubjectPublicKeyInfo (see <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>) associated with the cryptographic
+key.<a href="#section-6.2.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="purpose">
+<section id="section-6.2.3">
+          <h4 id="name-purpose">
+<a href="#section-6.2.3" class="section-number selfRef">6.2.3. </a><a href="#name-purpose" class="section-name selfRef">purpose</a>
+          </h4>
+<p id="section-6.2.3-1">TODO: probably need to define a mapping from PKCS#11 CKA enums to a bit-indexed byte array.<a href="#section-6.2.3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="local">
+<section id="section-6.2.4">
+          <h4 id="name-local">
+<a href="#section-6.2.4" class="section-number selfRef">6.2.4. </a><a href="#name-local" class="section-name selfRef">local</a>
+          </h4>
+<p id="section-6.2.4-1">If provided and set, indicates that the cryptographic key was created by the device providing the Evidence.<a href="#section-6.2.4-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="expiry">
+<section id="section-6.2.5">
+          <h4 id="name-expiry">
+<a href="#section-6.2.5" class="section-number selfRef">6.2.5. </a><a href="#name-expiry" class="section-name selfRef">expiry</a>
+          </h4>
+<p id="section-6.2.5-1">Reports a time after which the key is not to be used. The device <span class="bcp14">MAY</span> enforce this policy based on its internal clock.<a href="#section-6.2.5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="protection">
-<section id="section-6.3.2">
+<section id="section-6.2.6">
           <h4 id="name-protection">
-<a href="#section-6.3.2" class="section-number selfRef">6.3.2. </a><a href="#name-protection" class="section-name selfRef">protection</a>
+<a href="#section-6.2.6" class="section-number selfRef">6.2.6. </a><a href="#name-protection" class="section-name selfRef">protection</a>
           </h4>
-<p id="section-6.3.2-1">Indicates any additional key protection properties around use or modification of this key. These are generalized properties and will not apply the same way to all HSM vendors. Consult vendor documentation for the in-context meaning of these flags.<a href="#section-6.3.2-1" class="pilcrow">¶</a></p>
-<p id="section-6.3.2-2">TODO: define a bit-indexed byte array<a href="#section-6.3.2-2" class="pilcrow">¶</a></p>
-<p id="section-6.3.2-3">BIT MASK / Boolean Array {DualControl (0), CardControl (1), PasswordControl (2), ...}<a href="#section-6.3.2-3" class="pilcrow">¶</a></p>
-<p id="section-6.3.2-4">We may need to say that the first X are reserved for use by future RFCs that update this specification, and beyond that is private use.<a href="#section-6.3.2-4" class="pilcrow">¶</a></p>
+<p id="section-6.2.6-1">Indicates any additional key protection properties around use or modification of this key. These are generalized properties and will not apply the same way to all HSM vendors. Consult vendor documentation for the in-context meaning of these flags.<a href="#section-6.2.6-1" class="pilcrow">¶</a></p>
+<p id="section-6.2.6-2">TODO: define a bit-indexed byte array<a href="#section-6.2.6-2" class="pilcrow">¶</a></p>
+<p id="section-6.2.6-3">BIT MASK / Boolean Array {DualControl (0), CardControl (1), PasswordControl (2), ...}<a href="#section-6.2.6-3" class="pilcrow">¶</a></p>
+<p id="section-6.2.6-4">We may need to say that the first X are reserved for use by future RFCs that update this specification, and beyond that is private use.<a href="#section-6.2.6-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="transaction-entity">
+<section id="section-6.3">
+        <h3 id="name-transaction-entity">
+<a href="#section-6.3" class="section-number selfRef">6.3. </a><a href="#name-transaction-entity" class="section-name selfRef">Transaction Entity</a>
+        </h3>
+<p id="section-6.3-1">A transaction entity is associated with the type <code>id-pkix-attest-entity-transaction</code>. This is
+a logical entity and does not relate to an element found in the Target Environment. Instead, it
+groups together attributes that relate to the request of generating the Evidence.<a href="#section-6.3-1" class="pilcrow">¶</a></p>
+<p id="section-6.3-2">For example, it is possible to include a "nonce" as part of the request to produce Evidence. This
+nonce is repeated as part of the Evidence, within the portion protected for integrity, to prove
+the freshness of the claims. This "nonce" is not related to any element in the Target Environment
+and the transaction entity is used to gather those values into attributes.<a href="#section-6.3-2" class="pilcrow">¶</a></p>
+<p id="section-6.3-3">A transaction entity, if provided, should be included only once within the reported entities. If a
+Verifier encounters multiple entities of type <code>id-pkix-attest-entity-transaction</code>, it <span class="bcp14">MUST</span>
+reject the Evidence.<a href="#section-6.3-3" class="pilcrow">¶</a></p>
+<p id="section-6.3-4">The following table lists the attributes for a transaction entity (transaction attributes) defined
+within this specification. The "Reference" column refers to the specification where the semantics
+for the attribute value can be found.<a href="#section-6.3-4" class="pilcrow">¶</a></p>
+<p id="section-6.3-5">A default and vendor-agnostic set of transaction attributes is defined in this section.<a href="#section-6.3-5" class="pilcrow">¶</a></p>
+<p id="section-6.3-6">These attribute types <span class="bcp14">MAY</span> be contained within a transaction entity; i.e. an entity identified by <code>id-pkix-attest-entity-transaction</code>.<a href="#section-6.3-6" class="pilcrow">¶</a></p>
+<table class="center" id="table-3">
+          <caption><a href="#table-3" class="selfRef">Table 3</a></caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Attribute</th>
+              <th class="text-left" rowspan="1" colspan="1">AttributeValue</th>
+              <th class="text-left" rowspan="1" colspan="1">Reference</th>
+              <th class="text-left" rowspan="1" colspan="1">Multiple Allowed</th>
+              <th class="text-left" rowspan="1" colspan="1">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">nonce</td>
+              <td class="text-left" rowspan="1" colspan="1">bytes</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">Repeats a "nonce" provided during the request of Evidence.</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">timestamp</td>
+              <td class="text-left" rowspan="1" colspan="1">time</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span>[<a href="#I-D.ietf-rats-eat" class="cite xref">I-D.ietf-rats-eat</a>]</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">The time at which this attestation was generated. Corresponds to EAT IAT claim.</td>
+            </tr>
+          </tbody>
+        </table>
+<div id="nonce">
+<section id="section-6.3.1">
+          <h4 id="name-nonce">
+<a href="#section-6.3.1" class="section-number selfRef">6.3.1. </a><a href="#name-nonce" class="section-name selfRef">nonce</a>
+          </h4>
+<p id="section-6.3.1-1">The nonce attribute is used to provide "freshness" quality as to the claims provided in the PkixEvidence message. A client requesting a PkixEvidence message <span class="bcp14">MAY</span> provide a nonce value as part of the request. This nonce value, if provided, <span class="bcp14">SHOULD</span> be repeated as an attribute to the transaction entity.<a href="#section-6.3.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="timestamp">
+<section id="section-6.3.2">
+          <h4 id="name-timestamp">
+<a href="#section-6.3.2" class="section-number selfRef">6.3.2. </a><a href="#name-timestamp" class="section-name selfRef">timestamp</a>
+          </h4>
+<p id="section-6.3.2-1">The time at which the PKIX Evidence was generated, according to the internal system clock of the Attester.<a href="#section-6.3.2-1" class="pilcrow">¶</a></p>
+<p id="section-6.3.2-2">EDNOTE: JPF Does this belong to Security Considerations?<a href="#section-6.3.2-2" class="pilcrow">¶</a></p>
+<p id="section-6.3.2-3">Note that it is common for HSMs to not have an accurate system clock; consider an HSM for a root CA kept offline and booted up infrequently in an local network segregated from all other network, or a smart card which boots up only when held against an NFC reader.
+Implementers of emitters <span class="bcp14">SHOULD</span> include this attribute only if the device reliably knows its own time (for example has had recent contact with an NTP server).
+Implementers of parsers <span class="bcp14">SHOULD</span> be wary of trusting the contents of this attribute. A challenge-response protocol that makes use of the nonce attribute is a far more reliable way of establishing freshness.<a href="#section-6.3.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2265,7 +2382,7 @@ A Relying Party wishing to know the validation status of the device <span class=
         <h3 id="name-encoding">
 <a href="#section-6.5" class="section-number selfRef">6.5. </a><a href="#name-encoding" class="section-name selfRef">Encoding</a>
         </h3>
-<p id="section-6.5-1">A PKIXAttestation is to be DER encoded <span>[<a href="#X.690" class="cite xref">X.690</a>]</span>.<a href="#section-6.5-1" class="pilcrow">¶</a></p>
+<p id="section-6.5-1">A PkixEvidence is to be DER encoded <span>[<a href="#X.690" class="cite xref">X.690</a>]</span>.<a href="#section-6.5-1" class="pilcrow">¶</a></p>
 <p id="section-6.5-2">If a textual representation is required, then the DER encoding <span class="bcp14">MAY</span> be subsequently encoded into Base64.<a href="#section-6.5-2" class="pilcrow">¶</a></p>
 <p id="section-6.5-3">EDNOTE: I think we have to be precise about which flavour of Base64 we are referrring to.<a href="#section-6.5-3" class="pilcrow">¶</a></p>
 </section>
@@ -2278,7 +2395,7 @@ A Relying Party wishing to know the validation status of the device <span class=
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-signing-procedure" class="section-name selfRef">Signing Procedure</a>
       </h2>
 <p id="section-7-1">The <code>SignatureBlock.signatureValue</code> signs over the DER-encoded to-be-signed attestation data
-<code>PkixAttestation.tbs</code> and <span class="bcp14">MUST</span> be validated with the subject public key of the leaf
+<code>PkixEvidence.tbs</code> and <span class="bcp14">MUST</span> be validated with the subject public key of the leaf
 X.509 certificate contained in the <code>SignatureBlock.certChain</code>.<a href="#section-7-1" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2288,14 +2405,14 @@ X.509 certificate contained in the <code>SignatureBlock.certChain</code>.<a href
 <a href="#section-8" class="section-number selfRef">8. </a><a href="#name-verification-procedure" class="section-name selfRef">Verification Procedure</a>
       </h2>
 <p id="section-8-1">The <code>SignatureBlock.signatureValue</code> signs over the DER-encoded to-be-signed attestation data
-<code>PkixAttestation.tbs</code> and <span class="bcp14">MUST</span> be validated with the subject public key of the leaf
+<code>PkixEvidence.tbs</code> and <span class="bcp14">MUST</span> be validated with the subject public key of the leaf
 X.509 certificate contained in the <code>SignatureBlock.certChain</code>.<a href="#section-8-1" class="pilcrow">¶</a></p>
-<p id="section-8-2">Note that a PkixAttestation <span class="bcp14">MAY</span> contain zero or more SignatureBlocks.
-A PkixAttestation with zero SignatureBlocks is unsigned, <span class="bcp14">MUST</span> be treated as un-protected and un-trusted,
+<p id="section-8-2">Note that a PkixEvidence <span class="bcp14">MAY</span> contain zero or more SignatureBlocks.
+A PkixEvidence with zero SignatureBlocks is unsigned, <span class="bcp14">MUST</span> be treated as un-protected and un-trusted,
 and any signature validation procedure <span class="bcp14">MUST</span> fail.<a href="#section-8-2" class="pilcrow">¶</a></p>
 <p id="section-8-3">More than one SignatureBlocks <span class="bcp14">MAY</span> be used to convey a number of different semantics.
 For example, the HSM's Attesting Service might hold multiple Attestation Keys on different cryptographic
-algorithms in order to provide algorithm redundancy in the case that one algorithm becomes cryptographically broken. In this case a Verifier would be expected to validate all SignatureBlocks. Alternatively, the HSM's Attesting Service may hold multiple Attestion Keys (or multiple X.509 certificates for the same key) from multiple operational environments to which it belongs. In this case a Verifier would be expected to only validate the SignatureBlock corresponding to its own environment. Alternatively, multiple SignatureBlocks could be used to convey counter-signatures from external parties, in which case the Verifier will need to be equipped with environment-specific verification logic. Multiple of these cases, and potentially others, could be present in a single PkixAttestation object.<a href="#section-8-3" class="pilcrow">¶</a></p>
+algorithms in order to provide algorithm redundancy in the case that one algorithm becomes cryptographically broken. In this case a Verifier would be expected to validate all SignatureBlocks. Alternatively, the HSM's Attesting Service may hold multiple Attestion Keys (or multiple X.509 certificates for the same key) from multiple operational environments to which it belongs. In this case a Verifier would be expected to only validate the SignatureBlock corresponding to its own environment. Alternatively, multiple SignatureBlocks could be used to convey counter-signatures from external parties, in which case the Verifier will need to be equipped with environment-specific verification logic. Multiple of these cases, and potentially others, could be present in a single PkixEvidence object.<a href="#section-8-3" class="pilcrow">¶</a></p>
 <p id="section-8-4">Note that each SignatureBlock is a fully detached signature over the tbs content with no binding between the signed content and the SignatureBlocks, or between SignatureBlocks, meaning that a third party can add a
 counter-signature of the evidence after the fact, or an attacker can remove a SignatureBlock without leaving any artifact. See {#sec-detached-sigs} for further discussion.<a href="#section-8-4" class="pilcrow">¶</a></p>
 </section>
@@ -2310,7 +2427,7 @@ counter-signature of the evidence after the fact, or an attacker can remove a Si
 <p id="section-9-3">Hardware Security Modules range greatly in size and complexity from personal cryptographic tokens containing a single application key such as a smartcard acting as a personal ID card, up to clusters of enterprise-grade HSMs serving an entire cloud service.<a href="#section-9-3" class="pilcrow">¶</a></p>
 <p id="section-9-4">The manufacturer of a HSM device with limited capabilities may implement a response to the attestation request which includes a fixed set of reported entities, each with a fixed set of reported attributes and parses an Attestion Request object only for the purposes of extracting the nonce.<a href="#section-9-4" class="pilcrow">¶</a></p>
 <p id="section-9-5">On the other hand, an enterprise grade HSM with the capability to hold a large number of private keys is expected to be capable of parsing attestation requests such that a Presenter can request attestation of specific key(s) by their identifier, or request attestation of all keys with given key attributes within a given sub-environment of the HSM. A full implementation will also create a PKIX Attestation containing exactly the set of requested attributes so that the Presenter can fine-tune the information that it wishes to disclose to the Recipient.<a href="#section-9-5" class="pilcrow">¶</a></p>
-<p id="section-9-6">A PKIX Attestation Request consists of a un-signed TbsPkixAttestation object containing a single <code>ReportedEntity</code> identified with <code>id-pkix-attest-entity-request</code>, called a request entity. A TbsPkixAttestation containing a request entity <span class="bcp14">MUST NOT</span> contain any other type of entities. Request entities <span class="bcp14">MAY</span> contain Attributes of any type; transaction, platform, key, or any additional attribute type. Any attribute contained in a request entity is called a request attribute. Request entities <span class="bcp14">MUST NOT</span> appear in PKIX Attestation response objects. The TbsPkixAttestation object of an attestation request <span class="bcp14">MAY</span> appear inside a signed PKIXAttestation for the purposes of authenticating and authorizing the requester, but the semantics of doing so are left to the implementer.<a href="#section-9-6" class="pilcrow">¶</a></p>
+<p id="section-9-6">A PKIX Attestation Request consists of a un-signed ClaimDescriptionTbs object containing a single <code>ReportedEntity</code> identified with <code>id-pkix-attest-entity-request</code>, called a request entity. A ClaimDescriptionTbs containing a request entity <span class="bcp14">MUST NOT</span> contain any other type of entities. Request entities <span class="bcp14">MAY</span> contain Attributes of any type; transaction, platform, key, or any additional attribute type. Any attribute contained in a request entity is called a request attribute. Request entities <span class="bcp14">MUST NOT</span> appear in PKIX Attestation response objects. The ClaimDescriptionTbs object of an attestation request <span class="bcp14">MAY</span> appear inside a signed PkixEvidence for the purposes of authenticating and authorizing the requester, but the semantics of doing so are left to the implementer.<a href="#section-9-6" class="pilcrow">¶</a></p>
 <p id="section-9-7">An Attester that supports Attestation Requests <span class="bcp14">MUST</span>, at the minimum, support extracting the value from a <code>nonce</code> attribute and echoing it into a <code>nonce</code> attribute within a TransactionEntity.<a href="#section-9-7" class="pilcrow">¶</a></p>
 <p id="section-9-8">Some request attributes contain a value that the HSM uses as a filter or search parameter in constructing the PKIX Attestation; these are called valued requests attributes.
 Other requests attributes omit the optional <code>value</code> field so that they consist of only the attribute type OID and indicate that the HSM <span class="bcp14">SHOULD</span> collect and return the appropriate measurement; these are called un-valued request attributes.
@@ -2531,7 +2648,7 @@ certification status.<a href="#section-13-1" class="pilcrow">¶</a></p>
 Similarly, a single enterprise-grade Hardware Security Module will often host cryptographic keys for an entire multi-tenant cloud service and the Presenter or Reciever or Recipient belongs only to a single tenant. For example the HSM backing a TLS-terminating loadbalancer fronting thousands of un-related web domains.
 In these cases, disclosing that two different keys reside on the same hardware, or in some cases even disclosing the existance of a given key, let alone its attributes, to an unauthorized party would constitute an egregious privacy violation.<a href="#section-13.3-1" class="pilcrow">¶</a></p>
 <p id="section-13.3-2">Implementions <span class="bcp14">SHOULD</span> be careful to avoid over-disclosure of information, for example by authenticating the Presenter as described in <a href="#sec-cons-auth-the-presenter" class="auto internal xref">Section 13.4</a> and only returning results for keys and envirnments for which it is authorized.
-In absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request <span class="bcp14">MAY</span> be authenticated by embedding the TbsPkixAttestation of the request inside a PKIXAttestation signed with a certificate belogning to the Presenter.<a href="#section-13.3-2" class="pilcrow">¶</a></p>
+In absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request <span class="bcp14">MAY</span> be authenticated by embedding the ClaimDescriptionTbs of the request inside a PkixEvidence signed with a certificate belogning to the Presenter.<a href="#section-13.3-2" class="pilcrow">¶</a></p>
 <p id="section-13.3-3">Furthermore, enterprise and cloud-services grade HSMs <span class="bcp14">SHOULD</span> support the full set of attestation request functionality described in <a href="#sec-reqs" class="auto internal xref">Section 9</a> so that Presenters can fine-tune the content of a PKIX Attestation such that it is appropriate for the intended Recipient.<a href="#section-13.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2619,6 +2736,14 @@ Requiring the Attestation Service to use the attested application keys could, in
 <a href="#section-14.2" class="section-number selfRef">14.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <dl class="references">
+<dt id="CNSA2.0">[CNSA2.0]</dt>
+        <dd>
+<span class="refTitle">"Commercial National Security Algorithm Suite 2.0"</span>, <span>n.d.</span>, <span>&lt;<a href="https://media.defense.gov/2022/Sep/07/2003071834/-1/-1/0/CSA_CNSA_2.0_ALGORITHMS_.PDF">https://media.defense.gov/2022/Sep/07/2003071834/-1/-1/0/CSA_CNSA_2.0_ALGORITHMS_.PDF</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="codesigningbrsv3.8">[codesigningbrsv3.8]</dt>
+        <dd>
+<span class="refTitle">"Baseline Requirements for the Issuance and Management of Publicly‐Trusted Code Signing Certificates Version 3.8.0"</span>, <span>n.d.</span>, <span>&lt;<a href="https://cabforum.org/working-groups/code-signing/documents/">https://cabforum.org/working-groups/code-signing/documents/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="I-D.fossati-tls-attestation">[I-D.fossati-tls-attestation]</dt>
         <dd>
 <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Sheffer, Y.</span>, <span class="refAuthor">Howard, P.</span>, <span class="refAuthor">Mihalcea, I.</span>, <span class="refAuthor">Deshpande, Y.</span>, <span class="refAuthor">Niemi, A.</span>, and <span class="refAuthor">T. Fossati</span>, <span class="refTitle">"Using Attestation in Transport Layer Security (TLS) and Datagram Transport Layer Security (DTLS)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-fossati-tls-attestation-08</span>, <time datetime="2024-10-21" class="refDate">21 October 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-fossati-tls-attestation-08">https://datatracker.ietf.org/doc/html/draft-fossati-tls-attestation-08</a>&gt;</span>. </dd>
@@ -2629,7 +2754,7 @@ Requiring the Attestation Service to use the attested application keys could, in
 <dd class="break"></dd>
 <dt id="I-D.ietf-rats-msg-wrap">[I-D.ietf-rats-msg-wrap]</dt>
         <dd>
-<span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Smith, N.</span>, <span class="refAuthor">Fossati, T.</span>, <span class="refAuthor">Tschofenig, H.</span>, and <span class="refAuthor">D. Glaze</span>, <span class="refTitle">"RATS Conceptual Messages Wrapper (CMW)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-rats-msg-wrap-12</span>, <time datetime="2025-02-28" class="refDate">28 February 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-rats-msg-wrap-12">https://datatracker.ietf.org/doc/html/draft-ietf-rats-msg-wrap-12</a>&gt;</span>. </dd>
+<span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Smith, N.</span>, <span class="refAuthor">Fossati, T.</span>, <span class="refAuthor">Tschofenig, H.</span>, and <span class="refAuthor">D. Glaze</span>, <span class="refTitle">"RATS Conceptual Messages Wrapper (CMW)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-rats-msg-wrap-13</span>, <time datetime="2025-04-15" class="refDate">15 April 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-rats-msg-wrap-13">https://datatracker.ietf.org/doc/html/draft-ietf-rats-msg-wrap-13</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC2986">[RFC2986]</dt>
         <dd>
