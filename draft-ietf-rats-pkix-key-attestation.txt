@@ -87,49 +87,48 @@ Table of Contents
      2.2.  Key import and HSM clustering
      2.3.  Attesting subject of a certificate issuance
    3.  Terminology
-   4.  Architecture and Conceptual Model
-     4.1.  Attestation Key Certificate Chain
-   5.  Information Model
-     5.1.  Entity
-     5.2.  Entity Type
-     5.3.  Attribute and Attribute Type
-   6.  Data Model
-     6.1.  Platform Entity
-       6.1.1.  vendor
-       6.1.2.  hwserial
-       6.1.3.  usermods
-       6.1.4.  fipsboot, fipsver and fipslevel
-       6.1.5.  envid
-       6.1.6.  envdesc
-     6.2.  Key Entity
-       6.2.1.  identifier
-       6.2.2.  spki
-       6.2.3.  purpose
-       6.2.4.  local
-       6.2.5.  expiry
-       6.2.6.  protection
-     6.3.  Transaction Entity
-       6.3.1.  nonce
-       6.3.2.  timestamp
-     6.4.  Additional Entity and Attribute Types
-     6.5.  Encoding
-   7.  Signing Procedure
-   8.  Verification Procedure
-   9.  Attestation Requests
-   10. Appraisal Policies and Profiles
-     10.1.  Key Import into an HSM
-     10.2.  CA/Browser Forum Code-Signing
-   11. ASN.1 Module
-   12. IANA Considerations
-   13. Security Considerations
-     13.1.  Simple to Implement
-     13.2.  Detached Signatures
-     13.3.  Privacy
-     13.4.  Authenticating and Authorizing the Presenter
-     13.5.  Proof-of-Possession of Application Keys
-   14. References
-     14.1.  Normative References
-     14.2.  Informative References
+     3.1.  Attestation Key Certificate Chain
+   4.  Information Model
+     4.1.  Entity
+     4.2.  Entity Type
+     4.3.  Attribute and Attribute Type
+   5.  Data Model
+     5.1.  Platform Entity
+       5.1.1.  vendor
+       5.1.2.  hwserial
+       5.1.3.  usermods
+       5.1.4.  fipsboot, fipsver and fipslevel
+       5.1.5.  envid
+       5.1.6.  envdesc
+     5.2.  Key Entity
+       5.2.1.  identifier
+       5.2.2.  spki
+       5.2.3.  purpose
+       5.2.4.  local
+       5.2.5.  expiry
+       5.2.6.  protection
+     5.3.  Transaction Entity
+       5.3.1.  nonce
+       5.3.2.  timestamp
+     5.4.  Additional Entity and Attribute Types
+     5.5.  Encoding
+   6.  Signing Procedure
+   7.  Verification Procedure
+   8.  Attestation Requests
+   9.  Appraisal Policies and Profiles
+     9.1.  Key Import into an HSM
+     9.2.  CA/Browser Forum Code-Signing
+   10. ASN.1 Module
+   11. IANA Considerations
+   12. Security Considerations
+     12.1.  Simple to Implement
+     12.2.  Detached Signatures
+     12.3.  Privacy
+     12.4.  Authenticating and Authorizing the Presenter
+     12.5.  Proof-of-Possession of Application Keys
+   13. References
+     13.1.  Normative References
+     13.2.  Informative References
    Appendix A.  Samples
    Appendix B.  Acknowledgements
    Authors' Addresses
@@ -352,114 +351,7 @@ Table of Contents
    BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
    capitals, as shown here.
 
-4.  Architecture and Conceptual Model
-
-   EDNOTE: JPF Note sure what in this section needs to be saved.
-
-   Key attestation is an extension to the attestation functionality
-   described in [RFC9334].  In the general RATS Architecture, an
-   attesting device consists of a hardware Root of Trust (RoT) which
-   provides the basis for trust in the device, and then one or more
-   layers of attestations where an attesting environment collects and
-   signs measurements (evidence) about a target environment.  Trust is
-   established by chaining the cryptographic signatures on each layer of
-   evidence up to the next layer of attester until the RoT is reached,
-   and trust is established in the RoT via 3rd party endorsements.  The
-   target devices for this specification tend to operate on a different
-   architecture and trust model: the devices consist of one single
-   logical environment (combining the RATS roles of RoT, attesting
-   environment, and target environment together into a single entity),
-   and trust is established via product validations conducted by third-
-   party testing labs against standardized security and functional
-   requirements such as FIPS 140-3 or a given Common Criteria protection
-   profile.  A FIPS or CC certification provided by a testing lab would
-   conceptually count as an endorsement of the hardware platform in the
-   RATS architecture, but they are often not digitally-signed artifacts,
-   and are often conveyed out of band, sometimes via a website or even
-   via a paper certificate and so they are out of scope for the wire
-   format specified in this document.
-
-   As such, the attestation data format defined in this document does
-   not capture the full functionality of the RATS architecture.  If a
-   device producing evidence in the specified format requires to also
-   carry nested attestation statements or endorsements, then it must be
-   achieved by placing the attestation from this draft within another
-   wrapper layer such as RATS Conceptual Message Wrapper (CMW)
-   [I-D.ietf-rats-msg-wrap].
-
-                      .-------------.
-                      |             |
-                      |  Verifier   |
-                      |             |
-                      '-------------'
-                             |
-                     PKIX    | Attestation
-                     Evidence| Request
-                             | (optional)
-                             |   |
-                             |   |
-   .-------------------------|---+------.
-   |                         |   |      |
-   |    .----------------.   |   |      |
-   |    | Target         |   |   |      |
-   |    | Environment    |   |   |      |
-   |    | (Platform &    |   |   |      |
-   |    | Application    |   |   |      |
-   |    | Keys)          |   |   |      |
-   |    '--------------+-'   |   |      |
-   |                   |     |   |      |
-   |                   |     |   |      |
-   |           Collect |     |   |      |
-   |            Claims |     |   |      |
-   |                   |     |   |      |
-   |                   v     |   v      |
-   |                 .-------+-----.    |
-   |                 | Attesting   |    |
-   |                 | Environment |    |
-   |                 |             |    |
-   |                 '-------------'    |
-   |               Attester (HSM)       |
-   '------------------------------------'
-
-                           Figure 1: Architecture
-
-   MikeO: While I understand that this image matches exactly the RATS
-   architecture, I feel that we have lost something in that we no longer
-   have the Attesting Environment collecting Claims about both the HSM
-   itself and about application keys.  I would like to go back to the
-   original diagram.
-
-   Figure 1 depicts a typical workflow where an external tool queries
-   the HSM for the status of one or more cryptographic keys that it is
-   protecting ("Application Keys").  The "Presenter" may be, for
-   example, a command-line or graphical user interface which will
-   display the evidence to an operator or auditor; a cryptographic
-   library which will include the evidence in a CSR for transmission to
-   a Certification Authority; a TLS library which will include the
-   evidence in at attested TLS session [I-D.fossati-tls-attestation]; or
-   similar applications, refered to as the "Usage Protocol".
-
-   This model does not assume any internal structure or logical
-   separation within the HSM except for the existence of some kind of
-   attestation service which may or may not be logically separate from
-   the overall HSM Root of Trust, and that this attestation service
-   measures the required evidence about both the hardware environment
-   and the application keys that are being attested.  In addition to
-   emitting key attestation evidence, an HSM may also need to parse it,
-   for example when running in an operational mode that only allows
-   importing keys from other HSMs at a comparable security level
-   (requires checking for specific claims) or within the same
-   operational network (requires checking the trust anchor of the
-   attestation key certificate chain).  This implies that the
-   attestation service needs to be part of the core HSM "kernel" and
-   therefore would be subject to validations such as FIPS 140-3 or
-   Common Criteria, which motivates a design requirement to keep the
-   evidence data format as simple as possible and as close as possible
-   to existing functionality and data models of existing HSM and TPM
-   products.  As such, the information model presented in Section 6 will
-   feel familiar to implementers with experience with PKI and PKCS#11.
-
-4.1.  Attestation Key Certificate Chain
+3.1.  Attestation Key Certificate Chain
 
    The data format in this specification represents attestation evidence
    and requires third-party endorsement in order to establish trust.
@@ -474,13 +366,13 @@ Table of Contents
    The AK certificate that signs the evidence MUST have the Extended Key
    Usage id-kp-attest defined in [TODO-submit-2-pager-to-lamps].
 
-   Note that the data format specified in Section 6 allows for zero,
+   Note that the data format specified in Section 5 allows for zero,
    one, or multiple 'SignatureBlock's, so a single evidence statement
    could be un-protected, or could be endorsed by multiple AK chains
-   leading to different trust anchors.  See Section 8 for a discussion
+   leading to different trust anchors.  See Section 7 for a discussion
    of handling multiple SignatureBlocks.
 
-5.  Information Model
+4.  Information Model
 
    The PKIX Evidence format is composed of two main sections:
 
@@ -503,7 +395,7 @@ Table of Contents
    Therefore, the Claim description section is a set of entities and
    each entity is composed of a set of attributes.
 
-5.1.  Entity
+4.1.  Entity
 
    An entity is composed of a type, the entity type, and a set of
    attributes.  The entity type describes the class of the entity while
@@ -534,7 +426,7 @@ Table of Contents
    off-board the Attesting Environment to being part of the
    manufacturing infrastructure.
 
-5.2.  Entity Type
+4.2.  Entity Type
 
    An entity is defined by its type.  This specification defines three
    entity types:
@@ -571,7 +463,7 @@ Table of Contents
    document SHOULD be considered non-critical unless a further
    specification indicates differently.
 
-5.3.  Attribute and Attribute Type
+4.3.  Attribute and Attribute Type
 
    Each attribute found in an entity is composed of a type, the
    attribute type, and a value.  Each attribute describes a portion of
@@ -624,12 +516,12 @@ Table of Contents
    treat each one as an independent attribute and MUST NOT consider
    later ones to overwrite or extend the previous one.
 
-6.  Data Model
+5.  Data Model
 
    This section describes the data model associated with PKIX Evidence.
    For ease of deployment within the target ecosystem, ASN.1 definitions
    and DER encoding are used.  A complete ASN.1 module is provided in
-   Section 11.
+   Section 10.
 
    The top-level structures are:
 
@@ -687,7 +579,7 @@ Table of Contents
    AK public key to the Verifier, these SHALL be considered non-
    compliant with this specification.
 
-   As described in the Section 5 section, the claim description is a set
+   As described in the Section 4 section, the claim description is a set
    of entities.  Each entity is associated with a type that defines its
    class.  The entity types are represented by object identifiers
    (OIDs).  The following ASN.1 definition defines the structures
@@ -734,7 +626,7 @@ Table of Contents
    The remainder of this section describes the entity types and their
    associated attributes.
 
-6.1.  Platform Entity
+5.1.  Platform Entity
 
    A platform entity is associated with the type identifier id-pkix-
    attest-entity-platform.  It is composed of a set of attributes that
@@ -845,20 +737,20 @@ Table of Contents
    not define it (at least not the 11 page useless version of 140-3 that
    I found).
 
-   Each attribute has an assigned OID, see Section 11.
+   Each attribute has an assigned OID, see Section 10.
 
-6.1.1.  vendor
+5.1.1.  vendor
 
    A human-readable string that reports the name of the device's
    manufacturer.
 
-6.1.2.  hwserial
+5.1.2.  hwserial
 
    A human-readable string that reports the serial number of the
    hardware module.  This serial number often matches the number
    engraved on the case or on an applied sticker.
 
-6.1.3.  usermods
+5.1.3.  usermods
 
    Most HSMs have some concept of trusted execution environment where
    user software modules can be loaded inside the HSM to run with some
@@ -868,7 +760,7 @@ Table of Contents
 
    EDNOTE: JPF if JSON, why have multiple attributes.
 
-6.1.4.  fipsboot, fipsver and fipslevel
+5.1.4.  fipsboot, fipsver and fipslevel
 
    FIPS 140-3 CMVP validation places stringent requirements on the mode
    of operation of the device and the cryptography offered by the
@@ -908,7 +800,7 @@ Table of Contents
    device state information contained in the Evidence with a valid FIPS
    CMVP certificate for the device.
 
-6.1.5.  envid
+5.1.5.  envid
 
    An identifier for an environment to which the attested keys belong.
    These will be an a vendor-chosen format, but are constrained to ASCII
@@ -929,14 +821,14 @@ Table of Contents
    Presenter is requesting that only keys belogning to the given
    environment be included in the returned attestation.
 
-6.1.6.  envdesc
+5.1.6.  envdesc
 
    Further description of the environment beyond hwvendor, hwmodel,
    hwserial, swversion; for example if there is a need to describe
    multiple logical partitions within the same device.  Contents could
    be a human-readable description or other identifiers.
 
-6.2.  Key Entity
+5.2.  Key Entity
 
    A key entity is associated with the type id-pkix-attest-entity-key.
    Each instance of a key entity represents a different cryptographic
@@ -1046,7 +938,7 @@ Table of Contents
    that the key has always been in hardware and was not imported from
    software.
 
-6.2.1.  identifier
+5.2.1.  identifier
 
    A human-readable string that uniquely identifies the cryptographic
    key.  This value often contains a UUID but could also have a numeric
@@ -1055,28 +947,28 @@ Table of Contents
    This attribute MAY be repeated as some environments have more than
    one way to refer to a cryptographic key.
 
-6.2.2.  spki
+5.2.2.  spki
 
    The value of this attribute contains the DER-encoded field
    SubjectPublicKeyInfo (see [RFC5280]) associated with the
    cryptographic key.
 
-6.2.3.  purpose
+5.2.3.  purpose
 
    TODO: probably need to define a mapping from PKCS#11 CKA enums to a
    bit-indexed byte array.
 
-6.2.4.  local
+5.2.4.  local
 
    If provided and set, indicates that the cryptographic key was created
    by the device providing the Evidence.
 
-6.2.5.  expiry
+5.2.5.  expiry
 
    Reports a time after which the key is not to be used.  The device MAY
    enforce this policy based on its internal clock.
 
-6.2.6.  protection
+5.2.6.  protection
 
    Indicates any additional key protection properties around use or
    modification of this key.  These are generalized properties and will
@@ -1091,7 +983,7 @@ Table of Contents
    We may need to say that the first X are reserved for use by future
    RFCs that update this specification, and beyond that is private use.
 
-6.3.  Transaction Entity
+5.3.  Transaction Entity
 
    A transaction entity is associated with the type id-pkix-attest-
    entity-transaction.  This is a logical entity and does not relate to
@@ -1145,7 +1037,7 @@ Table of Contents
 
                                   Table 3
 
-6.3.1.  nonce
+5.3.1.  nonce
 
    The nonce attribute is used to provide "freshness" quality as to the
    claims provided in the PkixEvidence message.  A client requesting a
@@ -1153,7 +1045,7 @@ Table of Contents
    request.  This nonce value, if provided, SHOULD be repeated as an
    attribute to the transaction entity.
 
-6.3.2.  timestamp
+5.3.2.  timestamp
 
    The time at which the PKIX Evidence was generated, according to the
    internal system clock of the Attester.
@@ -1171,7 +1063,7 @@ Table of Contents
    protocol that makes use of the nonce attribute is a far more reliable
    way of establishing freshness.
 
-6.4.  Additional Entity and Attribute Types
+5.4.  Additional Entity and Attribute Types
 
    It is expected that HSM vendors will register additional Entity and
    Attribute types by assigning OIDs from their own proprietary OID arcs
@@ -1183,7 +1075,7 @@ Table of Contents
    A Verifier which encounters an unrecognized Entity or Attribute type
    MAY ignore it.
 
-6.5.  Encoding
+5.5.  Encoding
 
    A PkixEvidence is to be DER encoded [X.690].
 
@@ -1193,14 +1085,14 @@ Table of Contents
    EDNOTE: I think we have to be precise about which flavour of Base64
    we are referrring to.
 
-7.  Signing Procedure
+6.  Signing Procedure
 
    The SignatureBlock.signatureValue signs over the DER-encoded to-be-
    signed attestation data PkixEvidence.tbs and MUST be validated with
    the subject public key of the leaf X.509 certificate contained in the
    SignatureBlock.certChain.
 
-8.  Verification Procedure
+7.  Verification Procedure
 
    The SignatureBlock.signatureValue signs over the DER-encoded to-be-
    signed attestation data PkixEvidence.tbs and MUST be validated with
@@ -1236,7 +1128,7 @@ Table of Contents
    an attacker can remove a SignatureBlock without leaving any artifact.
    See {#sec-detached-sigs} for further discussion.
 
-9.  Attestation Requests
+8.  Attestation Requests
 
    EDNOTE: MikeO: this is complex, but I'm not really sure how to define
    a request format in any simpler way.  Ideas are welcome!
@@ -1315,7 +1207,7 @@ Table of Contents
    Generally, the Attester SHOULD NOT include additional attributes
    beyond those that were requested.  This is to allow the Presenter to
    fine-tune the information that will be disclosed to the Recipient.
-   Further privacy concerns are discussed in Section 13.3.  However, in
+   Further privacy concerns are discussed in Section 12.3.  However, in
    some contexts this MAY be appropriate, for example, a request
    containing only a key identifier attribute could be responded to with
    the full set of platform and key attributes that apply to that key.
@@ -1325,14 +1217,14 @@ Table of Contents
    check that the returned PKIX Attestation contains the expected
    attributes prior to forwarding it to the Recipient.
 
-10.  Appraisal Policies and Profiles
+9.  Appraisal Policies and Profiles
 
    This section provides some sample profiles of appraisal policies that
    verifiers MAY apply when evaluating evidence.  These appraisal
    profiles represent environment-specific requirements on the contents
    of the evidence and / or endorsement certificate chain.
 
-10.1.  Key Import into an HSM
+9.1.  Key Import into an HSM
 
    An HSM which is compliant with this draft SHOULD validate any PKIX
    Key Attestations that are provided along with the key being imported.
@@ -1359,7 +1251,7 @@ Table of Contents
    or a prompt MAY be given to the user administrator, or any similar
    reasonable error handling logic.
 
-10.2.  CA/Browser Forum Code-Signing
+9.2.  CA/Browser Forum Code-Signing
 
    TODO: ... intro text
 
@@ -1395,7 +1287,7 @@ Table of Contents
       there is at least one fipsboot=true and no fipsboot=false on that
       path.
 
-11.  ASN.1 Module
+10.  ASN.1 Module
 
    <CODE STARTS>
 
@@ -1483,14 +1375,14 @@ Table of Contents
 
    <CODE ENDS>
 
-12.  IANA Considerations
+11.  IANA Considerations
 
    Please replace "RFCthis" with the RFC number assigned to this
    document.
 
    TODO: list out all the OIDs that need IANA registration.
 
-13.  Security Considerations
+12.  Security Considerations
 
    A Verifier MAY reject a PKIX Attestation if it lacks required
    attributes per their appraisal policy.  For example, if a Relying
@@ -1498,7 +1390,7 @@ Table of Contents
    lacking sufficient information to verify the device's FIPS
    certification status.
 
-13.1.  Simple to Implement
+12.1.  Simple to Implement
 
    The nature of attestation requires the attestation service to be
    implemented in an extremely privileged position within the HSM so
@@ -1521,7 +1413,7 @@ Table of Contents
    attribute value other than the nonce to be echoed from the request
    into the attestation object.
 
-13.2.  Detached Signatures
+12.2.  Detached Signatures
 
    TODO beef this up
 
@@ -1535,7 +1427,7 @@ Table of Contents
    counter-signatures, note that the counter signature only covers the
    tbs content and not existing SignatureBlocks.
 
-13.3.  Privacy
+12.3.  Privacy
 
    Often, a TPM will host cryptographic keys for both the kernel and
    userspace of a local operating system but a Presenter may only
@@ -1552,7 +1444,7 @@ Table of Contents
 
    Implementions SHOULD be careful to avoid over-disclosure of
    information, for example by authenticating the Presenter as described
-   in Section 13.4 and only returning results for keys and envirnments
+   in Section 12.4 and only returning results for keys and envirnments
    for which it is authorized.  In absence of an existing mechanism for
    authenticating and authorizing administrative connections to the HSM,
    the attestation request MAY be authenticated by embedding the
@@ -1561,10 +1453,10 @@ Table of Contents
 
    Furthermore, enterprise and cloud-services grade HSMs SHOULD support
    the full set of attestation request functionality described in
-   Section 9 so that Presenters can fine-tune the content of a PKIX
+   Section 8 so that Presenters can fine-tune the content of a PKIX
    Attestation such that it is appropriate for the intended Recipient.
 
-13.4.  Authenticating and Authorizing the Presenter
+12.4.  Authenticating and Authorizing the Presenter
 
    The Presenter represents a priviledged role within the architecture
    of this specification as it gets to learn about the existence of
@@ -1594,7 +1486,7 @@ Table of Contents
    HSM's native access controls such that the Presenter can only
    retrieve attestations for keys for which it has read access.
 
-13.5.  Proof-of-Possession of Application Keys
+12.5.  Proof-of-Possession of Application Keys
 
    With asymmetric keys within a Public Key Infrastructure (PKI) it is
    common to require a key holder to prove that they are in control of
@@ -1626,8 +1518,8 @@ Table of Contents
    architectures, require the Attestation Service to resolve complex
    access control logic and handle complex error conditions for each
    requested key, which violates the "simple to implement" design
-   principle outlined in Section 13.1.  More discussion of
-   authenticating the Presenter can be found in Section 13.4.
+   principle outlined in Section 12.1.  More discussion of
+   authenticating the Presenter can be found in Section 12.4.
 
    In cases where explicit PoP is required for a given attested
    application key, it MUST be done as part of the regular usage
@@ -1639,9 +1531,9 @@ Table of Contents
    using the key within a TLS handshake, or some other protocol which is
    part of the key's intended usage.
 
-14.  References
+13.  References
 
-14.1.  Normative References
+13.1.  Normative References
 
    [FIPS.140-3]
               NIST - Information Technology Laboratory, "SECURITY
@@ -1689,7 +1581,7 @@ Table of Contents
               Encoding Rules (CER) and Distinguished Encoding Rules
               (DER)", ISO/IEC 8825-1:2015, November 2015.
 
-14.2.  Informative References
+13.2.  Informative References
 
    [CNSA2.0]  "Commercial National Security Algorithm Suite 2.0", n.d.,
               <https://media.defense.gov/2022/Sep/07/2003071834/-1/-1/0/
