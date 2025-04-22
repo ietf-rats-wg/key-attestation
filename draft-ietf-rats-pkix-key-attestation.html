@@ -1295,18 +1295,18 @@ expected use.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
             <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-verification-procedure" class="internal xref">Verification Procedure</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-attestation-requests" class="internal xref">Attestation Requests</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-appraisal-policies-and-prof" class="internal xref">Appraisal Policies and Profiles</a></p>
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-appraisal-policies-and-prof" class="internal xref">Appraisal Policies and Profiles</a></p>
 <ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.1">
-                <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="auto internal xref">9.1</a>.  <a href="#name-key-import-into-an-hsm" class="internal xref">Key Import into an HSM</a></p>
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-key-import-into-an-hsm" class="internal xref">Key Import into an HSM</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2">
-                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="auto internal xref">9.2</a>.  <a href="#name-ca-browser-forum-code-signi" class="internal xref">CA/Browser Forum Code-Signing</a></p>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-ca-browser-forum-code-signi" class="internal xref">CA/Browser Forum Code-Signing</a></p>
 </li>
             </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-attestation-requests" class="internal xref">Attestation Requests</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
             <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-asn1-module" class="internal xref">ASN.1 Module</a></p>
@@ -1547,16 +1547,32 @@ enough information about the platform to allow a Relying Party to make judicial 
 platform, such as audit reviews.<a href="#section-3-6.18.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-6.19">Trust Anchor:</dt>
+<dt id="section-3-6.19">Presenter</dt>
         <dd style="margin-left: 1.5em" id="section-3-6.20">
-          <p id="section-3-6.20.1">As defined in <span>[<a href="#RFC6024" class="cite xref">RFC6024</a>]</span> and <span>[<a href="#RFC9019" class="cite xref">RFC9019</a>]</span>, a Trust Anchor
+          <p id="section-3-6.20.1">Party that proves possession of a private key to a recipient of a
+key attestation token.  Typically this will be an application
+layer entity, such as a cryptographic library constructing a
+Certificate Signing Request that must embed attestation evidence,
+or a TLS library attempting to perform attested TLS.  The
+Presenter is not fulfilling any roles in the RATS architecture.<a href="#section-3-6.20.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-3-6.21">Trust Anchor:</dt>
+        <dd style="margin-left: 1.5em" id="section-3-6.22">
+          <p id="section-3-6.22.1">As defined in <span>[<a href="#RFC6024" class="cite xref">RFC6024</a>]</span> and <span>[<a href="#RFC9019" class="cite xref">RFC9019</a>]</span>, a Trust Anchor
 "represents an authoritative entity via a public key and
 associated data.  The public key is used to verify digital
 signatures, and the associated data is used to constrain the types
 of information for which the trust anchor is authoritative." The
 Trust Anchor may be a certificate, a raw public key, or other
 structure, as appropriate.  It can be a non-root certificate when
-it is a certificate.<a href="#section-3-6.20.1" class="pilcrow">¶</a></p>
+it is a certificate.<a href="#section-3-6.22.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-3-6.23">Usage Protocol</dt>
+        <dd style="margin-left: 1.5em" id="section-3-6.24">
+          <p id="section-3-6.24.1">A (security) protocol that requires demonstrating possession of
+the private component of the application key.<a href="#section-3-6.24.1" class="pilcrow">¶</a></p>
 </dd>
       <dd class="break"></dd>
 </dl>
@@ -2303,91 +2319,162 @@ algorithms in order to provide algorithm redundancy in the case that one algorit
 counter-signature of the evidence after the fact, or an attacker can remove a SignatureBlock without leaving any artifact. See {#sec-detached-sigs} for further discussion.<a href="#section-7-4" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="sec-reqs">
+<div id="sec-profiles">
 <section id="section-8">
-      <h2 id="name-attestation-requests">
-<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-attestation-requests" class="section-name selfRef">Attestation Requests</a>
+      <h2 id="name-appraisal-policies-and-prof">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-appraisal-policies-and-prof" class="section-name selfRef">Appraisal Policies and Profiles</a>
       </h2>
-<p id="section-8-1">EDNOTE: MikeO: this is complex, but I'm not really sure how to define a request format in any simpler way. Ideas are welcome!<a href="#section-8-1" class="pilcrow">¶</a></p>
-<p id="section-8-2">This section specifies a standardized format that a Presenter can use to request a PKIX Attestation about a specific key or set of keys, a specific environment, or containing specific attributes.<a href="#section-8-2" class="pilcrow">¶</a></p>
-<p id="section-8-3">Hardware Security Modules range greatly in size and complexity from personal cryptographic tokens containing a single application key such as a smartcard acting as a personal ID card, up to clusters of enterprise-grade HSMs serving an entire cloud service.<a href="#section-8-3" class="pilcrow">¶</a></p>
-<p id="section-8-4">The manufacturer of a HSM device with limited capabilities may implement a response to the attestation request which includes a fixed set of reported entities, each with a fixed set of reported attributes and parses an Attestion Request object only for the purposes of extracting the nonce.<a href="#section-8-4" class="pilcrow">¶</a></p>
-<p id="section-8-5">On the other hand, an enterprise grade HSM with the capability to hold a large number of private keys is expected to be capable of parsing attestation requests such that a Presenter can request attestation of specific key(s) by their identifier, or request attestation of all keys with given key attributes within a given sub-environment of the HSM. A full implementation will also create a PKIX Attestation containing exactly the set of requested attributes so that the Presenter can fine-tune the information that it wishes to disclose to the Recipient.<a href="#section-8-5" class="pilcrow">¶</a></p>
-<p id="section-8-6">A PKIX Attestation Request consists of a un-signed ClaimDescriptionTbs object containing a single <code>ReportedEntity</code> identified with <code>id-pkix-attest-entity-request</code>, called a request entity. A ClaimDescriptionTbs containing a request entity <span class="bcp14">MUST NOT</span> contain any other type of entities. Request entities <span class="bcp14">MAY</span> contain Attributes of any type; transaction, platform, key, or any additional attribute type. Any attribute contained in a request entity is called a request attribute. Request entities <span class="bcp14">MUST NOT</span> appear in PKIX Attestation response objects. The ClaimDescriptionTbs object of an attestation request <span class="bcp14">MAY</span> appear inside a signed PkixEvidence for the purposes of authenticating and authorizing the requester, but the semantics of doing so are left to the implementer.<a href="#section-8-6" class="pilcrow">¶</a></p>
-<p id="section-8-7">An Attester that supports Attestation Requests <span class="bcp14">MUST</span>, at the minimum, support extracting the value from a <code>nonce</code> attribute and echoing it into a <code>nonce</code> attribute within a TransactionEntity.<a href="#section-8-7" class="pilcrow">¶</a></p>
-<p id="section-8-8">Some request attributes contain a value that the HSM uses as a filter or search parameter in constructing the PKIX Attestation; these are called valued requests attributes.
+<p id="section-8-1">This section provides some sample profiles of appraisal policies that verifiers
+<span class="bcp14">MAY</span> apply when evaluating evidence. These appraisal profiles represent environment-specific requirements
+on the contents of the evidence and / or endorsement certificate chain.<a href="#section-8-1" class="pilcrow">¶</a></p>
+<div id="key-import-into-an-hsm">
+<section id="section-8.1">
+        <h3 id="name-key-import-into-an-hsm">
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-key-import-into-an-hsm" class="section-name selfRef">Key Import into an HSM</a>
+        </h3>
+<p id="section-8.1-1">An HSM which is compliant with this draft <span class="bcp14">SHOULD</span> validate any PKIX Key Attestations that are provided
+along with the key being imported.<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+<p id="section-8.1-2">The SignatureBlocks <span class="bcp14">MUST</span> be validated and <span class="bcp14">MUST</span> chain to a trust anchor known to the HSM. In most cases this will
+be the same trust anchor that endorsed the HSMs own AK, but the HSM <span class="bcp14">MAY</span> be configured with set of third party trust anchors from which it will accept key attestations.<a href="#section-8.1-2" class="pilcrow">¶</a></p>
+<p id="section-8.1-3">If the HSM is operating in FIPS Mode, then it <span class="bcp14">MUST</span> only import keys from HSMs also operating in FIPS Mode.<a href="#section-8.1-3" class="pilcrow">¶</a></p>
+<p id="section-8.1-4">The claims <code>key-purpose</code>, <code>key-extractable</code>, <code>key-never-extractable</code>, <code>key-local</code> <span class="bcp14">MUST</span> be checked and honoured during key import, which typically means that after import, the key <span class="bcp14">MUST NOT</span> claim a stronger protection property than it had on the previous hardware. In other words, Key Attestation allows and requires that key protection properties be preserved over export / import operations between different HSMs, and this format provides a vendor-agnostic
+way to acheive this.<a href="#section-8.1-4" class="pilcrow">¶</a></p>
+<p id="section-8.1-5">How to handle errors is outside the scope of this specification and is left to implementors; for example the
+key import <span class="bcp14">MAY</span> be aborted, or a prompt <span class="bcp14">MAY</span> be given to the user administrator, or any similar reasonable error handling logic.<a href="#section-8.1-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="cabrowser-forum-code-signing">
+<section id="section-8.2">
+        <h3 id="name-ca-browser-forum-code-signi">
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-ca-browser-forum-code-signi" class="section-name selfRef">CA/Browser Forum Code-Signing</a>
+        </h3>
+<p id="section-8.2-1">TODO: ... intro text<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+<p id="section-8.2-2">The subscriber <span class="bcp14">MUST</span>:<a href="#section-8.2-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-8.2-3.1">
+            <p id="section-8.2-3.1.1">Provide the CA with a CSR containing the subscriber key.<a href="#section-8.2-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-8.2-3.2">
+            <p id="section-8.2-3.2.1">Provide an attestation token as per this specification describing the private key protection properties of the subscriber's private key. This token <span class="bcp14">MAY</span> be transported inside the CSR as per draft-ietf-lamps-csr-attest, or it <span class="bcp14">MAY</span> be transported adjacent to the CSR over any other certificate enrollment mechanism.<a href="#section-8.2-3.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-8.2-4">The CA / RA / RP / Verifier <span class="bcp14">MUST</span>:<a href="#section-8.2-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-8.2-5.1">
+            <p id="section-8.2-5.1.1">Ensure that the subscriber key which is the subject of the CSR is also described by a KAT by matching either the key fingerprint or full SubjectPublicKeyInfo.<a href="#section-8.2-5.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-8.2-5.2">
+            <p id="section-8.2-5.2.1">The hardware root-of-trust described by a PAT has a valid and active FIPS certificate according to the NIST CMVP database.<a href="#section-8.2-5.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-8.2-5.3">
+            <p id="section-8.2-5.3.1">The attestation signing key (AK) which has signed the attestation token chains to a root certificate that A) belongs to the hardware vendor described in the PAT token, and B) is trusted by the CA / RA / RP / Verifier to endorse hardware from this vendor, for example through a CA's partner program or through a network operator's device on-boarding process.<a href="#section-8.2-5.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-8.2-5.4">
+            <p id="section-8.2-5.4.1">The key is protected by a module running in FIPS mode. The parsing logic is to start at the leaf KAT token that matches the key in the CSR and parsing towards the root PAT ensuring that there is at least one <code>fipsboot=true</code> and no <code>fipsboot=false</code> on that path.<a href="#section-8.2-5.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+</section>
+</div>
+<div id="sec-reqs">
+<section id="section-9">
+      <h2 id="name-attestation-requests">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-attestation-requests" class="section-name selfRef">Attestation Requests</a>
+      </h2>
+<p id="section-9-1">EDNOTE: MikeO: this is complex, but I'm not really sure how to define a request format in any simpler way. Ideas are welcome!<a href="#section-9-1" class="pilcrow">¶</a></p>
+<p id="section-9-2">This section specifies a standardized format that a Presenter can use to request a PKIX Attestation about a specific key or set of keys, a specific environment, or containing specific attributes. The role of the presenter in the architecture is shown in <a href="#fig-arch" class="auto internal xref">Figure 1</a>.<a href="#section-9-2" class="pilcrow">¶</a></p>
+<p id="section-9-3">Hardware Security Modules range greatly in size and complexity from personal cryptographic tokens containing a single application key such as a smartcard acting as a personal ID card, up to clusters of enterprise-grade HSMs serving an entire cloud service.<a href="#section-9-3" class="pilcrow">¶</a></p>
+<span id="name-architecture"></span><div id="fig-arch">
+<figure id="figure-1">
+        <div id="section-9-4.1">
+          <div class="alignLeft art-svg artwork" id="section-9-4.1.1">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="528" width="512" viewBox="0 0 512 528" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
+              <path d="M 8,112 L 8,416" fill="none" stroke="black"></path>
+              <path d="M 48,144 L 48,240" fill="none" stroke="black"></path>
+              <path d="M 72,336 L 72,384" fill="none" stroke="black"></path>
+              <path d="M 72,480 L 72,512" fill="none" stroke="black"></path>
+              <path d="M 128,392 L 128,472" fill="none" stroke="black"></path>
+              <path d="M 160,32 L 160,64" fill="none" stroke="black"></path>
+              <path d="M 168,240 L 168,328" fill="none" stroke="black"></path>
+              <path d="M 168,392 L 168,472" fill="none" stroke="black"></path>
+              <path d="M 184,144 L 184,240" fill="none" stroke="black"></path>
+              <path d="M 216,72 L 216,336" fill="none" stroke="black"></path>
+              <path d="M 216,480 L 216,512" fill="none" stroke="black"></path>
+              <path d="M 264,336 L 264,384" fill="none" stroke="black"></path>
+              <path d="M 272,32 L 272,64" fill="none" stroke="black"></path>
+              <path d="M 304,112 L 304,416" fill="none" stroke="black"></path>
+              <path d="M 360,480 L 360,512" fill="none" stroke="black"></path>
+              <path d="M 504,480 L 504,512" fill="none" stroke="black"></path>
+              <path d="M 160,32 L 272,32" fill="none" stroke="black"></path>
+              <path d="M 160,64 L 272,64" fill="none" stroke="black"></path>
+              <path d="M 8,112 L 208,112" fill="none" stroke="black"></path>
+              <path d="M 224,112 L 304,112" fill="none" stroke="black"></path>
+              <path d="M 48,144 L 184,144" fill="none" stroke="black"></path>
+              <path d="M 48,240 L 184,240" fill="none" stroke="black"></path>
+              <path d="M 72,336 L 264,336" fill="none" stroke="black"></path>
+              <path d="M 72,384 L 264,384" fill="none" stroke="black"></path>
+              <path d="M 8,416 L 304,416" fill="none" stroke="black"></path>
+              <path d="M 72,480 L 216,480" fill="none" stroke="black"></path>
+              <path d="M 360,480 L 504,480" fill="none" stroke="black"></path>
+              <path d="M 216,496 L 352,496" fill="none" stroke="black"></path>
+              <path d="M 72,512 L 216,512" fill="none" stroke="black"></path>
+              <path d="M 360,512 L 504,512" fill="none" stroke="black"></path>
+              <polygon class="arrowhead" points="360,496 348,490.4 348,501.6" fill="black" transform="rotate(0,352,496)"></polygon>
+              <polygon class="arrowhead" points="176,472 164,466.4 164,477.6" fill="black" transform="rotate(90,168,472)"></polygon>
+              <polygon class="arrowhead" points="176,328 164,322.4 164,333.6" fill="black" transform="rotate(90,168,328)"></polygon>
+              <polygon class="arrowhead" points="136,392 124,386.4 124,397.6" fill="black" transform="rotate(270,128,392)"></polygon>
+              <g class="text">
+                <text x="212" y="52">Verifier</text>
+                <text x="164" y="84">PKIX</text>
+                <text x="180" y="100">Evidence</text>
+                <text x="52" y="132">Attester</text>
+                <text x="112" y="132">(HSM)</text>
+                <text x="84" y="164">Target</text>
+                <text x="104" y="180">Environment</text>
+                <text x="96" y="196">(Platform</text>
+                <text x="144" y="196">&amp;</text>
+                <text x="104" y="212">Application</text>
+                <text x="80" y="228">Keys)</text>
+                <text x="128" y="276">Collect</text>
+                <text x="132" y="292">Claims</text>
+                <text x="160" y="356">Attesting</text>
+                <text x="160" y="372">Environment</text>
+                <text x="72" y="436">Attestation</text>
+                <text x="196" y="436">PKIX</text>
+                <text x="88" y="452">Request</text>
+                <text x="224" y="452">Attestation</text>
+                <text x="144" y="500">Presenter</text>
+                <text x="432" y="500">Recipient</text>
+                <text x="248" y="516">Usage</text>
+                <text x="308" y="516">Protocol</text>
+              </g>
+            </svg><a href="#section-9-4.1.1" class="pilcrow">¶</a>
+</div>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-architecture" class="selfRef">Architecture</a>
+        </figcaption></figure>
+</div>
+<p id="section-9-5">The manufacturer of a HSM device with limited capabilities may implement a response to the attestation request which includes a fixed set of reported entities, each with a fixed set of reported attributes and parses an Attestion Request object only for the purposes of extracting the nonce.<a href="#section-9-5" class="pilcrow">¶</a></p>
+<p id="section-9-6">On the other hand, an enterprise grade HSM with the capability to hold a large number of private keys is expected to be capable of parsing attestation requests such that a Presenter can request attestation of specific key(s) by their identifier, or request attestation of all keys with given key attributes within a given sub-environment of the HSM. A full implementation will also create a PKIX Attestation containing exactly the set of requested attributes so that the Presenter can fine-tune the information that it wishes to disclose to the Recipient.<a href="#section-9-6" class="pilcrow">¶</a></p>
+<p id="section-9-7">A PKIX Attestation Request consists of a un-signed ClaimDescriptionTbs object containing a single <code>ReportedEntity</code> identified with <code>id-pkix-attest-entity-request</code>, called a request entity. A ClaimDescriptionTbs containing a request entity <span class="bcp14">MUST NOT</span> contain any other type of entities. Request entities <span class="bcp14">MAY</span> contain Attributes of any type; transaction, platform, key, or any additional attribute type. Any attribute contained in a request entity is called a request attribute. Request entities <span class="bcp14">MUST NOT</span> appear in PKIX Attestation response objects. The ClaimDescriptionTbs object of an attestation request <span class="bcp14">MAY</span> appear inside a signed PkixEvidence for the purposes of authenticating and authorizing the requester, but the semantics of doing so are left to the implementer.<a href="#section-9-7" class="pilcrow">¶</a></p>
+<p id="section-9-8">An Attester that supports Attestation Requests <span class="bcp14">MUST</span>, at the minimum, support extracting the value from a <code>nonce</code> attribute and echoing it into a <code>nonce</code> attribute within a TransactionEntity.<a href="#section-9-8" class="pilcrow">¶</a></p>
+<p id="section-9-9">Some request attributes contain a value that the HSM uses as a filter or search parameter in constructing the PKIX Attestation; these are called valued requests attributes.
 Other requests attributes omit the optional <code>value</code> field so that they consist of only the attribute type OID and indicate that the HSM <span class="bcp14">SHOULD</span> collect and return the appropriate measurement; these are called un-valued request attributes.
 An Attester <span class="bcp14">SHOULD</span> return a PKIX Attestation containing exactly the set of attributes listed in the request, including both valued and un-valued request attributes but <span class="bcp14">MAY</span> omit requested attributes if it cannot be measured in the current device configuration.
 Note that an Attestation Request will contain all request attributes inside a single request entity, but the HSM <span class="bcp14">MUST</span> sort the attributes in the response PKIX Attestation into the appropriate entity types.
 For example, if the request contains the key <code>purpose</code> attribute (either valued or un-valued), then all returned key entities will contain the <code>purpose</code> attribute when this data is available for the given key.
-The tables in the following sections indicate whether an attribute of the given type <span class="bcp14">MUST</span>, <span class="bcp14">MAY</span>, or <span class="bcp14">MUST NOT</span> contain a value when included in a request entity.<a href="#section-8-8" class="pilcrow">¶</a></p>
-<p id="section-8-9">Generally errors should be handled gracefully by simply omitting an unfulfillable request attribute from the response.
+The tables in the following sections indicate whether an attribute of the given type <span class="bcp14">MUST</span>, <span class="bcp14">MAY</span>, or <span class="bcp14">MUST NOT</span> contain a value when included in a request entity.<a href="#section-9-9" class="pilcrow">¶</a></p>
+<p id="section-9-10">Generally errors should be handled gracefully by simply omitting an unfulfillable request attribute from the response.
 An example would be if the <code>hwserial</code> attribute was requested but the devices does not have a serial number.
 However in some cases a fatal error <span class="bcp14">MAY</span> be returned, for example if attestation of a specific key is requested by key identifier or SubjectPublicKeyInfo but the HSM does not contain a matching key.
-HSMs <span class="bcp14">SHOULD</span> ignore request attributes with unrecognized type OIDs.<a href="#section-8-9" class="pilcrow">¶</a></p>
-<p id="section-8-10">Generally, the Attester <span class="bcp14">SHOULD NOT</span> include additional attributes beyond those that were requested. This is to allow the Presenter to fine-tune the information that will be disclosed to the Recipient.
+HSMs <span class="bcp14">SHOULD</span> ignore request attributes with unrecognized type OIDs.<a href="#section-9-10" class="pilcrow">¶</a></p>
+<p id="section-9-11">Generally, the Attester <span class="bcp14">SHOULD NOT</span> include additional attributes beyond those that were requested. This is to allow the Presenter to fine-tune the information that will be disclosed to the Recipient.
 Further privacy concerns are discussed in <a href="#sec-cons-privacy" class="auto internal xref">Section 12.3</a>.
 However, in some contexts this <span class="bcp14">MAY</span> be appropriate, for example, a request containing only a key <code>identifier</code> attribute could be responded to with the full set of platform and key attributes that apply to that key.
-Discretion is left to implementers.<a href="#section-8-10" class="pilcrow">¶</a></p>
-<p id="section-8-11">For both error handling and privacy reasons, the Presenter <span class="bcp14">SHOULD</span> check that the returned PKIX Attestation contains the expected attributes prior to forwarding it to the Recipient.<a href="#section-8-11" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="sec-profiles">
-<section id="section-9">
-      <h2 id="name-appraisal-policies-and-prof">
-<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-appraisal-policies-and-prof" class="section-name selfRef">Appraisal Policies and Profiles</a>
-      </h2>
-<p id="section-9-1">This section provides some sample profiles of appraisal policies that verifiers
-<span class="bcp14">MAY</span> apply when evaluating evidence. These appraisal profiles represent environment-specific requirements
-on the contents of the evidence and / or endorsement certificate chain.<a href="#section-9-1" class="pilcrow">¶</a></p>
-<div id="key-import-into-an-hsm">
-<section id="section-9.1">
-        <h3 id="name-key-import-into-an-hsm">
-<a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-key-import-into-an-hsm" class="section-name selfRef">Key Import into an HSM</a>
-        </h3>
-<p id="section-9.1-1">An HSM which is compliant with this draft <span class="bcp14">SHOULD</span> validate any PKIX Key Attestations that are provided
-along with the key being imported.<a href="#section-9.1-1" class="pilcrow">¶</a></p>
-<p id="section-9.1-2">The SignatureBlocks <span class="bcp14">MUST</span> be validated and <span class="bcp14">MUST</span> chain to a trust anchor known to the HSM. In most cases this will
-be the same trust anchor that endorsed the HSMs own AK, but the HSM <span class="bcp14">MAY</span> be configured with set of third party trust anchors from which it will accept key attestations.<a href="#section-9.1-2" class="pilcrow">¶</a></p>
-<p id="section-9.1-3">If the HSM is operating in FIPS Mode, then it <span class="bcp14">MUST</span> only import keys from HSMs also operating in FIPS Mode.<a href="#section-9.1-3" class="pilcrow">¶</a></p>
-<p id="section-9.1-4">The claims <code>key-purpose</code>, <code>key-extractable</code>, <code>key-never-extractable</code>, <code>key-local</code> <span class="bcp14">MUST</span> be checked and honoured during key import, which typically means that after import, the key <span class="bcp14">MUST NOT</span> claim a stronger protection property than it had on the previous hardware. In other words, Key Attestation allows and requires that key protection properties be preserved over export / import operations between different HSMs, and this format provides a vendor-agnostic
-way to acheive this.<a href="#section-9.1-4" class="pilcrow">¶</a></p>
-<p id="section-9.1-5">How to handle errors is outside the scope of this specification and is left to implementors; for example the
-key import <span class="bcp14">MAY</span> be aborted, or a prompt <span class="bcp14">MAY</span> be given to the user administrator, or any similar reasonable error handling logic.<a href="#section-9.1-5" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="cabrowser-forum-code-signing">
-<section id="section-9.2">
-        <h3 id="name-ca-browser-forum-code-signi">
-<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-ca-browser-forum-code-signi" class="section-name selfRef">CA/Browser Forum Code-Signing</a>
-        </h3>
-<p id="section-9.2-1">TODO: ... intro text<a href="#section-9.2-1" class="pilcrow">¶</a></p>
-<p id="section-9.2-2">The subscriber <span class="bcp14">MUST</span>:<a href="#section-9.2-2" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-9.2-3.1">
-            <p id="section-9.2-3.1.1">Provide the CA with a CSR containing the subscriber key.<a href="#section-9.2-3.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-9.2-3.2">
-            <p id="section-9.2-3.2.1">Provide an attestation token as per this specification describing the private key protection properties of the subscriber's private key. This token <span class="bcp14">MAY</span> be transported inside the CSR as per draft-ietf-lamps-csr-attest, or it <span class="bcp14">MAY</span> be transported adjacent to the CSR over any other certificate enrollment mechanism.<a href="#section-9.2-3.2.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-9.2-4">The CA / RA / RP / Verifier <span class="bcp14">MUST</span>:<a href="#section-9.2-4" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-9.2-5.1">
-            <p id="section-9.2-5.1.1">Ensure that the subscriber key which is the subject of the CSR is also described by a KAT by matching either the key fingerprint or full SubjectPublicKeyInfo.<a href="#section-9.2-5.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-9.2-5.2">
-            <p id="section-9.2-5.2.1">The hardware root-of-trust described by a PAT has a valid and active FIPS certificate according to the NIST CMVP database.<a href="#section-9.2-5.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-9.2-5.3">
-            <p id="section-9.2-5.3.1">The attestation signing key (AK) which has signed the attestation token chains to a root certificate that A) belongs to the hardware vendor described in the PAT token, and B) is trusted by the CA / RA / RP / Verifier to endorse hardware from this vendor, for example through a CA's partner program or through a network operator's device on-boarding process.<a href="#section-9.2-5.3.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-9.2-5.4">
-            <p id="section-9.2-5.4.1">The key is protected by a module running in FIPS mode. The parsing logic is to start at the leaf KAT token that matches the key in the CSR and parsing towards the root PAT ensuring that there is at least one <code>fipsboot=true</code> and no <code>fipsboot=false</code> on that path.<a href="#section-9.2-5.4.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-</section>
-</div>
+Discretion is left to implementers.<a href="#section-9-11" class="pilcrow">¶</a></p>
+<p id="section-9-12">For both error handling and privacy reasons, the Presenter <span class="bcp14">SHOULD</span> check that the returned PKIX Attestation contains the expected attributes prior to forwarding it to the Recipient.<a href="#section-9-12" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-asn1-mod">
@@ -2535,7 +2622,7 @@ Similarly, a single enterprise-grade Hardware Security Module will often host cr
 In these cases, disclosing that two different keys reside on the same hardware, or in some cases even disclosing the existance of a given key, let alone its attributes, to an unauthorized party would constitute an egregious privacy violation.<a href="#section-12.3-1" class="pilcrow">¶</a></p>
 <p id="section-12.3-2">Implementions <span class="bcp14">SHOULD</span> be careful to avoid over-disclosure of information, for example by authenticating the Presenter as described in <a href="#sec-cons-auth-the-presenter" class="auto internal xref">Section 12.4</a> and only returning results for keys and envirnments for which it is authorized.
 In absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request <span class="bcp14">MAY</span> be authenticated by embedding the ClaimDescriptionTbs of the request inside a PkixEvidence signed with a certificate belogning to the Presenter.<a href="#section-12.3-2" class="pilcrow">¶</a></p>
-<p id="section-12.3-3">Furthermore, enterprise and cloud-services grade HSMs <span class="bcp14">SHOULD</span> support the full set of attestation request functionality described in <a href="#sec-reqs" class="auto internal xref">Section 8</a> so that Presenters can fine-tune the content of a PKIX Attestation such that it is appropriate for the intended Recipient.<a href="#section-12.3-3" class="pilcrow">¶</a></p>
+<p id="section-12.3-3">Furthermore, enterprise and cloud-services grade HSMs <span class="bcp14">SHOULD</span> support the full set of attestation request functionality described in <a href="#sec-reqs" class="auto internal xref">Section 9</a> so that Presenters can fine-tune the content of a PKIX Attestation such that it is appropriate for the intended Recipient.<a href="#section-12.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-cons-auth-the-presenter">
