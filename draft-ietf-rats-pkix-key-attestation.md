@@ -300,6 +300,14 @@ Platform Attestation:
 enough information about the platform to allow a Relying Party to make judicial decisions about the
 platform, such as audit reviews.
 
+Presenter
+: Party that proves possession of a private key to a recipient of a
+  key attestation token.  Typically this will be an application
+  layer entity, such as a cryptographic library constructing a
+  Certificate Signing Request that must embed attestation evidence,
+  or a TLS library attempting to perform attested TLS.  The
+  Presenter is not fulfilling any roles in the RATS architecture.
+
 Trust Anchor:
 : As defined in {{RFC6024}} and {{RFC9019}}, a Trust Anchor
 "represents an authoritative entity via a public key and
@@ -309,6 +317,10 @@ of information for which the trust anchor is authoritative." The
 Trust Anchor may be a certificate, a raw public key, or other
 structure, as appropriate.  It can be a non-root certificate when
 it is a certificate.
+
+Usage Protocol
+: A (security) protocol that requires demonstrating possession of
+  the private component of the application key.
 
 {::boilerplate bcp14-tagged}
 
