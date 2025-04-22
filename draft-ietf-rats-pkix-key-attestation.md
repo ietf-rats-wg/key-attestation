@@ -177,8 +177,8 @@ This section covers use cases that motivated the development of this specificati
 
 ## Remote audit of a Hardware Security Module (HSM)
 
-There are situations where it is necessary to verify the current running state of a HSM as part of operational or 
-auditing procedures. For example, there are devices that are certified to work in an environment only if certain 
+There are situations where it is necessary to verify the current running state of a HSM as part of operational or
+auditing procedures. For example, there are devices that are certified to work in an environment only if certain
 versions of the firmware are loaded or only if application keys are protected in with a certain set of protection policies.
 
 The Evidence format offered by this specification allows a platform to report its firmware level along with
@@ -238,15 +238,15 @@ This specification uses a necessary mixture of RATS and PKI terminology
 in order to map concepts between the two domains.
 
 The reader is assumed to be familiar with the vocabulary and concepts
-defined in the RATS architecture ({{!RFC9334}}) such as Attester, 
+defined in the RATS architecture ({{!RFC9334}}) such as Attester,
 Relying Party, Verifier.
 
 The reader is assumed to be familiar with common vocabulary and concepts
 defined in {{!RFC5280}} such as certificate, signature, attribute, verifier.
 
 In order to avoid confusion, this document generally
-capitalizes RATS terms such as Attester, Relying Party, and Claim. 
-Therefore, for example, a "Verifier" 
+capitalizes RATS terms such as Attester, Relying Party, and Claim.
+Therefore, for example, a "Verifier"
 should be assumed to be an entity that checks the validity of Evidence as per {{!RFC9334}},
 whereas a "verifier" could be a more general refence, for example, to a PKI entity that checks
 the validity of an X.509 certificate or other digital signature as per {{!RFC5280}}.
@@ -785,7 +785,7 @@ cryptographic key.
 ### spki
 
 The value of this attribute contains the DER-encoded field SubjectPublicKeyInfo (see {{!RFC5280}}) associated with the cryptographic
-key. 
+key.
 
 ### purpose
 
