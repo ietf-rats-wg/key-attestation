@@ -238,7 +238,7 @@ This specification uses a necessary mixture of RATS and PKI terminology
 in order to map concepts between the two domains.
 
 The reader is assumed to be familiar with the vocabulary and concepts
-defined in the RATS architecture ({{!RFC9334}}) such as Attester, 
+defined in the RATS architecture ({{!RFC9334}}) such as Attester,
 Relying Party, Verifier.
 
 The reader is assumed to be familiar with common vocabulary and concepts
