@@ -126,7 +126,7 @@ This document specifies a vendor-agnostic format for evidence produced and verif
 The evidence produced this way includes claims collected in a cryptographic module about itself and elements
 found within it such as cryptographic keys.
 
-One scenario envisaged is that the state inforamtion about the cryptographic module can be securely presented
+One scenario envisaged is that the state information about the cryptographic module can be securely presented
 to a remote operator or auditor in a vendor-agnostic verifiable format.
 A more complex scenario would be to submit this evidence to a Certification Authority to aid in determining
 whether the storage properties of this key meets the requirements of a given certificate profile.
@@ -198,7 +198,7 @@ A related scenario is when performing a key export-import across HSMs.
 If the key is being imported with certain properties, for example an environment running in FIPS mode at
 FIPS Level 3, and the key is set to certain protection properties such as Non-Exportable and Dual-Control,
 then the HSM might wish to verify that the key was previously stored under the same properties.
-This specification even provides a way to do this across HSM vendors.
+This specification provides a way to do this across HSM vendors.
 
 These scenarios motivate the design requirements to have an ASN.1 based Evidence format and a data model that
 more closely matches typical HSM architecture since in both scenarios
@@ -217,17 +217,17 @@ assess the location of the subject key along a number of commonly-required attri
 determine which HSM was used to generate the subject key, whether this device adheres
 to certain jurisdiction policies (such as FIPS mode) and the constraints applied to the key (such as whether is it extractable).
 
-For relatively simple HSM devices such as TPM-like devices, storage properties such as Extractable may always be true for all keys
+For relatively simple HSM devices such as TPM-like devices, storage properties such as "extractable" may always be true for all keys
 since the devices is not capable of key export and so the attestation could be essentially a hard-coded template asserting these
-immutable attributes. However, more complex HSM devices require a more complex key attestation format that encompases the
+immutable attributes. However, more complex HSM devices require a more complex key attestation format that encompaseses the
 mutability of these attributes.
-Also, the client requesting the key attestation might wish to scope-down the content of the key attestation, for example
-maybe the HSM contains many keys and only a certain subset are relevant for attesting the given transaction, or maybe only
+Also, the client requesting the key attestation might wish to scope-down the content of the key attestation as
+the HSM contains many keys and only a certain subset are relevant for attesting a given transaction, or only
 certain claims are relevant.
-Lack of ability to scope-down the key attestation contents could, in some scenarios, constitute a grave privacy violation.
+Lack of ability to scope-down the key attestation contents could, in some scenarios, constitute a privacy violation.
 This motivates the design choice for a key attestation request mechanism.
-The same objective could have been accomplished via a selective disclosure mechanism, however since an attestation request
-is necessary anyway to transmit an attestation nonce to the HSM, a standardized request format fits the usecase better
+The same objective could have been accomplished via a selective disclosure mechanism. However, since a request
+is necessary to transmit the attestation nonce to the HSM, a standardized request format fits the use case better
 and is generally simpler.
 
 
@@ -248,17 +248,12 @@ In order to avoid confusion, this document generally
 capitalizes RATS terms such as Attester, Relying Party, and Claim.
 Therefore, for example, a "Verifier"
 should be assumed to be an entity that checks the validity of Evidence as per {{!RFC9334}},
-whereas a "verifier" could be a more general refence, for example, to a PKI entity that checks
+whereas a "verifier" could be a more general reference to a PKI entity that checks
 the validity of an X.509 certificate or other digital signature as per {{!RFC5280}}.
 
 The following terms are used in this document:
 
 {: vspace="0"}
-
-Application Key:
-: An application key consists of a key hosted by a HSM (the platform) and intended to be used by a client
-of the HSM. The access and operations on an application key is controlled by the HSM.
-MikeO: I don't love that we have two "AK"s. Maybe we can find a different term for this?
 
 Attestation Key (AK):
 : Cryptographic key controlled solely by the Attester and used only for the purpose
@@ -280,7 +275,7 @@ refers to claims, encoded according to the format defined within this document, 
 the Attestation Key.
 
 Hardware Security Module (HSM):
-: A physical computing device that safeguards and manages secrets (most importantly cryptographic keys),
+: A physical computing device that safeguards and manages secrets, such as cryptographic keys,
 and performs cryptographic operations based on those secrets.
 This specification takes a broad definition of what counts as an HSM to include smartcards,
 USB tokens, TPMs, cryptographic co-processors (PCI cards) and "enterprise-grade" or "cloud-service grade" HSMs
@@ -296,17 +291,15 @@ Platform:
 "Attester" or "HSM".
 
 Platform Attestation:
-: Evidence containing claims pertaining to an attesting platform. In general, the claims includes
+: Evidence containing claims pertaining to attributes associated with the platform, itself. In general, the claims includes
 enough information about the platform to allow a Relying Party to make judicial decisions about the
 platform, such as audit reviews.
 
 Presenter
-: Party that proves possession of a private key to a recipient of a
-  key attestation token.  Typically this will be an application
-  layer entity, such as a cryptographic library constructing a
-  Certificate Signing Request that must embed attestation evidence,
-  or a TLS library attempting to perform attested TLS.  The
-  Presenter is not fulfilling any roles in the RATS architecture.
+: Role that join the HSM, in this case the Attester, and the Verifier. The
+  Presenter initiates the operation of generating evidence at the HSM and
+  passing it to the Verifier. This role is supported by a combination of
+  one or multiple human operators or automated processes.
 
 Trust Anchor:
 : As defined in {{RFC6024}} and {{RFC9019}}, a Trust Anchor
@@ -321,6 +314,12 @@ it is a certificate.
 Usage Protocol
 : A (security) protocol that requires demonstrating possession of
   the private component of the application key.
+
+User Key:
+: A user key consists of a key hosted by a HSM (the platform) and intended to be used by a client
+of the HSM. Other terms used for a user key is "application key", "client key" or "operational key".
+The access and operations on a user key is controlled by the HSM.
+
 
 {::boilerplate bcp14-tagged}
 
@@ -372,14 +371,14 @@ have multiple entities of the same type (for example reporting multiple keys), b
 entity MUST be relating to different elements.
 For example, if a given application public key appears in two different entities, these
 MUST be interpreted as two distinct and independent entities that happen to have the
-same public key, and MUST NOT be interpreted as adding attidional attributes to the
+same public key, and MUST NOT be interpreted as adding additional attributes to the
 already-described entity.
 This restriction is to ease the implementation of Verifiers for the provided Evidence.
 
 The number of entities reported in a claim description, and their respective type, is
 left to the implementer. For a simple device where there is only one key, the list of
 reported entities could be fixed. For larger and more complex devices, the list of
-reported entities should be tailored to the demands of the requesting party.
+reported entities should be tailored to the demands of the Presenter.
 
 In particular, note that the nonce attribute contained with the Transaction entity is optional,
 and therefore it is possible that an extremely simple device that holds one static key
@@ -406,7 +405,7 @@ An entity is defined by its type. This specification defines three entity types:
 
 Although this document defines a short list of entity types, this list should be extensible
 to allow implementers to report on entities found in their implementation and not
-covered by this specification. By using an Object Identifier (OID) based system for identifying both entity types
+covered by this specification. By using an Object Identifier (OID) for identifying both entity types
 and the attribute types that they contain, this format is inherently extensible;
 implementers of Attesters MAY define new custom or proprietary entity types and
 place them along-side the standardized entities, or define new attribute types
@@ -433,22 +432,20 @@ A value provided by an attribute is to be interpreted within the context
 of its entity and in relation to the attribute type.
 
 It is RECOMMENDED that an attribute type be defined for a specific entity type, to reduce
-confusion when it comes to interpretation of the value.
-MikeO: I don't understand this sentence. I think it needs better words.
+confusion when it comes to interpretation of the value. In other words, an attribute type SHOULD
+not be used by multiple entity types. For example, if a concept of "revision" is applicable to a platform
+and a key, the attribute for one entity type (platform revision) should have a different identifier
+than the one for the other entity type (key revision).
 
 The nature of the value (boolean, integer, string, bytes) is dependent on the attribute type.
 
 This specification defines a limited number of attribute types. However, this list should be
 extensible to allow implementers to report attributes not covered by this specification.
 
-If a Verifier encounters an attribute with an unrecognized attribute type, it may ignore it.
-In PKI terminology, all custom attributes not defined in this document
-SHOULD be considered non-critical unless a further specification indicates differently.
-
 The number of attributes reported within an entity, and their respective type, is
 left to the implementer. For a simple device, the reported list of attributes for an entity
 might be fixed. However, larger and more complex devices, the list of reported attributes
-should be tailored to the demands of the requesting party.
+should be tailored to the demands of the Presenter.
 
 Some attributes MAY be repeated within an entity while others MUST NOT. For example, for a
 platform entity, there can only be one "firmware version" attribute. Therefore, the associated attribute
@@ -458,7 +455,7 @@ Therefore, the definition of an attribute specifies whether or not multiple copi
 attribute are allowed.
 
 If a Verifier encounters, within a single entity, multiple copies of an attribute specified as
-"Multiple Allowed: No", it MUST reject the evidence as mal-formed.
+"Multiple Allowed: No", it MUST reject the evidence as malformed.
 
 If a Verifier encounters, within the context of an entity, a repeated attribute for a type where
 multiple attributes are allowed, it MUST treat each one as an independent attribute and MUST NOT
@@ -497,13 +494,13 @@ The SEQUENCE OF SignatureBlock allows for both multi-algorithm protection and fo
 of the evidence.
 In an effort to keep the evidence format simple, distinguishing between these two cases is left up to Verifier policy,
 potentially by making use of the certificates that accompany each signature.
-Thes design also does not prevent against stripping attacks where an attacker removes a signature without leaving evidence
+This design also does not prevent against stripping attacks where an attacker removes a signature without leaving evidence
 in the message that an additional signature had been there or signature re-ordering attacks.
 Again, this is left up to Verifier policy to know how many
 algorithms or counter-signatures it is expecting.
 Consequently, Verifiers MUST NOT make any inferences about the lack of a signature. For example, enumerating
 counter-signatures on an Evidence MUST NOT be considered to be a complete list of HSMs in a given cluster.
-Similarly, the presense and order of counter-signatures MUST NOT be taken as proof of the path that the evidence traversed
+Similarly, the presence and order of counter-signatures MUST NOT be taken as proof of the path that the evidence traversed
 over the network.
 
 The TBS section is composed of a version number, to ensure future extensibility, and a sequence of reported entities.
@@ -512,6 +509,7 @@ For compliance with this specification, `ClaimDescriptionTbs.version` MUST be `1
 This envelope format is not extensible; future specifications which make compatibility-breaking changes MUST increment the version number.
 
 EDNOTE: do we want extension marks on the TbsAttestation object? I can see pros and cons to doing that.
+JPF: This is a strong statement as there are many ways of extending a ASN.1 structure without breaking backwards compatibility.
 
 `SignatureBlock.certChain` MUST contain at least one X.509 certificate as per {{RFC5280}}.
 While there might exist attesting environments which use out-of-band or non-X.509 mechanisms for communicating
@@ -570,7 +568,7 @@ of a set of attributes that are global to the Target Environment.
 
 A platform entity, if provided, MUST be included only once within the reported entities. If a
 Verifier encounters multiple entities of type `id-pkix-attest-entity-platform`, it MUST
-reject the Evidence as mal-formed.
+reject the Evidence as malformed.
 
 The following table lists the attributes for a platform entity (platform attributes) defined
 within this specification. In cases where the attribute is borrowed from another specification,
@@ -619,7 +617,9 @@ EDNOTE: JPF if JSON, why have multiple attributes.
 
 FIPS 140-3 CMVP validation places stringent requirements on the mode of operation of the device and the cryptography offered by the module, including only enabling FIPS-approved algorithms, certain requirements on entropy sources, and extensive start-up self-tests. FIPS 140-3 offers compliance levels 1 through 4 with increasingly strict requirements. Many HSMs include a configuration setting that allows the device to be taken out of FIPS mode and thus enable additional functionality or performance, and some offer configuration settings to change between compliance levels.
 
-The boolean attribute `fipsboot` indicates whether the device is currently operating in FIPS mode. For most HSMs, changing this configuration setting from `fipsboot=true` to `fips-boos=false` is destructive and will result in zeroization of all cryptographic keys held within the module.
+The boolean attribute `fipsboot` indicates whether the device is currently operating in FIPS mode. When the attribute value is "true", the HSM is running in compliance with the
+FIPS 140 restrictions. Among other restrictions, it means that only FIPS-approved algorithms are available. If the value of this attribute is "false", then the HSM is not
+restricted to the behavior limited by compliance.
 
 The UTF8String attribute `fipsver` indicates the version of the FIPS CMVP specification with which the device's operational mode is compliant. At the time of writing, the strings "FIPS 140-2" or "FIPS 140-3" SHOULD be used.
 
@@ -655,7 +655,7 @@ be multiple key entities found in claim description, but each reported key entit
 described a different cryptographic key.
 
 A key entity is composed of a set of attributes relating to the related cryptographic key. At
-minimum, a key entity MUST have an attribute "identifier" to uniquely identify this cryptographic
+minimum, a key entity MUST report the attribute "identifier" to uniquely identify this cryptographic
 key from any others found in the same Target Environment.
 
 A Verifier that encounters a claim description with multiple key entities referring to the
@@ -755,7 +755,7 @@ These attribute types MAY be contained within a transaction entity; i.e. an enti
 
 ### nonce
 
-The nonce attribute is used to provide "freshness" quality as to the claims provided in the PkixEvidence message. A client requesting a PkixEvidence message MAY provide a nonce value as part of the request. This nonce value, if provided, SHOULD be repeated as an attribute to the transaction entity.
+The nonce attribute is used to provide "freshness" quality as to the claims provided in the PkixEvidence message. A Presenter requesting a PkixEvidence message MAY provide a nonce value as part of the request. This nonce value, if provided, SHOULD be repeated as an attribute to the transaction entity.
 
 ### timestamp
 
@@ -781,7 +781,7 @@ A PkixEvidence is to be DER encoded [X.690].
 
 If a textual representation is required, then the DER encoding MAY be subsequently encoded into Base64.
 
-EDNOTE: I think we have to be precise about which flavour of Base64 we are referrring to.
+EDNOTE: I think we have to be precise about which flavour of Base64 we are referring to.
 
 
 
@@ -853,12 +853,22 @@ The CA / RA / RP / Verifier MUST:
 
 # Attestation Requests {#sec-reqs}
 
-EDNOTE: MikeO: this is complex, but I'm not really sure how to define a request format in any simpler way. Ideas are welcome!
+This section is informative in nature and implementers of this specification do not need to adhere to it. The aim of this section is
+to provide a standard interface between a Presenter and a HSM producing PKIX evidence. The authors hope that this standard interface will
+yield interoperable tools between offerings from different vendors.
 
-This section specifies a standardized format that a Presenter can use to request a PKIX Attestation about a specific key or set of keys, a specific environment, or containing specific attributes. The role of the presenter in the architecture is shown in {{fig-arch}}.
+The interface presented in this section might be too complex for manufacturers of HSMs with limited capabilities such as smartcards
+or personal ID tokens. For devices with limited capabilities, a fix attestation message endorsed by the vendor might be installed
+during manufacturing. Other approaches for constrained HSMs might be to report entities and attributes that are fixed or offer limited
+variations.
 
-Hardware Security Modules range greatly in size and complexity from personal cryptographic tokens containing a single application key such as a smartcard acting as a personal ID card, up to clusters of enterprise-grade HSMs serving an entire cloud service.
+On the other hand, an enterprise grade HSM with the capability to hold a large number of private keys is expected to be capable of generating
+attestation messages catered to the specific constraints imposed by a Verifier and without exposing extraneous information. The aim of the request
+interface is to provide the means to select and report specific information in an attestation message.
 
+This section introduces the role of "Presenter" as shown in {{fig-arch}}. The Presenter is the role that initiates the generation of an
+attestation message. Since HSMs are generally servers (client/server relationship) or slaves (master/slave relationship), an entity is
+required to launch the process of creating the attestation message and capturing its results. The results are then forwarded to the Verifier.
 
 ~~~aasvg
                    .-------------.
@@ -895,32 +905,124 @@ Hardware Security Modules range greatly in size and complexity from personal cry
 ~~~
 {: #fig-arch title="Architecture"}
 
-The manufacturer of a HSM device with limited capabilities may implement a response to the attestation request which includes a fixed set of reported entities, each with a fixed set of reported attributes and parses an Attestion Request object only for the purposes of extracting the nonce.
 
-On the other hand, an enterprise grade HSM with the capability to hold a large number of private keys is expected to be capable of parsing attestation requests such that a Presenter can request attestation of specific key(s) by their identifier, or request attestation of all keys with given key attributes within a given sub-environment of the HSM. A full implementation will also create a PKIX Attestation containing exactly the set of requested attributes so that the Presenter can fine-tune the information that it wishes to disclose to the Recipient.
+An Attestation Request (request) is assembled by the Presenter and submitted to the HSM. The HSM parses the request and produces PKIX evidence,
+the attestation message, which is returned to the Presenter for distribution.
 
-A PKIX Attestation Request consists of a un-signed ClaimDescriptionTbs object containing a single `ReportedEntity` identified with `id-pkix-attest-entity-request`, called a request entity. A ClaimDescriptionTbs containing a request entity MUST NOT contain any other type of entities. Request entities MAY contain Attributes of any type; transaction, platform, key, or any additional attribute type. Any attribute contained in a request entity is called a request attribute. Request entities MUST NOT appear in PKIX Attestation response objects. The ClaimDescriptionTbs object of an attestation request MAY appear inside a signed PkixEvidence for the purposes of authenticating and authorizing the requester, but the semantics of doing so are left to the implementer.
+The request consists of a structure TbsPkixEvidence containing one ReportedEntity for each entity expected to be attested by the HSM.
+Each instance of ReportedEntity included in the request is referred to as a request entity. A request entity contains a number of instances
+of ReportedAttribute known as request attributes. The collection of request entities and request attributes represent the information desired
+by the Presenter.
 
-An Attester that supports Attestation Requests MUST, at the minimum, support extracting the value from a `nonce` attribute and echoing it into a `nonce` attribute within a TransactionEntity.
+In most cases the value of a request attribute should be left unspecified by the Presenter. In the process of generating
+the evidence, the values of the desired attributes are observed by the attestation service within the HSM and reporte accordingly. For the purpose
+of creating a request, the Presenter sets the values of the attributes to `null`. This is a departure from the values specified for each attribute
+but serves well the purposes of the request.
 
-Some request attributes contain a value that the HSM uses as a filter or search parameter in constructing the PKIX Attestation; these are called valued requests attributes.
-Other requests attributes omit the optional `value` field so that they consist of only the attribute type OID and indicate that the HSM SHOULD collect and return the appropriate measurement; these are called un-valued request attributes.
-An Attester SHOULD return a PKIX Attestation containing exactly the set of attributes listed in the request, including both valued and un-valued request attributes but MAY omit requested attributes if it cannot be measured in the current device configuration.
-Note that an Attestation Request will contain all request attributes inside a single request entity, but the HSM MUST sort the attributes in the response PKIX Attestation into the appropriate entity types.
-For example, if the request contains the key `purpose` attribute (either valued or un-valued), then all returned key entities will contain the `purpose` attribute when this data is available for the given key.
-The tables in the following sections indicate whether an attribute of the given type MUST, MAY, or MUST NOT contain a value when included in a request entity.
+On the other hand, there are circumstances where the value of a request attribute should be provided by the Presenter. For example, when a particular
+cryptographic key is to be included in the attestation message, the request must include a request entity with one of its attribute set with a type
+`id-pkix-evidence-attribute-key-identifier`. The value of this attribute is set to the key identifier associated with the cryptographic
+key to be reported.
 
-Generally errors should be handled gracefully by simply omitting an unfulfillable request attribute from the response.
-An example would be if the `hwserial` attribute was requested but the devices does not have a serial number.
-However in some cases a fatal error MAY be returned, for example if attestation of a specific key is requested by key identifier or SubjectPublicKeyInfo but the HSM does not contain a matching key.
-HSMs SHOULD ignore request attributes with unrecognized type OIDs.
+Some instances of ReportedEntity, such as those representing the platform or the transaction, do not need identifiers as the associated entities are
+implicit in nature. Custom entity types might need selection during an attestation request and related documentation should specify how this is
+achieved.
 
-Generally, the Attester SHOULD NOT include additional attributes beyond those that were requested. This is to allow the Presenter to fine-tune the information that will be disclosed to the Recipient.
+The instance of TbsPkixEvidence is unsigned and does not provided any means to maintain integrity when communicated from the Presenter to the HSM.
+These details are left to the implementer. However, it is worth pointing out that the structure offered by PkixEvidence could be reused by an
+implementer to provide those capabilities.
+
+## Request Attributes with Specified Values
+
+This section deals with the request attributes specified in this document where a value should be provided by a Presenter. In other words, this
+sub-section defines all request attributes that should not be `null`. Request attributes not covered in this sub-section should have a value
+of `null`.
+
+Since this section is non-normative, implementers may deviate from those recommendations.
+
+### Key Identifiers
+
+A Presenter may choose to select which cryptographic keys are reported as part of the PKIX evidence. For each selected cryptographic key,
+the Presenter includes a request entity of type `id-pkix-evidence-entity-key`. Among the request attributes for this entity, the
+Presenter includes one attribute with the type `id-pkix-evidence-attribute-key-identifier`. The value of this attribute should be
+set to the utf8String that represents the identifiers for the specific key.
+
+A HSM receiving an attestation request which selects a key via this approach MUST fail the transaction if it can not find the cryptographic
+key associated with the specified identifier.
+
+### Nonce
+
+A Presenter may choose to include a nonce as part of the attestation request. When producing the PKIX evidence, the HSM repeats the
+nonce that was provided as part of the request.
+
+When providing a nonce, a Presenter includes, in the attestation request, an entity of type `id-pkix-evidence-entity-transaction`
+with an attribute of type `id-pkix-evidence-attribute-transaction-nonce`. This attribute is set with the value of the
+nonce as "bytes".
+
+### Custom Key Selection
+
+An implementer might desire to select multiple cryptographic keys based on a shared attribute or similar schemes. A possible approach
+is to include a single request entity of type `id-pkix-evidence-entity-key` including an attribute with a set value. This attribute
+would not be related to the key identifier as this is unique to each key. A HSM supporting this scheme could select all the cryptographic
+keys matching the specified attribute and report them in the attestation message.
+
+This is a departure from the base request interface, as multiple key entities are reported from a single request entity.
+
+More elaborate selection schemes are envisaged where multiple request attributes specifying values would be tested against cryptographic keys.
+Whether these attributes are combined in a logic "and" or in a logical "or" would need to be specified by the implementer.
+
+### Custom Transaction Attribute
+
+The extensibility offered by the proposed request interface allows an implementer to add custom attributes to the transaction entity in
+order to influence the way that the evidence generation is performed.
+
+In such an approach, a new custom attribute for request entities of type `id-pkix-evidence-entity-transaction` is defined. Then, an
+attribute of that type is included in the attestation request (as part of the transaction entity) while specifying a value. This value
+is considered by the HSM while generating the attestation message.
+
+## Processing an Attestation Request
+
+This sub-section deals with the rules that should be considered when an Attester (the HSM) processes a request to generate an
+attestation request. This section is non-normative and implementers MAY choose to not follow those recommendations.
+
+These recommendations apply to any attestation request schemes and are not restricted solely to the request interface proposed
+here.
+
+An Attester MUST fail an attestation request if it contains an unrecognized entity type. This is to ensure that all the semantics expected
+by the Presenter are fully understood by the Attester.
+
+An Attester MUST fail an attestation request if it contains a request attribute of an unrecognized type while specifying a value (other than
+null). This represents a situation where the Presenter is selecting specific information that is not understood by the Attester.
+
+An Attester SHOULD fail an attestation request if it contains a request attribute with an unrecognized type. An environment with an Attester
+that ignores unrecognized attributes forces the Presenter to review the generated evidence for necessary information.
+
+An Attester MUST omit including entities and attributes in the generated attestation message is these entities and attributes were
+not specified as part of the request. This is to give the Presenter the control on what information is disclosed b ythe Attester.
+
+An Attester MUST fail an attestation request is the Presenter does not have the appropriate access rights to the entities included
+in the request.
+
+## Verification by Presenter
+
+This sub-section deals with the rules that should be considered when a Presenter receives an attestation message from the Attester (the HSM)
+prior to distribution. This section is non-normative and implementers MAY choose to not follow those recommendations.
+
+These recommendations apply to any attestation messages and are not restricted solely messages generated from the proposed request interface.
+
+A Presenter MUST review the attestation message produced by an Attester for fitness prior to distribution.
+
+A Presenter MUST not disclose an attestation message if it contains information it can not parse. This restriction applies to entity types and
+attributes type. This is to ensure that the information provided b ythe Attester can be evaluated by the Presenter.
+
+A Presenter MUST not disclose an attestation message if it contains entities others than the ones that were requested of the Attester. This is
+to ensure that only the selected entities are exposed to the Verifier.
+
+A Predenter MUST not disclose an attestation message if it contains an entity with an attribute that was not requested of the Attester. This is
+to ensure that only the selected information is disclosed to the Verifier.
+
 Further privacy concerns are discussed in {{sec-cons-privacy}}.
-However, in some contexts this MAY be appropriate, for example, a request containing only a key `identifier` attribute could be responded to with the full set of platform and key attributes that apply to that key.
-Discretion is left to implementers.
 
-For both error handling and privacy reasons, the Presenter SHOULD check that the returned PKIX Attestation contains the expected attributes prior to forwarding it to the Recipient.
 
 # ASN.1 Module {#sec-asn1-mod}
 
@@ -944,15 +1046,30 @@ TODO: list out all the OIDs that need IANA registration.
 
 # Security Considerations
 
+## Policies relating to Verifier and Relying Party
+
+The generation of PKIX evidence by a HSM is to provide sufficient information to
+a Verifier and a Relying Party to appraise the Target Environment (the HSM) and make
+decisions based on this appraisal.
+
+The Appraisal Policy associated with the Verifier influences the generation of the Attestation
+Results. Those results, in turn, are consumed by Relying Party to make decisions about
+the HSM, which might be based on a set of rules and policies. Therefore, the interpretation of
+PKIX evidence may greatly influence the outcome of some decisions.
+
 A Verifier MAY reject a PKIX Attestation if it lacks required attributes per their
 appraisal policy. For example, if a Relying Party mandates a FIPS-certified device,
 it SHOULD reject evidence lacking sufficient information to verify the device's FIPS
 certification status.
 
+If a Verifier encounters an attribute with an unrecognized attribute type, it MAY ignore it and
+treat it as extraneous information. By ignoring an attribute, the Verifier may accept PKIX evidence
+that would be deemed malformed to a Verifier with different policies. However, this approach
+fosters a higher likelihood of achieving interoperability.
 
 ## Simple to Implement {#sec-cons-simple}
 
-The nature of attestation requires the attestation service to be implemented in an extremely privileged position within the HSM so that it can collect measurements of both the hardware environment and the application keys being attested. For many HSM and TPM architectures, this will place the Attestation Service inside the "HSM kernel" and potentially subject to FIPS 140-3 or Common Criteria validation and change control. For both security and compliance reasons there is incentive for the emitting and parsing logic to be simple and easy to implement correctly. Additionally, when the data formats contained in this specification are parsed within an HSM boundary -- that would be parsing a request entity, or parsing an attestation produced by a different HSM -- implementers SHOULD opt for simple logic that rejects any data that does not match the expected format instead of attempting to be flexible.
+The nature of attestation requires the attestation service to be implemented in an extremely privileged position within the HSM so that it can collect measurements of both the hardware environment and the user keys being attested. For many HSM and TPM architectures, this will place the Attestation Service inside the "HSM kernel" and potentially subject to FIPS 140-3 or Common Criteria validation and change control. For both security and compliance reasons there is incentive for the generation and parsing logic to be simple and easy to implement correctly. Additionally, when the data formats contained in this specification are parsed within an HSM boundary -- that would be parsing a request entity, or parsing an attestation produced by a different HSM -- implementers SHOULD opt for simple logic that rejects any data that does not match the expected format instead of attempting to be flexible.
 
 In particular, Attesting Services SHOULD generate the attestation object from scratch and avoid copying any content from the request. Attesting Services MUST NOT allow unrecognized attributes or any attribute value other than the nonce to be echoed from the request into the attestation object.
 
@@ -980,21 +1097,21 @@ Furthermore, enterprise and cloud-services grade HSMs SHOULD support the full se
 
 ## Authenticating and Authorizing the Presenter {#sec-cons-auth-the-presenter}
 
-The Presenter represents a priviledged role within the architecture of this specification as it gets to learn about the existence of application keys and their protection properties, as well as details of the platform.
+The Presenter represents a priviledged role within the architecture of this specification as it gets to learn about the existence of user keys and their protection properties, as well as details of the platform.
 The Presenter is in the position of deciding how much information to disclose to the Recipient, and to request a suitably redacted attestation from the HSM.
 
 For personal cryptographic tokens it might be appropriate for the attestation request interface to be un-authenticated. However, for enterprise and cloud-services grade HSMs the Presenter SHOULD be authenticated using the HSM's native authentication mechanism. The details will be HSM-specific and are thus left up to the implementer, however it is RECOMMENDED to implement an authorization framework similar to the following.
 
-A Presenter SHOULD be allowed to request attestation for any application keys which it is allowed to use.
+A Presenter SHOULD be allowed to request attestation for any user keys which it is allowed to use.
 For example, a TLS application that is correctly authenticated to the HSM in order to use its TLS keys SHOULD be able to request attestation of those same keys without needing to perform any additional authentication or requiring any additional roles or permissions.
 HSMs that wish to allow a Presenter to request attestation of keys which is not allowed to use, for example for the purposes of displaying HSM status information on an administrative console or UI, SHOULD have a "Attestation Requester" role or permission and SHOULD enforce the HSM's native access controls such that the Presenter can only retrieve attestations for keys for which it has read access.
 
 
-## Proof-of-Possession of Application Keys
+## Proof-of-Possession of User Keys
 
-With asymmetric keys within a Public Key Infrastructure (PKI) it is common to require a key holder to prove that they are in control of the private key by using it. This is called "proof-of-possession (PoP)". This specification intentionally does not provide a mechnaism for PoP of application keys and relies on the Presenter, Recipient, Verifier, and Relying Party trusting the Attester to correctly report the cryptographic keys that it is holding.
+With asymmetric keys within a Public Key Infrastructure (PKI) it is common to require a key holder to prove that they are in control of the private key by using it. This is called "proof-of-possession (PoP)". This specification intentionally does not provide a mechanism for PoP of user keys and relies on the Presenter, Recipient, Verifier, and Relying Party trusting the Attester to correctly report the cryptographic keys that it is holding.
 
-It would be easy to add a PoP Key Attribute that uses the attested application key to sign over, for example, the Transaction Entity, however this is a bad idea and MUST NOT be added as a custom attribute for several reasons.
+It would be easy to add a PoP Key Attribute that uses the attested user key to sign over, for example, the Transaction Entity, however this is a bad idea and MUST NOT be added as a custom attribute for several reasons.
 
 First, an application key intended, for example, for TLS SHOULD only be used with the TLS protocol and introducing a signature oracle whereby the TLS application key is used to sign attestation content could lead to cross-protocol attacks whereby the attacker submits a nonce value which is in fact not random but is crafted in such a way as to appear as a valid message in some other protocol context or exploit some other weakness in the signature algorithm.
 

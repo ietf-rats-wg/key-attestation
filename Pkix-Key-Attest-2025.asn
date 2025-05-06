@@ -30,7 +30,8 @@ AttributeValue :== CHOICE {
    bool        [2] IMPLICIT BOOLEAN,
    time        [3] IMPLICIT GeneralizedTime,
    int         [4] IMPLICIT INTEGER,
-   oid         [5] IMPLICIT OBJECT IDENTIFIER
+   oid         [5] IMPLICIT OBJECT IDENTIFIER,
+   null        [6] IMPLICIT NULL
 }
 
 SignatureBlock ::= SEQUENCE {
