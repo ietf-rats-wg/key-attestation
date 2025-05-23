@@ -64,9 +64,9 @@ author:
     email: henk.birkholz@ietf.contact
 
   - name: Monty Wiseman
-    org: Beyond Identity
+    org:
     country: USA
-    email: monty.wiseman@beyondidentity.com
+    email: montywiseman32@gmail.com
 
   - name: Ned Smith
     organization: Intel Corporation
