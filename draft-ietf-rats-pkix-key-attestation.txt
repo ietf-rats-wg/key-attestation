@@ -5,7 +5,7 @@
 RATS                                                        M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 19 November 2025                                       Crypto4A
+Expires: 24 November 2025                                       Crypto4A
                                                            H. Tschofenig
                                                                    H-BRS
                                                              H. Birkholz
@@ -14,7 +14,7 @@ Expires: 19 November 2025                                       Crypto4A
                                                          Beyond Identity
                                                                 N. Smith
                                                        Intel Corporation
-                                                             18 May 2025
+                                                             23 May 2025
 
 
                   PKIX Evidence for Remote Attestation
@@ -37,16 +37,23 @@ Abstract
    This specification also offers a format for requesting a
    cryptographic module to produce evidence tailored for expected use.
 
-Discussion Venues
+About This Document
 
    This note is to be removed before publishing as an RFC.
 
-   Discussion of this document takes place on the Remote ATtestation
-   ProcedureS Working Group mailing list (rats@ietf.org), which is
-   archived at https://mailarchive.ietf.org/arch/browse/rats/.
+   The latest revision of this draft can be found at https://ietf-rats-
+   wg.github.io/key-attestation/draft-ietf-rats-pkix-key-
+   attestation.html.  Status information for this document may be found
+   at https://datatracker.ietf.org/doc/draft-ietf-rats-pkix-key-
+   attestation/.
+
+   Discussion of this document takes place on the RATS Working Group
+   mailing list (mailto:rats@ietf.org), which is archived at
+   https://datatracker.ietf.org/wg/rats/about/.  Subscribe at
+   https://www.ietf.org/mailman/listinfo/rats/.
 
    Source for this draft and an issue tracker can be found at
-   https://github.com/hannestschofenig/key-attestation.
+   https://github.com/ietf-rats-wg/key-attestation.
 
 Status of This Memo
 
@@ -63,7 +70,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 19 November 2025.
+   This Internet-Draft will expire on 24 November 2025.
 
 Copyright Notice
 
@@ -1804,9 +1811,9 @@ Table of Contents
    [I-D.ietf-rats-msg-wrap]
               Birkholz, H., Smith, N., Fossati, T., Tschofenig, H., and
               D. Glaze, "RATS Conceptual Messages Wrapper (CMW)", Work
-              in Progress, Internet-Draft, draft-ietf-rats-msg-wrap-13,
-              15 April 2025, <https://datatracker.ietf.org/doc/html/
-              draft-ietf-rats-msg-wrap-13>.
+              in Progress, Internet-Draft, draft-ietf-rats-msg-wrap-14,
+              21 May 2025, <https://datatracker.ietf.org/doc/html/draft-
+              ietf-rats-msg-wrap-14>.
 
    [RFC2986]  Nystrom, M. and B. Kaliski, "PKCS #10: Certification
               Request Syntax Specification Version 1.7", RFC 2986,
