@@ -878,37 +878,33 @@ attestation message. Since HSMs are generally servers (client/server relationshi
 required to launch the process of creating the attestation message and capturing its results. The results are then forwarded to the Verifier.
 
 ~~~aasvg
-                   .-------------.
-                   |  Verifier   |
-                   '-------------'
-                  PKIX    |
-                  Evidence|
-.-------------------------|----------.
-| Attester (HSM)          |          |
-|    .----------------.   |          |
-|    | Target         |   |          |
-|    | Environment    |   |          |
-|    | (Platform &    |   |          |
-|    | Application    |   |          |
-|    | Keys)          |   |          |
-|    '--------------+-'   |          |
-|                   |     |          |
-|           Collect |     |          |
-|            Claims |     |          |
-|                   |     |          |
-|                   v     |          |
-|       .-----------------+-----.    |
-|       |      Attesting        |    |
-|       |     Environment       |    |
-|       '-----------------------'    |
-|              ^    |                |
-'--------------+----+----------------'
-   Attestation |    | PKIX
-       Request |    | Attestation
-               |    v
-        .-----------------.                 .-----------------.
-        |    Presenter    +---------------->|    Recipient    |
-        '-----------------' Usage Protocol  '-----------------'
++-----------------------------+                 
+|  Attester (HSM)             |                 
+|                             |                 
+|      +--------------+       |                 
+|      | Target       |       |                 
+|      | Environment  |       |                 
+|      | (Entities,&  |       |                 
+|      |  attributes) |       |                 
+|      +-------+------+       |                 
+|              |              |                 
+|              | Collect      |                 
+|              | Claims       |                 
+|              v              |                 
+|      +------------------+   |                 
+|      | Attesting        |   |                 
+|      | Environment      |   |                 
+|      +--------+---------+   |                 
+|            ^  |             |                 
+|            |  |             |                 
++------------+--+-------------+                 
+             |  |                               
+ Attestation |  |   PKIX                        
+ Request     |  |   Evidence                    
+             |  v                               
+     +----------------+           +------------+
+     |    Presenter   |---------->|  Verifier  |
+     +----------------+           +------------+
 ~~~
 {: #fig-arch title="Architecture"}
 
@@ -1135,7 +1131,7 @@ In cases where explicit PoP is required for a given attested application key, it
 
 # Samples
 
-A reference implementation of this specification can be found at https://github.com/hannestschofenig/keyattestation
+A reference implementation of this specification can be found at https://github.com/ietf-rats-wg/key-attestation
 
 It produces the following sample attestation:
 
