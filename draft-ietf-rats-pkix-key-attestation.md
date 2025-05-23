@@ -26,6 +26,13 @@ pi:
   text-list-symbols: -o*+
   docmapping: yes
   toc_levels: 4
+venue:
+  group: RATS
+  type: Working Group
+  mail: rats@ietf.org
+  arch: https://datatracker.ietf.org/wg/rats/about/
+  github: "ietf-rats-wg/key-attestation"
+  latest: "https://ietf-rats-wg.github.io/key-attestation/draft-ietf-rats-pkix-key-attestation.html"
 
 author:
   - name: Mike Ounsworth
