@@ -11,7 +11,7 @@ Expires: 24 November 2025                                       Crypto4A
                                                              H. Birkholz
                                                           Fraunhofer SIT
                                                               M. Wiseman
-                                                         Beyond Identity
+                                                                        
                                                                 N. Smith
                                                        Intel Corporation
                                                              23 May 2025
@@ -2149,9 +2149,8 @@ Authors' Addresses
 
 
    Monty Wiseman
-   Beyond Identity
    United States of America
-   Email: monty.wiseman@beyondidentity.com
+   Email: montywiseman32@gmail.com
 
 
    Ned Smith
