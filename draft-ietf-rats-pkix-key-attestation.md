@@ -698,30 +698,21 @@ The following table lists the attributes for a key entity (key attributes) defin
 within this specification. The "Reference" column refers to the specification where the semantics
 for the attribute value can be found.
 
-| Attribute         | AttributeValue  | Reference           | Multiple Allowed | Description |
-| ---               | ---             | ---                 | ---              | ---         |
-| identifier        | utf8String      | {{&SELF}}           | Yes              | Identifies the subject key, with a vendor-specific format which could be numeric, UUID, or other textual identifier. |
-| spki              | bytes           | {{&SELF}}           | No               | A complete DER-encoded SubjectPublicKeyInfo representing the public key associated with the asymetric key pair being attested. |
-| purpose           | bytes           | [PKCS11]            | No               | Defines the intended usage for the key. |
-| extractable       | bool            | [PKCS11]            | No               | Indicates if the key is able to be exported from the module. Corresponds directly to PKCS#11 CKA_EXTRACTABLE. |
-| sensitive         | bool            | [PKCS11]            | No               | Indicates that the key cannot leave the module in plaintext. Corresponds directly to PKCS#11 CKA_SENSITIVE. |
-| never-extractable | bool            | [PKCS11]            | No               | Indicates if the key was able to be exported from the module. Corresponds directly to PKCS#11  CKA_NEVER_EXTRACTABLE. |
-| local             | bool            | {{&SELF}}           | No               | Indicates whether the key was generated locally or imported. |
-| expiry            | time            | {{&SELF}}           | No               | Defines the expiry date or "not after" time for the key. |
-| protection        | bytes           | {{&SELF}}           | No               | Indicates any additional key protection properties. |
-
-PKCS#11 private key attributes can be somewhat complex to parse, especially as their exact meanings can vary by the key type and the exact details of key export mechanisms supported by the HSM.
+| Attribute         | AttributeValue  | Reference   | Multiple? | OID                                              |
+| ---               | ---             | ---         | ---       | ---                                              |
+| identifier        | utf8String      | {{&SELF}}   | Yes       | id-pkix-evidence-attribute-key-identifier        |
+| spki              | bytes           | {{&SELF}}   | No        | id-pkix-evidence-attribute-key-spki              |
+| purpose           | bytes           | [PKCS11]    | No        | id-pkix-evidence-attribute-key-purpose           |
+| extractable       | bool            | [PKCS11]    | No        | id-pkix-evidence-attribute-key-extractable       |
+| sensitive         | bool            | [PKCS11]    | No        | id-pkix-evidence-attribute-key-sensitive         |
+| never-extractable | bool            | [PKCS11]    | No        | id-pkix-evidence-attribute-key-never-extractable |
+| local             | bool            | [PKCS11]    | No        | id-pkix-evidence-attribute-key-local             |
+| expiry            | time            | {{&SELF}}   | No        | id-pkix-evidence-attribute-key-expiry            |
+| protection        | bytes           | {{&SELF}}   | No        | id-pkix-evidence-attribute-key-protection        |
 
 An attestation key might be visible to a client of the device and be reported along with other cryptographic keys. Therefore,
 it is acceptable to include a key entity providing claims about an attestation key like any other cryptographic key. An
 implemention MAY reject the generation of PKIX Evidence if it relates to an attestation key.
-
-EDNOTE: JPF I wonder if we should convert the table column "Description" to "OID" and provide the name
-of the OID. It might be cleaner to provide the description in the associated sub-section.
-
-EDNOTE: JPF the next paragraph probably belongs somewhere else
-
-In most cases, the Verifier of a PKIX Attestation will want to know simply that the key is in hardware and cannot be extracted to be used with a software cryptographic module. A setting of `extractable=false` satisfies this requirement. Generally `extractable=true && sensitive=true` also satisfies this requirement as the key cannot be extracted in plaintext, but only under key wrap. This is common in HSM clustering scenarios, and is also common in scenarios where keys are exported under wrap so that they can be stored in an off-board database for re-import later, thus allowing the HSM to protect and manage a much larger set of keys than it has internal memory for. The `never-extractable` and `local` attributes give additional assurance that the key has always been in hardware and was not imported from software.
 
 ### identifier
 
@@ -736,13 +727,27 @@ cryptographic key.
 The value of this attribute contains the DER-encoded field SubjectPublicKeyInfo (see {{!RFC5280}}) associated with the cryptographic
 key.
 
-### purpose
+### purpose, extractable, sensitive, never-extractable, local
 
-TODO: probably need to define a mapping from PKCS#11 CKA enums to a bit-indexed byte array.
+These attributes are defined in [PKCS11] and reused in this specification for interoperability. Small
+descriptions are offered for each to ease the reading of this specification. In case of confusion between the
+description offered here and the one in [PKCS11], the definition offered in the latter shall prevail.
 
-### local
+The attribute "purpose" defines the intended usage for the key.
 
-If provided and set, indicates that the cryptographic key was created by the device providing the Evidence.
+EDNOTE: JPF: I do not see "purpose" as part of PKCS#11
+
+The attribute "extractable" indicates that the key can be exported from the HSM. Corresponds directly to the attribute CKA_EXTRACTABLE
+found in PKCS#11.
+
+The attribute "sensitive" indicates that the key cannot leave the HSM in plaintext. Corresponds directly to the attribute CKA_SENSITIVE
+found in PKCS#11.
+
+The attribute "never-extractable" indicates if the key was never extractable from the HSM throughout the life of the key. Corresponds
+directly to the attribute CKA_NEVER_EXTRACTABLE found in PKCS#11.
+
+The attribute "local" indicates whether the key was generated locally or imported.. Corresponds directly to the attribute CKA_LOCAL
+found in PKCS#11.
 
 ### expiry
 
