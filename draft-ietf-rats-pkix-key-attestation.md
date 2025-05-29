@@ -913,30 +913,30 @@ attestation message. Since HSMs are generally servers (client/server relationshi
 required to launch the process of creating the attestation message and capturing its results. The results are then forwarded to the Verifier.
 
 ~~~aasvg
-+-----------------------------+                 
-|  Attester (HSM)             |                 
-|                             |                 
-|      +--------------+       |                 
-|      | Target       |       |                 
-|      | Environment  |       |                 
-|      | (Entities,&  |       |                 
-|      |  attributes) |       |                 
-|      +-------+------+       |                 
-|              |              |                 
-|              | Collect      |                 
-|              | Claims       |                 
-|              v              |                 
-|      +------------------+   |                 
-|      | Attesting        |   |                 
-|      | Environment      |   |                 
-|      +--------+---------+   |                 
-|            ^  |             |                 
-|            |  |             |                 
-+------------+--+-------------+                 
-             |  |                               
- Attestation |  |   PKIX                        
- Request     |  |   Evidence                    
-             |  v                               
++-----------------------------+
+|  Attester (HSM)             |
+|                             |
+|      +--------------+       |
+|      | Target       |       |
+|      | Environment  |       |
+|      | (Entities,&  |       |
+|      |  attributes) |       |
+|      +-------+------+       |
+|              |              |
+|              | Collect      |
+|              | Claims       |
+|              v              |
+|      +------------------+   |
+|      | Attesting        |   |
+|      | Environment      |   |
+|      +--------+---------+   |
+|            ^  |             |
+|            |  |             |
++------------+--+-------------+
+             |  |
+ Attestation |  |   PKIX
+ Request     |  |   Evidence
+             |  v
      +----------------+           +------------+
      |    Presenter   |---------->|  Verifier  |
      +----------------+           +------------+
