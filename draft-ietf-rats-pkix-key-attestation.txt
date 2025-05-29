@@ -5,7 +5,7 @@
 RATS                                                        M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 24 November 2025                                       Crypto4A
+Expires: 30 November 2025                                       Crypto4A
                                                            H. Tschofenig
                                                                    H-BRS
                                                              H. Birkholz
@@ -14,7 +14,7 @@ Expires: 24 November 2025                                       Crypto4A
                                                                         
                                                                 N. Smith
                                                        Intel Corporation
-                                                             23 May 2025
+                                                             29 May 2025
 
 
                   PKIX Evidence for Remote Attestation
@@ -70,7 +70,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 24 November 2025.
+   This Internet-Draft will expire on 30 November 2025.
 
 Copyright Notice
 
@@ -102,18 +102,19 @@ Table of Contents
    5.  Data Model
      5.1.  Platform Entity
        5.1.1.  vendor
-       5.1.2.  hwserial
-       5.1.3.  usermods
-       5.1.4.  fipsboot, fipsver and fipslevel
-       5.1.5.  envid
-       5.1.6.  envdesc
+       5.1.2.  oemid, hwmodel, swversion, dbgstat, uptime, bootcount
+       5.1.3.  hwserial
+       5.1.4.  usermods
+       5.1.5.  fipsboot, fipsver and fipslevel
+       5.1.6.  envid
+       5.1.7.  envdesc
      5.2.  Key Entity
        5.2.1.  identifier
        5.2.2.  spki
-       5.2.3.  purpose
-       5.2.4.  local
-       5.2.5.  expiry
-       5.2.6.  protection
+       5.2.3.  purpose, extractable, sensitive, never-extractable,
+               local
+       5.2.4.  expiry
+       5.2.5.  protection
      5.3.  Transaction Entity
        5.3.1.  nonce
        5.3.2.  timestamp
@@ -668,113 +669,154 @@ Table of Contents
    for the attribute value can be found.  Attributes defined in this
    specification have further details below.
 
-   +=========+==============+===================+========+====================+
-   |Attribute|AttributeValue|Reference          |Multiple|Description         |
-   |         |              |                   |Allowed |                    |
-   +=========+==============+===================+========+====================+
-   |vendor   |utf8String    |RFCthis            |No      |A human-readable    |
-   |         |              |                   |        |string by which the |
-   |         |              |                   |        |vendor identifies   |
-   |         |              |                   |        |themself.           |
-   +---------+--------------+-------------------+--------+--------------------+
-   |oemid    |bytes         |[I-D.ietf-rats-eat]|No      |The EAT OEM ID as   |
-   |         |              |                   |        |defined in          |
-   |         |              |                   |        |[I-D.ietf-rats-eat].|
-   +---------+--------------+-------------------+--------+--------------------+
-   |hwmodel  |utf8String    |[I-D.ietf-rats-eat]|No      |Model or product    |
-   |         |              |                   |        |line of the hardware|
-   |         |              |                   |        |module.             |
-   +---------+--------------+-------------------+--------+--------------------+
-   |hwserial |utf8String    |RFCthis            |No      |Serial number of the|
-   |         |              |                   |        |hardware module,    |
-   |         |              |                   |        |often matches the   |
-   |         |              |                   |        |number engraved or  |
-   |         |              |                   |        |stickered on the    |
-   |         |              |                   |        |case.               |
-   +---------+--------------+-------------------+--------+--------------------+
-   |swversion|utf8String    |[I-D.ietf-rats-eat]|No      |A text string       |
-   |         |              |                   |        |identifying the     |
-   |         |              |                   |        |firmware or software|
-   |         |              |                   |        |running on the HSM. |
-   +---------+--------------+-------------------+--------+--------------------+
-   |dbgstat  |int           |[I-D.ietf-rats-eat]|No      |Indicates whether   |
-   |         |              |                   |        |the HSM is currently|
-   |         |              |                   |        |in a debug state, or|
-   |         |              |                   |        |is capable in the   |
-   |         |              |                   |        |future of being     |
-   |         |              |                   |        |turned to a debug   |
-   |         |              |                   |        |state.  Semantics   |
-   |         |              |                   |        |and integer codes   |
-   |         |              |                   |        |are defined in      |
-   |         |              |                   |        |[I-D.ietf-rats-eat].|
-   +---------+--------------+-------------------+--------+--------------------+
-   |uptime   |int           |[I-D.ietf-rats-eat]|No      |Contains the number |
-   |         |              |                   |        |of seconds that have|
-   |         |              |                   |        |elapsed since the   |
-   |         |              |                   |        |entity was last     |
-   |         |              |                   |        |booted.             |
-   +---------+--------------+-------------------+--------+--------------------+
-   |bootcount|int           |[I-D.ietf-rats-eat]|No      |Contains a count of |
-   |         |              |                   |        |the number of times |
-   |         |              |                   |        |the entity has been |
-   |         |              |                   |        |booted.             |
-   +---------+--------------+-------------------+--------+--------------------+
-   |usermods |utf8String    |RFCthis            |Yes     |This attribute lists|
-   |         |              |                   |        |user modules        |
-   |         |              |                   |        |currently loaded    |
-   |         |              |                   |        |onto the HSM in a   |
-   |         |              |                   |        |human readable      |
-   |         |              |                   |        |format.             |
-   +---------+--------------+-------------------+--------+--------------------+
-   |fipsboot |bool          |[FIPS.140-3]       |No      |Indicates whether   |
-   |         |              |                   |        |the devices is      |
-   |         |              |                   |        |currently running in|
-   |         |              |                   |        |FIPS mode.          |
-   +---------+--------------+-------------------+--------+--------------------+
-   |fipsver  |utf8String    |[FIPS.140-3]       |No      |Indicates the       |
-   |         |              |                   |        |version of the FIPS |
-   |         |              |                   |        |CMVP standard that  |
-   |         |              |                   |        |is being enforced.  |
-   |         |              |                   |        |At time of writing  |
-   |         |              |                   |        |this is typically   |
-   |         |              |                   |        |"FIPS 140-2" or     |
-   |         |              |                   |        |"FIPS 140-3".       |
-   +---------+--------------+-------------------+--------+--------------------+
-   |fipslevel|int           |[FIPS.140-3]       |No      |Indicates the FIPS  |
-   |         |              |                   |        |Level to which the  |
-   |         |              |                   |        |device is currently |
-   |         |              |                   |        |operating in        |
-   |         |              |                   |        |compliance with.    |
-   +---------+--------------+-------------------+--------+--------------------+
-   |envid    |utf8String    |RFCthis            |Yes     |An environment ID,  |
-   |         |              |                   |        |which will typically|
-   |         |              |                   |        |be a URI, UUID, or  |
-   |         |              |                   |        |similar.            |
-   +---------+--------------+-------------------+--------+--------------------+
-   |envdesc  |utf8String    |RFCthis            |Yes     |Further description |
-   |         |              |                   |        |of the environment. |
-   +---------+--------------+-------------------+--------+--------------------+
+   +=========+================+==============+===========+============+
+   |Attribute| AttributeValue | Reference    | Multiple? | OID        |
+   +=========+================+==============+===========+============+
+   |vendor   | utf8String     | RFCthis      | No        | id-pkix-   |
+   |         |                |              |           | evidence-  |
+   |         |                |              |           | attribute- |
+   |         |                |              |           | platform-  |
+   |         |                |              |           | vendor     |
+   +---------+----------------+--------------+-----------+------------+
+   |oemid    | bytes          | [RFC9711]    | No        | id-pkix-   |
+   |         |                |              |           | evidence-  |
+   |         |                |              |           | attribute- |
+   |         |                |              |           | platform-  |
+   |         |                |              |           | oemid      |
+   +---------+----------------+--------------+-----------+------------+
+   |hwmodel  | utf8String     | [RFC9711]    | No        | id-pkix-   |
+   |         |                |              |           | evidence-  |
+   |         |                |              |           | attribute- |
+   |         |                |              |           | platform-  |
+   |         |                |              |           | model      |
+   +---------+----------------+--------------+-----------+------------+
+   |hwserial | utf8String     | RFCthis      | No        | id-pkix-   |
+   |         |                |              |           | evidence-  |
+   |         |                |              |           | attribute- |
+   |         |                |              |           | platform-  |
+   |         |                |              |           | hwserial   |
+   +---------+----------------+--------------+-----------+------------+
+   |swversion| utf8String     | [RFC9711]    | No        | id-pkix-   |
+   |         |                |              |           | evidence-  |
+   |         |                |              |           | attribute- |
+   |         |                |              |           | platform-  |
+   |         |                |              |           | swversion  |
+   +---------+----------------+--------------+-----------+------------+
+   |dbgstat  | int            | [RFC9711]    | No        | id-pkix-   |
+   |         |                |              |           | evidence-  |
+   |         |                |              |           | attribute- |
+   |         |                |              |           | platform-  |
+   |         |                |              |           | debugstat  |
+   +---------+----------------+--------------+-----------+------------+
+   |uptime   | int            | [RFC9711]    | No        | id-pkix-   |
+   |         |                |              |           | evidence-  |
+   |         |                |              |           | attribute- |
+   |         |                |              |           | platform-  |
+   |         |                |              |           | uptime     |
+   +---------+----------------+--------------+-----------+------------+
+   |bootcount| int            | [RFC9711]    | No        | id-pkix-   |
+   |         |                |              |           | evidence-  |
+   |         |                |              |           | attribute- |
+   |         |                |              |           | platform-  |
+   |         |                |              |           | bootcount  |
+   +---------+----------------+--------------+-----------+------------+
+   |usermods | utf8String     | RFCthis      | Yes       | id-pkix-   |
+   |         |                |              |           | evidence-  |
+   |         |                |              |           | attribute- |
+   |         |                |              |           | platform-  |
+   |         |                |              |           | usermods   |
+   +---------+----------------+--------------+-----------+------------+
+   |fipsboot | bool           | [FIPS.140-3] | No        | id-pkix-   |
+   |         |                |              |           | evidence-  |
+   |         |                |              |           | attribute- |
+   |         |                |              |           | platform-  |
+   |         |                |              |           | fipsboot   |
+   +---------+----------------+--------------+-----------+------------+
+   |fipsver  | utf8String     | [FIPS.140-3] | No        | id-pkix-   |
+   |         |                |              |           | evidence-  |
+   |         |                |              |           | attribute- |
+   |         |                |              |           | platform-  |
+   |         |                |              |           | fipsver    |
+   +---------+----------------+--------------+-----------+------------+
+   |fipslevel| int            | [FIPS.140-3] | No        | id-pkix-   |
+   |         |                |              |           | evidence-  |
+   |         |                |              |           | attribute- |
+   |         |                |              |           | platform-  |
+   |         |                |              |           | fipslevel  |
+   +---------+----------------+--------------+-----------+------------+
+   |envid    | utf8String     | RFCthis      | Yes       | id-pkix-   |
+   |         |                |              |           | evidence-  |
+   |         |                |              |           | attribute- |
+   |         |                |              |           | platform-  |
+   |         |                |              |           | envid      |
+   +---------+----------------+--------------+-----------+------------+
+   |envdesc  | utf8String     | RFCthis      | Yes       | id-pkix-   |
+   |         |                |              |           | evidence-  |
+   |         |                |              |           | attribute- |
+   |         |                |              |           | platform-  |
+   |         |                |              |           | envdesc    |
+   +---------+----------------+--------------+-----------+------------+
 
-                                  Table 1
+                                 Table 1
 
    TODO: find the actual reference for "FIPS Mode" -- FIPS 140-3 does
    not define it (at least not the 11 page useless version of 140-3 that
    I found).
 
-   Each attribute has an assigned OID, see Section 10.
+   Each attribute defined in the table above is described in the
+   following sub-sections.
 
 5.1.1.  vendor
 
    A human-readable string that reports the name of the device's
    manufacturer.
 
-5.1.2.  hwserial
+5.1.2.  oemid, hwmodel, swversion, dbgstat, uptime, bootcount
+
+   These attributes are defined in [RFC9711] and reused in this
+   specification for interoperability.  Small descriptions are offered
+   for each to ease the reading of this specification.  In case of
+   confusion between the description offered here and the one in
+   [RFC9711], the definition offered in the latter shall prevail.
+
+   The attribute "oemid" uniquely identifies the Original Equipment
+   Manufacturer (OEM) of the HSM.  This is a sequence of bytes and is
+   not meant to be a human readable string.
+
+   The attribute "hwmodel" differentiates models, products and variants
+   manufactured by a particular OEM.  A model must be unique within a
+   given "oemid".  This is a sequence of bytes and is not meant to be a
+   human readable string.
+
+   EDNOTE: JPF: "hwmodel" in EAT is not human readbale.  We have
+   "vendor" that duplicates in human readable for "oemid".  Should we
+   duplicate "hwmodel" in a human readable form?  Should we define it
+   here for ourselves?
+
+   The attribute "swversion" differentiates between the various
+   revisions of a firmware offered for the HSM.  This is a string that
+   is expected to be human readable.
+
+   EDNOTE: JPF: In EAT, "swversion" requires "swname".  Should we add
+   "swname" or disaassociate from the EAT definition?
+
+   The attribute "dbgstat" refers to the state of the debug facilities
+   offered by the HSM.  This is an integer value describing the current
+   state as described in [RFC9711].
+
+   The attribute "uptime" reports the number of seconds that have
+   elapsed since the HSM was last booted.
+
+   The attribute "bootcount" reported the number of times the HSM was
+   booted.
+
+5.1.3.  hwserial
 
    A human-readable string that reports the serial number of the
    hardware module.  This serial number often matches the number
    engraved on the case or on an applied sticker.
 
-5.1.3.  usermods
+5.1.4.  usermods
 
    Most HSMs have some concept of trusted execution environment where
    user software modules can be loaded inside the HSM to run with some
@@ -784,7 +826,7 @@ Table of Contents
 
    EDNOTE: JPF if JSON, why have multiple attributes.
 
-5.1.4.  fipsboot, fipsver and fipslevel
+5.1.5.  fipsboot, fipsver and fipslevel
 
    FIPS 140-3 CMVP validation places stringent requirements on the mode
    of operation of the device and the cryptography offered by the
@@ -826,7 +868,7 @@ Table of Contents
    device state information contained in the Evidence with a valid FIPS
    CMVP certificate for the device.
 
-5.1.5.  envid
+5.1.6.  envid
 
    An identifier for an environment to which the attested keys belong.
    These will be an a vendor-chosen format, but are constrained to ASCII
@@ -847,7 +889,7 @@ Table of Contents
    Presenter is requesting that only keys belogning to the given
    environment be included in the returned attestation.
 
-5.1.6.  envdesc
+5.1.7.  envdesc
 
    Further description of the environment beyond hwvendor, hwmodel,
    hwserial, swversion; for example if there is a need to describe
@@ -876,66 +918,61 @@ Table of Contents
    column refers to the specification where the semantics for the
    attribute value can be found.
 
-   +===========+==============+=========+========+======================+
-   |Attribute  |AttributeValue|Reference|Multiple|Description           |
-   |           |              |         |Allowed |                      |
-   +===========+==============+=========+========+======================+
-   |identifier |utf8String    |RFCthis  |Yes     |Identifies the subject|
-   |           |              |         |        |key, with a vendor-   |
-   |           |              |         |        |specific format which |
-   |           |              |         |        |could be numeric,     |
-   |           |              |         |        |UUID, or other textual|
-   |           |              |         |        |identifier.           |
-   +-----------+--------------+---------+--------+----------------------+
-   |spki       |bytes         |RFCthis  |No      |A complete DER-encoded|
-   |           |              |         |        |SubjectPublicKeyInfo  |
-   |           |              |         |        |representing the      |
-   |           |              |         |        |public key associated |
-   |           |              |         |        |with the asymetric key|
-   |           |              |         |        |pair being attested.  |
-   +-----------+--------------+---------+--------+----------------------+
-   |purpose    |bytes         |[PKCS11] |No      |Defines the intended  |
-   |           |              |         |        |usage for the key.    |
-   +-----------+--------------+---------+--------+----------------------+
-   |extractable|bool          |[PKCS11] |No      |Indicates if the key  |
-   |           |              |         |        |is able to be exported|
-   |           |              |         |        |from the module.      |
-   |           |              |         |        |Corresponds directly  |
-   |           |              |         |        |to PKCS#11            |
-   |           |              |         |        |CKA_EXTRACTABLE.      |
-   +-----------+--------------+---------+--------+----------------------+
-   |sensitive  |bool          |[PKCS11] |No      |Indicates that the key|
-   |           |              |         |        |cannot leave the      |
-   |           |              |         |        |module in plaintext.  |
-   |           |              |         |        |Corresponds directly  |
-   |           |              |         |        |to PKCS#11            |
-   |           |              |         |        |CKA_SENSITIVE.        |
-   +-----------+--------------+---------+--------+----------------------+
-   |never-     |bool          |[PKCS11] |No      |Indicates if the key  |
-   |extractable|              |         |        |was able to be        |
-   |           |              |         |        |exported from the     |
-   |           |              |         |        |module.  Corresponds  |
-   |           |              |         |        |directly to PKCS#11   |
-   |           |              |         |        |CKA_NEVER_EXTRACTABLE.|
-   +-----------+--------------+---------+--------+----------------------+
-   |local      |bool          |RFCthis  |No      |Indicates whether the |
-   |           |              |         |        |key was generated     |
-   |           |              |         |        |locally or imported.  |
-   +-----------+--------------+---------+--------+----------------------+
-   |expiry     |time          |RFCthis  |No      |Defines the expiry    |
-   |           |              |         |        |date or "not after"   |
-   |           |              |         |        |time for the key.     |
-   +-----------+--------------+---------+--------+----------------------+
-   |protection |bytes         |RFCthis  |No      |Indicates any         |
-   |           |              |         |        |additional key        |
-   |           |              |         |        |protection properties.|
-   +-----------+--------------+---------+--------+----------------------+
+   +=============+================+=========+===========+=============+
+   | Attribute   | AttributeValue |Reference| Multiple? | OID         |
+   +=============+================+=========+===========+=============+
+   | identifier  | utf8String     |RFCthis  | Yes       | id-pkix-    |
+   |             |                |         |           | evidence-   |
+   |             |                |         |           | attribute-  |
+   |             |                |         |           | key-        |
+   |             |                |         |           | identifier  |
+   +-------------+----------------+---------+-----------+-------------+
+   | spki        | bytes          |RFCthis  | No        | id-pkix-    |
+   |             |                |         |           | evidence-   |
+   |             |                |         |           | attribute-  |
+   |             |                |         |           | key-spki    |
+   +-------------+----------------+---------+-----------+-------------+
+   | purpose     | bytes          |[PKCS11] | No        | id-pkix-    |
+   |             |                |         |           | evidence-   |
+   |             |                |         |           | attribute-  |
+   |             |                |         |           | key-purpose |
+   +-------------+----------------+---------+-----------+-------------+
+   | extractable | bool           |[PKCS11] | No        | id-pkix-    |
+   |             |                |         |           | evidence-   |
+   |             |                |         |           | attribute-  |
+   |             |                |         |           | key-        |
+   |             |                |         |           | extractable |
+   +-------------+----------------+---------+-----------+-------------+
+   | sensitive   | bool           |[PKCS11] | No        | id-pkix-    |
+   |             |                |         |           | evidence-   |
+   |             |                |         |           | attribute-  |
+   |             |                |         |           | key-        |
+   |             |                |         |           | sensitive   |
+   +-------------+----------------+---------+-----------+-------------+
+   | never-      | bool           |[PKCS11] | No        | id-pkix-    |
+   | extractable |                |         |           | evidence-   |
+   |             |                |         |           | attribute-  |
+   |             |                |         |           | key-never-  |
+   |             |                |         |           | extractable |
+   +-------------+----------------+---------+-----------+-------------+
+   | local       | bool           |[PKCS11] | No        | id-pkix-    |
+   |             |                |         |           | evidence-   |
+   |             |                |         |           | attribute-  |
+   |             |                |         |           | key-local   |
+   +-------------+----------------+---------+-----------+-------------+
+   | expiry      | time           |RFCthis  | No        | id-pkix-    |
+   |             |                |         |           | evidence-   |
+   |             |                |         |           | attribute-  |
+   |             |                |         |           | key-expiry  |
+   +-------------+----------------+---------+-----------+-------------+
+   | protection  | bytes          |RFCthis  | No        | id-pkix-    |
+   |             |                |         |           | evidence-   |
+   |             |                |         |           | attribute-  |
+   |             |                |         |           | key-        |
+   |             |                |         |           | protection  |
+   +-------------+----------------+---------+-----------+-------------+
 
-                                  Table 2
-
-   PKCS#11 private key attributes can be somewhat complex to parse,
-   especially as their exact meanings can vary by the key type and the
-   exact details of key export mechanisms supported by the HSM.
+                                 Table 2
 
    An attestation key might be visible to a client of the device and be
    reported along with other cryptographic keys.  Therefore, it is
@@ -943,26 +980,6 @@ Table of Contents
    attestation key like any other cryptographic key.  An implemention
    MAY reject the generation of PKIX Evidence if it relates to an
    attestation key.
-
-   EDNOTE: JPF I wonder if we should convert the table column
-   "Description" to "OID" and provide the name of the OID.  It might be
-   cleaner to provide the description in the associated sub-section.
-
-   EDNOTE: JPF the next paragraph probably belongs somewhere else
-
-   In most cases, the Verifier of a PKIX Attestation will want to know
-   simply that the key is in hardware and cannot be extracted to be used
-   with a software cryptographic module.  A setting of extractable=false
-   satisfies this requirement.  Generally extractable=true &&
-   sensitive=true also satisfies this requirement as the key cannot be
-   extracted in plaintext, but only under key wrap.  This is common in
-   HSM clustering scenarios, and is also common in scenarios where keys
-   are exported under wrap so that they can be stored in an off-board
-   database for re-import later, thus allowing the HSM to protect and
-   manage a much larger set of keys than it has internal memory for.
-   The never-extractable and local attributes give additional assurance
-   that the key has always been in hardware and was not imported from
-   software.
 
 5.2.1.  identifier
 
@@ -979,22 +996,40 @@ Table of Contents
    SubjectPublicKeyInfo (see [RFC5280]) associated with the
    cryptographic key.
 
-5.2.3.  purpose
+5.2.3.  purpose, extractable, sensitive, never-extractable, local
 
-   TODO: probably need to define a mapping from PKCS#11 CKA enums to a
-   bit-indexed byte array.
+   These attributes are defined in [PKCS11] and reused in this
+   specification for interoperability.  Small descriptions are offered
+   for each to ease the reading of this specification.  In case of
+   confusion between the description offered here and the one in
+   [PKCS11], the definition offered in the latter shall prevail.
 
-5.2.4.  local
+   The attribute "purpose" defines the intended usage for the key.
 
-   If provided and set, indicates that the cryptographic key was created
-   by the device providing the Evidence.
+   EDNOTE: JPF: I do not see "purpose" as part of PKCS#11
 
-5.2.5.  expiry
+   The attribute "extractable" indicates that the key can be exported
+   from the HSM.  Corresponds directly to the attribute CKA_EXTRACTABLE
+   found in PKCS#11.
+
+   The attribute "sensitive" indicates that the key cannot leave the HSM
+   in plaintext.  Corresponds directly to the attribute CKA_SENSITIVE
+   found in PKCS#11.
+
+   The attribute "never-extractable" indicates if the key was never
+   extractable from the HSM throughout the life of the key.  Corresponds
+   directly to the attribute CKA_NEVER_EXTRACTABLE found in PKCS#11.
+
+   The attribute "local" indicates whether the key was generated locally
+   or imported.. Corresponds directly to the attribute CKA_LOCAL found
+   in PKCS#11.
+
+5.2.4.  expiry
 
    Reports a time after which the key is not to be used.  The device MAY
    enforce this policy based on its internal clock.
 
-5.2.6.  protection
+5.2.5.  protection
 
    Indicates any additional key protection properties around use or
    modification of this key.  These are generalized properties and will
@@ -1040,43 +1075,45 @@ Table of Contents
    These attribute types MAY be contained within a transaction entity;
    i.e. an entity identified by id-pkix-attest-entity-transaction.
 
-    +=========+==============+===================+========+===========+
-    |Attribute|AttributeValue|Reference          |Multiple|Description|
-    |         |              |                   |Allowed |           |
-    +=========+==============+===================+========+===========+
-    |nonce    |bytes         |RFCthis            |No      |Repeats a  |
-    |         |              |                   |        |"nonce"    |
-    |         |              |                   |        |provided   |
-    |         |              |                   |        |during the |
-    |         |              |                   |        |request of |
-    |         |              |                   |        |Evidence.  |
-    +---------+--------------+-------------------+--------+-----------+
-    |timestamp|time          |[I-D.ietf-rats-eat]|No      |The time at|
-    |         |              |                   |        |which this |
-    |         |              |                   |        |attestation|
-    |         |              |                   |        |was        |
-    |         |              |                   |        |generated. |
-    |         |              |                   |        |Corresponds|
-    |         |              |                   |        |to EAT IAT |
-    |         |              |                   |        |claim.     |
-    +---------+--------------+-------------------+--------+-----------+
+    +=========+================+===========+===========+==============+
+    |Attribute| AttributeValue | Reference | Multiple? | OID          |
+    +=========+================+===========+===========+==============+
+    |nonce    | bytes          | [RFC9711] | Yes       | id-pkix-     |
+    |         |                |           |           | evidence-    |
+    |         |                |           |           | attribute-   |
+    |         |                |           |           | transaction- |
+    |         |                |           |           | nonce        |
+    +---------+----------------+-----------+-----------+--------------+
+    |timestamp| time           | [RFC9711] | No        | id-pkix-     |
+    |         |                |           |           | evidence-    |
+    |         |                |           |           | attribute-   |
+    |         |                |           |           | transaction- |
+    |         |                |           |           | timestamp    |
+    +---------+----------------+-----------+-----------+--------------+
 
                                   Table 3
 
 5.3.1.  nonce
 
-   The nonce attribute is used to provide "freshness" quality as to the
-   claims provided in the PkixEvidence message.  A Presenter requesting
-   a PkixEvidence message MAY provide a nonce value as part of the
-   request.  This nonce value, if provided, SHOULD be repeated as an
-   attribute to the transaction entity.
+   The attribute "nonce" is used to provide "freshness" quality as to
+   the claims provided in the PkixEvidence message.  A Presenter
+   requesting a PkixEvidence message MAY provide a nonce value as part
+   of the request.  This nonce value, if provided, SHOULD be repeated as
+   an attribute to the transaction entity.
+
+   This is similar to the attribute "eat_nonce" as defined in [RFC9711].
+   According to this specification, this attribute may be specified
+   multiple times with different values.  In that case, all different
+   values shall be repeated in the PKIXEvidence.
 
 5.3.2.  timestamp
 
    The time at which the PKIX Evidence was generated, according to the
-   internal system clock of the Attester.
+   internal system clock of the Attester.  This is similar to the "iat"
+   claim in [RFC9711].
 
-   EDNOTE: JPF Does this belong to Security Considerations?
+   EDNOTE: JPF: Does the following paragraph belong to Security
+   Considerations?
 
    Note that it is common for HSMs to not have an accurate system clock;
    consider an HSM for a root CA kept offline and booted up infrequently
@@ -1256,37 +1293,33 @@ Table of Contents
    and capturing its results.  The results are then forwarded to the
    Verifier.
 
-                      .-------------.
-                      |  Verifier   |
-                      '-------------'
-                     PKIX    |
-                     Evidence|
-   .-------------------------|----------.
-   | Attester (HSM)          |          |
-   |    .----------------.   |          |
-   |    | Target         |   |          |
-   |    | Environment    |   |          |
-   |    | (Platform &    |   |          |
-   |    | Application    |   |          |
-   |    | Keys)          |   |          |
-   |    '--------------+-'   |          |
-   |                   |     |          |
-   |           Collect |     |          |
-   |            Claims |     |          |
-   |                   |     |          |
-   |                   v     |          |
-   |       .-----------------+-----.    |
-   |       |      Attesting        |    |
-   |       |     Environment       |    |
-   |       '-----------------------'    |
-   |              ^    |                |
-   '--------------+----+----------------'
-      Attestation |    | PKIX
-          Request |    | Attestation
-                  |    v
-           .-----------------.                 .-----------------.
-           |    Presenter    +---------------->|    Recipient    |
-           '-----------------' Usage Protocol  '-----------------'
+   +-----------------------------+
+   |  Attester (HSM)             |
+   |                             |
+   |      +--------------+       |
+   |      | Target       |       |
+   |      | Environment  |       |
+   |      | (Entities,&  |       |
+   |      |  attributes) |       |
+   |      +-------+------+       |
+   |              |              |
+   |              | Collect      |
+   |              | Claims       |
+   |              v              |
+   |      +------------------+   |
+   |      | Attesting        |   |
+   |      | Environment      |   |
+   |      +--------+---------+   |
+   |            ^  |             |
+   |            |  |             |
+   +------------+--+-------------+
+                |  |
+    Attestation |  |   PKIX
+    Request     |  |   Evidence
+                |  v
+        +----------------+           +------------+
+        |    Presenter   |---------->|  Verifier  |
+        +----------------+           +------------+
 
                            Figure 1: Architecture
 
@@ -1519,25 +1552,25 @@ Table of Contents
 
    id-pkix-evidence-attribute-type OBJECT IDENTIFIER ::= { id-pkix-evidence- 1 }
 
-   id-pkix-evidence-attribute-transaction       OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-type 0 }
-   id-pkix-evidence-attribute-transaction-nonce OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-transaction 0 }
+   id-pkix-evidence-attribute-transaction           OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-type 0 }
+   id-pkix-evidence-attribute-transaction-nonce     OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-transaction 0 }
+   id-pkix-evidence-attribute-transaction-timestamp OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-transaction 1 }
 
    id-pkix-evidence-attribute-platform            OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-type 1 }
    id-pkix-evidence-attribute-platform-vendor     OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 0 }
    id-pkix-evidence-attribute-platform-hwserial   OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 1 }
    id-pkix-evidence-attribute-platform-fipsboot   OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 2 }
-   id-pkix-evidence-attribute-platform-desc       OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 3 }
-   id-pkix-evidence-attribute-platform-time       OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 4 }
-   id-pkix-evidence-attribute-platform-swversion  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 5 }
-   id-pkix-evidence-attribute-platform-oemid      OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 6 }
-   id-pkix-evidence-attribute-platform-debugstat  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 7 }
-   id-pkix-evidence-attribute-platform-uptime     OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 8 }
-   id-pkix-evidence-attribute-platform-bootcount  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 9 }
-   id-pkix-evidence-attribute-platform-usermods   OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 8 }
-   id-pkix-evidence-attribute-platform-envid      OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 9 }
-   id-pkix-evidence-attribute-platform-envdesc    OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 10 }
-   id-pkix-evidence-attribute-platform-fipsver    OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 11 }
-   id-pkix-evidence-attribute-platform-fipslevel  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 12 }
+   id-pkix-evidence-attribute-platform-model      OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 3 }
+   id-pkix-evidence-attribute-platform-swversion  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 4 }
+   id-pkix-evidence-attribute-platform-oemid      OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 5 }
+   id-pkix-evidence-attribute-platform-debugstat  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 6 }
+   id-pkix-evidence-attribute-platform-uptime     OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 7 }
+   id-pkix-evidence-attribute-platform-bootcount  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 8 }
+   id-pkix-evidence-attribute-platform-usermods   OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 9 }
+   id-pkix-evidence-attribute-platform-envid      OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 10 }
+   id-pkix-evidence-attribute-platform-envdesc    OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 11 }
+   id-pkix-evidence-attribute-platform-fipsver    OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 12 }
+   id-pkix-evidence-attribute-platform-fipslevel  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 13 }
 
 
 
@@ -1550,6 +1583,7 @@ Table of Contents
    id-pkix-evidence-attribute-key-local             OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 5 }
    id-pkix-evidence-attribute-key-expiry            OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 6 }
    id-pkix-evidence-attribute-key-protection        OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 7 }
+   id-pkix-evidence-attribute-key-sensitive         OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 8 }
 
    <CODE ENDS>
 
@@ -1739,13 +1773,6 @@ Table of Contents
               <https://nvlpubs.nist.gov/nistpubs/FIPS/
               NIST.FIPS.140-3.pdf>.
 
-   [I-D.ietf-rats-eat]
-              Lundblade, L., Mandyam, G., O'Donoghue, J., and C.
-              Wallace, "The Entity Attestation Token (EAT)", Work in
-              Progress, Internet-Draft, draft-ietf-rats-eat-31, 6
-              September 2024, <https://datatracker.ietf.org/doc/html/
-              draft-ietf-rats-eat-31>.
-
    [PKCS11]   Cox, D. B. T., "PKCS #11 Specification Version 3.1", n.d.,
               <https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/
               pkcs11-spec-v3.1-cs01.html>.
@@ -1769,6 +1796,11 @@ Table of Contents
               W. Pan, "Remote ATtestation procedureS (RATS)
               Architecture", RFC 9334, DOI 10.17487/RFC9334, January
               2023, <https://www.rfc-editor.org/rfc/rfc9334>.
+
+   [RFC9711]  Lundblade, L., Mandyam, G., O'Donoghue, J., and C.
+              Wallace, "The Entity Attestation Token (EAT)", RFC 9711,
+              DOI 10.17487/RFC9711, April 2025,
+              <https://www.rfc-editor.org/rfc/rfc9711>.
 
    [X.680]    ITU-T, "Information technology -- Abstract Syntax Notation
               One (ASN.1): Specification of basic notation", n.d.,
@@ -1804,9 +1836,9 @@ Table of Contents
               Ounsworth, M., Tschofenig, H., Birkholz, H., Wiseman, M.,
               and N. Smith, "Use of Remote Attestation with
               Certification Signing Requests", Work in Progress,
-              Internet-Draft, draft-ietf-lamps-csr-attestation-18, 19
-              March 2025, <https://datatracker.ietf.org/doc/html/draft-
-              ietf-lamps-csr-attestation-18>.
+              Internet-Draft, draft-ietf-lamps-csr-attestation-19, 25
+              May 2025, <https://datatracker.ietf.org/doc/html/draft-
+              ietf-lamps-csr-attestation-19>.
 
    [I-D.ietf-rats-msg-wrap]
               Birkholz, H., Smith, N., Fossati, T., Tschofenig, H., and
@@ -1837,7 +1869,7 @@ Table of Contents
 Appendix A.  Samples
 
    A reference implementation of this specification can be found at
-   https://github.com/hannestschofenig/keyattestation
+   https://github.com/ietf-rats-wg/key-attestation
 
    It produces the following sample attestation:
 
@@ -1858,17 +1890,17 @@ PkixAttestation:
     entityType=1.2.3.999.0.1
     reportedAttributes=SequenceOf:
      ReportedAttribute:
-      attributeType=1.2.3.999.1.1.0
+      attributeType=1.2.3.999.1.1.1
       value=AttributeValue:
        utf8String=HSM-123
 
      ReportedAttribute:
-      attributeType=1.2.3.999.1.1.1
+      attributeType=1.2.3.999.1.1.2
       value=AttributeValue:
        bool=True
 
      ReportedAttribute:
-      attributeType=1.2.3.999.1.1.2
+      attributeType=1.2.3.999.1.1.3
       value=AttributeValue:
        utf8String=Model ABC
 
@@ -1876,11 +1908,6 @@ PkixAttestation:
       attributeType=1.2.3.999.1.1.4
       value=AttributeValue:
        utf8String=3.1.9
-
-     ReportedAttribute:
-      attributeType=1.2.3.999.1.1.3
-      value=AttributeValue:
-       time=202502032234Z
 
 
    ReportedEntity:
@@ -2024,7 +2051,7 @@ PkixAttestation:
      trailerField=1
 
 
-   signatureValue=0x9b6ac1932f1cd85befbde054e084577ebc9181bcf05179658a700e22556fc3f1931f59dc9734efe08df204fcfe55c64c6a97e8d520e58c1f64080b6cce1c08e88db510c06d6914a818b70df82326b37a2abe54fab0567d748e1e82e2de954cac63c5ab3bc92fff9cb8aa64fbcb83dd8bacbce96392f91dd40ee05058adceb11f5cf0c379241fd470918abceea70fd01c0cbc64d96067fe549ec443738655bc2bcf7e5bd54c15d5e5ac2f4ad180d973a7e6025126ccd2b45d78e9944662237959ef73f47e9ae0fa9b0c55177bb6f867a90b41d0efb72c192f15a66531d030bc85fed3d135aea4045e024ef2e807517504d313dbea4b0f709d0553b60793b2dcaa
+   signatureValue=0xab7fd2b0f854daa4e867fd16955cd3b9910e93b70c7403cfa8077f04193909d14ec6bed859b67476c84cc2c28842b9a087d5c39e11ca95f6961d272d97297cb6ed3c062717696b032f4bf1f0f41ac20ae9706a8a4c17845ae2512950774173737010d6692cb726d1ab3a022092efcf27f0dd875b62e4df546814186f9e744cc34cf0778c877c571d006be094aa683a5f66d6816d22dba104334163020c62d81903c41d353eaba9421247fc354fd3288a01921d93014100960324c3122feebfffc1007c83e98136e1b1fca115835b9e67fa9056f290208fb99e1c8144839a5e13ccb1217dceeecc253fc7785bc8308382e052ffb867b40a0cd593176ed6ddc7b0
   SignatureBlock:
    certChain=SequenceOf:
     Certificate:
@@ -2105,12 +2132,12 @@ PkixAttestation:
     algorithm=1.2.840.10045.2.1
     parameters=0x06082a8648ce3d030107
 
-   signatureValue=0x304402201e7703f63bff951917714e5fa813de5265f151a6802165ef0be5f1fe6c91225b02200ad06b41a5062b07ff3ad37c7d112e19575f0e14a9750fe95e615550b88b5fed
+   signatureValue=0x3046022100e416af2483667e73345ee297e563cf1639e41ab9bdcd01f98872fddb101e779d022100d06c6e1054292640eea1873230a399af0936760cbfc8023a8a2874f9c5fc5ba8
 
 
 
 DER Base64:
-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
+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
 
 Appendix B.  Acknowledgements
 
