@@ -49,8 +49,9 @@ id-pkix-evidence-entity-key         OBJECT IDENTIFIER ::= { id-pkix-evidence-ent
 
 id-pkix-evidence-attribute-type OBJECT IDENTIFIER ::= { id-pkix-evidence- 1 }
 
-id-pkix-evidence-attribute-transaction       OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-type 0 }
-id-pkix-evidence-attribute-transaction-nonce OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-transaction 0 }
+id-pkix-evidence-attribute-transaction           OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-type 0 }
+id-pkix-evidence-attribute-transaction-nonce     OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-transaction 0 }
+id-pkix-evidence-attribute-transaction-timestamp OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-transaction 1 }
 
 id-pkix-evidence-attribute-platform            OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-type 1 }
 id-pkix-evidence-attribute-platform-vendor     OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 0 }

@@ -786,20 +786,24 @@ A default and vendor-agnostic set of transaction attributes is defined in this s
 
 These attribute types MAY be contained within a transaction entity; i.e. an entity identified by `id-pkix-attest-entity-transaction`.
 
-| Attribute       | AttributeValue  | Reference    | Multiple Allowed | Description  |
-| ---             | ---             | ---          | ---              |              |
-| nonce           | bytes           | {{&SELF}}    | No               | Repeats a "nonce" provided during the request of Evidence. |
-| timestamp       | time            | {{!RFC9711}} | No               | The time at which this attestation was generated. Corresponds to EAT IAT claim. |
+| Attribute       | AttributeValue  | Reference    | Multiple? | OID                                               |
+| ---             | ---             | ---          | ---       | ---                                               |
+| nonce           | bytes           | {{!RFC9711}} | Yes       | id-pkix-evidence-attribute-transaction-nonce      |
+| timestamp       | time            | {{!RFC9711}} | No        | id-pkix-evidence-attribute-transaction-timestamp  |
 
 ### nonce
 
-The nonce attribute is used to provide "freshness" quality as to the claims provided in the PkixEvidence message. A Presenter requesting a PkixEvidence message MAY provide a nonce value as part of the request. This nonce value, if provided, SHOULD be repeated as an attribute to the transaction entity.
+The attribute "nonce" is used to provide "freshness" quality as to the claims provided in the PkixEvidence message. A Presenter requesting a PkixEvidence message MAY provide a nonce value as part of the request. This nonce value, if provided, SHOULD be repeated as an attribute to the transaction entity.
+
+This is similar to the attribute "eat_nonce" as defined in {{!RFC9711}}. According to this specification, this attribute may be specified multiple times with
+different values. In that case, all different values shall be repeated in the PKIXEvidence.
 
 ### timestamp
 
-The time at which the PKIX Evidence was generated, according to the internal system clock of the Attester.
+The time at which the PKIX Evidence was generated, according to the internal system clock of the Attester. This is similar to the
+"iat" claim in {{!RFC9711}}.
 
-EDNOTE: JPF Does this belong to Security Considerations?
+EDNOTE: JPF: Does the following paragraph belong to Security Considerations?
 
 Note that it is common for HSMs to not have an accurate system clock; consider an HSM for a root CA kept offline and booted up infrequently in an local network segregated from all other network, or a smart card which boots up only when held against an NFC reader.
 Implementers of emitters SHOULD include this attribute only if the device reliably knows its own time (for example has had recent contact with an NTP server).
