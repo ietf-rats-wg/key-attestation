@@ -26,11 +26,10 @@ id_pkix_attest_attribute_transaction        = univ.ObjectIdentifier( id_pkix_att
 id_pkix_attest_attribute_transaction_nonce  = univ.ObjectIdentifier( id_pkix_attest_attribute_transaction + (0,))
 
 id_pkix_attest_attribute_platform            = univ.ObjectIdentifier( id_pkix_attest_attribute_type + (1,))
-id_pkix_attest_attribute_platform_hwserial   = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (0,))
-id_pkix_attest_attribute_platform_fipsboot   = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (1,))
-id_pkix_attest_attribute_platform_desc       = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (2,))
-id_pkix_attest_attribute_platform_time       = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (3,))
-id_pkix_attest_attribute_platform_fw_version = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (4,))
+id_pkix_attest_attribute_platform_hwserial   = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (1,))
+id_pkix_attest_attribute_platform_fipsboot   = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (2,))
+id_pkix_attest_attribute_platform_model      = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (3,))
+id_pkix_attest_attribute_platform_sw_version = univ.ObjectIdentifier( id_pkix_attest_attribute_platform + (4,))
 
 id_pkix_attest_attribute_key                   = univ.ObjectIdentifier( id_pkix_attest_attribute_type + (2,))
 id_pkix_attest_attribute_key_identifier        = univ.ObjectIdentifier( id_pkix_attest_attribute_key + (0,))
@@ -165,22 +164,16 @@ def ReportedAttributePlatformFipsBoot(flag:bool):
         flag
     )
     
-def ReportedAttributePlatformDescription(desc:str):
+def ReportedAttributePlatformModel(desc:str):
     return ReportedAttributeString(
-        id_pkix_attest_attribute_platform_desc,
+        id_pkix_attest_attribute_platform_model,
         desc
     )
     
-def ReportedAttributePlatformFwVersion(version:str):
+def ReportedAttributePlatformSwVersion(version:str):
     return ReportedAttributeString(
-        id_pkix_attest_attribute_platform_fw_version,
+        id_pkix_attest_attribute_platform_sw_version,
         version
-    )
-    
-def ReportedAttributePlatformTime(time:str):
-    return ReportedAttributeTime(
-        id_pkix_attest_attribute_platform_time,
-        time
     )
     
 #

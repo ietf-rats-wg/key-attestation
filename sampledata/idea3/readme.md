@@ -63,12 +63,21 @@ id-pkix-attest-attribute-type OBJECT IDENTIFIER ::= { id-pkix-attest 1 }
 id-pkix-attest-attribute-request       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 0 }
 id-pkix-attest-attribute-request-nonce OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-request 0 }
 
-id-pkix-attest-attribute-platform            OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 1 }
-id-pkix-attest-attribute-platform-hwserial   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 0 }
-id-pkix-attest-attribute-platform-fipsboot   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 1 }
-id-pkix-attest-attribute-platform-desc       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 2 }
-id-pkix-attest-attribute-platform-time       OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 3 }
-id-pkix-attest-attribute-platform-fw-version OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-platform 4 }
+id-pkix-evidence-attribute-platform            OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-type 1 }
+id-pkix-evidence-attribute-platform-vendor     OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 0 }
+id-pkix-evidence-attribute-platform-hwserial   OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 1 }
+id-pkix-evidence-attribute-platform-fipsboot   OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 2 }
+id-pkix-evidence-attribute-platform-model      OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 3 }
+id-pkix-evidence-attribute-platform-swversion  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 4 }
+id-pkix-evidence-attribute-platform-oemid      OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 5 }
+id-pkix-evidence-attribute-platform-debugstat  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 6 }
+id-pkix-evidence-attribute-platform-uptime     OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 7 }
+id-pkix-evidence-attribute-platform-bootcount  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 8 }
+id-pkix-evidence-attribute-platform-usermods   OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 9 }
+id-pkix-evidence-attribute-platform-envid      OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 10 }
+id-pkix-evidence-attribute-platform-envdesc    OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 11 }
+id-pkix-evidence-attribute-platform-fipsver    OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 12 }
+id-pkix-evidence-attribute-platform-fipslevel  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 13 }
 
 id-pkix-attest-attribute-key                   OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-type 2 }
 id-pkix-attest-attribute-key-identifier        OBJECT IDENTIFIER ::= { id-pkix-attest-attribute-key 0 }

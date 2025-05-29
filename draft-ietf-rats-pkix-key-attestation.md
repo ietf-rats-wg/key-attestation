@@ -77,7 +77,7 @@ normative:
   RFC2119:
   RFC9334:
   RFC5280:
-  I-D.ietf-rats-eat: eat
+  RFC9711:
   X.680:
      title: "Information technology -- Abstract Syntax Notation One (ASN.1): Specification of basic notation"
      author:
@@ -583,31 +583,57 @@ the "Reference" column refers to the specification where the semantics
 for the attribute value can be found.
 Attributes defined in this specification have further details below.
 
-| Attribute       | AttributeValue  | Reference  | Multiple Allowed | Description|
-| ---             | ---             | ---        | ---              | ---        |
-| vendor          | utf8String      | {{&SELF}}  | No               | A human-readable string by which the vendor identifies themself. |
-| oemid           | bytes           | {{-eat}}   | No               | The EAT OEM ID as defined in {{-eat}}. |
-| hwmodel         | utf8String      | {{-eat}}   | No               | Model or product line of the hardware module. |
-| hwserial        | utf8String      | {{&SELF}}  | No               | Serial number of the hardware module, often matches the number engraved or stickered on the case. |
-| swversion       | utf8String      | {{-eat}}   | No               | A text string identifying the firmware or software running on the HSM. |
-| dbgstat         | int             | {{-eat}}   | No               | Indicates whether the HSM is currently in a debug state, or is capable in the future of being turned to a debug state. Semantics and integer codes are defined in {{-eat}}. |
-| uptime          | int             | {{-eat}}   | No               | Contains the number of seconds that have elapsed since the entity was last booted. |
-| bootcount       | int             | {{-eat}}   | No               | Contains a count of the number of times the entity has been booted. |
-| usermods        | utf8String      | {{&SELF}}  | Yes              | This attribute lists user modules currently loaded onto the HSM in a human readable format. |
-| fipsboot        | bool            | {{-fips}}  | No               | Indicates whether the devices is currently running in FIPS mode. |
-| fipsver         | utf8String      | {{-fips}}  | No               | Indicates the version of the FIPS CMVP standard that is being enforced. At time of writing this is typically "FIPS 140-2" or "FIPS 140-3". |
-| fipslevel       | int             | {{-fips}}  | No               | Indicates the FIPS Level to which the device is currently operating in compliance with. |
-| envid           | utf8String      | {{&SELF}}  | Yes              | An environment ID, which will typically be a URI, UUID, or similar. |
-| envdesc         | utf8String      | {{&SELF}}  | Yes              | Further description of the environment. |
+| Attribute       | AttributeValue  | Reference    | Multiple? | OID                                           |
+| ---             | ---             | ---          | ---       | ---                                           |
+| vendor          | utf8String      | {{&SELF}}    | No        | id-pkix-evidence-attribute-platform-vendor    |
+| oemid           | bytes           | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-oemid     |
+| hwmodel         | utf8String      | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-model     |
+| hwserial        | utf8String      | {{&SELF}}    | No        | id-pkix-evidence-attribute-platform-hwserial  |
+| swversion       | utf8String      | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-swversion |
+| dbgstat         | int             | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-debugstat |
+| uptime          | int             | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-uptime    |
+| bootcount       | int             | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-bootcount |
+| usermods        | utf8String      | {{&SELF}}    | Yes       | id-pkix-evidence-attribute-platform-usermods  |
+| fipsboot        | bool            | {{-fips}}    | No        | id-pkix-evidence-attribute-platform-fipsboot  |
+| fipsver         | utf8String      | {{-fips}}    | No        | id-pkix-evidence-attribute-platform-fipsver   |
+| fipslevel       | int             | {{-fips}}    | No        | id-pkix-evidence-attribute-platform-fipslevel |
+| envid           | utf8String      | {{&SELF}}    | Yes       | id-pkix-evidence-attribute-platform-envid     |
+| envdesc         | utf8String      | {{&SELF}}    | Yes       | id-pkix-evidence-attribute-platform-envdesc   |
 
 TODO: find the actual reference for "FIPS Mode" -- FIPS 140-3 does not define it (at least not the 11 page useless version of 140-3 that I found).
 
-Each attribute has an assigned OID, see {{sec-asn1-mod}}.
-
+Each attribute defined in the table above is described in the following sub-sections.
 
 ### vendor
 
 A human-readable string that reports the name of the device's manufacturer.
+
+### oemid, hwmodel, swversion, dbgstat, uptime, bootcount
+
+These attributes are defined in {{!RFC9711}} and reused in this specification for interoperability. Small
+descriptions are offered for each to ease the reading of this specification. In case of confusion between the
+description offered here and the one in {{!RFC9711}}, the definition offered in the latter shall prevail.
+
+The attribute "oemid" uniquely identifies the Original Equipment Manufacturer (OEM) of the HSM. This is a
+sequence of bytes and is not meant to be a human readable string.
+
+The attribute "hwmodel" differentiates models, products and variants manufactured by a particular OEM. A model
+must be unique within a given "oemid". This is a sequence of bytes and is not meant to be a human readable string.
+
+EDNOTE: JPF: "hwmodel" in EAT is not human readbale. We have "vendor" that duplicates in human readable for "oemid".
+Should we duplicate "hwmodel" in a human readable form? Should we define it here for ourselves?
+
+The attribute "swversion" differentiates between the various revisions of a firmware offered for the HSM. This
+is a string that is expected to be human readable.
+
+EDNOTE: JPF: In EAT, "swversion" requires "swname". Should we add "swname" or disaassociate from the EAT definition?
+
+The attribute "dbgstat" refers to the state of the debug facilities offered by the HSM. This is an integer
+value describing the current state as described in {{!RFC9711}}.
+
+The attribute "uptime" reports the number of seconds that have elapsed since the HSM was last booted.
+
+The attribute "bootcount" reported the number of times the HSM was booted.
 
 ### hwserial
 
@@ -758,7 +784,7 @@ These attribute types MAY be contained within a transaction entity; i.e. an enti
 | Attribute       | AttributeValue  | Reference    | Multiple Allowed | Description  |
 | ---             | ---             | ---          | ---              |              |
 | nonce           | bytes           | {{&SELF}}    | No               | Repeats a "nonce" provided during the request of Evidence. |
-| timestamp       | time            | {{-eat}}     | No               | The time at which this attestation was generated. Corresponds to EAT IAT claim. |
+| timestamp       | time            | {{!RFC9711}} | No               | The time at which this attestation was generated. Corresponds to EAT IAT claim. |
 
 ### nonce
 
