@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-24T00:43:58.264358+00:00",
+  "timestamp": "2025-06-17T00:47:17.463152+00:00",
   "repo": "ietf-rats-wg/key-attestation",
   "labels": [
     {
@@ -342,6 +342,22 @@
       "updatedAt": "2025-03-19T18:20:20Z",
       "closedAt": null,
       "comments": []
+    },
+    {
+      "number": 35,
+      "id": "I_kwDONUAin867y7uy",
+      "title": "s/Attestation Message/PKIX Evidence",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/issues/35",
+      "state": "OPEN",
+      "author": "hannestschofenig",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-06-16T17:06:21Z",
+      "updatedAt": "2025-06-16T17:06:21Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -393,7 +409,7 @@
       "labels": [],
       "body": "",
       "createdAt": "2024-12-16T16:27:17Z",
-      "updatedAt": "2024-12-16T17:02:49Z",
+      "updatedAt": "2025-06-16T16:23:31Z",
       "baseRepository": "ietf-rats-wg/key-attestation",
       "baseRefName": "main",
       "baseRefOid": "3df6ede9ac580649753a69e4918c3e760aa225d3",
@@ -449,7 +465,7 @@
       "labels": [],
       "body": "",
       "createdAt": "2025-01-27T15:20:15Z",
-      "updatedAt": "2025-01-27T18:09:41Z",
+      "updatedAt": "2025-06-16T16:23:29Z",
       "baseRepository": "ietf-rats-wg/key-attestation",
       "baseRefName": "main",
       "baseRefOid": "8a27726e727c6970cd9d802e38b2d3b8df9d86cd",
@@ -915,7 +931,7 @@
       "labels": [],
       "body": "",
       "createdAt": "2025-04-09T10:52:19Z",
-      "updatedAt": "2025-04-22T15:40:06Z",
+      "updatedAt": "2025-06-16T16:20:46Z",
       "baseRepository": "ietf-rats-wg/key-attestation",
       "baseRefName": "main",
       "baseRefOid": "37dd4695bc345cbd127341ba349b6348a62e81a3",
@@ -986,6 +1002,46 @@
       },
       "comments": [],
       "reviews": []
+    },
+    {
+      "number": 34,
+      "id": "PR_kwDONUAin86av-EJ",
+      "title": "Title Change",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/pull/34",
+      "state": "OPEN",
+      "author": "hannestschofenig",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-06-16T16:29:08Z",
+      "updatedAt": "2025-06-16T16:29:44Z",
+      "baseRepository": "ietf-rats-wg/key-attestation",
+      "baseRefName": "main",
+      "baseRefOid": "9568a4c40b235225ffb7d6fec61c23dbe9fbb02f",
+      "headRepository": "ietf-rats-wg/key-attestation",
+      "headRefName": "hannestschofenig-patch-1",
+      "headRefOid": "85c1139a9a9668b9add55e3c7dfcd0bf5132e915",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDONUAin86uzsrv",
+          "commit": {
+            "abbreviatedOid": "85c1139"
+          },
+          "author": "henkbirkholz",
+          "authorAssociation": "MEMBER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-06-16T16:29:44Z",
+          "updatedAt": "2025-06-16T16:29:44Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
