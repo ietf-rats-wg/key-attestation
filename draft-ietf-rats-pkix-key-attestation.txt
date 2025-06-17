@@ -5,7 +5,7 @@
 RATS                                                        M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 30 November 2025                                       Crypto4A
+Expires: 19 December 2025                                       Crypto4A
                                                            H. Tschofenig
                                                                    H-BRS
                                                              H. Birkholz
@@ -14,10 +14,10 @@ Expires: 30 November 2025                                       Crypto4A
                                                                         
                                                                 N. Smith
                                                        Intel Corporation
-                                                             29 May 2025
+                                                            17 June 2025
 
 
-                  PKIX Evidence for Remote Attestation
+   PKIX Evidence for Remote Attestation of Hardware Security Modules
               draft-ietf-rats-pkix-key-attestation-latest
 
 Abstract
@@ -70,7 +70,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 November 2025.
+   This Internet-Draft will expire on 19 December 2025.
 
 Copyright Notice
 
@@ -1843,9 +1843,9 @@ Table of Contents
    [I-D.ietf-rats-msg-wrap]
               Birkholz, H., Smith, N., Fossati, T., Tschofenig, H., and
               D. Glaze, "RATS Conceptual Messages Wrapper (CMW)", Work
-              in Progress, Internet-Draft, draft-ietf-rats-msg-wrap-14,
-              21 May 2025, <https://datatracker.ietf.org/doc/html/draft-
-              ietf-rats-msg-wrap-14>.
+              in Progress, Internet-Draft, draft-ietf-rats-msg-wrap-15,
+              30 May 2025, <https://datatracker.ietf.org/doc/html/draft-
+              ietf-rats-msg-wrap-15>.
 
    [RFC2986]  Nystrom, M. and B. Kaliski, "PKCS #10: Certification
               Request Syntax Specification Version 1.7", RFC 2986,
