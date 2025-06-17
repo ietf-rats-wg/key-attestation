@@ -1,6 +1,6 @@
 ---
-title: PKIX Evidence for Remote Attestation
-abbrev: PKIX Evidence for Remote Attestation
+title: PKIX Evidence for Remote Attestation of Hardware Security Modules
+abbrev: PKIX Evidence for Remote Attestation of HSMs
 docname: draft-ietf-rats-pkix-key-attestation-latest
 
 category: std
