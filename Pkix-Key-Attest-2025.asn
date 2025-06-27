@@ -5,8 +5,10 @@ PKIX-Evidence-2025
 
 
 PkixEvidence ::= SEQUENCE {
-    tbs TbsPkixAttestation,
-    signatures SEQUENCE SIZE (0..MAX) of SignatureBlock
+    tbs                           TbsPkixEvidence,
+    signatures                    SEQUENCE SIZE (0..MAX) of SignatureBlock,
+    intermediateCertificates  [0] IMPLICIT SEQUENCE of Certificate OPTIONAL
+                                  -- As defined in RFC 5280
 }
 
 TbsPkixEvidence ::= SEQUENCE {
@@ -35,9 +37,17 @@ AttributeValue :== CHOICE {
 }
 
 SignatureBlock ::= SEQUENCE {
-   certChain SEQUENCE of Certificate,
-   signatureAlgorithm AlgorithmIdentifier,
-   signatureValue OCTET STRING
+   sid                  SignerIdentifier,
+   signatureAlgorithm   AlgorithmIdentifier,
+   signatureValue       OCTET STRING
+}
+
+SignerIdentifier ::= SEQUENCE {
+   keyId                [0] EXPLICIT OCTET STRING OPTIONAL,
+   subjectKeyIdentifier [1] EXPLICIT SubjectPublicKeyInfo OPTIONAL,
+                            -- As defined in RFC 5280
+   certificate          [2] EXPLICIT Certificate OPTIONAL
+                            -- As defined in RFC 5280
 }
 
 id-pkix-evidence OBJECT IDENTIFIER ::= { 1 2 3 999 }

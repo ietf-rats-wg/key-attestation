@@ -478,51 +478,65 @@ The top-level structures are:
 
 ~~~asn.1
 PkixEvidence ::= SEQUENCE {
-    tbs ClaimDescriptionTbs,
-    signatures SEQUENCE SIZE (0..MAX) of SignatureBlock
+    tbs                           TbsPkixEvidence,
+    signatures                    SEQUENCE SIZE (0..MAX) of SignatureBlock,
+    intermediateCertificates  [0] IMPLICIT SEQUENCE of Certificate OPTIONAL
+                                  -- As defined in RFC 5280
 }
 
-ClaimDescriptionTbs ::= SEQUENCE {
+TbsPkixEvidence ::= SEQUENCE {
     version INTEGER,
     reportedEntities SEQUENCE SIZE (1..MAX) OF ReportedEntity
 }
 
 SignatureBlock ::= SEQUENCE {
-   certChain SEQUENCE of Certificate,
-   signatureAlgorithm AlgorithmIdentifier,
-   signatureValue OCTET STRING
+   sid                  SignerIdentifier,
+   signatureAlgorithm   AlgorithmIdentifier,
+   signatureValue       OCTET STRING
+}
+
+SignerIdentifier ::= SEQUENCE {
+   keyId                [0] EXPLICIT OCTET STRING OPTIONAL,
+   subjectKeyIdentifier [1] EXPLICIT SubjectPublicKeyInfo OPTIONAL,
+                            -- As defined in RFC 5280
+   certificate          [2] EXPLICIT Certificate OPTIONAL
+                            -- As defined in RFC 5280
 }
 ~~~
 
-A PkixEvidence message is composed of a protected section known as the To-Be-Signed (TBS) where the claim
-description is reported. The integrity of the TBS section is ensured with one or multiple cryptographic signatures
-over the content of the section. There is a provision to carry the X.509 certificates supporting each signature.
+A PkixEvidence message is composed of a protected section known as the To-Be-Signed (TBS) section where the evidence
+reported by the HSM is assembled. The integrity of the TBS section is ensured with one or multiple cryptographic signatures
+over the content of this section. There is a provision to carry X.509 certificates supporting each signature.
 The SEQUENCE OF SignatureBlock allows for both multi-algorithm protection and for counter-signatures
 of the evidence.
 In an effort to keep the evidence format simple, distinguishing between these two cases is left up to Verifier policy,
 potentially by making use of the certificates that accompany each signature.
 This design also does not prevent against stripping attacks where an attacker removes a signature without leaving evidence
 in the message that an additional signature had been there or signature re-ordering attacks.
-Again, this is left up to Verifier policy to know how many
-algorithms or counter-signatures it is expecting.
+Again, this is left up to Verifier and its policy to enforce the expected number of algorithms or signatures.
 Consequently, Verifiers MUST NOT make any inferences about the lack of a signature. For example, enumerating
 counter-signatures on an Evidence MUST NOT be considered to be a complete list of HSMs in a given cluster.
 Similarly, the presence and order of counter-signatures MUST NOT be taken as proof of the path that the evidence traversed
 over the network.
 
 The TBS section is composed of a version number, to ensure future extensibility, and a sequence of reported entities.
-
-For compliance with this specification, `ClaimDescriptionTbs.version` MUST be `1`.
+For compliance with this specification, `TbsPkixEvidence.version` MUST be `1`.
 This envelope format is not extensible; future specifications which make compatibility-breaking changes MUST increment the version number.
 
-EDNOTE: do we want extension marks on the TbsAttestation object? I can see pros and cons to doing that.
-JPF: This is a strong statement as there are many ways of extending a ASN.1 structure without breaking backwards compatibility.
+A `SignatureBlock` is included for each signature submitted against the TBS section. The SignatureBlock includes
+the signature algorithm (signatureAlgorithm) and the signature itself (signatureValue). It also includes
+information to identify the authority that provided the signature which is the structure `SignerIdentifier` (sid).
+The signer identifier includes a combination of X.509 certificate, Subject Public Key Identifier (SPKI) and/or
+key identifier (keyId). It is expected that a X.509 certificate will be generally used, as it provides the public key needed
+to verify the signature and clearly identifies the subject that provided the signature. The SPKI and keyId are allowed
+to support environments where X.509 certificates are not used.
 
-`SignatureBlock.certChain` MUST contain at least one X.509 certificate as per {{RFC5280}}.
-While there might exist attesting environments which use out-of-band or non-X.509 mechanisms for communicating
-the AK public key to the Verifier, these SHALL be considered non-compliant with this specification.
+The optional certificates provided in `PkixEvidence.intermediateCertificates` enables the insertion
+of X.509 certificates to support trusting the signatures. This information is intended to provide
+the certificates required by the Verifier to verified the endorsement on the certificates included
+with the signatures.
 
-As described in the {{sec-info-model}} section, the claim description is a set of entities. Each entity
+As described in the {{sec-info-model}} section, the `TbsPkixEvidence` is a set of entities. Each entity
 is associated with a type that defines its class. The entity types are represented by object identifiers
 (OIDs). The following ASN.1 definition defines the structures associated with entities:
 
@@ -847,7 +861,7 @@ More than one SignatureBlocks MAY be used to convey a number of different semant
 For example, the HSM's Attesting Service might hold multiple Attestation Keys on different cryptographic
 algorithms in order to provide algorithm redundancy in the case that one algorithm becomes cryptographically broken. In this case a Verifier would be expected to validate all SignatureBlocks. Alternatively, the HSM's Attesting Service may hold multiple Attestion Keys (or multiple X.509 certificates for the same key) from multiple operational environments to which it belongs. In this case a Verifier would be expected to only validate the SignatureBlock corresponding to its own environment. Alternatively, multiple SignatureBlocks could be used to convey counter-signatures from external parties, in which case the Verifier will need to be equipped with environment-specific verification logic. Multiple of these cases, and potentially others, could be present in a single PkixEvidence object.
 
-Note that each SignatureBlock is a fully detached signature over the tbs content with no binding between the signed content and the SignatureBlocks, or between SignatureBlocks, meaning that a third party can add a
+Note that each SignatureBlock is a fully detached signature over the TBS content with no binding between the signed content and the SignatureBlocks, or between SignatureBlocks, meaning that a third party can add a
 counter-signature of the evidence after the fact, or an attacker can remove a SignatureBlock without leaving any artifact. See {#sec-detached-sigs} for further discussion.
 
 
@@ -1134,7 +1148,7 @@ Similarly, a single enterprise-grade Hardware Security Module will often host cr
 In these cases, disclosing that two different keys reside on the same hardware, or in some cases even disclosing the existance of a given key, let alone its attributes, to an unauthorized party would constitute an egregious privacy violation.
 
 Implementions SHOULD be careful to avoid over-disclosure of information, for example by authenticating the Presenter as described in {{sec-cons-auth-the-presenter}} and only returning results for keys and envirnments for which it is authorized.
-In absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request MAY be authenticated by embedding the ClaimDescriptionTbs of the request inside a PkixEvidence signed with a certificate belonging to the Presenter.
+In absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request MAY be authenticated by embedding the TbsPkixEvidence of the request inside a PkixEvidence signed with a certificate belonging to the Presenter.
 
 Furthermore, enterprise and cloud-services grade HSMs SHOULD support the full set of attestation request functionality described in {{sec-reqs}} so that Presenters can fine-tune the content of a PKIX evidence such that it is appropriate for the intended Recipient.
 
