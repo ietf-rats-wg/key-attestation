@@ -1083,7 +1083,7 @@ Further privacy concerns are discussed in {{sec-cons-privacy}}.
 
 <CODE STARTS>
 
-{::include Pkix-Key-Attest-2025.asn}
+{::include-fold Pkix-Key-Attest-2025.asn}
 
 <CODE ENDS>
 
@@ -1187,7 +1187,7 @@ A reference implementation of this specification can be found at https://github.
 It produces the following sample evidence:
 
 ~~~
-{::include sampledata/idea3/sample1.txt}
+{::include-fold sampledata/idea3/sample1.txt}
 ~~~
 
 # Acknowledgements
