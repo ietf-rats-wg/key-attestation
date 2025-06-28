@@ -130,8 +130,8 @@ entity:
 --- abstract
 
 This document specifies a vendor-agnostic format for evidence produced and verified within a PKIX context.
-The evidence produced this way includes claims collected in a cryptographic module about itself and elements
-found within it such as cryptographic keys.
+The evidence produced this way includes claims collected about a cryptographic module
+and elements found within it such as cryptographic keys.
 
 One scenario envisaged is that the state information about the cryptographic module can be securely presented
 to a remote operator or auditor in a vendor-agnostic verifiable format.
