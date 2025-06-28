@@ -444,8 +444,8 @@ than the one for the other entity type (key revision).
 
 The nature of the value (boolean, integer, string, bytes) is dependent on the attribute type.
 
-This specification defines a limited number of attribute types. However, this list should be
-extensible to allow implementers to report attributes not covered by this specification.
+This specification defines a limited number of attribute types.
+However, this list is extensible via both IANA process and via private OID allocation to allow implementers to report attributes not covered by this specification.
 
 The number of attributes reported within an entity, and their respective type, is
 left to the implementer. For a simple device, the reported list of attributes for an entity
