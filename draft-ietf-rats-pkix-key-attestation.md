@@ -133,13 +133,11 @@ This document specifies a vendor-agnostic format for evidence produced and verif
 The evidence produced this way includes claims collected about a cryptographic module
 and elements found within it such as cryptographic keys.
 
-One scenario envisaged is that the state information about the cryptographic module can be securely presented
-to a remote operator or auditor in a vendor-agnostic verifiable format.
-A more complex scenario would be to submit this evidence to a Certification Authority to aid in determining
-whether the storage properties of this key meets the requirements of a given certificate profile.
+Two scenarios are supported.
+One simpler scenario is that the state information about the cryptographic module is securely presented to a remote operator or auditor in a vendor-agnostic verifiable format.
+A more complex scenario would be to submit this evidence to a Certification Authority to aid in determining whether the storage properties of this key meets the requirements of a given certificate profile.
 
-This specification also offers a format for requesting a cryptographic module to produce evidence tailored for
-expected use.
+This specification also offers a format for requesting a cryptographic module to produce evidence tailored for expected use.
 
 
 --- middle
