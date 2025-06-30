@@ -1061,7 +1061,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Ounsworth, et al.</td>
-<td class="center">Expires 29 December 2025</td>
+<td class="center">Expires 1 January 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1074,12 +1074,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-rats-pkix-key-attestation-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-06-27" class="published">27 June 2025</time>
+<time datetime="2025-06-30" class="published">30 June 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-12-29">29 December 2025</time></dd>
+<dd class="expires"><time datetime="2026-01-01">1 January 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1156,7 +1156,7 @@ expected use.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 29 December 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 1 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -2662,6 +2662,8 @@ to ensure that only the selected information is disclosed to the Verifier.<a hre
 <pre>
 &lt;CODE STARTS&gt;
 
+=============== NOTE: '\' line wrapping per RFC 8792 ================
+
 PKIX-Evidence-2025
       { iso(1) identified-organization(3) dod(6) internet(1)
         security(5) mechanisms(5) pkix(7) id-mod(0)
@@ -2670,8 +2672,10 @@ PKIX-Evidence-2025
 
 PkixEvidence ::= SEQUENCE {
     tbs                           TbsPkixEvidence,
-    signatures                    SEQUENCE SIZE (0..MAX) of SignatureBlock,
-    intermediateCertificates  [0] IMPLICIT SEQUENCE of Certificate OPTIONAL
+    signatures                    SEQUENCE SIZE (0..MAX) of \
+                                                      SignatureBlock,
+    intermediateCertificates  [0] IMPLICIT SEQUENCE of Certificate \
+                                                             OPTIONAL
                                   -- As defined in RFC 5280
 }
 
@@ -2716,45 +2720,78 @@ SignerIdentifier ::= SEQUENCE {
 
 id-pkix-evidence OBJECT IDENTIFIER ::= { 1 2 3 999 }
 
-id-pkix-evidence-entity-type        OBJECT IDENTIFIER ::= { id-pkix-evidence- 0 }
-id-pkix-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 0 }
-id-pkix-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 1 }
-id-pkix-evidence-entity-key         OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 2 }
+id-pkix-evidence-entity-type        OBJECT IDENTIFIER ::= { id-pkix-\
+                                                        evidence- 0 }
+id-pkix-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-\
+                                             evidence-entity-type 0 }
+id-pkix-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-\
+                                             evidence-entity-type 1 }
+id-pkix-evidence-entity-key         OBJECT IDENTIFIER ::= { id-pkix-\
+                                             evidence-entity-type 2 }
 
-id-pkix-evidence-attribute-type OBJECT IDENTIFIER ::= { id-pkix-evidence- 1 }
+id-pkix-evidence-attribute-type OBJECT IDENTIFIER ::= { id-pkix-\
+                                                        evidence- 1 }
 
-id-pkix-evidence-attribute-transaction           OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-type 0 }
-id-pkix-evidence-attribute-transaction-nonce     OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-transaction 0 }
-id-pkix-evidence-attribute-transaction-timestamp OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-transaction 1 }
+id-pkix-evidence-attribute-transaction           OBJECT IDENTIFIER :\
+                             := { id-pkix-evidence-attribute-type 0 }
+id-pkix-evidence-attribute-transaction-nonce     OBJECT IDENTIFIER :\
+                      := { id-pkix-evidence-attribute-transaction 0 }
+id-pkix-evidence-attribute-transaction-timestamp OBJECT IDENTIFIER :\
+                      := { id-pkix-evidence-attribute-transaction 1 }
 
-id-pkix-evidence-attribute-platform            OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-type 1 }
-id-pkix-evidence-attribute-platform-vendor     OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 0 }
-id-pkix-evidence-attribute-platform-hwserial   OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 1 }
-id-pkix-evidence-attribute-platform-fipsboot   OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 2 }
-id-pkix-evidence-attribute-platform-model      OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 3 }
-id-pkix-evidence-attribute-platform-swversion  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 4 }
-id-pkix-evidence-attribute-platform-oemid      OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 5 }
-id-pkix-evidence-attribute-platform-debugstat  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 6 }
-id-pkix-evidence-attribute-platform-uptime     OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 7 }
-id-pkix-evidence-attribute-platform-bootcount  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 8 }
-id-pkix-evidence-attribute-platform-usermods   OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 9 }
-id-pkix-evidence-attribute-platform-envid      OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 10 }
-id-pkix-evidence-attribute-platform-envdesc    OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 11 }
-id-pkix-evidence-attribute-platform-fipsver    OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 12 }
-id-pkix-evidence-attribute-platform-fipslevel  OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 13 }
+id-pkix-evidence-attribute-platform            OBJECT IDENTIFIER ::\
+                              = { id-pkix-evidence-attribute-type 1 }
+id-pkix-evidence-attribute-platform-vendor     OBJECT IDENTIFIER ::\
+                          = { id-pkix-evidence-attribute-platform 0 }
+id-pkix-evidence-attribute-platform-hwserial   OBJECT IDENTIFIER ::\
+                          = { id-pkix-evidence-attribute-platform 1 }
+id-pkix-evidence-attribute-platform-fipsboot   OBJECT IDENTIFIER ::\
+                          = { id-pkix-evidence-attribute-platform 2 }
+id-pkix-evidence-attribute-platform-model      OBJECT IDENTIFIER ::\
+                          = { id-pkix-evidence-attribute-platform 3 }
+id-pkix-evidence-attribute-platform-swversion  OBJECT IDENTIFIER ::\
+                          = { id-pkix-evidence-attribute-platform 4 }
+id-pkix-evidence-attribute-platform-oemid      OBJECT IDENTIFIER ::\
+                          = { id-pkix-evidence-attribute-platform 5 }
+id-pkix-evidence-attribute-platform-debugstat  OBJECT IDENTIFIER ::\
+                          = { id-pkix-evidence-attribute-platform 6 }
+id-pkix-evidence-attribute-platform-uptime     OBJECT IDENTIFIER ::\
+                          = { id-pkix-evidence-attribute-platform 7 }
+id-pkix-evidence-attribute-platform-bootcount  OBJECT IDENTIFIER ::\
+                          = { id-pkix-evidence-attribute-platform 8 }
+id-pkix-evidence-attribute-platform-usermods   OBJECT IDENTIFIER ::\
+                          = { id-pkix-evidence-attribute-platform 9 }
+id-pkix-evidence-attribute-platform-envid      OBJECT IDENTIFIER ::\
+                         = { id-pkix-evidence-attribute-platform 10 }
+id-pkix-evidence-attribute-platform-envdesc    OBJECT IDENTIFIER ::\
+                         = { id-pkix-evidence-attribute-platform 11 }
+id-pkix-evidence-attribute-platform-fipsver    OBJECT IDENTIFIER ::\
+                         = { id-pkix-evidence-attribute-platform 12 }
+id-pkix-evidence-attribute-platform-fipslevel  OBJECT IDENTIFIER ::\
+                         = { id-pkix-evidence-attribute-platform 13 }
 
 
 
-id-pkix-evidence-attribute-key                   OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-type 2 }
-id-pkix-evidence-attribute-key-identifier        OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 0 }
-id-pkix-evidence-attribute-key-spki              OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 1 }
-id-pkix-evidence-attribute-key-purpose           OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 2 }
-id-pkix-evidence-attribute-key-extractable       OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 3 }
-id-pkix-evidence-attribute-key-never-extractable OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 4 }
-id-pkix-evidence-attribute-key-local             OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 5 }
-id-pkix-evidence-attribute-key-expiry            OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 6 }
-id-pkix-evidence-attribute-key-protection        OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 7 }
-id-pkix-evidence-attribute-key-sensitive         OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 8 }
+id-pkix-evidence-attribute-key                   OBJECT IDENTIFIER :\
+                             := { id-pkix-evidence-attribute-type 2 }
+id-pkix-evidence-attribute-key-identifier        OBJECT IDENTIFIER :\
+                              := { id-pkix-evidence-attribute-key 0 }
+id-pkix-evidence-attribute-key-spki              OBJECT IDENTIFIER :\
+                              := { id-pkix-evidence-attribute-key 1 }
+id-pkix-evidence-attribute-key-purpose           OBJECT IDENTIFIER :\
+                              := { id-pkix-evidence-attribute-key 2 }
+id-pkix-evidence-attribute-key-extractable       OBJECT IDENTIFIER :\
+                              := { id-pkix-evidence-attribute-key 3 }
+id-pkix-evidence-attribute-key-never-extractable OBJECT IDENTIFIER :\
+                              := { id-pkix-evidence-attribute-key 4 }
+id-pkix-evidence-attribute-key-local             OBJECT IDENTIFIER :\
+                              := { id-pkix-evidence-attribute-key 5 }
+id-pkix-evidence-attribute-key-expiry            OBJECT IDENTIFIER :\
+                              := { id-pkix-evidence-attribute-key 6 }
+id-pkix-evidence-attribute-key-protection        OBJECT IDENTIFIER :\
+                              := { id-pkix-evidence-attribute-key 7 }
+id-pkix-evidence-attribute-key-sensitive         OBJECT IDENTIFIER :\
+                              := { id-pkix-evidence-attribute-key 8 }
 
 &lt;CODE ENDS&gt;
 
@@ -2969,6 +3006,8 @@ Requiring the Attestation Service to use the attested application keys could, in
 <p id="appendix-A-2">It produces the following sample evidence:<a href="#appendix-A-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="appendix-A-3">
 <pre>
+=============== NOTE: '\' line wrapping per RFC 8792 ================
+
 PkixAttestation:
  tbs=TbsPkixAttestation:
   version=2
@@ -3022,7 +3061,10 @@ PkixAttestation:
      ReportedAttribute:
       attributeType=1.2.3.999.1.2.1
       value=AttributeValue:
-       bytes=0x3059301306072a8648ce3d020106082a8648ce3d03010703420004422548f88fb782ffb5eca3744452c72a1e558fbd6f73be5e48e93232cc45c5b16c4cd10c4cb8d5b8a17139e94882c8992572993425f41419ab7e90a42a494272
+       bytes=\
+0x3059301306072a8648ce3d020106082a8648ce3d03010703420004422548f88fb7\
+82ffb5eca3744452c72a1e558fbd6f73be5e48e93232cc45c5b16c4cd10c4cb8d5b8\
+                     a17139e94882c8992572993425f41419ab7e90a42a494272
 
 
    ReportedEntity:
@@ -3041,7 +3083,10 @@ PkixAttestation:
      ReportedAttribute:
       attributeType=1.2.3.999.1.2.1
       value=AttributeValue:
-       bytes=0x3059301306072a8648ce3d020106082a8648ce3d03010703420004422548f88fb782ffb5eca3744452c72a1e558fbd6f73be5e48e93232cc45c5b16c4cd10c4cb8d5b8a17139e94882c8992572993425f41419ab7e90a42a494272
+       bytes=\
+0x3059301306072a8648ce3d020106082a8648ce3d03010703420004422548f88fb7\
+82ffb5eca3744452c72a1e558fbd6f73be5e48e93232cc45c5b16c4cd10c4cb8d5b8\
+                     a17139e94882c8992572993425f41419ab7e90a42a494272
 
 
    ReportedEntity:
@@ -3111,7 +3156,17 @@ PkixAttestation:
         algorithm=1.2.840.113549.1.1.1
         parameters=0x0500
 
-       subjectPublicKey=31795268810366627125468059984427145931784542919710733587190808152893606542214208096328883077225607136393362795609997601968312039001251339428349101203532726047646450301142882318337709398316574407647199690000689245113739552615279534528145776090813314822312012607567736073057936820713733090928849092672110937300300755561797808000438134839458043673852453722969649609202093945235393494912138691342219564365300965387743701570507112064401758218314760153081271981340812350365663466513620853326534252424706992841033652817461354632316129312597825542820569667842318342646457447037125609399476844336456206583416539426479221164971369788464727307915820767918489601
+       subjectPublicKey=\
+31795268810366627125468059984427145931784542919710733587190808152893\
+60654221420809632888307722560713639336279560999760196831203900125133\
+94283491012035327260476464503011428823183377093983165744076471996900\
+00689245113739552615279534528145776090813314822312012607567736073057\
+93682071373309092884909267211093730030075556179780800043813483945804\
+36738524537229696496092020939452353934949121386913422195643653009653\
+87743701570507112064401758218314760153081271981340812350365663466513\
+62085332653425242470699284103365281746135463231612931259782554282056\
+96678423183426464574470371256093994768443364562065834165394264792211\
+                               64971369788464727307915820767918489601
 
       extensions=Extensions:
        Extension:
@@ -3132,7 +3187,17 @@ PkixAttestation:
       algorithm=1.2.840.113549.1.1.11
       parameters=0x0500
 
-     signature=12977775424631768289542539102653382982431795551146145281750189553757940982572813264428982985997740595878077027853994515775116752030963858469651548765808775269857271167748512795017916284867051302884465315751010913658016640170608413935780119349866986170148033301955753116984041271273907756544780231564646860424999020990745523383622980115200446260103173103500647838758197610238552349053064525420240826193553395378873725256584269666918504793674497748455574822238022085054752185687440807655337724821853332688158460379554906105417720665175648371832825939577039874730442790337726004105878168375998123110331993348833629325492
+     signature=\
+12977775424631768289542539102653382982431795551146145281750189553757\
+94098257281326442898298599774059587807702785399451577511675203096385\
+84696515487658087752698572711677485127950179162848670513028844653157\
+51010913658016640170608413935780119349866986170148033301955753116984\
+04127127390775654478023156464686042499902099074552338362298011520044\
+62601031731035006478387581976102385523490530645254202408261935533953\
+78873725256584269666918504793674497748455574822238022085054752185687\
+44080765533772482185333268815846037955490610541772066517564837183282\
+59395770398747304427903377260041058781683759981231103319933488336293\
+                                                                25492
 
    signatureAlgorithm=AlgorithmIdentifier:
     algorithm=1.2.840.113549.1.1.10
@@ -3147,7 +3212,15 @@ PkixAttestation:
      trailerField=1
 
 
-   signatureValue=0xab7fd2b0f854daa4e867fd16955cd3b9910e93b70c7403cfa8077f04193909d14ec6bed859b67476c84cc2c28842b9a087d5c39e11ca95f6961d272d97297cb6ed3c062717696b032f4bf1f0f41ac20ae9706a8a4c17845ae2512950774173737010d6692cb726d1ab3a022092efcf27f0dd875b62e4df546814186f9e744cc34cf0778c877c571d006be094aa683a5f66d6816d22dba104334163020c62d81903c41d353eaba9421247fc354fd3288a01921d93014100960324c3122feebfffc1007c83e98136e1b1fca115835b9e67fa9056f290208fb99e1c8144839a5e13ccb1217dceeecc253fc7785bc8308382e052ffb867b40a0cd593176ed6ddc7b0
+   signatureValue=\
+0xab7fd2b0f854daa4e867fd16955cd3b9910e93b70c7403cfa8077f04193909d14e\
+c6bed859b67476c84cc2c28842b9a087d5c39e11ca95f6961d272d97297cb6ed3c06\
+2717696b032f4bf1f0f41ac20ae9706a8a4c17845ae2512950774173737010d6692c\
+b726d1ab3a022092efcf27f0dd875b62e4df546814186f9e744cc34cf0778c877c57\
+1d006be094aa683a5f66d6816d22dba104334163020c62d81903c41d353eaba94212\
+47fc354fd3288a01921d93014100960324c3122feebfffc1007c83e98136e1b1fca1\
+15835b9e67fa9056f290208fb99e1c8144839a5e13ccb1217dceeecc253fc7785bc8\
+                               308382e052ffb867b40a0cd593176ed6ddc7b0
   SignatureBlock:
    certChain=SequenceOf:
     Certificate:
@@ -3202,7 +3275,10 @@ PkixAttestation:
         algorithm=1.2.840.10045.2.1
         parameters=0x06082a8648ce3d030107
 
-       subjectPublicKey=57095560233504924588952816185508037812996307929249104847846164660564888397123390877585670462836285725041261897550020311481127562655774333675293173915140722
+       subjectPublicKey=\
+57095560233504924588952816185508037812996307929249104847846164660564\
+88839712339087758567046283628572504126189755002031148112756265577433\
+                                                  3675293173915140722
 
       extensions=Extensions:
        Extension:
@@ -3222,18 +3298,76 @@ PkixAttestation:
      signatureAlgorithm=AlgorithmIdentifier:
       algorithm=1.2.840.10045.4.3.2
 
-     signature=182167519797146035745575043154801415115532979136731128676399180692664821804883990401552040789643013103202424486088058364982966709324496782518079519267269438816178719668437
+     signature=\
+18216751979714603574557504315480141511553297913673112867639918069266\
+48218048839904015520407896430131032024244860880583649829667093244967\
+                                  82518079519267269438816178719668437
 
    signatureAlgorithm=AlgorithmIdentifier:
     algorithm=1.2.840.10045.2.1
     parameters=0x06082a8648ce3d030107
 
-   signatureValue=0x3046022100e416af2483667e73345ee297e563cf1639e41ab9bdcd01f98872fddb101e779d022100d06c6e1054292640eea1873230a399af0936760cbfc8023a8a2874f9c5fc5ba8
+   signatureValue=\
+0x3046022100e416af2483667e73345ee297e563cf1639e41ab9bdcd01f98872fddb\
+101e779d022100d06c6e1054292640eea1873230a399af0936760cbfc8023a8a2874\
+                                                           f9c5fc5ba8
 
 
 
 DER Base64:
-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
+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\
+A0IABEIlSPiPt4L/teyjdERSxyoeVY+9b3O+\
+XkjpMjLMRcWxbEzRDEy41bihcTnpSILImSVymTQl9BQZq36QpCpJQnIwgbIGBioDh2cA\
+AjCBpzAvBgcqA4dnAQIADCQ0OWE5NmFjZS1lMzlhLTRmZDItYmVjMS0xMzE2NWE5OTYy\
+MWMwDAYHKgOHZwECAwEB/\
+zBmBgcqA4dnAQIBBFswWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAARCJUj4j7eC/\
+7Xso3REUscqHlWPvW9zvl5I6TIyzEXFsWxM0QxMuNW4oXE56UiCyJklcpk0JfQUGat+\
+kKQqSUJyMB8GBSoDhngAMBYwFAYFKgOGeAEMC3BhcnRpdGlvbiAxMIIGoDCCBHowggNF\
+MIIDQTCCAimgAwIBAgIUWWuyy9RGarWD+\
+k6k4ZswYmQ7cQ0wDQYJKoZIhvcNAQELBQAwLzENMAsGA1UECgwESUVURjENMAsGA1UEC\
+wwEUkFUUzEPMA0GA1UEAwwGQUsgUlNBMCAXDTI1MDExNzE3MTMwM1oYDzIwNTIwNjA0M\
+TcxMzAzWjAvMQ0wCwYDVQQKDARJRVRGMQ0wCwYDVQQLDARSQVRTMQ8wDQYDVQQDDAZBS\
+yBSU0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCw+\
+egZQ6eumJKq3hfKfED4dE/tL4FI5sjqont9ABVI+\
+1GSqyi1bFBgsRjM0THllIdMbKmJtWwnKW8J+5OgNN8y6Xxv8JmM/\
+Y5vQt2lis0fqXmG8UTz0VTWdlAXXmhUs6lSADvAaIe4RVrCsZ97L3ZQTryY7JRVcbB4k\
+hUN3Gp0yg+801SXzoFTTa+UGIRLE66jH51aa5VXu99hnv1OiH8tQrjdi8mH6uG/\
+icq4XuIeNWMF32wHqIOOPvQcWV3M5D2vxJEj702Ku6k9OQXkAo17qRSEonWW4HtLbtmS\
+8He1JNPc/n3dVUm+\
+fM6NoDXPoLP7j55G9zKyqGtGAWXAj1MTAgMBAAGjUzBRMB0GA1UdDgQWBBSJGVleDvFp\
+9cu9R+E0/OKYzGkwkTAfBgNVHSMEGDAWgBSJGVleDvFp9cu9R+E0/\
+OKYzGkwkTAPBgNVHRMBAf8EBTADAQH/\
+MA0GCSqGSIb3DQEBCwUAA4IBAQBmzcTIPYhVNtMdrOb9ee9qYADlTuQl1y1mdrDPcC+\
+zmwZuwKLJu89hvxmFdDrVNc6QsNKnH0fWtMZxU5UQTrqW2Wf0jLY3bjfJkCmTQahOK8X\
+D3oQqfXVKCe+MGFUSh71BUXc4FIQzMJ6phG+5qiCqsD9BL/gFXf4ao+BI4SQhVWi6FR+\
+JOBMxd91DYDyYr6NfddAbzaW7iDoVEWR1pvQAZbycWfv1KIY6ne2yQ0dSedOqIE9Odjq\
+i2QkW4kD7qXRLYKcMPqe1SPao2xoS2Kz8SIdoLInLu7Cb3QC7n/\
+oEbiK4JIVD29giMpudJ8gbBLLjwDrCls0yA+ng8n/\
+wkki0MCsGCSqGSIb3DQEBCjAeoA0wCwYJYIZIAWUDBAIBoQ0wCwYJKoZIhvcNAQEIBII\
+BAKt/0rD4VNqk6Gf9FpVc07mRDpO3DHQDz6gHfwQZOQnRTsa+\
+2Fm2dHbITMLCiEK5oIfVw54RypX2lh0nLZcpfLbtPAYnF2lrAy9L8fD0GsIK6XBqikwX\
+hFriUSlQd0Fzc3AQ1mkstybRqzoCIJLvzyfw3YdbYuTfVGgUGG+\
+edEzDTPB3jId8Vx0Aa+CUqmg6X2bWgW0i26EEM0FjAgxi2BkDxB01PqupQhJH/\
+DVP0yiKAZIdkwFBAJYDJMMSL+6//\
+8EAfIPpgTbhsfyhFYNbnmf6kFbykCCPuZ4cgUSDml4TzLEhfc7uzCU/x3hbyDCDguBS/\
+7hntAoM1ZMXbtbdx7AwggIeMIIBuzCCAbcwggFdoAMCAQICFAep6a/8hKR/\
+Xf8D7fMOi6OQH5W4MAoGCCqGSM49BAMCMDAxDTALBgNVBAoMBElFVEYxDTALBgNVBAsM\
+BFJBVFMxEDAOBgNVBAMMB0FLIFAyNTYwIBcNMjUwMTE3MTcxNDI4WhgPMjA1MjA2MDQx\
+NzE0MjhaMDAxDTALBgNVBAoMBElFVEYxDTALBgNVBAsMBFJBVFMxEDAOBgNVBAMMB0FL\
+IFAyNTYwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAARCJUj4j7eC/\
+7Xso3REUscqHlWPvW9zvl5I6TIyzEXFsWxM0QxMuNW4oXE56UiCyJklcpk0JfQUGat+\
+kKQqSUJyo1MwUTAdBgNVHQ4EFgQUW3CnmBf3n/\
+Y30vfj3ERsIQnXu9QwHwYDVR0jBBgwFoAUW3CnmBf3n/\
+Y30vfj3ERsIQnXu9QwDwYDVR0TAQH/BAUwAwEB/\
+zAKBggqhkjOPQQDAgNIADBFAiEAkH8Erj/\
+TLNoEfJIvokEEDVmhH5f7UQHdrrCyQWEhJegCICRsy/1Vqjo3qg/WrHospwcB2PaHYy+\
+FnH79mznqO7jVMBMGByqGSM49AgEGCCqGSM49AwEHBEgwRgIhAOQWrySDZn5zNF7il+\
+VjzxY55Bq5vc0B+Yhy/dsQHnedAiEA0GxuEFQpJkDuoYcyMKOZrwk2dgy/yAI6iih0+\
+                                                              cX8W6g=
 </pre><a href="#appendix-A-3" class="pilcrow">¶</a>
 </div>
 </section>
