@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-06-29T00:54:39.709120+00:00",
+  "timestamp": "2025-07-01T00:55:15.175878+00:00",
   "repo": "ietf-rats-wg/key-attestation",
   "labels": [
     {
@@ -1300,24 +1300,26 @@
       "id": "PR_kwDONUAin86ci_ca",
       "title": "fold long example lines",
       "url": "https://github.com/ietf-rats-wg/key-attestation/pull/51",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "mcr",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "based upon -00 version.\r\n",
       "createdAt": "2025-06-28T19:15:17Z",
-      "updatedAt": "2025-06-28T19:15:17Z",
+      "updatedAt": "2025-06-30T16:23:35Z",
       "baseRepository": "ietf-rats-wg/key-attestation",
       "baseRefName": "main",
       "baseRefOid": "86ed2d6ba90b29864a05b99f4274f6a51ebc64c1",
       "headRepository": "mcr/key-attestation",
       "headRefName": "wrap-line-01",
       "headRefOid": "048b919cb9cf740c165f99da5c12e5b4add36715",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-06-30T16:23:34Z",
+      "mergedAt": "2025-06-30T16:23:34Z",
+      "mergedBy": "hannestschofenig",
+      "mergeCommit": {
+        "oid": "bf9e41cf2968616c48161f2f72fe75b0fed94070"
+      },
       "comments": [],
       "reviews": []
     },
