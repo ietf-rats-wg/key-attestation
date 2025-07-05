@@ -1210,3 +1210,4 @@ of the RATS working group. This specification has been developed
 based on discussions in that design team and also with great amounts of
 input taken from discussions on the RATS mailing list.
 
+We would like to thank Jeff Andersen for the review comments.
