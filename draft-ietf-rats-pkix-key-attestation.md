@@ -130,16 +130,14 @@ entity:
 --- abstract
 
 This document specifies a vendor-agnostic format for evidence produced and verified within a PKIX context.
-The evidence produced this way includes claims collected in a cryptographic module about itself and elements
-found within it such as cryptographic keys.
+The evidence produced this way includes claims collected about a cryptographic module
+and elements found within it such as cryptographic keys.
 
-One scenario envisaged is that the state information about the cryptographic module can be securely presented
-to a remote operator or auditor in a vendor-agnostic verifiable format.
-A more complex scenario would be to submit this evidence to a Certification Authority to aid in determining
-whether the storage properties of this key meets the requirements of a given certificate profile.
+Two scenarios are supported.
+One simpler scenario is that the state information about the cryptographic module is securely presented to a remote operator or auditor in a vendor-agnostic verifiable format.
+A more complex scenario would be to submit this evidence to a Certification Authority to aid in determining whether the storage properties of this key meets the requirements of a given certificate profile.
 
-This specification also offers a format for requesting a cryptographic module to produce evidence tailored for
-expected use.
+This specification also offers a format for requesting a cryptographic module to produce evidence tailored for expected use.
 
 
 --- middle
@@ -446,8 +444,8 @@ than the one for the other entity type (key revision).
 
 The nature of the value (boolean, integer, string, bytes) is dependent on the attribute type.
 
-This specification defines a limited number of attribute types. However, this list should be
-extensible to allow implementers to report attributes not covered by this specification.
+This specification defines a limited number of attribute types.
+However, this list is extensible via both IANA process and via private OID allocation to allow implementers to report attributes not covered by this specification.
 
 The number of attributes reported within an entity, and their respective type, is
 left to the implementer. For a simple device, the reported list of attributes for an entity
@@ -1144,7 +1142,7 @@ When multiple SignatureBlocks are used for providing third party counter-signatu
 ## Privacy {#sec-cons-privacy}
 
 Often, a TPM will host cryptographic keys for both the kernel and userspace of a local operating system but a Presenter may only represents a single user or application.
-Similarly, a single enterprise-grade Hardware Security Module will often host cryptographic keys for an entire multi-tenant cloud service and the Presenter or Reciever or Recipient belongs only to a single tenant. For example the HSM backing a TLS-terminating loadbalancer fronting thousands of un-related web domains.
+Similarly, a single enterprise-grade Hardware Security Module will often host cryptographic keys for an entire multi-tenant cloud service and the Presenter or Receiver or Recipient belongs only to a single tenant. For example the HSM backing a TLS-terminating loadbalancer fronting thousands of un-related web domains.
 In these cases, disclosing that two different keys reside on the same hardware, or in some cases even disclosing the existance of a given key, let alone its attributes, to an unauthorized party would constitute an egregious privacy violation.
 
 Implementions SHOULD be careful to avoid over-disclosure of information, for example by authenticating the Presenter as described in {{sec-cons-auth-the-presenter}} and only returning results for keys and envirnments for which it is authorized.
