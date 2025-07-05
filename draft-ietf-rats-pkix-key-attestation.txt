@@ -5,7 +5,7 @@
 RATS                                                        M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 1 January 2026                                         Crypto4A
+Expires: 6 January 2026                                         Crypto4A
                                                            H. Tschofenig
                                                                    H-BRS
                                                              H. Birkholz
@@ -14,7 +14,7 @@ Expires: 1 January 2026                                         Crypto4A
                                                                         
                                                                 N. Smith
                                                        Intel Corporation
-                                                            30 June 2025
+                                                             5 July 2025
 
 
    PKIX Evidence for Remote Attestation of Hardware Security Modules
@@ -24,15 +24,16 @@ Abstract
 
    This document specifies a vendor-agnostic format for evidence
    produced and verified within a PKIX context.  The evidence produced
-   this way includes claims collected in a cryptographic module about
-   itself and elements found within it such as cryptographic keys.
+   this way includes claims collected about a cryptographic module and
+   elements found within it such as cryptographic keys.
 
-   One scenario envisaged is that the state information about the
-   cryptographic module can be securely presented to a remote operator
-   or auditor in a vendor-agnostic verifiable format.  A more complex
-   scenario would be to submit this evidence to a Certification
-   Authority to aid in determining whether the storage properties of
-   this key meets the requirements of a given certificate profile.
+   Two scenarios are supported.  One simpler scenario is that the state
+   information about the cryptographic module is securely presented to a
+   remote operator or auditor in a vendor-agnostic verifiable format.  A
+   more complex scenario would be to submit this evidence to a
+   Certification Authority to aid in determining whether the storage
+   properties of this key meets the requirements of a given certificate
+   profile.
 
    This specification also offers a format for requesting a
    cryptographic module to produce evidence tailored for expected use.
@@ -70,7 +71,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 1 January 2026.
+   This Internet-Draft will expire on 6 January 2026.
 
 Copyright Notice
 
@@ -512,8 +513,9 @@ Table of Contents
    dependent on the attribute type.
 
    This specification defines a limited number of attribute types.
-   However, this list should be extensible to allow implementers to
-   report attributes not covered by this specification.
+   However, this list is extensible via both IANA process and via
+   private OID allocation to allow implementers to report attributes not
+   covered by this specification.
 
    The number of attributes reported within an entity, and their
    respective type, is left to the implementer.  For a simple device,
@@ -1728,7 +1730,7 @@ Table of Contents
    represents a single user or application.  Similarly, a single
    enterprise-grade Hardware Security Module will often host
    cryptographic keys for an entire multi-tenant cloud service and the
-   Presenter or Reciever or Recipient belongs only to a single tenant.
+   Presenter or Receiver or Recipient belongs only to a single tenant.
    For example the HSM backing a TLS-terminating loadbalancer fronting
    thousands of un-related web domains.  In these cases, disclosing that
    two different keys reside on the same hardware, or in some cases even
@@ -1894,9 +1896,9 @@ Table of Contents
    [I-D.ietf-rats-msg-wrap]
               Birkholz, H., Smith, N., Fossati, T., Tschofenig, H., and
               D. Glaze, "RATS Conceptual Messages Wrapper (CMW)", Work
-              in Progress, Internet-Draft, draft-ietf-rats-msg-wrap-15,
-              30 May 2025, <https://datatracker.ietf.org/doc/html/draft-
-              ietf-rats-msg-wrap-15>.
+              in Progress, Internet-Draft, draft-ietf-rats-msg-wrap-16,
+              3 July 2025, <https://datatracker.ietf.org/doc/html/draft-
+              ietf-rats-msg-wrap-16>.
 
    [RFC2986]  Nystrom, M. and B. Kaliski, "PKCS #10: Certification
               Request Syntax Specification Version 1.7", RFC 2986,

@@ -13,14 +13,12 @@
 <meta content="Ned Smith" name="author">
 <meta content="
        This document specifies a vendor-agnostic format for evidence produced and verified within a PKIX context.
-The evidence produced this way includes claims collected in a cryptographic module about itself and elements
-found within it such as cryptographic keys. 
-       One scenario envisaged is that the state information about the cryptographic module can be securely presented
-to a remote operator or auditor in a vendor-agnostic verifiable format.
-A more complex scenario would be to submit this evidence to a Certification Authority to aid in determining
-whether the storage properties of this key meets the requirements of a given certificate profile. 
-       This specification also offers a format for requesting a cryptographic module to produce evidence tailored for
-expected use. 
+The evidence produced this way includes claims collected about a cryptographic module
+and elements found within it such as cryptographic keys. 
+       Two scenarios are supported.
+One simpler scenario is that the state information about the cryptographic module is securely presented to a remote operator or auditor in a vendor-agnostic verifiable format.
+A more complex scenario would be to submit this evidence to a Certification Authority to aid in determining whether the storage properties of this key meets the requirements of a given certificate profile. 
+       This specification also offers a format for requesting a cryptographic module to produce evidence tailored for expected use. 
     " name="description">
 <meta content="xml2rfc 3.29.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
@@ -1057,11 +1055,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">PKIX Evidence for Remote Attestation of </td>
-<td class="right">June 2025</td>
+<td class="right">July 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Ounsworth, et al.</td>
-<td class="center">Expires 1 January 2026</td>
+<td class="center">Expires 6 January 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1074,12 +1072,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-rats-pkix-key-attestation-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-06-30" class="published">30 June 2025</time>
+<time datetime="2025-07-05" class="published">5 July 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-01-01">1 January 2026</time></dd>
+<dd class="expires"><time datetime="2026-01-06">6 January 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1112,14 +1110,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
 <p id="section-abstract-1">This document specifies a vendor-agnostic format for evidence produced and verified within a PKIX context.
-The evidence produced this way includes claims collected in a cryptographic module about itself and elements
-found within it such as cryptographic keys.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
-<p id="section-abstract-2">One scenario envisaged is that the state information about the cryptographic module can be securely presented
-to a remote operator or auditor in a vendor-agnostic verifiable format.
-A more complex scenario would be to submit this evidence to a Certification Authority to aid in determining
-whether the storage properties of this key meets the requirements of a given certificate profile.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
-<p id="section-abstract-3">This specification also offers a format for requesting a cryptographic module to produce evidence tailored for
-expected use.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
+The evidence produced this way includes claims collected about a cryptographic module
+and elements found within it such as cryptographic keys.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">Two scenarios are supported.
+One simpler scenario is that the state information about the cryptographic module is securely presented to a remote operator or auditor in a vendor-agnostic verifiable format.
+A more complex scenario would be to submit this evidence to a Certification Authority to aid in determining whether the storage properties of this key meets the requirements of a given certificate profile.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+<p id="section-abstract-3">This specification also offers a format for requesting a cryptographic module to produce evidence tailored for expected use.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1156,7 +1152,7 @@ expected use.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 1 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 6 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1736,8 +1732,8 @@ not be used by multiple entity types. For example, if a concept of "revision" is
 and a key, the attribute for one entity type (platform revision) should have a different identifier
 than the one for the other entity type (key revision).<a href="#section-4.3-3" class="pilcrow">¶</a></p>
 <p id="section-4.3-4">The nature of the value (boolean, integer, string, bytes) is dependent on the attribute type.<a href="#section-4.3-4" class="pilcrow">¶</a></p>
-<p id="section-4.3-5">This specification defines a limited number of attribute types. However, this list should be
-extensible to allow implementers to report attributes not covered by this specification.<a href="#section-4.3-5" class="pilcrow">¶</a></p>
+<p id="section-4.3-5">This specification defines a limited number of attribute types.
+However, this list is extensible via both IANA process and via private OID allocation to allow implementers to report attributes not covered by this specification.<a href="#section-4.3-5" class="pilcrow">¶</a></p>
 <p id="section-4.3-6">The number of attributes reported within an entity, and their respective type, is
 left to the implementer. For a simple device, the reported list of attributes for an entity
 might be fixed. However, larger and more complex devices, the list of reported attributes
@@ -2866,7 +2862,7 @@ only from attributes and values that are observed by the service.<a href="#secti
 <a href="#section-12.4" class="section-number selfRef">12.4. </a><a href="#name-privacy" class="section-name selfRef">Privacy</a>
         </h3>
 <p id="section-12.4-1">Often, a TPM will host cryptographic keys for both the kernel and userspace of a local operating system but a Presenter may only represents a single user or application.
-Similarly, a single enterprise-grade Hardware Security Module will often host cryptographic keys for an entire multi-tenant cloud service and the Presenter or Reciever or Recipient belongs only to a single tenant. For example the HSM backing a TLS-terminating loadbalancer fronting thousands of un-related web domains.
+Similarly, a single enterprise-grade Hardware Security Module will often host cryptographic keys for an entire multi-tenant cloud service and the Presenter or Receiver or Recipient belongs only to a single tenant. For example the HSM backing a TLS-terminating loadbalancer fronting thousands of un-related web domains.
 In these cases, disclosing that two different keys reside on the same hardware, or in some cases even disclosing the existance of a given key, let alone its attributes, to an unauthorized party would constitute an egregious privacy violation.<a href="#section-12.4-1" class="pilcrow">¶</a></p>
 <p id="section-12.4-2">Implementions <span class="bcp14">SHOULD</span> be careful to avoid over-disclosure of information, for example by authenticating the Presenter as described in <a href="#sec-cons-auth-the-presenter" class="auto internal xref">Section 12.5</a> and only returning results for keys and envirnments for which it is authorized.
 In absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request <span class="bcp14">MAY</span> be authenticated by embedding the TbsPkixEvidence of the request inside a PkixEvidence signed with a certificate belonging to the Presenter.<a href="#section-12.4-2" class="pilcrow">¶</a></p>
@@ -2974,7 +2970,7 @@ Requiring the Attestation Service to use the attested application keys could, in
 <dd class="break"></dd>
 <dt id="I-D.ietf-rats-msg-wrap">[I-D.ietf-rats-msg-wrap]</dt>
         <dd>
-<span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Smith, N.</span>, <span class="refAuthor">Fossati, T.</span>, <span class="refAuthor">Tschofenig, H.</span>, and <span class="refAuthor">D. Glaze</span>, <span class="refTitle">"RATS Conceptual Messages Wrapper (CMW)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-rats-msg-wrap-15</span>, <time datetime="2025-05-30" class="refDate">30 May 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-rats-msg-wrap-15">https://datatracker.ietf.org/doc/html/draft-ietf-rats-msg-wrap-15</a>&gt;</span>. </dd>
+<span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Smith, N.</span>, <span class="refAuthor">Fossati, T.</span>, <span class="refAuthor">Tschofenig, H.</span>, and <span class="refAuthor">D. Glaze</span>, <span class="refTitle">"RATS Conceptual Messages Wrapper (CMW)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-rats-msg-wrap-16</span>, <time datetime="2025-07-03" class="refDate">3 July 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-rats-msg-wrap-16">https://datatracker.ietf.org/doc/html/draft-ietf-rats-msg-wrap-16</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC2986">[RFC2986]</dt>
         <dd>
