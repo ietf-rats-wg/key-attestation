@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-08T00:48:25.894338+00:00",
+  "timestamp": "2025-07-13T00:55:34.008476+00:00",
   "repo": "ietf-rats-wg/key-attestation",
   "labels": [
     {
@@ -580,6 +580,22 @@
       "body": "The specification defines the Attestation Key as the key which signs evidence. The specification allows, but does not make explicit, that the Attestation Key may be part of a DICE hierarchy.\n\nIt would be useful to describe this, which would be a valuable feature for customers wishing to obtain strong attestation that their HSMs are running a given firmware version.",
       "createdAt": "2025-06-18T21:12:25Z",
       "updatedAt": "2025-06-18T21:12:25Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 53,
+      "id": "I_kwDONUAin86_3-7P",
+      "title": "Freshness issue",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/issues/53",
+      "state": "OPEN",
+      "author": "junzhanghw",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "In Section 5.3,  the epoch id is not mentioned as one mechanism to achieve time freshness.\n\nIn Section 5.3.1, the nonce is distributed by the presenter, rather than the relying party and verifier. Does it fit current attestation service architecture as usually the verifier generates the nonce, to avoid replay attack?",
+      "createdAt": "2025-07-10T12:16:41Z",
+      "updatedAt": "2025-07-10T12:16:41Z",
       "closedAt": null,
       "comments": []
     }
