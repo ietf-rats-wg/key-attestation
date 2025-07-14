@@ -222,7 +222,7 @@ assess the location of the subject key along a number of commonly-required attri
 determine which HSM was used to generate the subject key, whether this device adheres
 to certain jurisdiction policies (such as FIPS mode) and the constraints applied to the key (such as whether is it extractable).
 
-For relatively simple HSM devices such as TPM-like devices, storage properties such as "extractable" may always be true for all keys
+For relatively simple HSM devices, storage properties such as "extractable" may always be true for all keys
 since the devices are not capable of key export and so the attestation could be essentially a hard-coded template asserting these
 immutable attributes. However, more complex HSM devices require a more complex key attestation format that encompasses the
 mutability of these attributes.
@@ -1132,7 +1132,7 @@ fosters a higher likelihood of achieving interoperability.
 The nature of attestation requires the Attestation Service to be implemented in an extremely
 privileged position within the HSM so that it can collect measurements of both the hardware
 environment and the user keys being attested. For many HSM and TPM architectures, this will
-place the Attestation Service inside the "HSM kernel" and potentially subject to FIPS 140-3
+place the Attestation Service inside the "security kernel" and potentially subject to FIPS 140-3
 or Common Criteria validation and change control. For both security and compliance reasons
 there is incentive for the generation and parsing logic to be simple and easy to implement
 correctly. Additionally, when the data formats contained in this specification are parsed
