@@ -253,22 +253,21 @@ Table of Contents
    policies (such as FIPS mode) and the constraints applied to the key
    (such as whether is it extractable).
 
-   For relatively simple HSM devices such as TPM-like devices, storage
-   properties such as "extractable" may always be true for all keys
-   since the devices are not capable of key export and so the
-   attestation could be essentially a hard-coded template asserting
-   these immutable attributes.  However, more complex HSM devices
-   require a more complex key attestation format that encompasses the
-   mutability of these attributes.  Also, the client requesting the key
-   attestation might wish to scope-down the content of the key
-   attestation as the HSM contains many keys and only a certain subset
-   are relevant for attesting a given transaction, or only certain
-   claims are relevant.  Lack of ability to scope-down the key
-   attestation contents could, in some scenarios, constitute a privacy
-   violation.  This motivates the design choice for a key attestation
-   request mechanism.  The same objective could have been accomplished
-   via a selective disclosure mechanism.  However, since a request is
-   necessary to transmit the attestation nonce to the HSM, a
+   For relatively simple HSM devices, storage properties such as
+   "extractable" may always be true for all keys since the devices are
+   not capable of key export and so the attestation could be essentially
+   a hard-coded template asserting these immutable attributes.  However,
+   more complex HSM devices require a more complex key attestation
+   format that encompasses the mutability of these attributes.  Also,
+   the client requesting the key attestation might wish to scope-down
+   the content of the key attestation as the HSM contains many keys and
+   only a certain subset are relevant for attesting a given transaction,
+   or only certain claims are relevant.  Lack of ability to scope-down
+   the key attestation contents could, in some scenarios, constitute a
+   privacy violation.  This motivates the design choice for a key
+   attestation request mechanism.  The same objective could have been
+   accomplished via a selective disclosure mechanism.  However, since a
+   request is necessary to transmit the attestation nonce to the HSM, a
    standardized request format fits the use case better and is generally
    simpler.
 
@@ -1704,11 +1703,11 @@ Table of Contents
    implemented in an extremely privileged position within the HSM so
    that it can collect measurements of both the hardware environment and
    the user keys being attested.  For many HSM and TPM architectures,
-   this will place the Attestation Service inside the "HSM kernel" and
-   potentially subject to FIPS 140-3 or Common Criteria validation and
-   change control.  For both security and compliance reasons there is
-   incentive for the generation and parsing logic to be simple and easy
-   to implement correctly.  Additionally, when the data formats
+   this will place the Attestation Service inside the "security kernel"
+   and potentially subject to FIPS 140-3 or Common Criteria validation
+   and change control.  For both security and compliance reasons there
+   is incentive for the generation and parsing logic to be simple and
+   easy to implement correctly.  Additionally, when the data formats
    contained in this specification are parsed within an HSM boundary --
    that would be parsing a request entity, or parsing an attestation
    produced by a different HSM -- implementers SHOULD opt for simple
