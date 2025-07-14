@@ -510,8 +510,7 @@ The SEQUENCE OF SignatureBlock allows for both multi-algorithm protection and fo
 of the evidence.
 In an effort to keep the evidence format simple, distinguishing between these two cases is left up to Verifier policy,
 potentially by making use of the certificates that accompany each signature.
-This design also does not prevent against stripping attacks where an attacker removes a signature without leaving evidence
-in the message that an additional signature had been there or signature re-ordering attacks.
+This design also does not prevent an attacker from removing, adding or re-ordering signatures without leaving evidence.
 Again, this is left up to Verifier and its policy to enforce the expected number of algorithms or signatures.
 Consequently, Verifiers MUST NOT make any inferences about the lack of a signature. For example, enumerating
 counter-signatures on an Evidence MUST NOT be considered to be a complete list of HSMs in a given cluster.
