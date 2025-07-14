@@ -1060,7 +1060,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Ounsworth, et al.</td>
-<td class="center">Expires 6 January 2026</td>
+<td class="center">Expires 15 January 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1073,12 +1073,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-rats-pkix-key-attestation-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-07-05" class="published">5 July 2025</time>
+<time datetime="2025-07-14" class="published">14 July 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-01-06">6 January 2026</time></dd>
+<dd class="expires"><time datetime="2026-01-15">15 January 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1154,7 +1154,7 @@ whether the storage properties of this key meet the requirements of a given cert
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 6 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 15 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -2463,15 +2463,15 @@ key import <span class="bcp14">MAY</span> be aborted, or a prompt <span class="b
 to provide a standard interface between a Presenter and an HSM producing PKIX evidence. The authors hope that this standard interface will
 yield interoperable tools between offerings from different vendors.<a href="#section-9-1" class="pilcrow">¶</a></p>
 <p id="section-9-2">The interface presented in this section might be too complex for manufacturers of HSMs with limited capabilities such as smartcards
-or personal ID tokens. For devices with limited capabilities, a fixed attestation message endorsed by the vendor might be installed
+or personal ID tokens. For devices with limited capabilities, a fixed PKIX evidence endorsed by the vendor might be installed
 during manufacturing. Other approaches for constrained HSMs might be to report entities and attributes that are fixed or offer limited
 variations.<a href="#section-9-2" class="pilcrow">¶</a></p>
 <p id="section-9-3">On the other hand, an enterprise-grade HSM with the capability to hold a large number of private keys is expected to be capable of generating
-attestation messages catered to the specific constraints imposed by a Verifier and without exposing extraneous information. The aim of the request
-interface is to provide the means to select and report specific information in an attestation message.<a href="#section-9-3" class="pilcrow">¶</a></p>
-<p id="section-9-4">This section introduces the role of "Presenter" as shown in <a href="#fig-arch" class="auto internal xref">Figure 1</a>. The Presenter is the role that initiates the generation of an
-attestation message. Since HSMs are generally servers (client/server relationship) or slaves (master/slave relationship), a Presenter is
-required to launch the process of creating the attestation message and capturing its results. The results are then forwarded to the Verifier.<a href="#section-9-4" class="pilcrow">¶</a></p>
+PKIX evidence catered to the specific constraints imposed by a Verifier and without exposing extraneous information. The aim of the request
+interface is to provide the means to select and report specific information in the PKIX evidence.<a href="#section-9-3" class="pilcrow">¶</a></p>
+<p id="section-9-4">This section introduces the role of "Presenter" as shown in <a href="#fig-arch" class="auto internal xref">Figure 1</a>. The Presenter is the role that initiates the generation of PKIX
+evidence. Since HSMs are generally servers (client/server relationship) or slaves (master/slave relationship), a Presenter is
+required to launch the process of creating the PKIX evidence and capturing it to forward it to the Verifier.<a href="#section-9-4" class="pilcrow">¶</a></p>
 <span id="name-architecture"></span><div id="fig-arch">
 <figure id="figure-1">
         <div id="section-9-5.1">
@@ -2627,7 +2627,7 @@ by the Presenter are fully understood by the Attester.<a href="#section-9.2-3" c
 null). This represents a situation where the Presenter is selecting specific information that is not understood by the Attester.<a href="#section-9.2-4" class="pilcrow">¶</a></p>
 <p id="section-9.2-5">An Attester <span class="bcp14">SHOULD</span> fail an attestation request if it contains a request attribute with an unrecognized type. An environment with an Attester
 that ignores unrecognized attributes forces the Presenter to review the generated evidence for necessary information.<a href="#section-9.2-5" class="pilcrow">¶</a></p>
-<p id="section-9.2-6">An Attester <span class="bcp14">MUST NOT</span> include entities and attributes in the generated attestation message if these entities and attributes were
+<p id="section-9.2-6">An Attester <span class="bcp14">MUST NOT</span> include entities and attributes in the generated PKIX evidence if these entities and attributes were
 not specified as part of the request. This is to give the Presenter the control on what information is disclosed by the Attester.<a href="#section-9.2-6" class="pilcrow">¶</a></p>
 <p id="section-9.2-7">An Attester <span class="bcp14">MUST</span> fail an attestation request if the Presenter does not have the appropriate access rights to the entities included
 in the request.<a href="#section-9.2-7" class="pilcrow">¶</a></p>
@@ -2642,14 +2642,14 @@ in the request.<a href="#section-9.2-7" class="pilcrow">¶</a></p>
 prior to distribution. This section is non-normative and implementers <span class="bcp14">MAY</span> choose to not follow these recommendations.<a href="#section-9.3-1" class="pilcrow">¶</a></p>
 <p id="section-9.3-2">These recommendations apply to any PKIX evidence and are not restricted solely evidence generated from the proposed request interface.<a href="#section-9.3-2" class="pilcrow">¶</a></p>
 <p id="section-9.3-3">A Presenter <span class="bcp14">MUST</span> review the evidence produced by an Attester for fitness prior to distribution.<a href="#section-9.3-3" class="pilcrow">¶</a></p>
-<p id="section-9.3-4">A Presenter <span class="bcp14">MUST NOT</span> disclose an attestation message if it contains information it
+<p id="section-9.3-4">A Presenter <span class="bcp14">MUST NOT</span> disclose PKIX evidence if it contains information it
 cannot parse. This restriction applies to entity types and attributes type. This is
 to ensure that the information provided by the Attester can be evaluated by the
 Presenter.<a href="#section-9.3-4" class="pilcrow">¶</a></p>
-<p id="section-9.3-5">A Presenter <span class="bcp14">MUST NOT</span> disclose an attestation message if it contains entities others
+<p id="section-9.3-5">A Presenter <span class="bcp14">MUST NOT</span> disclose PKIX evidence if it contains entities others
 than the ones that were requested of the Attester. This is to ensure that only the
 selected entities are exposed to the Verifier.<a href="#section-9.3-5" class="pilcrow">¶</a></p>
-<p id="section-9.3-6">A Presenter <span class="bcp14">MUST NOT</span> disclose evidencee if it contains an entity with an attribute
+<p id="section-9.3-6">A Presenter <span class="bcp14">MUST NOT</span> disclose evidence if it contains an entity with an attribute
 that was not requested of the Attester. This is to ensure that only the selected
 information is disclosed to the Verifier.<a href="#section-9.3-6" class="pilcrow">¶</a></p>
 <p id="section-9.3-7">Further privacy concerns are discussed in <a href="#sec-cons-privacy" class="auto internal xref">Section 12.4</a>.<a href="#section-9.3-7" class="pilcrow">¶</a></p>
@@ -2981,7 +2981,7 @@ HSMs that wish to allow a Presenter to request evidence of keys which is not all
 <dd class="break"></dd>
 <dt id="I-D.ietf-lamps-csr-attestation">[I-D.ietf-lamps-csr-attestation]</dt>
         <dd>
-<span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Wiseman, M.</span>, and <span class="refAuthor">N. Smith</span>, <span class="refTitle">"Use of Remote Attestation with Certification Signing Requests"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-lamps-csr-attestation-19</span>, <time datetime="2025-05-25" class="refDate">25 May 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-19">https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-19</a>&gt;</span>. </dd>
+<span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Wiseman, M.</span>, and <span class="refAuthor">N. Smith</span>, <span class="refTitle">"Use of Remote Attestation with Certification Signing Requests"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-lamps-csr-attestation-20</span>, <time datetime="2025-07-07" class="refDate">7 July 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-20">https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-20</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-rats-msg-wrap">[I-D.ietf-rats-msg-wrap]</dt>
         <dd>

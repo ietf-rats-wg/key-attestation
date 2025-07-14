@@ -5,7 +5,7 @@
 RATS                                                        M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 6 January 2026                                         Crypto4A
+Expires: 15 January 2026                                        Crypto4A
                                                            H. Tschofenig
                                                                    H-BRS
                                                              H. Birkholz
@@ -14,7 +14,7 @@ Expires: 6 January 2026                                         Crypto4A
                                                                         
                                                                 N. Smith
                                                        Intel Corporation
-                                                             5 July 2025
+                                                            14 July 2025
 
 
    PKIX Evidence for Remote Attestation of Hardware Security Modules
@@ -70,7 +70,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 6 January 2026.
+   This Internet-Draft will expire on 15 January 2026.
 
 Copyright Notice
 
@@ -1302,25 +1302,24 @@ Table of Contents
    The interface presented in this section might be too complex for
    manufacturers of HSMs with limited capabilities such as smartcards or
    personal ID tokens.  For devices with limited capabilities, a fixed
-   attestation message endorsed by the vendor might be installed during
+   PKIX evidence endorsed by the vendor might be installed during
    manufacturing.  Other approaches for constrained HSMs might be to
    report entities and attributes that are fixed or offer limited
    variations.
 
    On the other hand, an enterprise-grade HSM with the capability to
    hold a large number of private keys is expected to be capable of
-   generating attestation messages catered to the specific constraints
-   imposed by a Verifier and without exposing extraneous information.
-   The aim of the request interface is to provide the means to select
-   and report specific information in an attestation message.
+   generating PKIX evidence catered to the specific constraints imposed
+   by a Verifier and without exposing extraneous information.  The aim
+   of the request interface is to provide the means to select and report
+   specific information in the PKIX evidence.
 
    This section introduces the role of "Presenter" as shown in Figure 1.
-   The Presenter is the role that initiates the generation of an
-   attestation message.  Since HSMs are generally servers (client/server
+   The Presenter is the role that initiates the generation of PKIX
+   evidence.  Since HSMs are generally servers (client/server
    relationship) or slaves (master/slave relationship), a Presenter is
-   required to launch the process of creating the attestation message
-   and capturing its results.  The results are then forwarded to the
-   Verifier.
+   required to launch the process of creating the PKIX evidence and
+   capturing it to forward it to the Verifier.
 
    +-----------------------------+
    |  Attester (HSM)             |
@@ -1489,9 +1488,9 @@ Table of Contents
    review the generated evidence for necessary information.
 
    An Attester MUST NOT include entities and attributes in the generated
-   attestation message if these entities and attributes were not
-   specified as part of the request.  This is to give the Presenter the
-   control on what information is disclosed by the Attester.
+   PKIX evidence if these entities and attributes were not specified as
+   part of the request.  This is to give the Presenter the control on
+   what information is disclosed by the Attester.
 
    An Attester MUST fail an attestation request if the Presenter does
    not have the appropriate access rights to the entities included in
@@ -1511,17 +1510,16 @@ Table of Contents
    A Presenter MUST review the evidence produced by an Attester for
    fitness prior to distribution.
 
-   A Presenter MUST NOT disclose an attestation message if it contains
+   A Presenter MUST NOT disclose PKIX evidence if it contains
    information it cannot parse.  This restriction applies to entity
    types and attributes type.  This is to ensure that the information
    provided by the Attester can be evaluated by the Presenter.
 
-   A Presenter MUST NOT disclose an attestation message if it contains
-   entities others than the ones that were requested of the Attester.
-   This is to ensure that only the selected entities are exposed to the
-   Verifier.
+   A Presenter MUST NOT disclose PKIX evidence if it contains entities
+   others than the ones that were requested of the Attester.  This is to
+   ensure that only the selected entities are exposed to the Verifier.
 
-   A Presenter MUST NOT disclose evidencee if it contains an entity with
+   A Presenter MUST NOT disclose evidence if it contains an entity with
    an attribute that was not requested of the Attester.  This is to
    ensure that only the selected information is disclosed to the
    Verifier.
@@ -1911,9 +1909,9 @@ Table of Contents
               Ounsworth, M., Tschofenig, H., Birkholz, H., Wiseman, M.,
               and N. Smith, "Use of Remote Attestation with
               Certification Signing Requests", Work in Progress,
-              Internet-Draft, draft-ietf-lamps-csr-attestation-19, 25
-              May 2025, <https://datatracker.ietf.org/doc/html/draft-
-              ietf-lamps-csr-attestation-19>.
+              Internet-Draft, draft-ietf-lamps-csr-attestation-20, 7
+              July 2025, <https://datatracker.ietf.org/doc/html/draft-
+              ietf-lamps-csr-attestation-20>.
 
    [I-D.ietf-rats-msg-wrap]
               Birkholz, H., Smith, N., Fossati, T., Tschofenig, H., and
