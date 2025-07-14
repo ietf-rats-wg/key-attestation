@@ -917,17 +917,17 @@ to provide a standard interface between a Presenter and an HSM producing PKIX ev
 yield interoperable tools between offerings from different vendors.
 
 The interface presented in this section might be too complex for manufacturers of HSMs with limited capabilities such as smartcards
-or personal ID tokens. For devices with limited capabilities, a fixed attestation message endorsed by the vendor might be installed
+or personal ID tokens. For devices with limited capabilities, a fixed PKIX evidence endorsed by the vendor might be installed
 during manufacturing. Other approaches for constrained HSMs might be to report entities and attributes that are fixed or offer limited
 variations.
 
 On the other hand, an enterprise-grade HSM with the capability to hold a large number of private keys is expected to be capable of generating
-attestation messages catered to the specific constraints imposed by a Verifier and without exposing extraneous information. The aim of the request
-interface is to provide the means to select and report specific information in an attestation message.
+PKIX evidence catered to the specific constraints imposed by a Verifier and without exposing extraneous information. The aim of the request
+interface is to provide the means to select and report specific information in the PKIX evidence.
 
-This section introduces the role of "Presenter" as shown in {{fig-arch}}. The Presenter is the role that initiates the generation of an
-attestation message. Since HSMs are generally servers (client/server relationship) or slaves (master/slave relationship), a Presenter is
-required to launch the process of creating the attestation message and capturing its results. The results are then forwarded to the Verifier.
+This section introduces the role of "Presenter" as shown in {{fig-arch}}. The Presenter is the role that initiates the generation of PKIX
+evidence. Since HSMs are generally servers (client/server relationship) or slaves (master/slave relationship), a Presenter is
+required to launch the process of creating the PKIX evidence and capturing it to forward it to the Verifier.
 
 ~~~aasvg
 +-----------------------------+
@@ -1054,7 +1054,7 @@ null). This represents a situation where the Presenter is selecting specific inf
 An Attester SHOULD fail an attestation request if it contains a request attribute with an unrecognized type. An environment with an Attester
 that ignores unrecognized attributes forces the Presenter to review the generated evidence for necessary information.
 
-An Attester MUST NOT include entities and attributes in the generated attestation message if these entities and attributes were
+An Attester MUST NOT include entities and attributes in the generated PKIX evidence if these entities and attributes were
 not specified as part of the request. This is to give the Presenter the control on what information is disclosed by the Attester.
 
 An Attester MUST fail an attestation request if the Presenter does not have the appropriate access rights to the entities included
@@ -1069,16 +1069,16 @@ These recommendations apply to any PKIX evidence and are not restricted solely e
 
 A Presenter MUST review the evidence produced by an Attester for fitness prior to distribution.
 
-A Presenter MUST NOT disclose an attestation message if it contains information it
+A Presenter MUST NOT disclose PKIX evidence if it contains information it
 cannot parse. This restriction applies to entity types and attributes type. This is
 to ensure that the information provided by the Attester can be evaluated by the
 Presenter.
 
-A Presenter MUST NOT disclose an attestation message if it contains entities others
+A Presenter MUST NOT disclose PKIX evidence if it contains entities others
 than the ones that were requested of the Attester. This is to ensure that only the
 selected entities are exposed to the Verifier.
 
-A Presenter MUST NOT disclose evidencee if it contains an entity with an attribute
+A Presenter MUST NOT disclose evidence if it contains an entity with an attribute
 that was not requested of the Attester. This is to ensure that only the selected
 information is disclosed to the Verifier.
 
