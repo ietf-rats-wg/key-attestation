@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-13T00:55:34.008476+00:00",
+  "timestamp": "2025-07-15T00:51:59.592126+00:00",
   "repo": "ietf-rats-wg/key-attestation",
   "labels": [
     {
@@ -171,9 +171,17 @@
       "labels": [],
       "body": "This would be easiest accomplished,I think, by stating that [Section 7.4](https://www.rfc-editor.org/rfc/rfc9334.html#section-7.4) of [RFC9334](https://www.rfc-editor.org/rfc/rfc9334.html) does not apply in this document.",
       "createdAt": "2025-02-05T20:40:03Z",
-      "updatedAt": "2025-02-05T20:40:03Z",
+      "updatedAt": "2025-07-14T15:19:07Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@henkbirkholz Has the latest version of the document addressed your concern?",
+          "createdAt": "2025-07-14T15:19:07Z",
+          "updatedAt": "2025-07-14T15:19:07Z"
+        }
+      ]
     },
     {
       "number": 10,
@@ -266,16 +274,24 @@
       "id": "I_kwDONUAin86pkFaq",
       "title": "An EAT is a CWT",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/15",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "henkbirkholz",
       "authorAssociation": "MEMBER",
       "assignees": [],
       "labels": [],
       "body": "> JWT \"iat\"  The time at which this token was generated. EDNOTE: Surely such a thing already exists in EAT?\n\nYes, the IAT Claim is specified inf [RFC 7519](https://datatracker.ietf.org/doc/html/rfc7519) and in [RFC 8392](https://datatracker.ietf.org/doc/html/rfc8392) respectively.",
       "createdAt": "2025-02-11T09:28:19Z",
-      "updatedAt": "2025-02-11T09:28:19Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2025-07-14T15:24:39Z",
+      "closedAt": "2025-07-14T15:24:39Z",
+      "comments": [
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "It is now referencing https://www.rfc-editor.org/rfc/rfc9711.html#section-4.3.1",
+          "createdAt": "2025-07-14T15:24:39Z",
+          "updatedAt": "2025-07-14T15:24:39Z"
+        }
+      ]
     },
     {
       "number": 16,
@@ -289,9 +305,17 @@
       "labels": [],
       "body": "It seems like it's adding complexity to make Platform Entities and Transaction Entities part of the Entity list, and then in text restrict them to \"_MAY contain only one\"._\n\nIn this case, wouldn't it be better to do this so that this constraint can be enforced by the ASN.1 parser?\n\n```\nTbsPkixAttestation ::= SEQUENCE {\n    version INTEGER,\n    reportedEntities SEQUENCE SIZE (1..MAX) OF ReportedEntity,\n    platformEntity        OPTIONAL [0] PlatformEntity,\n    transactionEntity    OPTIONAL [1] TransactionEntity\n}\n```\n\nWe can use the fancy new ASN.1 syntax .&Type({AttrSet}{@type} -- or whatever -- to restrict the valid types for ReportedEntity, and in this document we only register KeyEntity as a valid type for ReportedEntity.",
       "createdAt": "2025-02-28T00:54:37Z",
-      "updatedAt": "2025-02-28T00:54:37Z",
+      "updatedAt": "2025-07-14T15:27:05Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I prefer the notion of extensibility where entities are all treated the same way.",
+          "createdAt": "2025-07-14T15:27:05Z",
+          "updatedAt": "2025-07-14T15:27:05Z"
+        }
+      ]
     },
     {
       "number": 18,
@@ -339,25 +363,41 @@
       "labels": [],
       "body": "Given the name of the draft changed to include pkix, should the repo name be updated as well to disambiguate from prior naming?",
       "createdAt": "2025-03-19T18:20:20Z",
-      "updatedAt": "2025-03-19T18:20:20Z",
+      "updatedAt": "2025-07-14T15:30:05Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I think that the name could be changed to \"pkix-evidence\". However, I am not sure of all the changes required to keep datatracker and GitHub consistent.",
+          "createdAt": "2025-07-14T15:30:05Z",
+          "updatedAt": "2025-07-14T15:30:05Z"
+        }
+      ]
     },
     {
       "number": 35,
       "id": "I_kwDONUAin867y7uy",
       "title": "s/Attestation Message/PKIX Evidence",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/35",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "hannestschofenig",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2025-06-16T17:06:21Z",
-      "updatedAt": "2025-06-16T17:06:21Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2025-07-14T15:03:50Z",
+      "closedAt": "2025-07-14T15:03:50Z",
+      "comments": [
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Handled in commit: c552a350a1d6c48c31f189bb6fe5a9bbbb75fe82",
+          "createdAt": "2025-07-14T15:03:50Z",
+          "updatedAt": "2025-07-14T15:03:50Z"
+        }
+      ]
     },
     {
       "number": 36,
@@ -366,14 +406,29 @@
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/36",
       "state": "OPEN",
       "author": "bluegate010",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The specification makes two references to TPMs:\n\n> For relatively simple HSM devices such as TPM-like devices, storage properties such as \"extractable\" may always be true for all keys since the devices are not capable of key export and so the attestation could be essentially a hard-coded template asserting these immutable attributes. However, more complex HSM devices require a more complex key attestation format that encompasses the mutability of these attributes.\n\n> \"Often, a TPM will host cryptographic keys for both the kernel and userspace of a local operating system, but a Presenter may only represent a single user or application.\"\n\nThese references could safely be dropped, as this specification is targeting HSMs, not TPMs.\n\n(Also, \"'extractable' may always be true\" seems to disagree with \"the devices are not capable of key export\", which itself is unclear because I believe the TPM _can_ export certain keys.)",
       "createdAt": "2025-06-18T20:46:44Z",
-      "updatedAt": "2025-06-19T13:20:00Z",
+      "updatedAt": "2025-07-14T16:00:21Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "In the document, the definition for HSM includes TPM. Are you suggesting that TPMs should not be considered HSMs?",
+          "createdAt": "2025-07-14T15:15:32Z",
+          "updatedAt": "2025-07-14T15:15:32Z"
+        },
+        {
+          "author": "bluegate010",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "In the general case yes, they're essentially HSMs. However, TPMs already support key attestation via the TPM 2.0 specification. So my understanding of this spec was that it would be targeted towards more \"traditional\" HSMs, i.e. devices that speak PKCS#11 and don't already support a flavor of key attestation.\n\nIn any case, the specification could clarify the association between the proposed new ASN.1 structures and the TPM specification.",
+          "createdAt": "2025-07-14T16:00:21Z",
+          "updatedAt": "2025-07-14T16:00:21Z"
+        }
+      ]
     },
     {
       "number": 37,
@@ -398,30 +453,46 @@
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/38",
       "state": "OPEN",
       "author": "bluegate010",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The specification currently states:\n\n> This design also does not prevent against stripping attacks where an attacker removes a signature without leaving evidence in the message that an additional signature had been there or signature re-ordering attacks. Again, this is left up to Verifier policy to know how many algorithms or counter-signatures it is expecting.\n\nWe could extend the transaction entity attributes table with the following:\n\n| Attribute         | AttributeValue  | Reference   | Multiple? | OID                                              |\n| ---               | ---             | ---         | ---       | ---                                              |\n| ak-spki | bytes | {{&SELF}} | Yes        | id-pkix-evidence-attribute-transaction-ak-spki  |\n\nThis attribute would contain the `spki` for each Attestation Key that the HSM intends to use to sign the claims.",
       "createdAt": "2025-06-18T20:46:54Z",
-      "updatedAt": "2025-06-18T21:44:23Z",
+      "updatedAt": "2025-07-14T15:32:09Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "This is a very interesting suggestion.",
+          "createdAt": "2025-07-14T15:32:08Z",
+          "updatedAt": "2025-07-14T15:32:08Z"
+        }
+      ]
     },
     {
       "number": 39,
       "id": "I_kwDONUAin868PQ06",
       "title": "\"Signature re-ordering attack\" is undefined",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/39",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bluegate010",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The specification currently states:\n\n> This design also does not prevent against stripping attacks where an attacker removes a signature without leaving evidence in the message that an additional signature had been there or signature re-ordering attacks. Again, this is left up to Verifier policy to know how many algorithms or counter-signatures it is expecting.\n\nIt is unclear what a \"signature re-ordering attack\" is. We could drop this and simply state that attackers are free to remove or re-order signatures at will.",
       "createdAt": "2025-06-18T20:46:58Z",
-      "updatedAt": "2025-06-18T20:46:58Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2025-07-14T18:59:44Z",
+      "closedAt": "2025-07-14T18:59:43Z",
+      "comments": [
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Addresses in commit 173a2861e0d1a81d8a2d90a3d59877136aa3cdf6",
+          "createdAt": "2025-07-14T18:59:44Z",
+          "updatedAt": "2025-07-14T18:59:44Z"
+        }
+      ]
     },
     {
       "number": 40,
@@ -430,14 +501,22 @@
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/40",
       "state": "OPEN",
       "author": "bluegate010",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The spec currently defines a `usermod` platform entity attribute:\n\n> Most HSMs have some concept of trusted execution environment where user software modules can be loaded inside the HSM to run with some level of privileged access to the application keys. This attribute lists user modules currently loaded onto the HSM in a human readable format, preferably JSON.\n\nIt would be nice to define a standard format for reporting the usermod version and digest. That may be outside the scope of this particular specification though.",
       "createdAt": "2025-06-18T20:47:03Z",
-      "updatedAt": "2025-06-18T20:47:03Z",
+      "updatedAt": "2025-07-14T19:00:57Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Do you have suggestions as to related work on this?",
+          "createdAt": "2025-07-14T19:00:57Z",
+          "updatedAt": "2025-07-14T19:00:57Z"
+        }
+      ]
     },
     {
       "number": 41,
