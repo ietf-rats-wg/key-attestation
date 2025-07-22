@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-17T00:51:35.735242+00:00",
+  "timestamp": "2025-07-22T00:51:28.214000+00:00",
   "repo": "ietf-rats-wg/key-attestation",
   "labels": [
     {
@@ -682,6 +682,22 @@
       "body": "In Section 5.3,  the epoch id is not mentioned as one mechanism to achieve time freshness.\n\nIn Section 5.3.1, the nonce is distributed by the presenter, rather than the relying party and verifier. Does it fit current attestation service architecture as usually the verifier generates the nonce, to avoid replay attack?",
       "createdAt": "2025-07-10T12:16:41Z",
       "updatedAt": "2025-07-10T12:16:41Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 54,
+      "id": "I_kwDONUAin87Bkhiy",
+      "title": "Feedback from Kathleen Moriarty",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/issues/54",
+      "state": "OPEN",
+      "author": "jpfiset",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Greetings!\n\nI had offered to review https://datatracker.ietf.org/doc/draft-ietf-rats-pkix-key-attestation/ at the last meeting and I apologize for my delay in just doing that now!\n\nThe current version looks very good. However, I recommend writing the abstract over as it is disconnected from the content of the draft. I read the draft as enabling and describing how you can attest an HSM and the environment where keys are stored. It uses FIPS 140-3 or Common Criteria validation criteria in order to develop the list of what will be checked.\n\nIs the introduction correct in terms of the high-level aims or is the draft more tactical to HSM verification using attestation? The CA Browser forum example extends the examples to key stores, so perhaps that overall goal is this broad, but I wanted to check as consistency in the abstract, introduction, and body of the document would be very helpful as it's a complex enough topic already. :-)\n\nA few questions/nits/comments:\n\nIn section 5.1.6, there is a note that someone does not understand the subsection and I can see why. The third paragraph is where the language adds to confusion and should be easy enough to fix. This sentence is confusing as written:\n\"Note that by including envid as a platform attribute, this implies\n   that it applies to all attested key entities.\"\nShould it be \"all attested entities\"?  I would think it applies to the attested entity, the platform where the envid is included as an attribute, but not all or you'll need to explain what you mean by all. I think the other sentences are ok.\n\nSection 5.3.2\n\nI think the paragraph cautioning on timestamps is appropriately placed. You might add a quick sentence about it in the security considerations section as well.\n\n\nSection 8.2\n\nPlease expand out KAT and PAT\n\nI hope this review is helpful!\n\n--\n\nBest regards,\nKathleen",
+      "createdAt": "2025-07-21T07:43:17Z",
+      "updatedAt": "2025-07-21T07:43:17Z",
       "closedAt": null,
       "comments": []
     }
