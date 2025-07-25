@@ -529,10 +529,6 @@ key identifier (keyId). It is expected that a X.509 certificate will be generall
 to verify the signature and clearly identifies the subject that provided the signature. The SPKI and keyId are allowed
 to support environments where X.509 certificates are not used.
 
-`SignatureBlock.certChain` MUST contain at least one X.509 certificate as per {{RFC5280}}.
-While there might exist Target Environments which use out-of-band or non-X.509 mechanisms for communicating
-the AK public key to the Verifier, these mechanisms are insufficient to comply with this specification.
-
 The optional certificates provided in `PkixEvidence.intermediateCertificates` enables the insertion
 of X.509 certificates to support trusting the signatures. This information is intended to provide
 the certificates required by the Verifier to verified the endorsement on the certificates included
