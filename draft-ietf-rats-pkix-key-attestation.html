@@ -21,11 +21,11 @@ A more complex scenario would be to submit this evidence to a Certification Auth
 whether the storage properties of this key meet the requirements of a given certificate profile. 
        This specification also offers a format for requesting a cryptographic module to produce evidence tailored for expected use. 
     " name="description">
-<meta content="xml2rfc 3.29.0" name="generator">
+<meta content="xml2rfc 3.30.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-ietf-rats-pkix-key-attestation-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.29.0
+  xml2rfc 3.30.0
     Python 3.12.11
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
@@ -1060,7 +1060,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Ounsworth, et al.</td>
-<td class="center">Expires 15 January 2026</td>
+<td class="center">Expires 26 January 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1073,12 +1073,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-rats-pkix-key-attestation-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-07-14" class="published">14 July 2025</time>
+<time datetime="2025-07-25" class="published">25 July 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-01-15">15 January 2026</time></dd>
+<dd class="expires"><time datetime="2026-01-26">26 January 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1154,7 +1154,7 @@ whether the storage properties of this key meet the requirements of a given cert
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 15 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 26 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1816,17 +1816,14 @@ The signer identifier includes a combination of X.509 certificate, Subject Publi
 key identifier (keyId). It is expected that a X.509 certificate will be generally used, as it provides the public key needed
 to verify the signature and clearly identifies the subject that provided the signature. The SPKI and keyId are allowed
 to support environments where X.509 certificates are not used.<a href="#section-5-6" class="pilcrow">¶</a></p>
-<p id="section-5-7"><code>SignatureBlock.certChain</code> <span class="bcp14">MUST</span> contain at least one X.509 certificate as per <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>.
-While there might exist Target Environments which use out-of-band or non-X.509 mechanisms for communicating
-the AK public key to the Verifier, these mechanisms are insufficient to comply with this specification.<a href="#section-5-7" class="pilcrow">¶</a></p>
-<p id="section-5-8">The optional certificates provided in <code>PkixEvidence.intermediateCertificates</code> enables the insertion
+<p id="section-5-7">The optional certificates provided in <code>PkixEvidence.intermediateCertificates</code> enables the insertion
 of X.509 certificates to support trusting the signatures. This information is intended to provide
 the certificates required by the Verifier to verified the endorsement on the certificates included
-with the signatures.<a href="#section-5-8" class="pilcrow">¶</a></p>
-<p id="section-5-9">As described in the <a href="#sec-info-model" class="auto internal xref">Section 4</a> section, the <code>TbsPkixEvidence</code> is a set of entities. Each entity
+with the signatures.<a href="#section-5-7" class="pilcrow">¶</a></p>
+<p id="section-5-8">As described in the <a href="#sec-info-model" class="auto internal xref">Section 4</a> section, the <code>TbsPkixEvidence</code> is a set of entities. Each entity
 is associated with a type that defines its class. The entity types are represented by object identifiers
-(OIDs). The following ASN.1 definition defines the structures associated with entities:<a href="#section-5-9" class="pilcrow">¶</a></p>
-<div class="lang-asn.1 sourcecode" id="section-5-10">
+(OIDs). The following ASN.1 definition defines the structures associated with entities:<a href="#section-5-8" class="pilcrow">¶</a></p>
+<div class="lang-asn.1 sourcecode" id="section-5-9">
 <pre>
 ReportedEntity ::= SEQUENCE {
     entityType         OBJECT IDENTIFIER,
@@ -1838,12 +1835,12 @@ id-pkix-attest-entity-type        OBJECT IDENTIFIER ::= { id-pkix-attest 0 }
 id-pkix-attest-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 0 }
 id-pkix-attest-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 1 }
 id-pkix-attest-entity-key         OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 2 }
-</pre><a href="#section-5-10" class="pilcrow">¶</a>
+</pre><a href="#section-5-9" class="pilcrow">¶</a>
 </div>
-<p id="section-5-11">In turn, entities are composed of attributes. Each attribute is composed of a type and a value.
+<p id="section-5-10">In turn, entities are composed of attributes. Each attribute is composed of a type and a value.
 The attribute types are represented by object identifiers (OIDs). The
-following ASN.1 definition defines the structures associated with attributes:<a href="#section-5-11" class="pilcrow">¶</a></p>
-<div class="lang-asn.1 sourcecode" id="section-5-12">
+following ASN.1 definition defines the structures associated with attributes:<a href="#section-5-10" class="pilcrow">¶</a></p>
+<div class="lang-asn.1 sourcecode" id="section-5-11">
 <pre>
 ReportedAttribute ::= SEQUENCE {
     attributeType      OBJECT IDENTIFIER,
@@ -1858,13 +1855,13 @@ AttributeValue :== CHOICE {
    int         [4] IMPLICIT INTEGER,
    oid         [5] IMPLICIT OBJECT IDENTIFIER
 }
-</pre><a href="#section-5-12" class="pilcrow">¶</a>
+</pre><a href="#section-5-11" class="pilcrow">¶</a>
 </div>
-<p id="section-5-13">The attributes associated with an entity are dependent on the type of entity. Therefore, it is encouraged
-to define attribute types grouped with their respective entity type.<a href="#section-5-13" class="pilcrow">¶</a></p>
-<p id="section-5-14">The type of an attribute value is dictated by the attribute type. When an attribute type is defined, the
-definition must include the type of the value, its semantic and interpretation.<a href="#section-5-14" class="pilcrow">¶</a></p>
-<p id="section-5-15">The remainder of this section describes the entity types and their associated attributes.<a href="#section-5-15" class="pilcrow">¶</a></p>
+<p id="section-5-12">The attributes associated with an entity are dependent on the type of entity. Therefore, it is encouraged
+to define attribute types grouped with their respective entity type.<a href="#section-5-12" class="pilcrow">¶</a></p>
+<p id="section-5-13">The type of an attribute value is dictated by the attribute type. When an attribute type is defined, the
+definition must include the type of the value, its semantic and interpretation.<a href="#section-5-13" class="pilcrow">¶</a></p>
+<p id="section-5-14">The remainder of this section describes the entity types and their associated attributes.<a href="#section-5-14" class="pilcrow">¶</a></p>
 <div id="platform-entity">
 <section id="section-5.1">
         <h3 id="name-platform-entity">

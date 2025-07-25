@@ -5,7 +5,7 @@
 RATS                                                        M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 15 January 2026                                        Crypto4A
+Expires: 26 January 2026                                        Crypto4A
                                                            H. Tschofenig
                                                                    H-BRS
                                                              H. Birkholz
@@ -14,7 +14,7 @@ Expires: 15 January 2026                                        Crypto4A
                                                                         
                                                                 N. Smith
                                                        Intel Corporation
-                                                            14 July 2025
+                                                            25 July 2025
 
 
    PKIX Evidence for Remote Attestation of Hardware Security Modules
@@ -70,7 +70,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 15 January 2026.
+   This Internet-Draft will expire on 26 January 2026.
 
 Copyright Notice
 
@@ -617,12 +617,6 @@ Table of Contents
    identifies the subject that provided the signature.  The SPKI and
    keyId are allowed to support environments where X.509 certificates
    are not used.
-
-   SignatureBlock.certChain MUST contain at least one X.509 certificate
-   as per [RFC5280].  While there might exist Target Environments which
-   use out-of-band or non-X.509 mechanisms for communicating the AK
-   public key to the Verifier, these mechanisms are insufficient to
-   comply with this specification.
 
    The optional certificates provided in
    PkixEvidence.intermediateCertificates enables the insertion of X.509
