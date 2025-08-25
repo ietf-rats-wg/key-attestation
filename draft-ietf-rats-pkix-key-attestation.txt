@@ -5,7 +5,7 @@
 RATS                                                        M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 26 January 2026                                        Crypto4A
+Expires: 26 February 2026                                       Crypto4A
                                                            H. Tschofenig
                                                                    H-BRS
                                                              H. Birkholz
@@ -14,7 +14,7 @@ Expires: 26 January 2026                                        Crypto4A
                                                                         
                                                                 N. Smith
                                                        Intel Corporation
-                                                            25 July 2025
+                                                          25 August 2025
 
 
    PKIX Evidence for Remote Attestation of Hardware Security Modules
@@ -70,7 +70,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 January 2026.
+   This Internet-Draft will expire on 26 February 2026.
 
 Copyright Notice
 
@@ -1309,9 +1309,9 @@ Table of Contents
    This section introduces the role of "Presenter" as shown in Figure 1.
    The Presenter is the role that initiates the generation of PKIX
    evidence.  Since HSMs are generally servers (client/server
-   relationship) or slaves (master/slave relationship), a Presenter is
-   required to launch the process of creating the PKIX evidence and
-   capturing it to forward it to the Verifier.
+   relationship) or peripherals (controller/peripheral relationship), a
+   Presenter is required to launch the process of creating the PKIX
+   evidence and capturing it to forward it to the Verifier.
 
    +-----------------------------+
    |  Attester (HSM)             |
@@ -1908,9 +1908,9 @@ Table of Contents
    [I-D.ietf-rats-msg-wrap]
               Birkholz, H., Smith, N., Fossati, T., Tschofenig, H., and
               D. Glaze, "RATS Conceptual Messages Wrapper (CMW)", Work
-              in Progress, Internet-Draft, draft-ietf-rats-msg-wrap-16,
-              3 July 2025, <https://datatracker.ietf.org/doc/html/draft-
-              ietf-rats-msg-wrap-16>.
+              in Progress, Internet-Draft, draft-ietf-rats-msg-wrap-17,
+              12 August 2025, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-rats-msg-wrap-17>.
 
    [RFC2986]  Nystrom, M. and B. Kaliski, "PKCS #10: Certification
               Request Syntax Specification Version 1.7", RFC 2986,
