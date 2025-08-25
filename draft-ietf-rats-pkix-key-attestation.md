@@ -967,7 +967,7 @@ by the Presenter.
 
 In most cases the value of a request attribute should be left unspecified by the Presenter. In the process of generating
 the evidence, the values of the desired attributes are observed by the Attestation Service within the HSM and reported accordingly. For the purpose
-of creating a request, the Presenter sets the values of the attributes to `null`. This is a departure from the values specified for each attribute
+of creating a request, the Presenter sets the values of the attributes to `null`. This contradicts the type of values specified in the definition of each attribute
 but serves well the purposes of the request.
 
 On the other hand, there are circumstances where the value of a request attribute should be provided by the Presenter. For example, when a particular
