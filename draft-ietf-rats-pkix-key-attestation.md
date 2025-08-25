@@ -921,7 +921,7 @@ PKIX evidence catered to the specific constraints imposed by a Verifier and with
 interface is to provide the means to select and report specific information in the PKIX evidence.
 
 This section introduces the role of "Presenter" as shown in {{fig-arch}}. The Presenter is the role that initiates the generation of PKIX
-evidence. Since HSMs are generally servers (client/server relationship) or slaves (master/slave relationship), a Presenter is
+evidence. Since HSMs are generally servers (client/server relationship) or peripherals (controller/peripheral relationship), a Presenter is
 required to launch the process of creating the PKIX evidence and capturing it to forward it to the Verifier.
 
 ~~~aasvg
