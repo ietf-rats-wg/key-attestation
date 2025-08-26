@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-22T00:51:28.214000+00:00",
+  "timestamp": "2025-08-26T00:44:46.696880+00:00",
   "repo": "ietf-rats-wg/key-attestation",
   "labels": [
     {
@@ -506,7 +506,7 @@
       "labels": [],
       "body": "The spec currently defines a `usermod` platform entity attribute:\n\n> Most HSMs have some concept of trusted execution environment where user software modules can be loaded inside the HSM to run with some level of privileged access to the application keys. This attribute lists user modules currently loaded onto the HSM in a human readable format, preferably JSON.\n\nIt would be nice to define a standard format for reporting the usermod version and digest. That may be outside the scope of this particular specification though.",
       "createdAt": "2025-06-18T20:47:03Z",
-      "updatedAt": "2025-07-15T03:46:37Z",
+      "updatedAt": "2025-08-25T16:59:03Z",
       "closedAt": null,
       "comments": [
         {
@@ -522,6 +522,27 @@
           "body": "Something inspired by confidential-compute could work, though that's too prescriptive for this use-case I think. Something like this:\n\n- Code running in the user software module can request a signed \"user module report\" from the HSM. One of the arguments is a nonce field.\n- The HSM produces a signed statement that covers:\n  - The request nonce\n  - The code digest and configuration of the user software module that provided the request nonce.\n\nThe user software module can, at runtime:\n\n- Generate an ephemeral random attestation key of its own.\n- Pass a digest of that attestation key as a nonce to the HSM, and obtain a signed report.\n- Proceed to use that signed attestation key for arbitrary attestation flows. For example, the user module could wield its attestation key to sign key material exported from a TLS 1.3 session via [RFC 5705](https://datatracker.ietf.org/doc/html/rfc5705). Or the user module could wield its attestation key to sign a quote over some piece of application-specific data.\n\nThe report issued by the HSM allows relying parties of the user module to verify the authenticity of the user module and its measurements.",
           "createdAt": "2025-07-15T03:45:44Z",
           "updatedAt": "2025-07-15T03:46:37Z"
+        },
+        {
+          "author": "hannestschofenig",
+          "authorAssociation": "COLLABORATOR",
+          "body": "At the discussion at 25. August Jeff mentioned two use cases:\n\n1. External system asks \"What usermods are installed and what are their measurements?\"\n2. A specific usermod wants to demonstrate evidence about itself to other remote servies.",
+          "createdAt": "2025-08-25T16:38:47Z",
+          "updatedAt": "2025-08-25T16:38:47Z"
+        },
+        {
+          "author": "hannestschofenig",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Take a look at the TEEP spec as well for the functionality in (1):\nhttps://datatracker.ietf.org/doc/draft-ietf-teep-protocol/\n\n",
+          "createdAt": "2025-08-25T16:39:30Z",
+          "updatedAt": "2025-08-25T16:39:30Z"
+        },
+        {
+          "author": "hannestschofenig",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Please also have a look at the Measured Component Draft as well:\nhttps://datatracker.ietf.org/doc/draft-ietf-rats-eat-measured-component/\n",
+          "createdAt": "2025-08-25T16:59:03Z",
+          "updatedAt": "2025-08-25T16:59:03Z"
         }
       ]
     },
@@ -548,14 +569,22 @@
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/42",
       "state": "OPEN",
       "author": "bluegate010",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The `protection` attribute type \"indicates any additional key protection properties around use or modification of this key. These are generalized properties and will not apply the same way to all HSM vendors. Consult vendor documentation for the in-context meaning of these flags.\"\n\nThere are indications that this will be defined as an extensible byte array.\n\nIt seems that we could simply allow these \"additional key protection properties\" to be defined in terms of future OIDs rather than a bitfield, which is the extension mechanism that the spec uses for entity and attribute types generally.",
       "createdAt": "2025-06-18T20:53:03Z",
-      "updatedAt": "2025-06-18T20:53:19Z",
+      "updatedAt": "2025-08-25T16:42:40Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "hannestschofenig",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Discussed at the 25. August: Conclusion to drop the protection attribute",
+          "createdAt": "2025-08-25T16:42:40Z",
+          "updatedAt": "2025-08-25T16:42:40Z"
+        }
+      ]
     },
     {
       "number": 43,
@@ -578,15 +607,15 @@
       "id": "I_kwDONUAin868PWEM",
       "title": "Spec uses potentially problematic language",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/44",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bluegate010",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The spec currently states:\n\n> Since HSMs are generally servers (client/server relationship) or slaves (master/slave relationship)\n\nWe could potentially modify this to state:\n\n> Since HSMs are generally servers (client/server relationship) or peripherals (controller/peripheral relationship)",
       "createdAt": "2025-06-18T20:56:58Z",
-      "updatedAt": "2025-06-18T20:56:58Z",
-      "closedAt": null,
+      "updatedAt": "2025-08-25T14:26:15Z",
+      "closedAt": "2025-08-25T14:26:15Z",
       "comments": []
     },
     {
@@ -612,14 +641,29 @@
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/46",
       "state": "OPEN",
       "author": "bluegate010",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The spec states: (emphasis added)\n\n> In most cases the value of a request attribute should be left unspecified by the Presenter. In the process of generating the evidence, the values of the desired attributes are observed by the attestation service within the HSM and reported accordingly. For the purpose of creating a request, the Presenter sets the values of the attributes to `null`. **This is a departure from the values specified for each attribute** but serves well the purposes of the request.\n\nIs the bolded portion simply noting that the attested values will differ from the requested values? Or something else?",
       "createdAt": "2025-06-18T21:00:59Z",
-      "updatedAt": "2025-06-18T21:01:06Z",
+      "updatedAt": "2025-08-25T16:09:55Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I have changed the statement to:\n\n\"This contradicts the type of values specified in the definition of each attribute but serves well the purposes of the request.\"\n\nIs this more clear?",
+          "createdAt": "2025-08-25T14:32:59Z",
+          "updatedAt": "2025-08-25T14:32:59Z"
+        },
+        {
+          "author": "bluegate010",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Because the values are non-nullable? Works for me. Could also just delete the phrase since the ASN.1 does seem to make the types nullable via `OPTIONAL`. Not a big deal.",
+          "createdAt": "2025-08-25T16:09:54Z",
+          "updatedAt": "2025-08-25T16:09:54Z"
+        }
+      ]
     },
     {
       "number": 47,
@@ -628,14 +672,22 @@
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/47",
       "state": "OPEN",
       "author": "bluegate010",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The `nonce` attribute is repeatable in the Transaction entity:\n\n> The attribute \"nonce\" is used to provide \"freshness\" quality as to the claims provided in the PkixEvidence message. A Presenter requesting a PkixEvidence message MAY provide a nonce value as part of the request. This nonce value, if provided, SHOULD be repeated as an attribute within the transaction entity.\n> \n> This is similar to the attribute \"eat_nonce\" as defined in {{!RFC9711}}. According to this specification, this attribute may be specified multiple times with different values. In that case, all different values shall be repeated in the PKIXEvidence.\n\n\nIn the non-normative Attestation Requests section, the nonce is described thusly:\n\n> A Presenter may choose to include a nonce as part of the attestation request. When producing the PKIX evidence, the HSM repeats the nonce that was provided as part of the request.\n> \n> When providing a nonce, a Presenter includes, in the attestation request, an entity of type `id-pkix-evidence-entity-transaction` with an attribute of type `id-pkix-evidence-attribute-transaction-nonce`. This attribute is set with the value of the nonce as \"bytes\".\n\nIt is unclear based on the cited language why multiple nonces are supported. It could be worth including an example that illustrates when multiple nonces would be used.",
       "createdAt": "2025-06-18T21:06:26Z",
-      "updatedAt": "2025-06-18T21:06:26Z",
+      "updatedAt": "2025-08-25T16:47:11Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "hannestschofenig",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Discussion on August 25th lead to the conclusion that we would only use a single nonce, as done in Section 4.1.1 of https://datatracker.ietf.org/doc/rfc9783/",
+          "createdAt": "2025-08-25T16:47:11Z",
+          "updatedAt": "2025-08-25T16:47:11Z"
+        }
+      ]
     },
     {
       "number": 48,
@@ -644,14 +696,29 @@
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/48",
       "state": "OPEN",
       "author": "bluegate010",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The spec has the following two pieces of language, which contradict each other:\n\n> An Attester (HSM) which is requested to provide information about unrecognized Entity or Attribute types MUST fail the operation.\n\n> An Attester SHOULD fail an attestation request if it contains a request attribute with an unrecognized type.",
       "createdAt": "2025-06-18T21:07:35Z",
-      "updatedAt": "2025-06-18T21:07:35Z",
+      "updatedAt": "2025-08-25T16:56:01Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "hannestschofenig",
+          "authorAssociation": "COLLABORATOR",
+          "body": "MCR suggests to ignore requests for unrecognized types",
+          "createdAt": "2025-08-25T16:51:56Z",
+          "updatedAt": "2025-08-25T16:51:56Z"
+        },
+        {
+          "author": "hannestschofenig",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Mike: The requester should check whether it receives what it received back.",
+          "createdAt": "2025-08-25T16:56:01Z",
+          "updatedAt": "2025-08-25T16:56:01Z"
+        }
+      ]
     },
     {
       "number": 50,
@@ -681,9 +748,17 @@
       "labels": [],
       "body": "In Section 5.3,  the epoch id is not mentioned as one mechanism to achieve time freshness.\n\nIn Section 5.3.1, the nonce is distributed by the presenter, rather than the relying party and verifier. Does it fit current attestation service architecture as usually the verifier generates the nonce, to avoid replay attack?",
       "createdAt": "2025-07-10T12:16:41Z",
-      "updatedAt": "2025-07-10T12:16:41Z",
+      "updatedAt": "2025-08-25T16:46:04Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "hannestschofenig",
+          "authorAssociation": "COLLABORATOR",
+          "body": "JP said he could add a reference to the epoch marker draft: [draft-ietf-rats-epoch-markers-01 - Epoch Markers](https://datatracker.ietf.org/doc/draft-ietf-rats-epoch-markers/)\n",
+          "createdAt": "2025-08-25T16:46:04Z",
+          "updatedAt": "2025-08-25T16:46:04Z"
+        }
+      ]
     },
     {
       "number": 54,
@@ -698,6 +773,22 @@
       "body": "Greetings!\n\nI had offered to review https://datatracker.ietf.org/doc/draft-ietf-rats-pkix-key-attestation/ at the last meeting and I apologize for my delay in just doing that now!\n\nThe current version looks very good. However, I recommend writing the abstract over as it is disconnected from the content of the draft. I read the draft as enabling and describing how you can attest an HSM and the environment where keys are stored. It uses FIPS 140-3 or Common Criteria validation criteria in order to develop the list of what will be checked.\n\nIs the introduction correct in terms of the high-level aims or is the draft more tactical to HSM verification using attestation? The CA Browser forum example extends the examples to key stores, so perhaps that overall goal is this broad, but I wanted to check as consistency in the abstract, introduction, and body of the document would be very helpful as it's a complex enough topic already. :-)\n\nA few questions/nits/comments:\n\nIn section 5.1.6, there is a note that someone does not understand the subsection and I can see why. The third paragraph is where the language adds to confusion and should be easy enough to fix. This sentence is confusing as written:\n\"Note that by including envid as a platform attribute, this implies\n   that it applies to all attested key entities.\"\nShould it be \"all attested entities\"?  I would think it applies to the attested entity, the platform where the envid is included as an attribute, but not all or you'll need to explain what you mean by all. I think the other sentences are ok.\n\nSection 5.3.2\n\nI think the paragraph cautioning on timestamps is appropriately placed. You might add a quick sentence about it in the security considerations section as well.\n\n\nSection 8.2\n\nPlease expand out KAT and PAT\n\nI hope this review is helpful!\n\n--\n\nBest regards,\nKathleen",
       "createdAt": "2025-07-21T07:43:17Z",
       "updatedAt": "2025-07-21T07:43:17Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 55,
+      "id": "I_kwDONUAin87H0oXJ",
+      "title": "claim Terminology",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/issues/55",
+      "state": "OPEN",
+      "author": "hannestschofenig",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Text needed to explain what we mean by claim for a PKIX-reader audience",
+      "createdAt": "2025-08-25T16:27:30Z",
+      "updatedAt": "2025-08-25T16:27:30Z",
       "closedAt": null,
       "comments": []
     }
