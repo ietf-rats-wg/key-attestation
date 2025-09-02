@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-08-26T00:44:46.696880+00:00",
+  "timestamp": "2025-09-02T00:44:01.908714+00:00",
   "repo": "ietf-rats-wg/key-attestation",
   "labels": [
     {
@@ -748,7 +748,7 @@
       "labels": [],
       "body": "In Section 5.3,  the epoch id is not mentioned as one mechanism to achieve time freshness.\n\nIn Section 5.3.1, the nonce is distributed by the presenter, rather than the relying party and verifier. Does it fit current attestation service architecture as usually the verifier generates the nonce, to avoid replay attack?",
       "createdAt": "2025-07-10T12:16:41Z",
-      "updatedAt": "2025-08-25T16:46:04Z",
+      "updatedAt": "2025-09-01T08:03:57Z",
       "closedAt": null,
       "comments": [
         {
@@ -757,6 +757,13 @@
           "body": "JP said he could add a reference to the epoch marker draft: [draft-ietf-rats-epoch-markers-01 - Epoch Markers](https://datatracker.ietf.org/doc/draft-ietf-rats-epoch-markers/)\n",
           "createdAt": "2025-08-25T16:46:04Z",
           "updatedAt": "2025-08-25T16:46:04Z"
+        },
+        {
+          "author": "junzhanghw",
+          "authorAssociation": "NONE",
+          "body": "Thanks. Is the presenter trusted by the attester, relying party and the verifier in default and there is a protocol to deliver the nonce from the presenter to the verifier? As it is possible to pre-generate some nonce by the presenter, and the HSM generates the corresponding evidences (good evidence), and only transmits these good evidences to the presenter, then to the verifier.  How to ensure that the nonce itself is fresh?",
+          "createdAt": "2025-09-01T08:03:57Z",
+          "updatedAt": "2025-09-01T08:03:57Z"
         }
       ]
     },
