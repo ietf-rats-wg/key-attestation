@@ -837,13 +837,7 @@ EDNOTE: I think we have to be precise about which flavour of Base64 we are refer
 
 
 
-# Signing Procedure
-
-The `SignatureBlock.signatureValue` signs over the DER-encoded to-be-signed evidence data
-`PkixEvidence.tbs` and MUST be validated with the subject public key of the leaf
-X.509 certificate contained in the `SignatureBlock.certChain`.
-
-# Verification Procedure {#sec-verif-proc}
+# Signing and Verification Procedures {#sec-verif-proc}
 
 The `SignatureBlock.signatureValue` signs over the DER-encoded to-be-signed evidence data
 `PkixEvidence.tbs` and MUST be validated with the subject public key of the leaf
