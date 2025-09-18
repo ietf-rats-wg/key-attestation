@@ -21,21 +21,21 @@ A more complex scenario would be to submit this evidence to a Certification Auth
 whether the storage properties of this key meet the requirements of a given certificate profile. 
        This specification also offers a format for requesting a cryptographic module to produce evidence tailored for expected use. 
     " name="description">
-<meta content="xml2rfc 3.30.0" name="generator">
+<meta content="xml2rfc 3.30.2" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-ietf-rats-pkix-key-attestation-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.30.0
+  xml2rfc 3.30.2
     Python 3.12.11
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
     Jinja2 3.1.6
     lxml 5.3.1
-    platformdirs 4.3.8
+    platformdirs 4.4.0
     pycountry 24.6.1
     PyYAML 6.0.2
-    requests 2.32.4
+    requests 2.32.5
     setuptools 80.9.0
     wcwidth 0.2.13
 -->
@@ -1056,11 +1056,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">PKIX Evidence for Remote Attestation of </td>
-<td class="right">August 2025</td>
+<td class="right">September 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Ounsworth, et al.</td>
-<td class="center">Expires 26 February 2026</td>
+<td class="center">Expires 22 March 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1073,12 +1073,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-rats-pkix-key-attestation-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-08-25" class="published">25 August 2025</time>
+<time datetime="2025-09-18" class="published">18 September 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-02-26">26 February 2026</time></dd>
+<dd class="expires"><time datetime="2026-03-22">22 March 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1154,7 +1154,7 @@ whether the storage properties of this key meet the requirements of a given cert
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 26 February 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 22 March 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1480,7 +1480,7 @@ determine which HSM was used to generate the subject key, whether this device ad
 to certain jurisdiction policies (such as FIPS mode) and the constraints applied to the key (such as whether is it extractable).<a href="#section-2.3-2" class="pilcrow">¶</a></p>
 <p id="section-2.3-3">For relatively simple HSM devices, storage properties such as "extractable" may always be true for all keys
 since the devices are not capable of key export and so the attestation could be essentially a hard-coded template asserting these
-immutable attributes. However, more complex HSM devices require a more complex key attestation format that encompasses the
+immutable attributes. However, more complex HSM devices require a more complex evidence format that encompasses the
 mutability of these attributes.
 Also, the client requesting the key attestation might wish to scope-down the content of the key attestation as
 the HSM contains many keys and only a certain subset are relevant for attesting a given transaction, or only
@@ -1552,8 +1552,8 @@ USB tokens, TPMs, cryptographic co-processors (PCI cards) and "enterprise-grade"
         <dd class="break"></dd>
 <dt id="section-3-6.11">Key Attestation:</dt>
         <dd style="margin-left: 1.5em" id="section-3-6.12">
-          <p id="section-3-6.12.1">Process of producing Evidence containing claims pertaining to application keys found within an HSM. In
-general, the claims includes enough information about an application key and its hosting platform to allow
+          <p id="section-3-6.12.1">Process of producing Evidence containing claims pertaining to user keys found within an HSM. In
+general, the claims includes enough information about a user key and its hosting platform to allow
 a Relying Party to make judicious decisions about the key, such as whether to issue a certificate for the key.<a href="#section-3-6.12.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
@@ -1572,10 +1572,10 @@ platform, such as those carried out during audit reviews.<a href="#section-3-6.1
         <dd class="break"></dd>
 <dt id="section-3-6.17">Presenter</dt>
         <dd style="margin-left: 1.5em" id="section-3-6.18">
-          <p id="section-3-6.18.1">Role that facilitates communication between the HSM, in this case the Attester, and the Verifier. The
-Presenter initiates the operation of generating evidence at the HSM and
-passes the generated evidence to the Verifier. This role is supported by a combination of
-one or multiple human operators or automated processes.<a href="#section-3-6.18.1" class="pilcrow">¶</a></p>
+          <p id="section-3-6.18.1">Role that facilitates communication between the Attester and the Verifier. The
+Presenter initiates the operation of generating evidence at the Attester and
+passes the generated evidence to the Verifier. In the case of HSMs, the Presenter
+is responsible of selecting the claims that are part of the generated evidence.<a href="#section-3-6.18.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 <dt id="section-3-6.19">Trust Anchor:</dt>
@@ -1586,21 +1586,14 @@ associated data. The public key is used to verify digital
 signatures, and the associated data is used to constrain the types
 of information for which the trust anchor is authoritative." The
 Trust Anchor may be a certificate, a raw public key, or other
-structure, as appropriate. It can be a non-root certificate when
-it is a certificate.<a href="#section-3-6.20.1" class="pilcrow">¶</a></p>
+structure, as appropriate.<a href="#section-3-6.20.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-6.21">Usage Protocol</dt>
+<dt id="section-3-6.21">User Key:</dt>
         <dd style="margin-left: 1.5em" id="section-3-6.22">
-          <p id="section-3-6.22.1">A (security) protocol that requires demonstrating possession of
-the private component of the application key.<a href="#section-3-6.22.1" class="pilcrow">¶</a></p>
-</dd>
-        <dd class="break"></dd>
-<dt id="section-3-6.23">User Key:</dt>
-        <dd style="margin-left: 1.5em" id="section-3-6.24">
-          <p id="section-3-6.24.1">A user key consists of a key hosted by an HSM (the platform) and intended to be used by a client
-of the HSM. Other terms used for a user key is "application key", "client key" or "operational key".
-The access and operations on a user key is controlled by the HSM.<a href="#section-3-6.24.1" class="pilcrow">¶</a></p>
+          <p id="section-3-6.22.1">A user key consists of a key hosted by an HSM (the platform) and intended to be used by a client
+of the HSM. Other terms used for a user key are "application key", "client key" or "operational key".
+The access and operations on a user key is controlled by the HSM.<a href="#section-3-6.22.1" class="pilcrow">¶</a></p>
 </dd>
       <dd class="break"></dd>
 </dl>
@@ -1657,26 +1650,27 @@ of a set of attributes.<a href="#section-4-5" class="pilcrow">¶</a></p>
         <h3 id="name-entity">
 <a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-entity" class="section-name selfRef">Entity</a>
         </h3>
-<p id="section-4.1-1">An entity is composed of a type, the entity type, and a set of attributes. The entity type
-describes the class of the entity while its attributes defines its state.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
-<p id="section-4.1-2">An entity <span class="bcp14">SHOULD</span> be reported only once in a claim description. The claim description can
+<p id="section-4.1-1">An entity is a logical construct that refers to a portion of the Target Environment's state. It is
+addressable via an identifier such as a UUID or a handle (as expressed in <span>[<a href="#PKCS11" class="cite xref">PKCS11</a>]</span>). In general, an
+entity refers to a component recognized by users of the HSM, such as a key or the platform itself.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">An entity is composed of a type, the entity type, and a set of attributes. The entity type
+describes the class of the entity while its attributes defines its state.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.1-3">An entity <span class="bcp14">MUST</span> be reported at most once in a claim description. The claim description can
 have multiple entities of the same type (for example reporting multiple keys), but each
-entity <span class="bcp14">MUST</span> be relating to different elements.
-For example, if a given application public key appears in two different entities, these
-<span class="bcp14">MUST</span> be interpreted as two distinct and independent entities that happen to have the
-same public key, and <span class="bcp14">MUST NOT</span> be interpreted as adding additional attributes to the
-already-described entity.
-This restriction is to ease the implementation of Verifiers for the provided Evidence.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
-<p id="section-4.1-3">The number of entities reported in a claim description, and their respective type, is
+entity <span class="bcp14">MUST</span> be relating to different portions of the Target Environment.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
+<p id="section-4.1-4">It is possible for two entities to be quite similar such as in a situation where a key is imported
+twice in a HSM. In this case, the two related entities could have similar attributes. However, they
+are treated as different entities as they are addressed differently.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.1-5">The number of entities reported in a claim description, and their respective type, is
 left to the implementer. For a simple device where there is only one key, the list of
 reported entities could be fixed. For larger and more complex devices, the list of
-reported entities should be tailored to the demands of the Presenter.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
-<p id="section-4.1-4">In particular, note that the nonce attribute contained with the Transaction entity is optional,
+reported entities should be tailored to the demands of the Presenter.<a href="#section-4.1-5" class="pilcrow">¶</a></p>
+<p id="section-4.1-6">In particular, note that the nonce attribute contained with the Transaction entity is optional,
 and therefore it is possible that an extremely simple device that holds one static key
 could have its key attestation object generated at manufacture time and injected
 statically into the device and act as a kind of certificate, instead of
 being generated on-demand. This model would essentially
-off-board the Target Environment to be part of the manufacturing infrastructure.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+off-board the Target Environment to be part of the manufacturing infrastructure.<a href="#section-4.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="entity-type">
@@ -1705,15 +1699,13 @@ to the current request for Evidence such as a nonce to support freshness.<a href
 to allow implementers to report on entities found in their implementation and not
 covered by this specification. By using an Object Identifier (OID) for identifying both entity types
 and the attribute types that they contain, this format is inherently extensible;
-implementers of Attesters <span class="bcp14">MAY</span> define new custom or proprietary entity types and
+implementers of this specification <span class="bcp14">MAY</span> define new custom or proprietary entity types and
 place them alongside the standardized entities, or define new attribute types
 and place them inside standardized entities.<a href="#section-4.2-3" class="pilcrow">¶</a></p>
 <p id="section-4.2-4">Verifiers <span class="bcp14">SHOULD</span> ignore and skip over
 unrecognized entity or attribute types and continue processing normally.
 In other words, if a given Evidence would have been acceptable without the
-unrecognized entity or attribute, then it <span class="bcp14">SHOULD</span> still be acceptable.
-In PKI terminology, all custom entities and attributes not defined in this document
-<span class="bcp14">SHOULD</span> be considered non-critical unless a further specification indicates differently.<a href="#section-4.2-4" class="pilcrow">¶</a></p>
+unrecognized entity or attribute, then it <span class="bcp14">SHOULD</span> still be acceptable.<a href="#section-4.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="attribute-and-attribute-type">
@@ -2103,14 +2095,16 @@ A Relying Party wishing to know the validation status of the device <span class=
 <a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-key-entity" class="section-name selfRef">Key Entity</a>
         </h3>
 <p id="section-5.2-1">A key entity is associated with the type <code>id-pkix-attest-entity-key</code>. Each instance of a
-key entity represents a different cryptographic key found in the Target Environment. There can
+key entity represents a different addressable key found in the Target Environment. There can
 be multiple key entities found in a claim description, but each reported key entity <span class="bcp14">MUST</span>
-describe a different cryptographic key.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+describe a different key. Two key entities may represent the same underlying cryptographic key
+(keys with the exact same value) but they must be different portion of the Target Environment's
+state.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
 <p id="section-5.2-2">A key entity is composed of a set of attributes relating to the cryptographic key. At
 minimum, a key entity <span class="bcp14">MUST</span> report the attribute "identifier" to uniquely identify this cryptographic
 key from any others found in the same Target Environment.<a href="#section-5.2-2" class="pilcrow">¶</a></p>
 <p id="section-5.2-3">A Verifier that encounters a claim description with multiple key entities referring to the
-same cryptographic key <span class="bcp14">MUST</span> reject the Evidence.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+same addressable key <span class="bcp14">MUST</span> reject the Evidence.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
 <p id="section-5.2-4">The following table lists the attributes for a key entity defined
 within this specification. The "Reference" column refers to the specification where the semantics
 for the attribute value can be found.<a href="#section-5.2-4" class="pilcrow">¶</a></p>
