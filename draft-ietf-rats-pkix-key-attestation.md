@@ -801,9 +801,10 @@ Note that security considerations should be taken relating to the evaluation of 
 
 It is expected that HSM vendors will register additional Entity and Attribute types by assigning OIDs from their own proprietary OID arcs to hold data describing additional proprietary key properties.
 
-An Attester (HSM) which is requested to provide information about unrecognized Entity or Attribute types MUST fail the operation.
+When new entity and attribute types are used, documentation similar to the one produced in this specification SHOULD be distributed to
+explain the meaning of the types and the frequency that values can be provided.
 
-A Verifier which encounters an unrecognized Entity or Attribute type MAY ignore it.
+See {{sec-req-processing}}, {{sec-req-verification}} and {{sec-cons-verifier}} for handling of unrecognized custom types.
 
 ## Encoding
 
@@ -1002,7 +1003,7 @@ In such an approach, a new custom attribute for request entities of type `id-pki
 attribute of that type is included in the attestation request (as part of the transaction entity) while specifying a value. This value
 is considered by the HSM while generating the PKIX evidence.
 
-## Processing an Attestation Request
+## Processing an Attestation Request {#sec-req-processing}
 
 This sub-section deals with the rules that should be considered when an Attester (the HSM) processes a request to generate an
 attestation request. This section is non-normative and implementers MAY choose to not follow these recommendations.
@@ -1013,33 +1014,35 @@ here.
 An Attester MUST fail an attestation request if it contains an unrecognized entity type. This is to ensure that all the semantics expected
 by the Presenter are fully understood by the Attester.
 
-An Attester MUST fail an attestation request if it contains a request attribute of an unrecognized type while specifying a value (not
+An Attester MUST fail an attestation request if it contains a request attribute of an unrecognized type with a specified a value (not
 empty). This represents a situation where the Presenter is selecting specific information that is not understood by the Attester.
 
-An Attester SHOULD fail an attestation request if it contains a request attribute with an unrecognized type. An environment with an Attester
-that ignores unrecognized attributes forces the Presenter to review the generated evidence for necessary information.
+An Attester SHOULD ignore unrecognized attribute types in an attestation request. In this situation, the Attester SHOULD NOT include
+the attribute as part of the response. This guidance is to increase the likelihood of interoperability between tools of various
+vendors.
 
-An Attester MUST NOT include entities and attributes in the generated PKIX evidence if these entities and attributes were
+An Attester MUST NOT include entities and attributes in the generated evidence if these entities and attributes were
 not specified as part of the request. This is to give the Presenter the control on what information is disclosed by the Attester.
 
 An Attester MUST fail an attestation request if the Presenter does not have the appropriate access rights to the entities included
 in the request.
 
-## Verification by Presenter
 
-This sub-section deals with the rules that should be considered when a Presenter receives an PKIX evidence from the Attester (the HSM)
+## Verification by Presenter {#sec-req-verification}
+
+This sub-section deals with the rules that should be considered when a Presenter receives PKIX evidence from the Attester (the HSM)
 prior to distribution. This section is non-normative and implementers MAY choose to not follow these recommendations.
 
-These recommendations apply to any PKIX evidence and are not restricted solely evidence generated from the proposed request interface.
+These recommendations apply to any PKIX evidence and are not restricted solely to evidence generated from the proposed request interface.
 
 A Presenter MUST review the evidence produced by an Attester for fitness prior to distribution.
 
-A Presenter MUST NOT disclose PKIX evidence if it contains information it
+A Presenter MUST NOT disclose evidence if it contains information it
 cannot parse. This restriction applies to entity types and attributes type. This is
 to ensure that the information provided by the Attester can be evaluated by the
 Presenter.
 
-A Presenter MUST NOT disclose PKIX evidence if it contains entities others
+A Presenter MUST NOT disclose evidence if it contains entities others
 than the ones that were requested of the Attester. This is to ensure that only the
 selected entities are exposed to the Verifier.
 
@@ -1070,7 +1073,7 @@ TODO: list out all the OIDs that need IANA registration.
 
 # Security Considerations
 
-## Policies relating to Verifier and Relying Party
+## Policies relating to Verifier and Relying Party {#sec-cons-verifier}
 
 The generation of PKIX evidence by an HSM is to provide sufficient information to
 a Verifier and a Relying Party to appraise the Target Environment (the HSM) and make
@@ -1080,7 +1083,6 @@ The Appraisal Policy associated with the Verifier influences the generation of t
 Results. Those results, in turn, are consumed by the Relying Party to make decisions about
 the HSM, which might be based on a set of rules and policies. Therefore, the interpretation of
 PKIX evidence may greatly influence the outcome of some decisions.
-
 
 A Verifier MAY reject a PKIX evidence if it lacks required attributes per the Verifier's
 appraisal policy. For example, if a Relying Party mandates a FIPS-certified device,
