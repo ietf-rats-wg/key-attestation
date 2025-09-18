@@ -224,7 +224,7 @@ to certain jurisdiction policies (such as FIPS mode) and the constraints applied
 
 For relatively simple HSM devices, storage properties such as "extractable" may always be true for all keys
 since the devices are not capable of key export and so the attestation could be essentially a hard-coded template asserting these
-immutable attributes. However, more complex HSM devices require a more complex key attestation format that encompasses the
+immutable attributes. However, more complex HSM devices require a more complex evidence format that encompasses the
 mutability of these attributes.
 Also, the client requesting the key attestation might wish to scope-down the content of the key attestation as
 the HSM contains many keys and only a certain subset are relevant for attesting a given transaction, or only
@@ -287,8 +287,8 @@ USB tokens, TPMs, cryptographic co-processors (PCI cards) and "enterprise-grade"
 (possibly rack mounted). In this specification, it is interchangeable with "platform" or "Attester".
 
 Key Attestation:
-: Process of producing Evidence containing claims pertaining to application keys found within an HSM. In
-general, the claims includes enough information about an application key and its hosting platform to allow
+: Process of producing Evidence containing claims pertaining to user keys found within an HSM. In
+general, the claims includes enough information about a user key and its hosting platform to allow
 a Relying Party to make judicious decisions about the key, such as whether to issue a certificate for the key.
 
 Platform:
@@ -301,10 +301,10 @@ enough information about the platform to allow a Relying Party to make judicious
 platform, such as those carried out during audit reviews.
 
 Presenter
-: Role that facilitates communication between the HSM, in this case the Attester, and the Verifier. The
-  Presenter initiates the operation of generating evidence at the HSM and
-  passes the generated evidence to the Verifier. This role is supported by a combination of
-  one or multiple human operators or automated processes.
+: Role that facilitates communication between the Attester and the Verifier. The
+  Presenter initiates the operation of generating evidence at the Attester and
+  passes the generated evidence to the Verifier. In the case of HSMs, the Presenter
+  is responsible of selecting the claims that are part of the generated evidence.
 
 Trust Anchor:
 : As defined in {{RFC6024}} and {{RFC9019}}, a Trust Anchor
@@ -313,16 +313,11 @@ associated data. The public key is used to verify digital
 signatures, and the associated data is used to constrain the types
 of information for which the trust anchor is authoritative." The
 Trust Anchor may be a certificate, a raw public key, or other
-structure, as appropriate. It can be a non-root certificate when
-it is a certificate.
-
-Usage Protocol
-: A (security) protocol that requires demonstrating possession of
-  the private component of the application key.
+structure, as appropriate.
 
 User Key:
 : A user key consists of a key hosted by an HSM (the platform) and intended to be used by a client
-of the HSM. Other terms used for a user key is "application key", "client key" or "operational key".
+of the HSM. Other terms used for a user key are "application key", "client key" or "operational key".
 The access and operations on a user key is controlled by the HSM.
 
 
@@ -368,17 +363,20 @@ of a set of attributes.
 
 ## Entity
 
+An entity is a logical construct that refers to a portion of the Target Environment's state. It is
+addressable via an identifier such as a UUID or a handle (as expressed in [PKCS11]). In general, an
+entity refers to a component recognized by users of the HSM, such as a key or the platform itself.
+
 An entity is composed of a type, the entity type, and a set of attributes. The entity type
 describes the class of the entity while its attributes defines its state.
 
-An entity SHOULD be reported only once in a claim description. The claim description can
+An entity MUST be reported at most once in a claim description. The claim description can
 have multiple entities of the same type (for example reporting multiple keys), but each
-entity MUST be relating to different elements.
-For example, if a given application public key appears in two different entities, these
-MUST be interpreted as two distinct and independent entities that happen to have the
-same public key, and MUST NOT be interpreted as adding additional attributes to the
-already-described entity.
-This restriction is to ease the implementation of Verifiers for the provided Evidence.
+entity MUST be relating to different portions of the Target Environment.
+
+It is possible for two entities to be quite similar such as in a situation where a key is imported
+twice in a HSM. In this case, the two related entities could have similar attributes. However, they
+are treated as different entities as they are addressed differently.
 
 The number of entities reported in a claim description, and their respective type, is
 left to the implementer. For a simple device where there is only one key, the list of
@@ -412,7 +410,7 @@ Although this document defines a short list of entity types, this list is extens
 to allow implementers to report on entities found in their implementation and not
 covered by this specification. By using an Object Identifier (OID) for identifying both entity types
 and the attribute types that they contain, this format is inherently extensible;
-implementers of Attesters MAY define new custom or proprietary entity types and
+implementers of this specification MAY define new custom or proprietary entity types and
 place them alongside the standardized entities, or define new attribute types
 and place them inside standardized entities.
 
@@ -420,8 +418,6 @@ Verifiers SHOULD ignore and skip over
 unrecognized entity or attribute types and continue processing normally.
 In other words, if a given Evidence would have been acceptable without the
 unrecognized entity or attribute, then it SHOULD still be acceptable.
-In PKI terminology, all custom entities and attributes not defined in this document
-SHOULD be considered non-critical unless a further specification indicates differently.
 
 
 
@@ -695,16 +691,18 @@ Further description of the environment beyond hwvendor, hwmodel, hwserial, swver
 ## Key Entity
 
 A key entity is associated with the type `id-pkix-attest-entity-key`. Each instance of a
-key entity represents a different cryptographic key found in the Target Environment. There can
+key entity represents a different addressable key found in the Target Environment. There can
 be multiple key entities found in a claim description, but each reported key entity MUST
-describe a different cryptographic key.
+describe a different key. Two key entities may represent the same underlying cryptographic key
+(keys with the exact same value) but they must be different portion of the Target Environment's
+state.
 
 A key entity is composed of a set of attributes relating to the cryptographic key. At
 minimum, a key entity MUST report the attribute "identifier" to uniquely identify this cryptographic
 key from any others found in the same Target Environment.
 
 A Verifier that encounters a claim description with multiple key entities referring to the
-same cryptographic key MUST reject the Evidence.
+same addressable key MUST reject the Evidence.
 
 The following table lists the attributes for a key entity defined
 within this specification. The "Reference" column refers to the specification where the semantics
