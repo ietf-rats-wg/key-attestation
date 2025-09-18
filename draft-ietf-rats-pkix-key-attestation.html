@@ -2477,8 +2477,8 @@ of ReportedAttribute known as request attributes. The collection of request enti
 by the Presenter.<a href="#section-8-8" class="pilcrow">¶</a></p>
 <p id="section-8-9">In most cases the value of a request attribute should be left unspecified by the Presenter. In the process of generating
 the evidence, the values of the desired attributes are observed by the Attestation Service within the HSM and reported accordingly. For the purpose
-of creating a request, the Presenter sets the values of the attributes to <code>null</code>. This contradicts the type of values specified in the definition of each attribute
-but serves well the purposes of the request.<a href="#section-8-9" class="pilcrow">¶</a></p>
+of creating a request, the Presenter does not specify the value of the requested attributes. This is possible because the definition of
+the structure <code>ReportedAttribute</code> specifies the element value as optional.<a href="#section-8-9" class="pilcrow">¶</a></p>
 <p id="section-8-10">On the other hand, there are circumstances where the value of a request attribute should be provided by the Presenter. For example, when a particular
 cryptographic key is to be included in the evidence, the request must include a request entity with one of its attributes set with a type
 <code>id-pkix-evidence-attribute-key-identifier</code>. The value of this attribute is set to the key identifier associated with the cryptographic
@@ -2495,8 +2495,8 @@ implementer to provide those capabilities, as described in <a href="#sec-cons-au
 <a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-request-attributes-with-spe" class="section-name selfRef">Request Attributes with Specified Values</a>
         </h3>
 <p id="section-8.1-1">This section deals with the request attributes specified in this document where a value should be provided by a Presenter. In other words, this
-sub-section defines all request attributes that should not be <code>null</code>. Request attributes not covered in this sub-section should have a value
-of <code>null</code>.<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+sub-section defines all request attributes that should set in the structure <code>ReportedAttribute</code>. Request attributes not covered in this sub-section
+should not have a specified value (left empty).<a href="#section-8.1-1" class="pilcrow">¶</a></p>
 <p id="section-8.1-2">Since this section is non-normative, implementers may deviate from those recommendations.<a href="#section-8.1-2" class="pilcrow">¶</a></p>
 <div id="key-identifiers">
 <section id="section-8.1.1">
@@ -2562,8 +2562,8 @@ attestation request. This section is non-normative and implementers <span class=
 here.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
 <p id="section-8.2-3">An Attester <span class="bcp14">MUST</span> fail an attestation request if it contains an unrecognized entity type. This is to ensure that all the semantics expected
 by the Presenter are fully understood by the Attester.<a href="#section-8.2-3" class="pilcrow">¶</a></p>
-<p id="section-8.2-4">An Attester <span class="bcp14">MUST</span> fail an attestation request if it contains a request attribute of an unrecognized type while specifying a value (other than
-null). This represents a situation where the Presenter is selecting specific information that is not understood by the Attester.<a href="#section-8.2-4" class="pilcrow">¶</a></p>
+<p id="section-8.2-4">An Attester <span class="bcp14">MUST</span> fail an attestation request if it contains a request attribute of an unrecognized type while specifying a value (not
+empty). This represents a situation where the Presenter is selecting specific information that is not understood by the Attester.<a href="#section-8.2-4" class="pilcrow">¶</a></p>
 <p id="section-8.2-5">An Attester <span class="bcp14">SHOULD</span> fail an attestation request if it contains a request attribute with an unrecognized type. An environment with an Attester
 that ignores unrecognized attributes forces the Presenter to review the generated evidence for necessary information.<a href="#section-8.2-5" class="pilcrow">¶</a></p>
 <p id="section-8.2-6">An Attester <span class="bcp14">MUST NOT</span> include entities and attributes in the generated PKIX evidence if these entities and attributes were
