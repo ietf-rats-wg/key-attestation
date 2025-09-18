@@ -937,8 +937,8 @@ by the Presenter.
 
 In most cases the value of a request attribute should be left unspecified by the Presenter. In the process of generating
 the evidence, the values of the desired attributes are observed by the Attestation Service within the HSM and reported accordingly. For the purpose
-of creating a request, the Presenter sets the values of the attributes to `null`. This contradicts the type of values specified in the definition of each attribute
-but serves well the purposes of the request.
+of creating a request, the Presenter does not specify the value of the requested attributes. This is possible because the definition of
+the structure `ReportedAttribute` specifies the element value as optional.
 
 On the other hand, there are circumstances where the value of a request attribute should be provided by the Presenter. For example, when a particular
 cryptographic key is to be included in the evidence, the request must include a request entity with one of its attributes set with a type
@@ -957,8 +957,8 @@ implementer to provide those capabilities, as described in {{sec-cons-auth-the-p
 ## Request Attributes with Specified Values
 
 This section deals with the request attributes specified in this document where a value should be provided by a Presenter. In other words, this
-sub-section defines all request attributes that should not be `null`. Request attributes not covered in this sub-section should have a value
-of `null`.
+sub-section defines all request attributes that should set in the structure `ReportedAttribute`. Request attributes not covered in this sub-section
+should not have a specified value (left empty).
 
 Since this section is non-normative, implementers may deviate from those recommendations.
 
@@ -1013,8 +1013,8 @@ here.
 An Attester MUST fail an attestation request if it contains an unrecognized entity type. This is to ensure that all the semantics expected
 by the Presenter are fully understood by the Attester.
 
-An Attester MUST fail an attestation request if it contains a request attribute of an unrecognized type while specifying a value (other than
-null). This represents a situation where the Presenter is selecting specific information that is not understood by the Attester.
+An Attester MUST fail an attestation request if it contains a request attribute of an unrecognized type while specifying a value (not
+empty). This represents a situation where the Presenter is selecting specific information that is not understood by the Attester.
 
 An Attester SHOULD fail an attestation request if it contains a request attribute with an unrecognized type. An environment with an Attester
 that ignores unrecognized attributes forces the Presenter to review the generated evidence for necessary information.
