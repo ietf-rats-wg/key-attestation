@@ -1098,11 +1098,13 @@ Table of Contents
    Attribute types by assigning OIDs from their own proprietary OID arcs
    to hold data describing additional proprietary key properties.
 
-   An Attester (HSM) which is requested to provide information about
-   unrecognized Entity or Attribute types MUST fail the operation.
+   When new entity and attribute types are used, documentation similar
+   to the one produced in this specification SHOULD be distributed to
+   explain the meaning of the types and the frequency that values can be
+   provided.
 
-   A Verifier which encounters an unrecognized Entity or Attribute type
-   MAY ignore it.
+   See Section 8.2, Section 8.3 and Section 11.1 for handling of
+   unrecognized custom types.
 
 5.5.  Encoding
 
@@ -1410,19 +1412,20 @@ Table of Contents
    expected by the Presenter are fully understood by the Attester.
 
    An Attester MUST fail an attestation request if it contains a request
-   attribute of an unrecognized type while specifying a value (not
+   attribute of an unrecognized type with a specified a value (not
    empty).  This represents a situation where the Presenter is selecting
    specific information that is not understood by the Attester.
 
-   An Attester SHOULD fail an attestation request if it contains a
-   request attribute with an unrecognized type.  An environment with an
-   Attester that ignores unrecognized attributes forces the Presenter to
-   review the generated evidence for necessary information.
+   An Attester SHOULD ignore unrecognized attribute types in an
+   attestation request.  In this situation, the Attester SHOULD NOT
+   include the attribute as part of the response.  This guidance is to
+   increase the likelihood of interoperability between tools of various
+   vendors.
 
    An Attester MUST NOT include entities and attributes in the generated
-   PKIX evidence if these entities and attributes were not specified as
-   part of the request.  This is to give the Presenter the control on
-   what information is disclosed by the Attester.
+   evidence if these entities and attributes were not specified as part
+   of the request.  This is to give the Presenter the control on what
+   information is disclosed by the Attester.
 
    An Attester MUST fail an attestation request if the Presenter does
    not have the appropriate access rights to the entities included in
@@ -1431,25 +1434,25 @@ Table of Contents
 8.3.  Verification by Presenter
 
    This sub-section deals with the rules that should be considered when
-   a Presenter receives an PKIX evidence from the Attester (the HSM)
-   prior to distribution.  This section is non-normative and
-   implementers MAY choose to not follow these recommendations.
+   a Presenter receives PKIX evidence from the Attester (the HSM) prior
+   to distribution.  This section is non-normative and implementers MAY
+   choose to not follow these recommendations.
 
    These recommendations apply to any PKIX evidence and are not
-   restricted solely evidence generated from the proposed request
+   restricted solely to evidence generated from the proposed request
    interface.
 
    A Presenter MUST review the evidence produced by an Attester for
    fitness prior to distribution.
 
-   A Presenter MUST NOT disclose PKIX evidence if it contains
-   information it cannot parse.  This restriction applies to entity
-   types and attributes type.  This is to ensure that the information
-   provided by the Attester can be evaluated by the Presenter.
+   A Presenter MUST NOT disclose evidence if it contains information it
+   cannot parse.  This restriction applies to entity types and
+   attributes type.  This is to ensure that the information provided by
+   the Attester can be evaluated by the Presenter.
 
-   A Presenter MUST NOT disclose PKIX evidence if it contains entities
-   others than the ones that were requested of the Attester.  This is to
-   ensure that only the selected entities are exposed to the Verifier.
+   A Presenter MUST NOT disclose evidence if it contains entities others
+   than the ones that were requested of the Attester.  This is to ensure
+   that only the selected entities are exposed to the Verifier.
 
    A Presenter MUST NOT disclose evidence if it contains an entity with
    an attribute that was not requested of the Attester.  This is to
