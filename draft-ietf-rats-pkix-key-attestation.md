@@ -718,7 +718,6 @@ for the attribute value can be found.
 | never-extractable | bool            | [PKCS11]    | No        | id-pkix-evidence-attribute-key-never-extractable |
 | local             | bool            | [PKCS11]    | No        | id-pkix-evidence-attribute-key-local             |
 | expiry            | time            | {{&SELF}}   | No        | id-pkix-evidence-attribute-key-expiry            |
-| protection        | bytes           | {{&SELF}}   | No        | id-pkix-evidence-attribute-key-protection        |
 
 An attestation key might be visible to a client of the device and be reported along with other cryptographic keys. Therefore,
 it is acceptable to include a key entity providing claims about an attestation key like any other cryptographic key. An
@@ -762,16 +761,6 @@ found in PKCS#11.
 ### expiry
 
 Reports a time after which the key is not to be used. The device MAY enforce this policy based on its internal clock.
-
-### protection
-
-Indicates any additional key protection properties around use or modification of this key. These are generalized properties and will not apply the same way to all HSM vendors. Consult vendor documentation for the in-context meaning of these flags.
-
-TODO: define a bit-indexed byte array
-
-BIT MASK / Boolean Array {DualControl (0), CardControl (1), PasswordControl (2), ...}
-
-We may need to say that the first X are reserved for use by future RFCs that update this specification, and beyond that is private use.
 
 ## Transaction Entity
 
@@ -1156,7 +1145,7 @@ Furthermore, enterprise and cloud-services grade HSMs SHOULD support the full se
 ## Authenticating and Authorizing the Presenter {#sec-cons-auth-the-presenter}
 
 The Presenter represents a privileged role within the architecture of this specification as it gets to learn about the existence of user keys and their protection properties, as well as details of the platform.
-The Presenter is in the position of deciding how much information to disclose to the Verifier, and to request a suitably redacted attestation from the HSM.
+The Presenter is in the position of deciding how much information to disclose to the Verifier, and to request a suitably redacted evidence from the HSM.
 
 For personal cryptographic tokens it might be appropriate for the attestation request interface to be un-authenticated. However, for enterprise and cloud-services grade HSMs the Presenter SHOULD be authenticated using the HSM's native authentication mechanism. The details are HSM-specific and are thus left up to the implementer. However, it is RECOMMENDED to implement an authorization framework similar to the following.
 
