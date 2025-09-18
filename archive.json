@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-09-02T00:44:01.908714+00:00",
+  "timestamp": "2025-09-18T00:41:15.704318+00:00",
   "repo": "ietf-rats-wg/key-attestation",
   "labels": [
     {
@@ -164,15 +164,15 @@
       "id": "I_kwDONUAin86o6iuO",
       "title": "Declare trust relationships between Attester and Verifier out-of-scope",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/9",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "henkbirkholz",
       "authorAssociation": "MEMBER",
       "assignees": [],
       "labels": [],
       "body": "This would be easiest accomplished,I think, by stating that [Section 7.4](https://www.rfc-editor.org/rfc/rfc9334.html#section-7.4) of [RFC9334](https://www.rfc-editor.org/rfc/rfc9334.html) does not apply in this document.",
       "createdAt": "2025-02-05T20:40:03Z",
-      "updatedAt": "2025-07-14T15:19:07Z",
-      "closedAt": null,
+      "updatedAt": "2025-09-17T16:40:50Z",
+      "closedAt": "2025-09-17T16:40:50Z",
       "comments": [
         {
           "author": "jpfiset",
@@ -298,15 +298,15 @@
       "id": "I_kwDONUAin86sA7lf",
       "title": "If Platform and Transaction Entities can only appear once, then why not make them explicitly part of the TBS struct?",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/16",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "ounsworth",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "It seems like it's adding complexity to make Platform Entities and Transaction Entities part of the Entity list, and then in text restrict them to \"_MAY contain only one\"._\n\nIn this case, wouldn't it be better to do this so that this constraint can be enforced by the ASN.1 parser?\n\n```\nTbsPkixAttestation ::= SEQUENCE {\n    version INTEGER,\n    reportedEntities SEQUENCE SIZE (1..MAX) OF ReportedEntity,\n    platformEntity        OPTIONAL [0] PlatformEntity,\n    transactionEntity    OPTIONAL [1] TransactionEntity\n}\n```\n\nWe can use the fancy new ASN.1 syntax .&Type({AttrSet}{@type} -- or whatever -- to restrict the valid types for ReportedEntity, and in this document we only register KeyEntity as a valid type for ReportedEntity.",
       "createdAt": "2025-02-28T00:54:37Z",
-      "updatedAt": "2025-07-14T15:27:05Z",
-      "closedAt": null,
+      "updatedAt": "2025-09-17T16:41:09Z",
+      "closedAt": "2025-09-17T16:41:09Z",
       "comments": [
         {
           "author": "jpfiset",
