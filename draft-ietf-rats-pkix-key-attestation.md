@@ -238,7 +238,7 @@ certain claims are relevant.
 Lack of ability to scope-down the key attestation contents could, in some scenarios, constitute a privacy violation.
 This motivates the design choice for a key attestation request mechanism.
 The same objective could have been accomplished via a selective disclosure mechanism. However, since a request
-is necessary to transmit the attestation nonce to the HSM, a standardized request format fits the use case better
+is necessary to transmit the nonce to the HSM, a standardized request format fits the use case better
 and is generally simpler.
 
 
@@ -780,15 +780,15 @@ These attribute types MAY be contained within a transaction entity; i.e. an enti
 
 | Attribute       | AttributeValue  | Reference    | Multiple? | OID                                               |
 | ---             | ---             | ---          | ---       | ---                                               |
-| nonce           | bytes           | {{!RFC9711}} | Yes       | id-pkix-evidence-attribute-transaction-nonce      |
+| nonce           | bytes           | {{!RFC9711}} | No        | id-pkix-evidence-attribute-transaction-nonce      |
 | timestamp       | time            | {{!RFC9711}} | No        | id-pkix-evidence-attribute-transaction-timestamp  |
 
 ### nonce
 
 The attribute "nonce" is used to provide "freshness" quality as to the claims provided in the PkixEvidence message. A Presenter requesting a PkixEvidence message MAY provide a nonce value as part of the request. This nonce value, if provided, SHOULD be repeated as an attribute within the transaction entity.
 
-This is similar to the attribute "eat_nonce" as defined in {{!RFC9711}}. According to this specification, this attribute may be specified multiple times with
-different values. In that case, all different values shall be repeated in the PKIXEvidence.
+This is similar to the attribute "eat_nonce" as defined in {{!RFC9711}}. According to that specification, this attribute may be specified multiple times with
+different values. However, within the scope of this specification, the "nonce" value can be specified only once within a transaction.
 
 ### timestamp
 
