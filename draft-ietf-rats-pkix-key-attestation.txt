@@ -273,9 +273,8 @@ Table of Contents
    privacy violation.  This motivates the design choice for a key
    attestation request mechanism.  The same objective could have been
    accomplished via a selective disclosure mechanism.  However, since a
-   request is necessary to transmit the attestation nonce to the HSM, a
-   standardized request format fits the use case better and is generally
-   simpler.
+   request is necessary to transmit the nonce to the HSM, a standardized
+   request format fits the use case better and is generally simpler.
 
 3.  Terminology
 
@@ -1054,7 +1053,7 @@ Table of Contents
     +=========+================+===========+===========+==============+
     |Attribute| AttributeValue | Reference | Multiple? | OID          |
     +=========+================+===========+===========+==============+
-    |nonce    | bytes          | [RFC9711] | Yes       | id-pkix-     |
+    |nonce    | bytes          | [RFC9711] | No        | id-pkix-     |
     |         |                |           |           | evidence-    |
     |         |                |           |           | attribute-   |
     |         |                |           |           | transaction- |
@@ -1078,9 +1077,10 @@ Table of Contents
    an attribute within the transaction entity.
 
    This is similar to the attribute "eat_nonce" as defined in [RFC9711].
-   According to this specification, this attribute may be specified
-   multiple times with different values.  In that case, all different
-   values shall be repeated in the PKIXEvidence.
+   According to that specification, this attribute may be specified
+   multiple times with different values.  However, within the scope of
+   this specification, the "nonce" value can be specified only once
+   within a transaction.
 
 5.3.2.  timestamp
 
