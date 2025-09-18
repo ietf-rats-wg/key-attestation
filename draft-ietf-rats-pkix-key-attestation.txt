@@ -186,6 +186,14 @@ Table of Contents
       might not be the case for all devices encountered, but is
       sufficient for the proposed specification.
 
+   Another important influence on the development of this specification
+   is that the envisaged Target Environments are quite large and that
+   only a portion of the total addressable state shall be divulged as
+   part of evidence.  Therefore, a scheme based on "entities" is used to
+   carved the portion of the Target Environment to be measured and
+   reported.  To this end, the concepts of "claims" and "measurements"
+   are folded into "entities" and "attributes" (see {sec-info-model}).
+
    This specification also aims at providing an extensible framework to
    encode within Evidence claims other than the one proposed in this
    document.  This allows implementations to introduce new claims and
