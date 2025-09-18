@@ -120,31 +120,30 @@ Table of Contents
        5.3.2.  timestamp
      5.4.  Additional Entity and Attribute Types
      5.5.  Encoding
-   6.  Signing Procedure
-   7.  Verification Procedure
-   8.  Appraisal Policies and Profiles
-     8.1.  Key Import into an HSM
-     8.2.  CA/Browser Forum Code-Signing
-   9.  Attestation Requests
-     9.1.  Request Attributes with Specified Values
-       9.1.1.  Key Identifiers
-       9.1.2.  Nonce
-       9.1.3.  Custom Key Selection
-       9.1.4.  Custom Transaction Entity Attributes
-     9.2.  Processing an Attestation Request
-     9.3.  Verification by Presenter
-   10. ASN.1 Module
-   11. IANA Considerations
-   12. Security Considerations
-     12.1.  Policies relating to Verifier and Relying Party
-     12.2.  Simple to Implement
-     12.3.  Detached Signatures
-     12.4.  Privacy
-     12.5.  Authenticating and Authorizing the Presenter
-     12.6.  Proof-of-Possession of User Keys
-   13. References
-     13.1.  Normative References
-     13.2.  Informative References
+   6.  Signing and Verification Procedures
+   7.  Appraisal Policies and Profiles
+     7.1.  Key Import into an HSM
+     7.2.  CA/Browser Forum Code-Signing
+   8.  Attestation Requests
+     8.1.  Request Attributes with Specified Values
+       8.1.1.  Key Identifiers
+       8.1.2.  Nonce
+       8.1.3.  Custom Key Selection
+       8.1.4.  Custom Transaction Entity Attributes
+     8.2.  Processing an Attestation Request
+     8.3.  Verification by Presenter
+   9.  ASN.1 Module
+   10. IANA Considerations
+   11. Security Considerations
+     11.1.  Policies relating to Verifier and Relying Party
+     11.2.  Simple to Implement
+     11.3.  Detached Signatures
+     11.4.  Privacy
+     11.5.  Authenticating and Authorizing the Presenter
+     11.6.  Proof-of-Possession of User Keys
+   12. References
+     12.1.  Normative References
+     12.2.  Informative References
    Appendix A.  Samples
    Appendix B.  Acknowledgements
    Authors' Addresses
@@ -390,7 +389,7 @@ Table of Contents
    Note that the data format specified in Section 5 allows for zero,
    one, or multiple 'SignatureBlock's, so a single evidence statement
    could be un-protected, or could be endorsed by multiple AK chains
-   leading to different trust anchors.  See Section 7 for a discussion
+   leading to different trust anchors.  See Section 6 for a discussion
    of handling multiple SignatureBlocks.
 
 4.  Information Model
@@ -544,7 +543,7 @@ Table of Contents
    This section describes the data model associated with PKIX Evidence.
    For ease of deployment within the target ecosystem, ASN.1 definitions
    and DER encoding are used.  A complete ASN.1 module is provided in
-   Section 10.
+   Section 9.
 
    The top-level structures are:
 
@@ -1166,14 +1165,7 @@ Table of Contents
    EDNOTE: I think we have to be precise about which flavour of Base64
    we are referring to.
 
-6.  Signing Procedure
-
-   The SignatureBlock.signatureValue signs over the DER-encoded to-be-
-   signed evidence data PkixEvidence.tbs and MUST be validated with the
-   subject public key of the leaf X.509 certificate contained in the
-   SignatureBlock.certChain.
-
-7.  Verification Procedure
+6.  Signing and Verification Procedures
 
    The SignatureBlock.signatureValue signs over the DER-encoded to-be-
    signed evidence data PkixEvidence.tbs and MUST be validated with the
@@ -1209,14 +1201,14 @@ Table of Contents
    an attacker can remove a SignatureBlock without leaving any artifact.
    See {#sec-detached-sigs} for further discussion.
 
-8.  Appraisal Policies and Profiles
+7.  Appraisal Policies and Profiles
 
    This section provides some sample profiles of appraisal policies that
    verifiers MAY apply when evaluating evidence.  These appraisal policy
    profiles represent environment-specific requirements on the contents
    of the evidence and / or endorsement certificate chain.
 
-8.1.  Key Import into an HSM
+7.1.  Key Import into an HSM
 
    An HSM which is compliant with this draft SHOULD validate any PKIX
    evidence that is provided along with the key being imported.
@@ -1244,7 +1236,7 @@ Table of Contents
    or a prompt MAY be given to the user administrator, or any similar
    reasonable error handling logic may be used.
 
-8.2.  CA/Browser Forum Code-Signing
+7.2.  CA/Browser Forum Code-Signing
 
    TODO: ... intro text
 
@@ -1280,7 +1272,7 @@ Table of Contents
       there is at least one fipsboot=true and no fipsboot=false on that
       path.
 
-9.  Attestation Requests
+8.  Attestation Requests
 
    This section is informative in nature and implementers of this
    specification do not need to adhere to it.  The aim of this section
@@ -1383,9 +1375,9 @@ Table of Contents
    the HSM.  These details are left to the implementer.  However, it is
    worth pointing out that the structure offered by PkixEvidence could
    be reused by an implementer to provide those capabilities, as
-   described in Section 12.5.
+   described in Section 11.5.
 
-9.1.  Request Attributes with Specified Values
+8.1.  Request Attributes with Specified Values
 
    This section deals with the request attributes specified in this
    document where a value should be provided by a Presenter.  In other
@@ -1396,7 +1388,7 @@ Table of Contents
    Since this section is non-normative, implementers may deviate from
    those recommendations.
 
-9.1.1.  Key Identifiers
+8.1.1.  Key Identifiers
 
    A Presenter may choose to select which cryptographic keys are
    reported as part of the PKIX evidence.  For each selected
@@ -1411,7 +1403,7 @@ Table of Contents
    approach MUST fail the transaction if it cannot find the
    cryptographic key associated with the specified identifier.
 
-9.1.2.  Nonce
+8.1.2.  Nonce
 
    A Presenter may choose to include a nonce as part of the attestation
    request.  When producing the PKIX evidence, the HSM repeats the nonce
@@ -1422,7 +1414,7 @@ Table of Contents
    an attribute of type id-pkix-evidence-attribute-transaction-nonce.
    This attribute is set with the value of the nonce as "bytes".
 
-9.1.3.  Custom Key Selection
+8.1.3.  Custom Key Selection
 
    An implementer might desire to select multiple cryptographic keys
    based on a shared attribute.  A possible approach is to include a
@@ -1441,7 +1433,7 @@ Table of Contents
    keys.  Whether these attributes are combined in a logical "and" or in
    a logical "or" would need to be specified by the implementer.
 
-9.1.4.  Custom Transaction Entity Attributes
+8.1.4.  Custom Transaction Entity Attributes
 
    The extensibility offered by the proposed request interface allows an
    implementer to add custom attributes to the transaction entity in
@@ -1453,7 +1445,7 @@ Table of Contents
    part of the transaction entity) while specifying a value.  This value
    is considered by the HSM while generating the PKIX evidence.
 
-9.2.  Processing an Attestation Request
+8.2.  Processing an Attestation Request
 
    This sub-section deals with the rules that should be considered when
    an Attester (the HSM) processes a request to generate an attestation
@@ -1487,7 +1479,7 @@ Table of Contents
    not have the appropriate access rights to the entities included in
    the request.
 
-9.3.  Verification by Presenter
+8.3.  Verification by Presenter
 
    This sub-section deals with the rules that should be considered when
    a Presenter receives an PKIX evidence from the Attester (the HSM)
@@ -1515,9 +1507,9 @@ Table of Contents
    ensure that only the selected information is disclosed to the
    Verifier.
 
-   Further privacy concerns are discussed in Section 12.4.
+   Further privacy concerns are discussed in Section 11.4.
 
-10.  ASN.1 Module
+9.  ASN.1 Module
 
    <CODE STARTS>
 
@@ -1654,16 +1646,16 @@ Table of Contents
 
    <CODE ENDS>
 
-11.  IANA Considerations
+10.  IANA Considerations
 
    Please replace "RFCthis" with the RFC number assigned to this
    document.
 
    TODO: list out all the OIDs that need IANA registration.
 
-12.  Security Considerations
+11.  Security Considerations
 
-12.1.  Policies relating to Verifier and Relying Party
+11.1.  Policies relating to Verifier and Relying Party
 
    The generation of PKIX evidence by an HSM is to provide sufficient
    information to a Verifier and a Relying Party to appraise the Target
@@ -1689,7 +1681,7 @@ Table of Contents
    However, this approach fosters a higher likelihood of achieving
    interoperability.
 
-12.2.  Simple to Implement
+11.2.  Simple to Implement
 
    The nature of attestation requires the Attestation Service to be
    implemented in an extremely privileged position within the HSM so
@@ -1711,7 +1703,7 @@ Table of Contents
    The Attestation Service MUST generate PKIX evidence only from
    attributes and values that are observed by the service.
 
-12.3.  Detached Signatures
+11.3.  Detached Signatures
 
    TODO: Editorial work needed.
 
@@ -1725,7 +1717,7 @@ Table of Contents
    counter-signatures, note that the counter signature only covers the
    tbs content and not existing SignatureBlocks.
 
-12.4.  Privacy
+11.4.  Privacy
 
    Often, a TPM will host cryptographic keys for both the kernel and
    userspace of a local operating system but a Presenter may only
@@ -1742,7 +1734,7 @@ Table of Contents
 
    Implementions SHOULD be careful to avoid over-disclosure of
    information, for example by authenticating the Presenter as described
-   in Section 12.5 and only returning results for keys and envirnments
+   in Section 11.5 and only returning results for keys and envirnments
    for which it is authorized.  In absence of an existing mechanism for
    authenticating and authorizing administrative connections to the HSM,
    the attestation request MAY be authenticated by embedding the
@@ -1751,10 +1743,10 @@ Table of Contents
 
    Furthermore, enterprise and cloud-services grade HSMs SHOULD support
    the full set of attestation request functionality described in
-   Section 9 so that Presenters can fine-tune the content of a PKIX
+   Section 8 so that Presenters can fine-tune the content of a PKIX
    evidence such that it is appropriate for the intended Verifier.
 
-12.5.  Authenticating and Authorizing the Presenter
+11.5.  Authenticating and Authorizing the Presenter
 
    The Presenter represents a privileged role within the architecture of
    this specification as it gets to learn about the existence of user
@@ -1790,7 +1782,7 @@ Table of Contents
    the request inside a PkixEvidence signed with a certificate belonging
    to the Presenter.
 
-12.6.  Proof-of-Possession of User Keys
+11.6.  Proof-of-Possession of User Keys
 
    With asymmetric keys within a Public Key Infrastructure (PKI) it is
    common to require a key holder to prove that they are in control of
@@ -1823,13 +1815,13 @@ Table of Contents
    keys could, in some architectures, require the Attestation Service to
    resolve complex access control logic and handle complex error
    conditions for each requested key, which violates the "simple to
-   implement" design principle outlined in Section 12.2.  More
+   implement" design principle outlined in Section 11.2.  More
    discussion of authenticating the Presenter can be found in
-   Section 12.5.
+   Section 11.5.
 
-13.  References
+12.  References
 
-13.1.  Normative References
+12.1.  Normative References
 
    [FIPS.140-3]
               NIST - Information Technology Laboratory, "SECURITY
@@ -1875,7 +1867,7 @@ Table of Contents
               Encoding Rules (CER) and Distinguished Encoding Rules
               (DER)", ISO/IEC 8825-1:2015, November 2015.
 
-13.2.  Informative References
+12.2.  Informative References
 
    [CNSA2.0]  "Commercial National Security Algorithm Suite 2.0", n.d.,
               <https://media.defense.gov/2022/Sep/07/2003071834/-1/-1/0/
