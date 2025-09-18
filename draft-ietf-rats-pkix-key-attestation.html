@@ -1266,9 +1266,6 @@ whether the storage properties of this key meet the requirements of a given cert
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2.2.4">
                     <p id="section-toc.1-1.5.2.2.2.4.1"><a href="#section-5.2.4" class="auto internal xref">5.2.4</a>.  <a href="#name-expiry" class="internal xref">expiry</a></p>
 </li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2.2.5">
-                    <p id="section-toc.1-1.5.2.2.2.5.1"><a href="#section-5.2.5" class="auto internal xref">5.2.5</a>.  <a href="#name-protection" class="internal xref">protection</a></p>
-</li>
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
@@ -2183,13 +2180,6 @@ for the attribute value can be found.<a href="#section-5.2-4" class="pilcrow">¶
               <td class="text-left" rowspan="1" colspan="1">No</td>
               <td class="text-left" rowspan="1" colspan="1">id-pkix-evidence-attribute-key-expiry</td>
             </tr>
-            <tr>
-              <td class="text-left" rowspan="1" colspan="1">protection</td>
-              <td class="text-left" rowspan="1" colspan="1">bytes</td>
-              <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
-              <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">id-pkix-evidence-attribute-key-protection</td>
-            </tr>
           </tbody>
         </table>
 <p id="section-5.2-6">An attestation key might be visible to a client of the device and be reported along with other cryptographic keys. Therefore,
@@ -2241,17 +2231,6 @@ found in PKCS#11.<a href="#section-5.2.3-7" class="pilcrow">¶</a></p>
 <a href="#section-5.2.4" class="section-number selfRef">5.2.4. </a><a href="#name-expiry" class="section-name selfRef">expiry</a>
           </h4>
 <p id="section-5.2.4-1">Reports a time after which the key is not to be used. The device <span class="bcp14">MAY</span> enforce this policy based on its internal clock.<a href="#section-5.2.4-1" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="protection">
-<section id="section-5.2.5">
-          <h4 id="name-protection">
-<a href="#section-5.2.5" class="section-number selfRef">5.2.5. </a><a href="#name-protection" class="section-name selfRef">protection</a>
-          </h4>
-<p id="section-5.2.5-1">Indicates any additional key protection properties around use or modification of this key. These are generalized properties and will not apply the same way to all HSM vendors. Consult vendor documentation for the in-context meaning of these flags.<a href="#section-5.2.5-1" class="pilcrow">¶</a></p>
-<p id="section-5.2.5-2">TODO: define a bit-indexed byte array<a href="#section-5.2.5-2" class="pilcrow">¶</a></p>
-<p id="section-5.2.5-3">BIT MASK / Boolean Array {DualControl (0), CardControl (1), PasswordControl (2), ...}<a href="#section-5.2.5-3" class="pilcrow">¶</a></p>
-<p id="section-5.2.5-4">We may need to say that the first X are reserved for use by future RFCs that update this specification, and beyond that is private use.<a href="#section-5.2.5-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2763,16 +2742,14 @@ id-pkix-evidence-attribute-key-purpose           OBJECT IDENTIFIER :\
                               := { id-pkix-evidence-attribute-key 2 }
 id-pkix-evidence-attribute-key-extractable       OBJECT IDENTIFIER :\
                               := { id-pkix-evidence-attribute-key 3 }
-id-pkix-evidence-attribute-key-never-extractable OBJECT IDENTIFIER :\
-                              := { id-pkix-evidence-attribute-key 4 }
-id-pkix-evidence-attribute-key-local             OBJECT IDENTIFIER :\
-                              := { id-pkix-evidence-attribute-key 5 }
-id-pkix-evidence-attribute-key-expiry            OBJECT IDENTIFIER :\
-                              := { id-pkix-evidence-attribute-key 6 }
-id-pkix-evidence-attribute-key-protection        OBJECT IDENTIFIER :\
-                              := { id-pkix-evidence-attribute-key 7 }
 id-pkix-evidence-attribute-key-sensitive         OBJECT IDENTIFIER :\
-                              := { id-pkix-evidence-attribute-key 8 }
+                              := { id-pkix-evidence-attribute-key 4 }
+id-pkix-evidence-attribute-key-never-extractable OBJECT IDENTIFIER :\
+                              := { id-pkix-evidence-attribute-key 5 }
+id-pkix-evidence-attribute-key-local             OBJECT IDENTIFIER :\
+                              := { id-pkix-evidence-attribute-key 6 }
+id-pkix-evidence-attribute-key-expiry            OBJECT IDENTIFIER :\
+                              := { id-pkix-evidence-attribute-key 7 }
 
 &lt;CODE ENDS&gt;
 
@@ -2866,7 +2843,7 @@ In absence of an existing mechanism for authenticating and authorizing administr
 <a href="#section-11.5" class="section-number selfRef">11.5. </a><a href="#name-authenticating-and-authoriz" class="section-name selfRef">Authenticating and Authorizing the Presenter</a>
         </h3>
 <p id="section-11.5-1">The Presenter represents a privileged role within the architecture of this specification as it gets to learn about the existence of user keys and their protection properties, as well as details of the platform.
-The Presenter is in the position of deciding how much information to disclose to the Verifier, and to request a suitably redacted attestation from the HSM.<a href="#section-11.5-1" class="pilcrow">¶</a></p>
+The Presenter is in the position of deciding how much information to disclose to the Verifier, and to request a suitably redacted evidence from the HSM.<a href="#section-11.5-1" class="pilcrow">¶</a></p>
 <p id="section-11.5-2">For personal cryptographic tokens it might be appropriate for the attestation request interface to be un-authenticated. However, for enterprise and cloud-services grade HSMs the Presenter <span class="bcp14">SHOULD</span> be authenticated using the HSM's native authentication mechanism. The details are HSM-specific and are thus left up to the implementer. However, it is <span class="bcp14">RECOMMENDED</span> to implement an authorization framework similar to the following.<a href="#section-11.5-2" class="pilcrow">¶</a></p>
 <p id="section-11.5-3">A Presenter <span class="bcp14">SHOULD</span> be allowed to request evidence for any user keys which it is allowed to use.
 For example, a TLS application that is correctly authenticated to the HSM in order to use its TLS keys <span class="bcp14">SHOULD</span> be able to request evidence of those same keys without needing to perform any additional authentication or requiring any additional roles or permissions.
