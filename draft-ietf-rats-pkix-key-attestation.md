@@ -321,6 +321,11 @@ of information for which the trust anchor is authoritative." The
 Trust Anchor may be a certificate, a raw public key, or other
 structure, as appropriate.
 
+Trusted Platform Module (TPM):
+A tamper-resistance processor generally located on a computer's motherboard used to enhance attestation
+functions for the hosting platform. TPMs are very specialized Hardware Security Modules and generally use
+other protocols (than the one presented in this specification) to transmit evidence.
+
 User Key:
 : A user key consists of a key hosted by an HSM (the platform) and intended to be used by a client
 of the HSM. Other terms used for a user key are "application key", "client key" or "operational key".
@@ -1098,7 +1103,7 @@ fosters a higher likelihood of achieving interoperability.
 
 The nature of attestation requires the Attestation Service to be implemented in an extremely
 privileged position within the HSM so that it can collect measurements of both the hardware
-environment and the user keys being attested. For many HSM and TPM architectures, this will
+environment and the user keys being attested. For many HSM architectures, this will
 place the Attestation Service inside the "security kernel" and potentially subject to FIPS 140-3
 or Common Criteria validation and change control. For both security and compliance reasons
 there is incentive for the generation and parsing logic to be simple and easy to implement
@@ -1123,11 +1128,14 @@ When multiple SignatureBlocks are used for providing third-party counter-signatu
 
 ## Privacy {#sec-cons-privacy}
 
-Often, a TPM will host cryptographic keys for both the kernel and userspace of a local operating system but a Presenter may only represents a single user or application.
-Similarly, a single enterprise-grade Hardware Security Module will often host cryptographic keys for an entire multi-tenant cloud service and the Presenter or Receiver or Recipient belongs only to a single tenant. For example the HSM backing a TLS-terminating loadbalancer fronting thousands of un-related web domains.
-In these cases, disclosing that two different keys reside on the same hardware, or in some cases even disclosing the existance of a given key, let alone its attributes, to an unauthorized party would constitute an egregious privacy violation.
+Some HSMs have the capacity of supporting cryptographic keys controlled by separate entities referred to as "tenants", and when the HSM is used in that mode
+it is referred to as a multi-tenant configuration.
 
-Implementions SHOULD be careful to avoid over-disclosure of information, for example by authenticating the Presenter as described in {{sec-cons-auth-the-presenter}} and only returning results for keys and envirnments for which it is authorized.
+For example, an enterprise-grade HSM in a large multi-tenant cloud service could host TLS keys fronting multiple un-related web domains. Providing evidence for
+attesting attributes of any one of the keys would involve a Presenter that could potentially access any of the hosted keys.
+In such a case, private violations could occur if the Presenter was to disclose information that does not relate to the subject key.
+
+Implementers SHOULD be careful to avoid over-disclosure of information, for example by authenticating the Presenter as described in {{sec-cons-auth-the-presenter}} and only returning results for keys and environments for which it is authorized.
 In absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request MAY be authenticated by embedding the TbsPkixEvidence of the request inside a PkixEvidence signed with a certificate belonging to the Presenter.
 
 Furthermore, enterprise and cloud-services grade HSMs SHOULD support the full set of attestation request functionality described in {{sec-reqs}} so that Presenters can fine-tune the content of a PKIX evidence such that it is appropriate for the intended Verifier.
