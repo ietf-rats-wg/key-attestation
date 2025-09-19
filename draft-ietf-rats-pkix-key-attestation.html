@@ -1827,11 +1827,11 @@ ReportedEntity ::= SEQUENCE {
     reportedAttributes SEQUENCE SIZE (1..MAX) OF ReportedAttribute
 }
 
-id-pkix-attest                    OBJECT IDENTIFIER ::= { 1 2 3 999 }
-id-pkix-attest-entity-type        OBJECT IDENTIFIER ::= { id-pkix-attest 0 }
-id-pkix-attest-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 0 }
-id-pkix-attest-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 1 }
-id-pkix-attest-entity-key         OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 2 }
+id-pkix-evidence                    OBJECT IDENTIFIER ::= { 1 2 3 999 }
+id-pkix-evidence-entity-type        OBJECT IDENTIFIER ::= { id-pkix-evidence 0 }
+id-pkix-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 0 }
+id-pkix-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 1 }
+id-pkix-evidence-entity-key         OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 2 }
 </pre><a href="#section-5-9" class="pilcrow">¶</a>
 </div>
 <p id="section-5-10">In turn, entities are composed of attributes. Each attribute is composed of a type and a value.
@@ -1864,10 +1864,10 @@ definition must include the type of the value, its semantic and interpretation.<
         <h3 id="name-platform-entity">
 <a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-platform-entity" class="section-name selfRef">Platform Entity</a>
         </h3>
-<p id="section-5.1-1">A platform entity is associated with the type identifier <code>id-pkix-attest-entity-platform</code>. It is composed
+<p id="section-5.1-1">A platform entity is associated with the type identifier <code>id-pkix-evidence-entity-platform</code>. It is composed
 of a set of attributes that are global to the Target Environment.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
 <p id="section-5.1-2">A platform entity, if provided, <span class="bcp14">MUST</span> be included only once within the reported entities. If a
-Verifier encounters multiple entities of type <code>id-pkix-attest-entity-platform</code>, it <span class="bcp14">MUST</span>
+Verifier encounters multiple entities of type <code>id-pkix-evidence-entity-platform</code>, it <span class="bcp14">MUST</span>
 reject the Evidence as malformed.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
 <p id="section-5.1-3">The following table lists the attributes for a platform entity (platform attributes) defined
 within this specification. In cases where the attribute is borrowed from another specification,
@@ -2080,7 +2080,7 @@ A Relying Party wishing to know the validation status of the device <span class=
         <h3 id="name-key-entity">
 <a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-key-entity" class="section-name selfRef">Key Entity</a>
         </h3>
-<p id="section-5.2-1">A key entity is associated with the type <code>id-pkix-attest-entity-key</code>. Each instance of a
+<p id="section-5.2-1">A key entity is associated with the type <code>id-pkix-evidence-entity-key</code>. Each instance of a
 key entity represents a different addressable key found in the Target Environment. There can
 be multiple key entities found in a claim description, but each reported key entity <span class="bcp14">MUST</span>
 describe a different key. Two key entities may represent the same underlying cryptographic key
@@ -2232,7 +2232,7 @@ found in PKCS#11.<a href="#section-5.2.3-7" class="pilcrow">¶</a></p>
         <h3 id="name-transaction-entity">
 <a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-transaction-entity" class="section-name selfRef">Transaction Entity</a>
         </h3>
-<p id="section-5.3-1">A transaction entity is associated with the type <code>id-pkix-attest-entity-transaction</code>. This is
+<p id="section-5.3-1">A transaction entity is associated with the type <code>id-pkix-evidence-entity-transaction</code>. This is
 a logical entity and does not relate to an element found in the Target Environment. Instead, it
 groups together attributes that relate to the request of generating the Evidence.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
 <p id="section-5.3-2">For example, it is possible to include a "nonce" as part of the request to produce Evidence. This
@@ -2240,13 +2240,13 @@ nonce is repeated as part of the Evidence, within the portion protected for inte
 the freshness of the claims. This "nonce" is not related to any element in the Target Environment
 and the transaction entity is used to gather those values into attributes.<a href="#section-5.3-2" class="pilcrow">¶</a></p>
 <p id="section-5.3-3">A transaction entity, if provided, <span class="bcp14">MUST</span> be included only once within the reported entities. If a
-Verifier encounters multiple entities of type <code>id-pkix-attest-entity-transaction</code>, it <span class="bcp14">MUST</span>
+Verifier encounters multiple entities of type <code>id-pkix-evidence-entity-transaction</code>, it <span class="bcp14">MUST</span>
 reject the Evidence.<a href="#section-5.3-3" class="pilcrow">¶</a></p>
 <p id="section-5.3-4">The following table lists the attributes for a transaction entity defined
 within this specification. The "Reference" column refers to the specification where the semantics
 for the attribute value can be found.<a href="#section-5.3-4" class="pilcrow">¶</a></p>
 <p id="section-5.3-5">A default and vendor-agnostic set of transaction entity attributes is defined in this section.<a href="#section-5.3-5" class="pilcrow">¶</a></p>
-<p id="section-5.3-6">These attribute types <span class="bcp14">MAY</span> be contained within a transaction entity; i.e. an entity identified by <code>id-pkix-attest-entity-transaction</code>.<a href="#section-5.3-6" class="pilcrow">¶</a></p>
+<p id="section-5.3-6">These attribute types <span class="bcp14">MAY</span> be contained within a transaction entity; i.e. an entity identified by <code>id-pkix-evidence-entity-transaction</code>.<a href="#section-5.3-6" class="pilcrow">¶</a></p>
 <table class="center" id="table-3">
           <caption><a href="#table-3" class="selfRef">Table 3</a></caption>
 <thead>
@@ -2642,7 +2642,7 @@ ReportedEntity ::= SEQUENCE {
 
 ReportedAttribute ::= SEQUENCE {
     attributeType      OBJECT IDENTIFIER,
-    value              AttributeValue
+    value              OPTIONAL AttributeValue
 }
 
 AttributeValue :== CHOICE {

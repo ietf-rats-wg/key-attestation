@@ -643,11 +643,11 @@ Table of Contents
        reportedAttributes SEQUENCE SIZE (1..MAX) OF ReportedAttribute
    }
 
-   id-pkix-attest                    OBJECT IDENTIFIER ::= { 1 2 3 999 }
-   id-pkix-attest-entity-type        OBJECT IDENTIFIER ::= { id-pkix-attest 0 }
-   id-pkix-attest-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 0 }
-   id-pkix-attest-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 1 }
-   id-pkix-attest-entity-key         OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 2 }
+   id-pkix-evidence                    OBJECT IDENTIFIER ::= { 1 2 3 999 }
+   id-pkix-evidence-entity-type        OBJECT IDENTIFIER ::= { id-pkix-evidence 0 }
+   id-pkix-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 0 }
+   id-pkix-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 1 }
+   id-pkix-evidence-entity-key         OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 2 }
 
    In turn, entities are composed of attributes.  Each attribute is
    composed of a type and a value.  The attribute types are represented
@@ -682,12 +682,12 @@ Table of Contents
 5.1.  Platform Entity
 
    A platform entity is associated with the type identifier id-pkix-
-   attest-entity-platform.  It is composed of a set of attributes that
+   evidence-entity-platform.  It is composed of a set of attributes that
    are global to the Target Environment.
 
    A platform entity, if provided, MUST be included only once within the
    reported entities.  If a Verifier encounters multiple entities of
-   type id-pkix-attest-entity-platform, it MUST reject the Evidence as
+   type id-pkix-evidence-entity-platform, it MUST reject the Evidence as
    malformed.
 
    The following table lists the attributes for a platform entity
@@ -899,7 +899,7 @@ Table of Contents
 
 5.2.  Key Entity
 
-   A key entity is associated with the type id-pkix-attest-entity-key.
+   A key entity is associated with the type id-pkix-evidence-entity-key.
    Each instance of a key entity represents a different addressable key
    found in the Target Environment.  There can be multiple key entities
    found in a claim description, but each reported key entity MUST
@@ -1028,7 +1028,7 @@ Table of Contents
 
 5.3.  Transaction Entity
 
-   A transaction entity is associated with the type id-pkix-attest-
+   A transaction entity is associated with the type id-pkix-evidence-
    entity-transaction.  This is a logical entity and does not relate to
    an element found in the Target Environment.  Instead, it groups
    together attributes that relate to the request of generating the
@@ -1043,7 +1043,8 @@ Table of Contents
 
    A transaction entity, if provided, MUST be included only once within
    the reported entities.  If a Verifier encounters multiple entities of
-   type id-pkix-attest-entity-transaction, it MUST reject the Evidence.
+   type id-pkix-evidence-entity-transaction, it MUST reject the
+   Evidence.
 
    The following table lists the attributes for a transaction entity
    defined within this specification.  The "Reference" column refers to
@@ -1054,7 +1055,7 @@ Table of Contents
    defined in this section.
 
    These attribute types MAY be contained within a transaction entity;
-   i.e. an entity identified by id-pkix-attest-entity-transaction.
+   i.e. an entity identified by id-pkix-evidence-entity-transaction.
 
     +=========+================+===========+===========+==============+
     |Attribute| AttributeValue | Reference | Multiple? | OID          |
@@ -1500,7 +1501,7 @@ Table of Contents
 
    ReportedAttribute ::= SEQUENCE {
        attributeType      OBJECT IDENTIFIER,
-       value              AttributeValue
+       value              OPTIONAL AttributeValue
    }
 
    AttributeValue :== CHOICE {
