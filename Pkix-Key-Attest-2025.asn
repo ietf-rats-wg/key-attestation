@@ -23,7 +23,7 @@ ReportedEntity ::= SEQUENCE {
 
 ReportedAttribute ::= SEQUENCE {
     attributeType      OBJECT IDENTIFIER,
-    value              AttributeValue
+    value              OPTIONAL AttributeValue
 }
 
 AttributeValue :== CHOICE {

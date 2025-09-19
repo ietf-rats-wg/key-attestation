@@ -551,11 +551,11 @@ ReportedEntity ::= SEQUENCE {
     reportedAttributes SEQUENCE SIZE (1..MAX) OF ReportedAttribute
 }
 
-id-pkix-attest                    OBJECT IDENTIFIER ::= { 1 2 3 999 }
-id-pkix-attest-entity-type        OBJECT IDENTIFIER ::= { id-pkix-attest 0 }
-id-pkix-attest-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 0 }
-id-pkix-attest-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 1 }
-id-pkix-attest-entity-key         OBJECT IDENTIFIER ::= { id-pkix-attest-entity-type 2 }
+id-pkix-evidence                    OBJECT IDENTIFIER ::= { 1 2 3 999 }
+id-pkix-evidence-entity-type        OBJECT IDENTIFIER ::= { id-pkix-evidence 0 }
+id-pkix-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 0 }
+id-pkix-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 1 }
+id-pkix-evidence-entity-key         OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 2 }
 ~~~
 
 In turn, entities are composed of attributes. Each attribute is composed of a type and a value.
@@ -589,11 +589,11 @@ The remainder of this section describes the entity types and their associated at
 
 ## Platform Entity
 
-A platform entity is associated with the type identifier `id-pkix-attest-entity-platform`. It is composed
+A platform entity is associated with the type identifier `id-pkix-evidence-entity-platform`. It is composed
 of a set of attributes that are global to the Target Environment.
 
 A platform entity, if provided, MUST be included only once within the reported entities. If a
-Verifier encounters multiple entities of type `id-pkix-attest-entity-platform`, it MUST
+Verifier encounters multiple entities of type `id-pkix-evidence-entity-platform`, it MUST
 reject the Evidence as malformed.
 
 The following table lists the attributes for a platform entity (platform attributes) defined
@@ -688,7 +688,7 @@ Further description of the environment beyond hwvendor, hwmodel, hwserial, swver
 
 ## Key Entity
 
-A key entity is associated with the type `id-pkix-attest-entity-key`. Each instance of a
+A key entity is associated with the type `id-pkix-evidence-entity-key`. Each instance of a
 key entity represents a different addressable key found in the Target Environment. There can
 be multiple key entities found in a claim description, but each reported key entity MUST
 describe a different key. Two key entities may represent the same underlying cryptographic key
@@ -762,7 +762,7 @@ Reports a time after which the key is not to be used. The device MAY enforce thi
 
 ## Transaction Entity
 
-A transaction entity is associated with the type `id-pkix-attest-entity-transaction`. This is
+A transaction entity is associated with the type `id-pkix-evidence-entity-transaction`. This is
 a logical entity and does not relate to an element found in the Target Environment. Instead, it
 groups together attributes that relate to the request of generating the Evidence.
 
@@ -772,7 +772,7 @@ the freshness of the claims. This "nonce" is not related to any element in the T
 and the transaction entity is used to gather those values into attributes.
 
 A transaction entity, if provided, MUST be included only once within the reported entities. If a
-Verifier encounters multiple entities of type `id-pkix-attest-entity-transaction`, it MUST
+Verifier encounters multiple entities of type `id-pkix-evidence-entity-transaction`, it MUST
 reject the Evidence.
 
 The following table lists the attributes for a transaction entity defined
@@ -781,7 +781,7 @@ for the attribute value can be found.
 
 A default and vendor-agnostic set of transaction entity attributes is defined in this section.
 
-These attribute types MAY be contained within a transaction entity; i.e. an entity identified by `id-pkix-attest-entity-transaction`.
+These attribute types MAY be contained within a transaction entity; i.e. an entity identified by `id-pkix-evidence-entity-transaction`.
 
 | Attribute       | AttributeValue  | Reference    | Multiple? | OID                                               |
 | ---             | ---             | ---          | ---       | ---                                               |
