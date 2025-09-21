@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-09-18T00:41:15.704318+00:00",
+  "timestamp": "2025-09-21T00:47:27.383791+00:00",
   "repo": "ietf-rats-wg/key-attestation",
   "labels": [
     {
@@ -404,15 +404,15 @@
       "id": "I_kwDONUAin868PQtk",
       "title": "References to TPM could be dropped",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/36",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bluegate010",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The specification makes two references to TPMs:\n\n> For relatively simple HSM devices such as TPM-like devices, storage properties such as \"extractable\" may always be true for all keys since the devices are not capable of key export and so the attestation could be essentially a hard-coded template asserting these immutable attributes. However, more complex HSM devices require a more complex key attestation format that encompasses the mutability of these attributes.\n\n> \"Often, a TPM will host cryptographic keys for both the kernel and userspace of a local operating system, but a Presenter may only represent a single user or application.\"\n\nThese references could safely be dropped, as this specification is targeting HSMs, not TPMs.\n\n(Also, \"'extractable' may always be true\" seems to disagree with \"the devices are not capable of key export\", which itself is unclear because I believe the TPM _can_ export certain keys.)",
       "createdAt": "2025-06-18T20:46:44Z",
-      "updatedAt": "2025-07-14T16:00:21Z",
-      "closedAt": null,
+      "updatedAt": "2025-09-19T13:45:08Z",
+      "closedAt": "2025-09-19T13:45:08Z",
       "comments": [
         {
           "author": "jpfiset",
@@ -451,15 +451,15 @@
       "id": "I_kwDONUAin868PQys",
       "title": "Add support for multi-signature key binding",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/38",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bluegate010",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The specification currently states:\n\n> This design also does not prevent against stripping attacks where an attacker removes a signature without leaving evidence in the message that an additional signature had been there or signature re-ordering attacks. Again, this is left up to Verifier policy to know how many algorithms or counter-signatures it is expecting.\n\nWe could extend the transaction entity attributes table with the following:\n\n| Attribute         | AttributeValue  | Reference   | Multiple? | OID                                              |\n| ---               | ---             | ---         | ---       | ---                                              |\n| ak-spki | bytes | {{&SELF}} | Yes        | id-pkix-evidence-attribute-transaction-ak-spki  |\n\nThis attribute would contain the `spki` for each Attestation Key that the HSM intends to use to sign the claims.",
       "createdAt": "2025-06-18T20:46:54Z",
-      "updatedAt": "2025-07-14T15:32:09Z",
-      "closedAt": null,
+      "updatedAt": "2025-09-19T18:17:32Z",
+      "closedAt": "2025-09-19T18:17:32Z",
       "comments": [
         {
           "author": "jpfiset",
@@ -551,15 +551,15 @@
       "id": "I_kwDONUAin868PS2r",
       "title": "Contradiction on whether multiple key entities can refer to the same cryptographic keypair",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/41",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bluegate010",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The spec states:\n\n> A key entity is associated with the type `id-pkix-attest-entity-key`. Each instance of a key entity represents a different cryptographic key found in the Target Environment. There can be multiple key entities found in a claim description, but each reported key entity MUST describe a different cryptographic key.\n\nAnd,\n\n> A Verifier that encounters a claim description with multiple key entities referring to the same cryptographic key MUST reject the Evidence.\n\nHowever, earlier the spec states:\n\n> For example, if a given application public key appears in two different entities, these MUST be interpreted as two distinct and independent entities that happen to have the same public key, and MUST NOT be interpreted as adding additional attributes to the already-described entity.",
       "createdAt": "2025-06-18T20:51:05Z",
-      "updatedAt": "2025-06-18T20:51:05Z",
-      "closedAt": null,
+      "updatedAt": "2025-09-18T13:03:04Z",
+      "closedAt": "2025-09-18T13:03:04Z",
       "comments": []
     },
     {
@@ -567,15 +567,15 @@
       "id": "I_kwDONUAin868PT0C",
       "title": "Unclear purpose of the 'protection' key entity attribute type",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/42",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bluegate010",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The `protection` attribute type \"indicates any additional key protection properties around use or modification of this key. These are generalized properties and will not apply the same way to all HSM vendors. Consult vendor documentation for the in-context meaning of these flags.\"\n\nThere are indications that this will be defined as an extensible byte array.\n\nIt seems that we could simply allow these \"additional key protection properties\" to be defined in terms of future OIDs rather than a bitfield, which is the extension mechanism that the spec uses for entity and attribute types generally.",
       "createdAt": "2025-06-18T20:53:03Z",
-      "updatedAt": "2025-08-25T16:42:40Z",
-      "closedAt": null,
+      "updatedAt": "2025-09-18T13:14:18Z",
+      "closedAt": "2025-09-18T13:14:18Z",
       "comments": [
         {
           "author": "hannestschofenig",
@@ -591,15 +591,15 @@
       "id": "I_kwDONUAin868PVDd",
       "title": "Minor: content duplicated across Signing Procedure and Verifying Procedure",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/43",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bluegate010",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The Signing Procedure section has the following content:\n\n> The `SignatureBlock.signatureValue` signs over the DER-encoded to-be-signed attestation data `PkixEvidence.tbs` and MUST be validated with the subject public key of the leaf X.509 certificate contained in the `SignatureBlock.certChain`.\n\nThis is duplicated in the Verifying Procedure section just below. These could potentially be deduped and instead of separate sections, just retitle to \"Signing and Verifying Procedure\".",
       "createdAt": "2025-06-18T20:55:34Z",
-      "updatedAt": "2025-06-18T20:55:34Z",
-      "closedAt": null,
+      "updatedAt": "2025-09-18T13:05:48Z",
+      "closedAt": "2025-09-18T13:05:48Z",
       "comments": []
     },
     {
@@ -639,15 +639,15 @@
       "id": "I_kwDONUAin868PYz_",
       "title": "Minor: unclear language in the Attestation Requests section",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/46",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bluegate010",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The spec states: (emphasis added)\n\n> In most cases the value of a request attribute should be left unspecified by the Presenter. In the process of generating the evidence, the values of the desired attributes are observed by the attestation service within the HSM and reported accordingly. For the purpose of creating a request, the Presenter sets the values of the attributes to `null`. **This is a departure from the values specified for each attribute** but serves well the purposes of the request.\n\nIs the bolded portion simply noting that the attested values will differ from the requested values? Or something else?",
       "createdAt": "2025-06-18T21:00:59Z",
-      "updatedAt": "2025-08-25T16:09:55Z",
-      "closedAt": null,
+      "updatedAt": "2025-09-18T14:59:26Z",
+      "closedAt": "2025-09-18T14:59:26Z",
       "comments": [
         {
           "author": "jpfiset",
@@ -670,15 +670,15 @@
       "id": "I_kwDONUAin868PcSk",
       "title": "Unclear purpose behind supporting multiple attested nonces",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/47",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bluegate010",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The `nonce` attribute is repeatable in the Transaction entity:\n\n> The attribute \"nonce\" is used to provide \"freshness\" quality as to the claims provided in the PkixEvidence message. A Presenter requesting a PkixEvidence message MAY provide a nonce value as part of the request. This nonce value, if provided, SHOULD be repeated as an attribute within the transaction entity.\n> \n> This is similar to the attribute \"eat_nonce\" as defined in {{!RFC9711}}. According to this specification, this attribute may be specified multiple times with different values. In that case, all different values shall be repeated in the PKIXEvidence.\n\n\nIn the non-normative Attestation Requests section, the nonce is described thusly:\n\n> A Presenter may choose to include a nonce as part of the attestation request. When producing the PKIX evidence, the HSM repeats the nonce that was provided as part of the request.\n> \n> When providing a nonce, a Presenter includes, in the attestation request, an entity of type `id-pkix-evidence-entity-transaction` with an attribute of type `id-pkix-evidence-attribute-transaction-nonce`. This attribute is set with the value of the nonce as \"bytes\".\n\nIt is unclear based on the cited language why multiple nonces are supported. It could be worth including an example that illustrates when multiple nonces would be used.",
       "createdAt": "2025-06-18T21:06:26Z",
-      "updatedAt": "2025-08-25T16:47:11Z",
-      "closedAt": null,
+      "updatedAt": "2025-09-18T15:09:54Z",
+      "closedAt": "2025-09-18T15:09:54Z",
       "comments": [
         {
           "author": "hannestschofenig",
@@ -694,15 +694,15 @@
       "id": "I_kwDONUAin868Pc01",
       "title": "Contradiction on whether an unrecognized request attribute must be rejected",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/48",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bluegate010",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The spec has the following two pieces of language, which contradict each other:\n\n> An Attester (HSM) which is requested to provide information about unrecognized Entity or Attribute types MUST fail the operation.\n\n> An Attester SHOULD fail an attestation request if it contains a request attribute with an unrecognized type.",
       "createdAt": "2025-06-18T21:07:35Z",
-      "updatedAt": "2025-08-25T16:56:01Z",
-      "closedAt": null,
+      "updatedAt": "2025-09-18T16:51:46Z",
+      "closedAt": "2025-09-18T16:51:46Z",
       "comments": [
         {
           "author": "hannestschofenig",
@@ -725,15 +725,15 @@
       "id": "I_kwDONUAin868Pfhe",
       "title": "Feature request: DICE-based Attestation Keys",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/50",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bluegate010",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The specification defines the Attestation Key as the key which signs evidence. The specification allows, but does not make explicit, that the Attestation Key may be part of a DICE hierarchy.\n\nIt would be useful to describe this, which would be a valuable feature for customers wishing to obtain strong attestation that their HSMs are running a given firmware version.",
       "createdAt": "2025-06-18T21:12:25Z",
-      "updatedAt": "2025-06-18T21:12:25Z",
-      "closedAt": null,
+      "updatedAt": "2025-09-19T13:44:57Z",
+      "closedAt": "2025-09-19T13:44:57Z",
       "comments": []
     },
     {
@@ -748,7 +748,7 @@
       "labels": [],
       "body": "In Section 5.3,  the epoch id is not mentioned as one mechanism to achieve time freshness.\n\nIn Section 5.3.1, the nonce is distributed by the presenter, rather than the relying party and verifier. Does it fit current attestation service architecture as usually the verifier generates the nonce, to avoid replay attack?",
       "createdAt": "2025-07-10T12:16:41Z",
-      "updatedAt": "2025-09-01T08:03:57Z",
+      "updatedAt": "2025-09-18T14:45:13Z",
       "closedAt": null,
       "comments": [
         {
@@ -764,6 +764,13 @@
           "body": "Thanks. Is the presenter trusted by the attester, relying party and the verifier in default and there is a protocol to deliver the nonce from the presenter to the verifier? As it is possible to pre-generate some nonce by the presenter, and the HSM generates the corresponding evidences (good evidence), and only transmits these good evidences to the presenter, then to the verifier.  How to ensure that the nonce itself is fresh?",
           "createdAt": "2025-09-01T08:03:57Z",
           "updatedAt": "2025-09-01T08:03:57Z"
+        },
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The role of Presenter is not a trusted position. Therefore, the Presenter can not be the one generating the nonce.\n\nThe role of Presenter is privileged in that it controls the amount of information that is disclosed. But, it is not trusted.",
+          "createdAt": "2025-09-18T14:45:12Z",
+          "updatedAt": "2025-09-18T14:45:12Z"
         }
       ]
     },
@@ -779,23 +786,47 @@
       "labels": [],
       "body": "Greetings!\n\nI had offered to review https://datatracker.ietf.org/doc/draft-ietf-rats-pkix-key-attestation/ at the last meeting and I apologize for my delay in just doing that now!\n\nThe current version looks very good. However, I recommend writing the abstract over as it is disconnected from the content of the draft. I read the draft as enabling and describing how you can attest an HSM and the environment where keys are stored. It uses FIPS 140-3 or Common Criteria validation criteria in order to develop the list of what will be checked.\n\nIs the introduction correct in terms of the high-level aims or is the draft more tactical to HSM verification using attestation? The CA Browser forum example extends the examples to key stores, so perhaps that overall goal is this broad, but I wanted to check as consistency in the abstract, introduction, and body of the document would be very helpful as it's a complex enough topic already. :-)\n\nA few questions/nits/comments:\n\nIn section 5.1.6, there is a note that someone does not understand the subsection and I can see why. The third paragraph is where the language adds to confusion and should be easy enough to fix. This sentence is confusing as written:\n\"Note that by including envid as a platform attribute, this implies\n   that it applies to all attested key entities.\"\nShould it be \"all attested entities\"?  I would think it applies to the attested entity, the platform where the envid is included as an attribute, but not all or you'll need to explain what you mean by all. I think the other sentences are ok.\n\nSection 5.3.2\n\nI think the paragraph cautioning on timestamps is appropriately placed. You might add a quick sentence about it in the security considerations section as well.\n\n\nSection 8.2\n\nPlease expand out KAT and PAT\n\nI hope this review is helpful!\n\n--\n\nBest regards,\nKathleen",
       "createdAt": "2025-07-21T07:43:17Z",
-      "updatedAt": "2025-07-21T07:43:17Z",
+      "updatedAt": "2025-09-18T14:42:46Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The section Appraisal Policies (referred here as 8) needs to be scrutinized. ",
+          "createdAt": "2025-09-18T14:42:46Z",
+          "updatedAt": "2025-09-18T14:42:46Z"
+        }
+      ]
     },
     {
       "number": 55,
       "id": "I_kwDONUAin87H0oXJ",
       "title": "claim Terminology",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/55",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "hannestschofenig",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Text needed to explain what we mean by claim for a PKIX-reader audience",
       "createdAt": "2025-08-25T16:27:30Z",
-      "updatedAt": "2025-08-25T16:27:30Z",
+      "updatedAt": "2025-09-18T13:33:30Z",
+      "closedAt": "2025-09-18T13:33:30Z",
+      "comments": []
+    },
+    {
+      "number": 56,
+      "id": "I_kwDONUAin87MfNmm",
+      "title": "Remove section on \"Appraisal Policies and Profiles\"",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/issues/56",
+      "state": "OPEN",
+      "author": "jpfiset",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This section provides little value to the document. If it was to remain, it would most likely need a lot of supporting documentation from outside the IETF.\n\nCertainly, these documents and requirements influenced the creation of the specification, but do we need to capture this information?",
+      "createdAt": "2025-09-18T14:49:58Z",
+      "updatedAt": "2025-09-18T14:49:58Z",
       "closedAt": null,
       "comments": []
     }
