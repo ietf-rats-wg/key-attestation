@@ -612,7 +612,6 @@ Attributes defined in this specification have further details below.
 | fipsver         | utf8String      | {{-fips}}    | No        | id-pkix-evidence-attribute-platform-fipsver    |
 | fipslevel       | int             | {{-fips}}    | No        | id-pkix-evidence-attribute-platform-fipslevel  |
 | fipsmodule      | utf8String      | {{-fips}}    | No        | id-pkix-evidence-attribute-platform-fipsmodule |
-| envdesc         | utf8String      | {{&SELF}}    | Yes       | id-pkix-evidence-attribute-platform-envdesc    |
 
 TODO: find the actual reference for "FIPS Mode" -- FIPS 140-3 does not define it (at least not the 11 page useless version of 140-3 that I found).
 
@@ -675,10 +674,6 @@ This information is available on the NIST CMVP website or by contacting the devi
 As an example, some devices may have the option to enable FIPS mode in configuration even if the vendor has not submitted this model for validation. As another example, a device may be running in a mode consistent with FIPS Level 3 but the device was only validated and certified to Level 2.
 A Relying Party wishing to know the validation status of the device MUST couple the device state information contained in the Evidence with a valid FIPS CMVP certificate for the device.
 
-### envdesc
-
-Further description of the environment beyond vendor, hwmodel, hwserial, swversion; for example if there is a need to describe multiple logical partitions within the same device. Contents could be a human-readable description or other identifiers.
-
 
 ## Key Entity
 
@@ -704,7 +699,6 @@ for the attribute value can be found.
 | ---               | ---             | ---         | ---       | ---                                              |
 | identifier        | utf8String      | {{&SELF}}   | Yes       | id-pkix-evidence-attribute-key-identifier        |
 | spki              | bytes           | {{&SELF}}   | No        | id-pkix-evidence-attribute-key-spki              |
-| purpose           | bytes           | [PKCS11]    | No        | id-pkix-evidence-attribute-key-purpose           |
 | extractable       | bool            | [PKCS11]    | No        | id-pkix-evidence-attribute-key-extractable       |
 | sensitive         | bool            | [PKCS11]    | No        | id-pkix-evidence-attribute-key-sensitive         |
 | never-extractable | bool            | [PKCS11]    | No        | id-pkix-evidence-attribute-key-never-extractable |
@@ -728,15 +722,11 @@ cryptographic key.
 The value of this attribute contains the DER-encoded field SubjectPublicKeyInfo (see {{!RFC5280}}) associated with the cryptographic
 key.
 
-### purpose, extractable, sensitive, never-extractable, local
+### extractable, sensitive, never-extractable, local
 
 These attributes are defined in [PKCS11] and reused in this specification for interoperability. Small
 descriptions are offered for each to ease the reading of this specification. In case of confusion between the
 description offered here and the one in [PKCS11], the definition offered in the latter shall prevail.
-
-The attribute "purpose" defines the intended usage for the key.
-
-EDNOTE: JPF: I do not see "purpose" as part of PKCS#11
 
 The attribute "extractable" indicates that the key can be exported from the HSM. Corresponds directly to the attribute CKA_EXTRACTABLE
 found in PKCS#11.
@@ -860,7 +850,7 @@ be the same trust anchor that endorsed the HSM's own AK, but the HSM MAY be conf
 
 If the HSM is operating in FIPS Mode, then it MUST only import keys from HSMs also operating in FIPS Mode.
 
-The claims `key-purpose`, `key-extractable`, `key-never-extractable`, and `key-local` MUST be checked and honoured during key import, which typically means that after import, the key MUST NOT claim a stronger protection property than it had within the previous HSM. In other words, Key Attestation allows and requires that key protection properties be preserved over export / import operations between different HSMs, and this format provides a vendor-agnostic
+The claims `key-extractable`, `key-never-extractable`, and `key-local` MUST be checked and honoured during key import, which typically means that after import, the key MUST NOT claim a stronger protection property than it had within the previous HSM. In other words, Key Attestation allows and requires that key protection properties be preserved over export / import operations between different HSMs, and this format provides a vendor-agnostic
 way to achieve this.
 
 How to handle errors is outside the scope of this specification and is left to implementors; for example the
