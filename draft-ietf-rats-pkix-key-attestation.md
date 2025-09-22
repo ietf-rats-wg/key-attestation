@@ -602,21 +602,24 @@ the "Reference" column refers to the specification where the semantics
 for the attribute value can be found.
 Attributes defined in this specification have further details below.
 
-| Attribute       | AttributeValue  | Reference    | Multiple? | OID                                           |
-| ---             | ---             | ---          | ---       | ---                                           |
-| vendor          | utf8String      | {{&SELF}}    | No        | id-pkix-evidence-attribute-platform-vendor    |
-| oemid           | bytes           | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-oemid     |
-| hwmodel         | utf8String      | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-model     |
-| hwserial        | utf8String      | {{&SELF}}    | No        | id-pkix-evidence-attribute-platform-hwserial  |
-| swversion       | utf8String      | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-swversion |
-| dbgstat         | int             | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-debugstat |
-| uptime          | int             | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-uptime    |
-| bootcount       | int             | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-bootcount |
-| usermods        | utf8String      | {{&SELF}}    | Yes       | id-pkix-evidence-attribute-platform-usermods  |
-| fipsboot        | bool            | {{-fips}}    | No        | id-pkix-evidence-attribute-platform-fipsboot  |
-| fipsver         | utf8String      | {{-fips}}    | No        | id-pkix-evidence-attribute-platform-fipsver   |
-| fipslevel       | int             | {{-fips}}    | No        | id-pkix-evidence-attribute-platform-fipslevel |
-| envdesc         | utf8String      | {{&SELF}}    | Yes       | id-pkix-evidence-attribute-platform-envdesc   |
+| Attribute       | AttributeValue  | Reference    | Multiple? | OID                                            |
+| ---             | ---             | ---          | ---       | ---                                            |
+| vendor          | utf8String      | {{&SELF}}    | No        | id-pkix-evidence-attribute-platform-vendor     |
+| oemid           | bytes           | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-oemid      |
+| hwmodel         | bytes           | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-hwmodel    |
+| hwversion       | utf8String      | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-hwversion  |
+| hwserial        | utf8String      | {{&SELF}}    | No        | id-pkix-evidence-attribute-platform-hwserial   |
+| swname          | utf8String      | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-swname     |
+| swversion       | utf8String      | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-swversion  |
+| dbgstat         | int             | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-debugstat  |
+| uptime          | int             | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-uptime     |
+| bootcount       | int             | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-bootcount  |
+| usermods        | utf8String      | {{&SELF}}    | Yes       | id-pkix-evidence-attribute-platform-usermods   |
+| fipsboot        | bool            | {{-fips}}    | No        | id-pkix-evidence-attribute-platform-fipsboot   |
+| fipsver         | utf8String      | {{-fips}}    | No        | id-pkix-evidence-attribute-platform-fipsver    |
+| fipslevel       | int             | {{-fips}}    | No        | id-pkix-evidence-attribute-platform-fipslevel  |
+| fipsmodule      | utf8String      | {{-fips}}    | No        | id-pkix-evidence-attribute-platform-fipsmodule |
+| envdesc         | utf8String      | {{&SELF}}    | Yes       | id-pkix-evidence-attribute-platform-envdesc    |
 
 TODO: find the actual reference for "FIPS Mode" -- FIPS 140-3 does not define it (at least not the 11 page useless version of 140-3 that I found).
 
@@ -626,7 +629,7 @@ Each attribute defined in the table above is described in the following sub-sect
 
 A human-readable string that reports the name of the device's manufacturer.
 
-### oemid, hwmodel, swversion, dbgstat, uptime, bootcount
+### oemid, hwmodel, hwversion, swname, swversion, dbgstat, uptime, bootcount
 
 These attributes are defined in {{!RFC9711}} and reused in this specification for interoperability. Small
 descriptions are offered for each to ease the reading of this specification. In case of confusion between the
@@ -638,13 +641,13 @@ sequence of bytes and is not meant to be a human readable string.
 The attribute "hwmodel" differentiates models, products, and variants manufactured by a particular OEM. A model
 must be unique within a given "oemid". This is a sequence of bytes and is not meant to be a human readable string.
 
-EDNOTE: JPF: "hwmodel" in EAT is not human readable. We have "vendor" that duplicates in human readable for "oemid".
-Should we duplicate "hwmodel" in a human readable form? Should we define it here for ourselves?
+The attribute "hwversion" is a text string reporting the version of the hardware. This attributes must be
+interpreted along with the attribute "hwmodel".
 
-The attribute "swversion" differentiates between the various revisions of a firmware offered for the HSM. This
+The attribute "swname" is a text string reporting the name of the firmware running on the platform.
+
+The attribute "swversion" differentiates between the various revisions of a firmware offered for the platform. This
 is a string that is expected to be human readable.
-
-EDNOTE: JPF: In EAT, "swversion" requires "swname". Should we add "swname" or disassociate from the EAT definition?
 
 The attribute "dbgstat" refers to the state of the debug facilities offered by the HSM. This is an integer
 value describing the current state as described in {{!RFC9711}}.
@@ -664,7 +667,7 @@ Most HSMs have some concept of trusted execution environment where user software
 
 EDNOTE: JPF if JSON, why have multiple attributes.
 
-### fipsboot, fipsver and fipslevel
+### fipsboot, fipsver, fipslevel and fipsmodule
 
 FIPS 140-3 CMVP validation places stringent requirements on the mode of operation of the device and the cryptography offered by the module, including only enabling FIPS-approved algorithms, certain requirements on entropy sources, and extensive start-up self-tests. FIPS 140-3 offers compliance levels 1 through 4 with increasingly strict requirements. Many HSMs include a configuration setting that allows the device to be taken out of FIPS mode and thus enable additional functionality or performance, and some offer configuration settings to change between compliance levels.
 
@@ -676,6 +679,9 @@ The UTF8String attribute `fipsver` indicates the version of the FIPS CMVP specif
 
 The integer attribute `fipslevel` indicates the compliance level to which the device is currently operating and MUST only be 1, 2, 3, or 4. The `fipslevel` attribute has no meaning if `fipsboot` is absent or `false`.
 
+The attribute `fipsmodule` is a textual field used to represent the name of the module that was submitted to CMVP for validation. The information derived by combining this attribute with the vendor name shall
+be sufficient to find the associated records in the CMVP database.
+
 The FIPS status information in PKIX Evidence indicates only the mode of operation of the device and is not authoritative of its validation status.
 This information is available on the NIST CMVP website or by contacting the device vendor.
 As an example, some devices may have the option to enable FIPS mode in configuration even if the vendor has not submitted this model for validation. As another example, a device may be running in a mode consistent with FIPS Level 3 but the device was only validated and certified to Level 2.
@@ -683,7 +689,7 @@ A Relying Party wishing to know the validation status of the device MUST couple 
 
 ### envdesc
 
-Further description of the environment beyond hwvendor, hwmodel, hwserial, swversion; for example if there is a need to describe multiple logical partitions within the same device. Contents could be a human-readable description or other identifiers.
+Further description of the environment beyond vendor, hwmodel, hwserial, swversion; for example if there is a need to describe multiple logical partitions within the same device. Contents could be a human-readable description or other identifiers.
 
 
 ## Key Entity
