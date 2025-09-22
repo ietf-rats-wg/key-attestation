@@ -5,7 +5,7 @@
 RATS                                                        M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 23 March 2026                                          Crypto4A
+Expires: 26 March 2026                                          Crypto4A
                                                            H. Tschofenig
                                                                    H-BRS
                                                              H. Birkholz
@@ -14,7 +14,7 @@ Expires: 23 March 2026                                          Crypto4A
                                                                         
                                                                 N. Smith
                                                        Intel Corporation
-                                                       19 September 2025
+                                                       22 September 2025
 
 
    PKIX Evidence for Remote Attestation of Hardware Security Modules
@@ -70,7 +70,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 23 March 2026.
+   This Internet-Draft will expire on 26 March 2026.
 
 Copyright Notice
 
@@ -102,10 +102,11 @@ Table of Contents
    5.  Data Model
      5.1.  Platform Entity
        5.1.1.  vendor
-       5.1.2.  oemid, hwmodel, swversion, dbgstat, uptime, bootcount
+       5.1.2.  oemid, hwmodel, hwversion, swname, swversion, dbgstat,
+               uptime, bootcount
        5.1.3.  hwserial
        5.1.4.  usermods
-       5.1.5.  fipsboot, fipsver and fipslevel
+       5.1.5.  fipsboot, fipsver, fipslevel and fipsmodule
        5.1.6.  envdesc
      5.2.  Key Entity
        5.2.1.  identifier
@@ -699,89 +700,107 @@ Table of Contents
    for the attribute value can be found.  Attributes defined in this
    specification have further details below.
 
-   +=========+================+==============+===========+============+
-   |Attribute| AttributeValue | Reference    | Multiple? | OID        |
-   +=========+================+==============+===========+============+
-   |vendor   | utf8String     | RFCthis      | No        | id-pkix-   |
-   |         |                |              |           | evidence-  |
-   |         |                |              |           | attribute- |
-   |         |                |              |           | platform-  |
-   |         |                |              |           | vendor     |
-   +---------+----------------+--------------+-----------+------------+
-   |oemid    | bytes          | [RFC9711]    | No        | id-pkix-   |
-   |         |                |              |           | evidence-  |
-   |         |                |              |           | attribute- |
-   |         |                |              |           | platform-  |
-   |         |                |              |           | oemid      |
-   +---------+----------------+--------------+-----------+------------+
-   |hwmodel  | utf8String     | [RFC9711]    | No        | id-pkix-   |
-   |         |                |              |           | evidence-  |
-   |         |                |              |           | attribute- |
-   |         |                |              |           | platform-  |
-   |         |                |              |           | model      |
-   +---------+----------------+--------------+-----------+------------+
-   |hwserial | utf8String     | RFCthis      | No        | id-pkix-   |
-   |         |                |              |           | evidence-  |
-   |         |                |              |           | attribute- |
-   |         |                |              |           | platform-  |
-   |         |                |              |           | hwserial   |
-   +---------+----------------+--------------+-----------+------------+
-   |swversion| utf8String     | [RFC9711]    | No        | id-pkix-   |
-   |         |                |              |           | evidence-  |
-   |         |                |              |           | attribute- |
-   |         |                |              |           | platform-  |
-   |         |                |              |           | swversion  |
-   +---------+----------------+--------------+-----------+------------+
-   |dbgstat  | int            | [RFC9711]    | No        | id-pkix-   |
-   |         |                |              |           | evidence-  |
-   |         |                |              |           | attribute- |
-   |         |                |              |           | platform-  |
-   |         |                |              |           | debugstat  |
-   +---------+----------------+--------------+-----------+------------+
-   |uptime   | int            | [RFC9711]    | No        | id-pkix-   |
-   |         |                |              |           | evidence-  |
-   |         |                |              |           | attribute- |
-   |         |                |              |           | platform-  |
-   |         |                |              |           | uptime     |
-   +---------+----------------+--------------+-----------+------------+
-   |bootcount| int            | [RFC9711]    | No        | id-pkix-   |
-   |         |                |              |           | evidence-  |
-   |         |                |              |           | attribute- |
-   |         |                |              |           | platform-  |
-   |         |                |              |           | bootcount  |
-   +---------+----------------+--------------+-----------+------------+
-   |usermods | utf8String     | RFCthis      | Yes       | id-pkix-   |
-   |         |                |              |           | evidence-  |
-   |         |                |              |           | attribute- |
-   |         |                |              |           | platform-  |
-   |         |                |              |           | usermods   |
-   +---------+----------------+--------------+-----------+------------+
-   |fipsboot | bool           | [FIPS.140-3] | No        | id-pkix-   |
-   |         |                |              |           | evidence-  |
-   |         |                |              |           | attribute- |
-   |         |                |              |           | platform-  |
-   |         |                |              |           | fipsboot   |
-   +---------+----------------+--------------+-----------+------------+
-   |fipsver  | utf8String     | [FIPS.140-3] | No        | id-pkix-   |
-   |         |                |              |           | evidence-  |
-   |         |                |              |           | attribute- |
-   |         |                |              |           | platform-  |
-   |         |                |              |           | fipsver    |
-   +---------+----------------+--------------+-----------+------------+
-   |fipslevel| int            | [FIPS.140-3] | No        | id-pkix-   |
-   |         |                |              |           | evidence-  |
-   |         |                |              |           | attribute- |
-   |         |                |              |           | platform-  |
-   |         |                |              |           | fipslevel  |
-   +---------+----------------+--------------+-----------+------------+
-   |envdesc  | utf8String     | RFCthis      | Yes       | id-pkix-   |
-   |         |                |              |           | evidence-  |
-   |         |                |              |           | attribute- |
-   |         |                |              |           | platform-  |
-   |         |                |              |           | envdesc    |
-   +---------+----------------+--------------+-----------+------------+
+    +==========+================+==============+=========+============+
+    |Attribute | AttributeValue | Reference    |Multiple?| OID        |
+    +==========+================+==============+=========+============+
+    |vendor    | utf8String     | RFCthis      |No       | id-pkix-   |
+    |          |                |              |         | evidence-  |
+    |          |                |              |         | attribute- |
+    |          |                |              |         | platform-  |
+    |          |                |              |         | vendor     |
+    +----------+----------------+--------------+---------+------------+
+    |oemid     | bytes          | [RFC9711]    |No       | id-pkix-   |
+    |          |                |              |         | evidence-  |
+    |          |                |              |         | attribute- |
+    |          |                |              |         | platform-  |
+    |          |                |              |         | oemid      |
+    +----------+----------------+--------------+---------+------------+
+    |hwmodel   | bytes          | [RFC9711]    |No       | id-pkix-   |
+    |          |                |              |         | evidence-  |
+    |          |                |              |         | attribute- |
+    |          |                |              |         | platform-  |
+    |          |                |              |         | hwmodel    |
+    +----------+----------------+--------------+---------+------------+
+    |hwversion | utf8String     | [RFC9711]    |No       | id-pkix-   |
+    |          |                |              |         | evidence-  |
+    |          |                |              |         | attribute- |
+    |          |                |              |         | platform-  |
+    |          |                |              |         | hwversion  |
+    +----------+----------------+--------------+---------+------------+
+    |hwserial  | utf8String     | RFCthis      |No       | id-pkix-   |
+    |          |                |              |         | evidence-  |
+    |          |                |              |         | attribute- |
+    |          |                |              |         | platform-  |
+    |          |                |              |         | hwserial   |
+    +----------+----------------+--------------+---------+------------+
+    |swname    | utf8String     | [RFC9711]    |No       | id-pkix-   |
+    |          |                |              |         | evidence-  |
+    |          |                |              |         | attribute- |
+    |          |                |              |         | platform-  |
+    |          |                |              |         | swname     |
+    +----------+----------------+--------------+---------+------------+
+    |swversion | utf8String     | [RFC9711]    |No       | id-pkix-   |
+    |          |                |              |         | evidence-  |
+    |          |                |              |         | attribute- |
+    |          |                |              |         | platform-  |
+    |          |                |              |         | swversion  |
+    +----------+----------------+--------------+---------+------------+
+    |dbgstat   | int            | [RFC9711]    |No       | id-pkix-   |
+    |          |                |              |         | evidence-  |
+    |          |                |              |         | attribute- |
+    |          |                |              |         | platform-  |
+    |          |                |              |         | debugstat  |
+    +----------+----------------+--------------+---------+------------+
+    |uptime    | int            | [RFC9711]    |No       | id-pkix-   |
+    |          |                |              |         | evidence-  |
+    |          |                |              |         | attribute- |
+    |          |                |              |         | platform-  |
+    |          |                |              |         | uptime     |
+    +----------+----------------+--------------+---------+------------+
+    |bootcount | int            | [RFC9711]    |No       | id-pkix-   |
+    |          |                |              |         | evidence-  |
+    |          |                |              |         | attribute- |
+    |          |                |              |         | platform-  |
+    |          |                |              |         | bootcount  |
+    +----------+----------------+--------------+---------+------------+
+    |usermods  | utf8String     | RFCthis      |Yes      | id-pkix-   |
+    |          |                |              |         | evidence-  |
+    |          |                |              |         | attribute- |
+    |          |                |              |         | platform-  |
+    |          |                |              |         | usermods   |
+    +----------+----------------+--------------+---------+------------+
+    |fipsboot  | bool           | [FIPS.140-3] |No       | id-pkix-   |
+    |          |                |              |         | evidence-  |
+    |          |                |              |         | attribute- |
+    |          |                |              |         | platform-  |
+    |          |                |              |         | fipsboot   |
+    +----------+----------------+--------------+---------+------------+
+    |fipsver   | utf8String     | [FIPS.140-3] |No       | id-pkix-   |
+    |          |                |              |         | evidence-  |
+    |          |                |              |         | attribute- |
+    |          |                |              |         | platform-  |
+    |          |                |              |         | fipsver    |
+    +----------+----------------+--------------+---------+------------+
+    |fipslevel | int            | [FIPS.140-3] |No       | id-pkix-   |
+    |          |                |              |         | evidence-  |
+    |          |                |              |         | attribute- |
+    |          |                |              |         | platform-  |
+    |          |                |              |         | fipslevel  |
+    +----------+----------------+--------------+---------+------------+
+    |fipsmodule| utf8String     | [FIPS.140-3] |No       | id-pkix-   |
+    |          |                |              |         | evidence-  |
+    |          |                |              |         | attribute- |
+    |          |                |              |         | platform-  |
+    |          |                |              |         | fipsmodule |
+    +----------+----------------+--------------+---------+------------+
+    |envdesc   | utf8String     | RFCthis      |Yes      | id-pkix-   |
+    |          |                |              |         | evidence-  |
+    |          |                |              |         | attribute- |
+    |          |                |              |         | platform-  |
+    |          |                |              |         | envdesc    |
+    +----------+----------------+--------------+---------+------------+
 
-                                 Table 1
+                                  Table 1
 
    TODO: find the actual reference for "FIPS Mode" -- FIPS 140-3 does
    not define it (at least not the 11 page useless version of 140-3 that
@@ -795,7 +814,8 @@ Table of Contents
    A human-readable string that reports the name of the device's
    manufacturer.
 
-5.1.2.  oemid, hwmodel, swversion, dbgstat, uptime, bootcount
+5.1.2.  oemid, hwmodel, hwversion, swname, swversion, dbgstat, uptime,
+        bootcount
 
    These attributes are defined in [RFC9711] and reused in this
    specification for interoperability.  Small descriptions are offered
@@ -812,17 +832,16 @@ Table of Contents
    given "oemid".  This is a sequence of bytes and is not meant to be a
    human readable string.
 
-   EDNOTE: JPF: "hwmodel" in EAT is not human readable.  We have
-   "vendor" that duplicates in human readable for "oemid".  Should we
-   duplicate "hwmodel" in a human readable form?  Should we define it
-   here for ourselves?
+   The attribute "hwversion" is a text string reporting the version of
+   the hardware.  This attributes must be interpreted along with the
+   attribute "hwmodel".
+
+   The attribute "swname" is a text string reporting the name of the
+   firmware running on the platform.
 
    The attribute "swversion" differentiates between the various
-   revisions of a firmware offered for the HSM.  This is a string that
-   is expected to be human readable.
-
-   EDNOTE: JPF: In EAT, "swversion" requires "swname".  Should we add
-   "swname" or disassociate from the EAT definition?
+   revisions of a firmware offered for the platform.  This is a string
+   that is expected to be human readable.
 
    The attribute "dbgstat" refers to the state of the debug facilities
    offered by the HSM.  This is an integer value describing the current
@@ -850,7 +869,7 @@ Table of Contents
 
    EDNOTE: JPF if JSON, why have multiple attributes.
 
-5.1.5.  fipsboot, fipsver and fipslevel
+5.1.5.  fipsboot, fipsver, fipslevel and fipsmodule
 
    FIPS 140-3 CMVP validation places stringent requirements on the mode
    of operation of the device and the cryptography offered by the
@@ -880,6 +899,12 @@ Table of Contents
    4.  The fipslevel attribute has no meaning if fipsboot is absent or
    false.
 
+   The attribute fipsmodule is a textual field used to represent the
+   name of the module that was submitted to CMVP for validation.  The
+   information derived by combining this attribute with the vendor name
+   shall be sufficient to find the associated records in the CMVP
+   database.
+
    The FIPS status information in PKIX Evidence indicates only the mode
    of operation of the device and is not authoritative of its validation
    status.  This information is available on the NIST CMVP website or by
@@ -894,7 +919,7 @@ Table of Contents
 
 5.1.6.  envdesc
 
-   Further description of the environment beyond hwvendor, hwmodel,
+   Further description of the environment beyond vendor, hwmodel,
    hwserial, swversion; for example if there is a need to describe
    multiple logical partitions within the same device.  Contents could
    be a human-readable description or other identifiers.
@@ -1594,30 +1619,36 @@ Table of Contents
                                  = { id-pkix-evidence-attribute-type 1 }
    id-pkix-evidence-attribute-platform-vendor     OBJECT IDENTIFIER ::\
                              = { id-pkix-evidence-attribute-platform 0 }
-   id-pkix-evidence-attribute-platform-hwserial   OBJECT IDENTIFIER ::\
-                             = { id-pkix-evidence-attribute-platform 1 }
-   id-pkix-evidence-attribute-platform-fipsboot   OBJECT IDENTIFIER ::\
-                             = { id-pkix-evidence-attribute-platform 2 }
-   id-pkix-evidence-attribute-platform-model      OBJECT IDENTIFIER ::\
-                             = { id-pkix-evidence-attribute-platform 3 }
-   id-pkix-evidence-attribute-platform-swversion  OBJECT IDENTIFIER ::\
-                             = { id-pkix-evidence-attribute-platform 4 }
    id-pkix-evidence-attribute-platform-oemid      OBJECT IDENTIFIER ::\
+                             = { id-pkix-evidence-attribute-platform 1 }
+   id-pkix-evidence-attribute-platform-hwmodel    OBJECT IDENTIFIER ::\
+                             = { id-pkix-evidence-attribute-platform 2 }
+   id-pkix-evidence-attribute-platform-hwversion  OBJECT IDENTIFIER ::\
+                             = { id-pkix-evidence-attribute-platform 3 }
+   id-pkix-evidence-attribute-platform-hwserial   OBJECT IDENTIFIER ::\
+                             = { id-pkix-evidence-attribute-platform 4 }
+   id-pkix-evidence-attribute-platform-swname     OBJECT IDENTIFIER ::\
                              = { id-pkix-evidence-attribute-platform 5 }
-   id-pkix-evidence-attribute-platform-debugstat  OBJECT IDENTIFIER ::\
+   id-pkix-evidence-attribute-platform-swversion  OBJECT IDENTIFIER ::\
                              = { id-pkix-evidence-attribute-platform 6 }
-   id-pkix-evidence-attribute-platform-uptime     OBJECT IDENTIFIER ::\
+   id-pkix-evidence-attribute-platform-debugstat  OBJECT IDENTIFIER ::\
                              = { id-pkix-evidence-attribute-platform 7 }
-   id-pkix-evidence-attribute-platform-bootcount  OBJECT IDENTIFIER ::\
+   id-pkix-evidence-attribute-platform-uptime     OBJECT IDENTIFIER ::\
                              = { id-pkix-evidence-attribute-platform 8 }
-   id-pkix-evidence-attribute-platform-usermods   OBJECT IDENTIFIER ::\
+   id-pkix-evidence-attribute-platform-bootcount  OBJECT IDENTIFIER ::\
                              = { id-pkix-evidence-attribute-platform 9 }
-   id-pkix-evidence-attribute-platform-envdesc    OBJECT IDENTIFIER ::\
+   id-pkix-evidence-attribute-platform-usermods   OBJECT IDENTIFIER ::\
                             = { id-pkix-evidence-attribute-platform 10 }
-   id-pkix-evidence-attribute-platform-fipsver    OBJECT IDENTIFIER ::\
+   id-pkix-evidence-attribute-platform-fipsboot   OBJECT IDENTIFIER ::\
                             = { id-pkix-evidence-attribute-platform 11 }
-   id-pkix-evidence-attribute-platform-fipslevel  OBJECT IDENTIFIER ::\
+   id-pkix-evidence-attribute-platform-fipsver    OBJECT IDENTIFIER ::\
                             = { id-pkix-evidence-attribute-platform 12 }
+   id-pkix-evidence-attribute-platform-fipslevel  OBJECT IDENTIFIER ::\
+                            = { id-pkix-evidence-attribute-platform 13 }
+   id-pkix-evidence-attribute-platform-fipsmodule OBJECT IDENTIFIER ::\
+                            = { id-pkix-evidence-attribute-platform 14 }
+   id-pkix-evidence-attribute-platform-envdesc    OBJECT IDENTIFIER ::\
+                            = { id-pkix-evidence-attribute-platform 15 }
 
 
 

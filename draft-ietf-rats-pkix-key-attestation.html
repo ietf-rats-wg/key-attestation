@@ -1060,7 +1060,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Ounsworth, et al.</td>
-<td class="center">Expires 23 March 2026</td>
+<td class="center">Expires 26 March 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1073,12 +1073,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-rats-pkix-key-attestation-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-09-19" class="published">19 September 2025</time>
+<time datetime="2025-09-22" class="published">22 September 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-03-23">23 March 2026</time></dd>
+<dd class="expires"><time datetime="2026-03-26">26 March 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1154,7 +1154,7 @@ whether the storage properties of this key meet the requirements of a given cert
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 23 March 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 26 March 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1232,7 +1232,7 @@ whether the storage properties of this key meet the requirements of a given cert
                     <p id="section-toc.1-1.5.2.1.2.1.1"><a href="#section-5.1.1" class="auto internal xref">5.1.1</a>.  <a href="#name-vendor" class="internal xref">vendor</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1.2.2">
-                    <p id="section-toc.1-1.5.2.1.2.2.1"><a href="#section-5.1.2" class="auto internal xref">5.1.2</a>.  <a href="#name-oemid-hwmodel-swversion-dbg" class="internal xref">oemid, hwmodel, swversion, dbgstat, uptime, bootcount</a></p>
+                    <p id="section-toc.1-1.5.2.1.2.2.1"><a href="#section-5.1.2" class="auto internal xref">5.1.2</a>.  <a href="#name-oemid-hwmodel-hwversion-swn" class="internal xref">oemid, hwmodel, hwversion, swname, swversion, dbgstat, uptime, bootcount</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1.2.3">
                     <p id="section-toc.1-1.5.2.1.2.3.1"><a href="#section-5.1.3" class="auto internal xref">5.1.3</a>.  <a href="#name-hwserial" class="internal xref">hwserial</a></p>
@@ -1241,7 +1241,7 @@ whether the storage properties of this key meet the requirements of a given cert
                     <p id="section-toc.1-1.5.2.1.2.4.1"><a href="#section-5.1.4" class="auto internal xref">5.1.4</a>.  <a href="#name-usermods" class="internal xref">usermods</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1.2.5">
-                    <p id="section-toc.1-1.5.2.1.2.5.1"><a href="#section-5.1.5" class="auto internal xref">5.1.5</a>.  <a href="#name-fipsboot-fipsver-and-fipsle" class="internal xref">fipsboot, fipsver and fipslevel</a></p>
+                    <p id="section-toc.1-1.5.2.1.2.5.1"><a href="#section-5.1.5" class="auto internal xref">5.1.5</a>.  <a href="#name-fipsboot-fipsver-fipslevel-" class="internal xref">fipsboot, fipsver, fipslevel and fipsmodule</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1.2.6">
                     <p id="section-toc.1-1.5.2.1.2.6.1"><a href="#section-5.1.6" class="auto internal xref">5.1.6</a>.  <a href="#name-envdesc" class="internal xref">envdesc</a></p>
@@ -1910,12 +1910,21 @@ Attributes defined in this specification have further details below.<a href="#se
             </tr>
             <tr>
               <td class="text-left" rowspan="1" colspan="1">hwmodel</td>
+              <td class="text-left" rowspan="1" colspan="1">bytes</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span>[<a href="#RFC9711" class="cite xref">RFC9711</a>]</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">id-pkix-evidence-attribute-platform-hwmodel</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">hwversion</td>
               <td class="text-left" rowspan="1" colspan="1">utf8String</td>
               <td class="text-left" rowspan="1" colspan="1">
                 <span>[<a href="#RFC9711" class="cite xref">RFC9711</a>]</span>
 </td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">id-pkix-evidence-attribute-platform-model</td>
+              <td class="text-left" rowspan="1" colspan="1">id-pkix-evidence-attribute-platform-hwversion</td>
             </tr>
             <tr>
               <td class="text-left" rowspan="1" colspan="1">hwserial</td>
@@ -1923,6 +1932,15 @@ Attributes defined in this specification have further details below.<a href="#se
               <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
               <td class="text-left" rowspan="1" colspan="1">id-pkix-evidence-attribute-platform-hwserial</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">swname</td>
+              <td class="text-left" rowspan="1" colspan="1">utf8String</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span>[<a href="#RFC9711" class="cite xref">RFC9711</a>]</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">id-pkix-evidence-attribute-platform-swname</td>
             </tr>
             <tr>
               <td class="text-left" rowspan="1" colspan="1">swversion</td>
@@ -1995,6 +2013,15 @@ Attributes defined in this specification have further details below.<a href="#se
               <td class="text-left" rowspan="1" colspan="1">id-pkix-evidence-attribute-platform-fipslevel</td>
             </tr>
             <tr>
+              <td class="text-left" rowspan="1" colspan="1">fipsmodule</td>
+              <td class="text-left" rowspan="1" colspan="1">utf8String</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span>[<a href="#FIPS.140-3" class="cite xref">FIPS.140-3</a>]</span>
+</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">id-pkix-evidence-attribute-platform-fipsmodule</td>
+            </tr>
+            <tr>
               <td class="text-left" rowspan="1" colspan="1">envdesc</td>
               <td class="text-left" rowspan="1" colspan="1">utf8String</td>
               <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
@@ -2013,10 +2040,10 @@ Attributes defined in this specification have further details below.<a href="#se
 <p id="section-5.1.1-1">A human-readable string that reports the name of the device's manufacturer.<a href="#section-5.1.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="oemid-hwmodel-swversion-dbgstat-uptime-bootcount">
+<div id="oemid-hwmodel-hwversion-swname-swversion-dbgstat-uptime-bootcount">
 <section id="section-5.1.2">
-          <h4 id="name-oemid-hwmodel-swversion-dbg">
-<a href="#section-5.1.2" class="section-number selfRef">5.1.2. </a><a href="#name-oemid-hwmodel-swversion-dbg" class="section-name selfRef">oemid, hwmodel, swversion, dbgstat, uptime, bootcount</a>
+          <h4 id="name-oemid-hwmodel-hwversion-swn">
+<a href="#section-5.1.2" class="section-number selfRef">5.1.2. </a><a href="#name-oemid-hwmodel-hwversion-swn" class="section-name selfRef">oemid, hwmodel, hwversion, swname, swversion, dbgstat, uptime, bootcount</a>
           </h4>
 <p id="section-5.1.2-1">These attributes are defined in <span>[<a href="#RFC9711" class="cite xref">RFC9711</a>]</span> and reused in this specification for interoperability. Small
 descriptions are offered for each to ease the reading of this specification. In case of confusion between the
@@ -2025,11 +2052,11 @@ description offered here and the one in <span>[<a href="#RFC9711" class="cite xr
 sequence of bytes and is not meant to be a human readable string.<a href="#section-5.1.2-2" class="pilcrow">¶</a></p>
 <p id="section-5.1.2-3">The attribute "hwmodel" differentiates models, products, and variants manufactured by a particular OEM. A model
 must be unique within a given "oemid". This is a sequence of bytes and is not meant to be a human readable string.<a href="#section-5.1.2-3" class="pilcrow">¶</a></p>
-<p id="section-5.1.2-4">EDNOTE: JPF: "hwmodel" in EAT is not human readable. We have "vendor" that duplicates in human readable for "oemid".
-Should we duplicate "hwmodel" in a human readable form? Should we define it here for ourselves?<a href="#section-5.1.2-4" class="pilcrow">¶</a></p>
-<p id="section-5.1.2-5">The attribute "swversion" differentiates between the various revisions of a firmware offered for the HSM. This
-is a string that is expected to be human readable.<a href="#section-5.1.2-5" class="pilcrow">¶</a></p>
-<p id="section-5.1.2-6">EDNOTE: JPF: In EAT, "swversion" requires "swname". Should we add "swname" or disassociate from the EAT definition?<a href="#section-5.1.2-6" class="pilcrow">¶</a></p>
+<p id="section-5.1.2-4">The attribute "hwversion" is a text string reporting the version of the hardware. This attributes must be
+interpreted along with the attribute "hwmodel".<a href="#section-5.1.2-4" class="pilcrow">¶</a></p>
+<p id="section-5.1.2-5">The attribute "swname" is a text string reporting the name of the firmware running on the platform.<a href="#section-5.1.2-5" class="pilcrow">¶</a></p>
+<p id="section-5.1.2-6">The attribute "swversion" differentiates between the various revisions of a firmware offered for the platform. This
+is a string that is expected to be human readable.<a href="#section-5.1.2-6" class="pilcrow">¶</a></p>
 <p id="section-5.1.2-7">The attribute "dbgstat" refers to the state of the debug facilities offered by the HSM. This is an integer
 value describing the current state as described in <span>[<a href="#RFC9711" class="cite xref">RFC9711</a>]</span>.<a href="#section-5.1.2-7" class="pilcrow">¶</a></p>
 <p id="section-5.1.2-8">The attribute "uptime" reports the number of seconds that have elapsed since the HSM was last booted.<a href="#section-5.1.2-8" class="pilcrow">¶</a></p>
@@ -2054,10 +2081,10 @@ on the case or on an applied sticker.<a href="#section-5.1.3-1" class="pilcrow">
 <p id="section-5.1.4-2">EDNOTE: JPF if JSON, why have multiple attributes.<a href="#section-5.1.4-2" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="fipsboot-fipsver-and-fipslevel">
+<div id="fipsboot-fipsver-fipslevel-and-fipsmodule">
 <section id="section-5.1.5">
-          <h4 id="name-fipsboot-fipsver-and-fipsle">
-<a href="#section-5.1.5" class="section-number selfRef">5.1.5. </a><a href="#name-fipsboot-fipsver-and-fipsle" class="section-name selfRef">fipsboot, fipsver and fipslevel</a>
+          <h4 id="name-fipsboot-fipsver-fipslevel-">
+<a href="#section-5.1.5" class="section-number selfRef">5.1.5. </a><a href="#name-fipsboot-fipsver-fipslevel-" class="section-name selfRef">fipsboot, fipsver, fipslevel and fipsmodule</a>
           </h4>
 <p id="section-5.1.5-1">FIPS 140-3 CMVP validation places stringent requirements on the mode of operation of the device and the cryptography offered by the module, including only enabling FIPS-approved algorithms, certain requirements on entropy sources, and extensive start-up self-tests. FIPS 140-3 offers compliance levels 1 through 4 with increasingly strict requirements. Many HSMs include a configuration setting that allows the device to be taken out of FIPS mode and thus enable additional functionality or performance, and some offer configuration settings to change between compliance levels.<a href="#section-5.1.5-1" class="pilcrow">¶</a></p>
 <p id="section-5.1.5-2">The boolean attribute <code>fipsboot</code> indicates whether the device is currently operating in FIPS mode. When the attribute value is "true", the HSM is running in compliance with the
@@ -2065,10 +2092,12 @@ FIPS 140 restrictions. Among other restrictions, it means that only FIPS-approve
 restricted to the behavior limited by compliance.<a href="#section-5.1.5-2" class="pilcrow">¶</a></p>
 <p id="section-5.1.5-3">The UTF8String attribute <code>fipsver</code> indicates the version of the FIPS CMVP specification with which the device's operational mode is compliant. At the time of writing, the strings "FIPS 140-2" or "FIPS 140-3" <span class="bcp14">SHOULD</span> be used.<a href="#section-5.1.5-3" class="pilcrow">¶</a></p>
 <p id="section-5.1.5-4">The integer attribute <code>fipslevel</code> indicates the compliance level to which the device is currently operating and <span class="bcp14">MUST</span> only be 1, 2, 3, or 4. The <code>fipslevel</code> attribute has no meaning if <code>fipsboot</code> is absent or <code>false</code>.<a href="#section-5.1.5-4" class="pilcrow">¶</a></p>
-<p id="section-5.1.5-5">The FIPS status information in PKIX Evidence indicates only the mode of operation of the device and is not authoritative of its validation status.
+<p id="section-5.1.5-5">The attribute <code>fipsmodule</code> is a textual field used to represent the name of the module that was submitted to CMVP for validation. The information derived by combining this attribute with the vendor name shall
+be sufficient to find the associated records in the CMVP database.<a href="#section-5.1.5-5" class="pilcrow">¶</a></p>
+<p id="section-5.1.5-6">The FIPS status information in PKIX Evidence indicates only the mode of operation of the device and is not authoritative of its validation status.
 This information is available on the NIST CMVP website or by contacting the device vendor.
 As an example, some devices may have the option to enable FIPS mode in configuration even if the vendor has not submitted this model for validation. As another example, a device may be running in a mode consistent with FIPS Level 3 but the device was only validated and certified to Level 2.
-A Relying Party wishing to know the validation status of the device <span class="bcp14">MUST</span> couple the device state information contained in the Evidence with a valid FIPS CMVP certificate for the device.<a href="#section-5.1.5-5" class="pilcrow">¶</a></p>
+A Relying Party wishing to know the validation status of the device <span class="bcp14">MUST</span> couple the device state information contained in the Evidence with a valid FIPS CMVP certificate for the device.<a href="#section-5.1.5-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="envdesc">
@@ -2076,7 +2105,7 @@ A Relying Party wishing to know the validation status of the device <span class=
           <h4 id="name-envdesc">
 <a href="#section-5.1.6" class="section-number selfRef">5.1.6. </a><a href="#name-envdesc" class="section-name selfRef">envdesc</a>
           </h4>
-<p id="section-5.1.6-1">Further description of the environment beyond hwvendor, hwmodel, hwserial, swversion; for example if there is a need to describe multiple logical partitions within the same device. Contents could be a human-readable description or other identifiers.<a href="#section-5.1.6-1" class="pilcrow">¶</a></p>
+<p id="section-5.1.6-1">Further description of the environment beyond vendor, hwmodel, hwserial, swversion; for example if there is a need to describe multiple logical partitions within the same device. Contents could be a human-readable description or other identifiers.<a href="#section-5.1.6-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2736,30 +2765,36 @@ id-pkix-evidence-attribute-platform            OBJECT IDENTIFIER ::\
                               = { id-pkix-evidence-attribute-type 1 }
 id-pkix-evidence-attribute-platform-vendor     OBJECT IDENTIFIER ::\
                           = { id-pkix-evidence-attribute-platform 0 }
-id-pkix-evidence-attribute-platform-hwserial   OBJECT IDENTIFIER ::\
-                          = { id-pkix-evidence-attribute-platform 1 }
-id-pkix-evidence-attribute-platform-fipsboot   OBJECT IDENTIFIER ::\
-                          = { id-pkix-evidence-attribute-platform 2 }
-id-pkix-evidence-attribute-platform-model      OBJECT IDENTIFIER ::\
-                          = { id-pkix-evidence-attribute-platform 3 }
-id-pkix-evidence-attribute-platform-swversion  OBJECT IDENTIFIER ::\
-                          = { id-pkix-evidence-attribute-platform 4 }
 id-pkix-evidence-attribute-platform-oemid      OBJECT IDENTIFIER ::\
+                          = { id-pkix-evidence-attribute-platform 1 }
+id-pkix-evidence-attribute-platform-hwmodel    OBJECT IDENTIFIER ::\
+                          = { id-pkix-evidence-attribute-platform 2 }
+id-pkix-evidence-attribute-platform-hwversion  OBJECT IDENTIFIER ::\
+                          = { id-pkix-evidence-attribute-platform 3 }
+id-pkix-evidence-attribute-platform-hwserial   OBJECT IDENTIFIER ::\
+                          = { id-pkix-evidence-attribute-platform 4 }
+id-pkix-evidence-attribute-platform-swname     OBJECT IDENTIFIER ::\
                           = { id-pkix-evidence-attribute-platform 5 }
-id-pkix-evidence-attribute-platform-debugstat  OBJECT IDENTIFIER ::\
+id-pkix-evidence-attribute-platform-swversion  OBJECT IDENTIFIER ::\
                           = { id-pkix-evidence-attribute-platform 6 }
-id-pkix-evidence-attribute-platform-uptime     OBJECT IDENTIFIER ::\
+id-pkix-evidence-attribute-platform-debugstat  OBJECT IDENTIFIER ::\
                           = { id-pkix-evidence-attribute-platform 7 }
-id-pkix-evidence-attribute-platform-bootcount  OBJECT IDENTIFIER ::\
+id-pkix-evidence-attribute-platform-uptime     OBJECT IDENTIFIER ::\
                           = { id-pkix-evidence-attribute-platform 8 }
-id-pkix-evidence-attribute-platform-usermods   OBJECT IDENTIFIER ::\
+id-pkix-evidence-attribute-platform-bootcount  OBJECT IDENTIFIER ::\
                           = { id-pkix-evidence-attribute-platform 9 }
-id-pkix-evidence-attribute-platform-envdesc    OBJECT IDENTIFIER ::\
+id-pkix-evidence-attribute-platform-usermods   OBJECT IDENTIFIER ::\
                          = { id-pkix-evidence-attribute-platform 10 }
-id-pkix-evidence-attribute-platform-fipsver    OBJECT IDENTIFIER ::\
+id-pkix-evidence-attribute-platform-fipsboot   OBJECT IDENTIFIER ::\
                          = { id-pkix-evidence-attribute-platform 11 }
-id-pkix-evidence-attribute-platform-fipslevel  OBJECT IDENTIFIER ::\
+id-pkix-evidence-attribute-platform-fipsver    OBJECT IDENTIFIER ::\
                          = { id-pkix-evidence-attribute-platform 12 }
+id-pkix-evidence-attribute-platform-fipslevel  OBJECT IDENTIFIER ::\
+                         = { id-pkix-evidence-attribute-platform 13 }
+id-pkix-evidence-attribute-platform-fipsmodule OBJECT IDENTIFIER ::\
+                         = { id-pkix-evidence-attribute-platform 14 }
+id-pkix-evidence-attribute-platform-envdesc    OBJECT IDENTIFIER ::\
+                         = { id-pkix-evidence-attribute-platform 15 }
 
 
 
