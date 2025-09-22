@@ -614,7 +614,6 @@ Attributes defined in this specification have further details below.
 | dbgstat         | int             | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-debugstat  |
 | uptime          | int             | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-uptime     |
 | bootcount       | int             | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-bootcount  |
-| usermods        | utf8String      | {{&SELF}}    | Yes       | id-pkix-evidence-attribute-platform-usermods   |
 | fipsboot        | bool            | {{-fips}}    | No        | id-pkix-evidence-attribute-platform-fipsboot   |
 | fipsver         | utf8String      | {{-fips}}    | No        | id-pkix-evidence-attribute-platform-fipsver    |
 | fipslevel       | int             | {{-fips}}    | No        | id-pkix-evidence-attribute-platform-fipslevel  |
@@ -660,12 +659,6 @@ The attribute "bootcount" reported the number of times the HSM was booted.
 
 A human-readable string that reports the serial number of the hardware module. This serial number often matches the number engraved
 on the case or on an applied sticker.
-
-### usermods
-
-Most HSMs have some concept of trusted execution environment where user software modules can be loaded inside the HSM to run with some level of privileged access to the application keys. This attribute lists user modules currently loaded onto the HSM in a human readable format, preferably JSON.
-
-EDNOTE: JPF if JSON, why have multiple attributes.
 
 ### fipsboot, fipsver, fipslevel and fipsmodule
 
