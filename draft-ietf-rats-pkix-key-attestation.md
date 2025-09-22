@@ -161,20 +161,10 @@ many specialized devices (Hardware Security Modules) that are inflexible in adop
 of internal constraints or validation difficulties. This specification defines the format in ASN.1 to ease the
 adoption within the community.
 
-* The claims within the Evidence are about internal elements such as "platforms" and "keys" which are not
-necessarily distinct from the Attesting Environment. Therefore, although the concept
-of "measurement" is present within the PKIX environment, it is not always clear that one attesting environment
-is measuring another distinct target environment the way it is envisioned in the RATS Architecture.
-Therefore, the emphasis and structure of this specifications is adjusted accordingly.
-Specifically, this specification assumes that the Attesting Environment and the Target Environment,
-as outlined in {{!RFC9334}}, are the same. This might not be the case for all devices encountered, but is
-sufficient for the proposed specification.
-
-Another important influence on the development of this specification is that the envisaged Target Environments
-are quite large and that only a portion of the total addressable state shall be divulged as part of evidence.
-Therefore, a scheme based on "entities" is used to carved the portion of the Target Environment to be measured
-and reported. To this end, the concepts of "claims" and "measurements" are folded into "entities" and "attributes"
-(see {{sec-info-model}}).
+* The claims reported within the generated Evidence is generally a small subset of all possible claims about
+the Target Environment. The claims relate to elements such as "platform" and "keys" which are more numerous than
+what a Verifier requires for a specific function. This specification provides the means to moderate the information
+disseminated as part of the generated Evidence.
 
 This specification also aims at providing an extensible framework to encode within Evidence claims other than
 the one proposed in this document. This allows implementations to introduce new claims and their associated
@@ -293,6 +283,10 @@ Key Attestation:
 general, the claims includes enough information about a user key and its hosting platform to allow
 a Relying Party to make judicious decisions about the key, such as whether to issue a certificate for the key.
 
+RATS:
+: Remote ATtestation procedureS. In this document, refers to the RATS Architecture as introduced
+in {{RFC9334}}. RATS and RATS Architecture is used interchangeably.
+
 Platform:
 : The module or device that embodies the Attester. In this specification, it is interchangeable with
 "Attester" or "HSM".
@@ -329,6 +323,37 @@ The access and operations on a user key is controlled by the HSM.
 
 
 {::boilerplate bcp14-tagged}
+
+## Claims and measurements in PKIX Evidence
+
+{{RFC9334}} states that Evidence is made up of claims and that a claim is "a piece of
+asserted information, often in the form of a name/value pair". The RATS Architecture also mentions
+the concept of "measurements" that "can describe a variety of attributes of system components, such
+as hardware, firmware, BIOS, software, etc., and how they are hardened."
+
+Some HSMs have a large amount of memory and can therefore contain a substantial amount of elements that
+can be observed independently by the Attestation Service. Each of those elements, in turn, can contain a
+number of measurable attributes.
+
+A certain level of complexity arises as multiple elements of the same class can be observed while generating
+Evidence. In that case, the "name" of the claim must also include the "address" of the element.
+
+To that end, in this specification, the claims are organized as tuples of "entity", "attribute" and "value":
+
+* the entity represents the encapsulation of an element as a set of attributes;
+
+* the attribute represents one property of the entity, which can be repeated to other entities of the
+same class; and,
+
+* the value is the actual measurement performed by the Attestation Service.
+
+Therefore, each entity is a collection of claims, where the "name/value" pair represents one attribute
+and its measured value for an entity.
+
+The grouping of claims into entities facilitates the comprehension of a large addressable space into
+elements recognizable by the user. More importantly, it curtails the produced Evidence to portions of the
+Target Environment that relate to the needs of the Verifier. See {{{sec-cons-privacy}}.
+
 
 ## Attestation Key Certificate Chain {#sec-ak-chain}
 
