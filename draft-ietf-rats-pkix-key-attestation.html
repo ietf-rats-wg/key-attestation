@@ -1204,7 +1204,10 @@ whether the storage properties of this key meet the requirements of a given cert
             <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-terminology" class="internal xref">Terminology</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
-                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-attestation-key-certificate" class="internal xref">Attestation Key Certificate Chain</a></p>
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-claims-and-measurements-in-" class="internal xref">Claims and measurements in PKIX Evidence</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-attestation-key-certificate" class="internal xref">Attestation Key Certificate Chain</a></p>
 </li>
             </ul>
 </li>
@@ -1394,24 +1397,15 @@ of internal constraints or validation difficulties. This specification defines t
 adoption within the community.<a href="#section-1-3.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-1-3.2">
-          <p id="section-1-3.2.1">The claims within the Evidence are about internal elements such as "platforms" and "keys" which are not
-necessarily distinct from the Attesting Environment. Therefore, although the concept
-of "measurement" is present within the PKIX environment, it is not always clear that one attesting environment
-is measuring another distinct target environment the way it is envisioned in the RATS Architecture.
-Therefore, the emphasis and structure of this specifications is adjusted accordingly.
-Specifically, this specification assumes that the Attesting Environment and the Target Environment,
-as outlined in <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>, are the same. This might not be the case for all devices encountered, but is
-sufficient for the proposed specification.<a href="#section-1-3.2.1" class="pilcrow">¶</a></p>
+          <p id="section-1-3.2.1">The claims reported within the generated Evidence is generally a small subset of all possible claims about
+the Target Environment. The claims relate to elements such as "platform" and "keys" which are more numerous than
+what a Verifier requires for a specific function. This specification provides the means to moderate the information
+disseminated as part of the generated Evidence.<a href="#section-1-3.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-1-4">Another important influence on the development of this specification is that the envisaged Target Environments
-are quite large and that only a portion of the total addressable state shall be divulged as part of evidence.
-Therefore, a scheme based on "entities" is used to carved the portion of the Target Environment to be measured
-and reported. To this end, the concepts of "claims" and "measurements" are folded into "entities" and "attributes"
-(see <a href="#sec-info-model" class="auto internal xref">Section 4</a>).<a href="#section-1-4" class="pilcrow">¶</a></p>
-<p id="section-1-5">This specification also aims at providing an extensible framework to encode within Evidence claims other than
+<p id="section-1-4">This specification also aims at providing an extensible framework to encode within Evidence claims other than
 the one proposed in this document. This allows implementations to introduce new claims and their associated
-semantics to the Evidence produced.<a href="#section-1-5" class="pilcrow">¶</a></p>
+semantics to the Evidence produced.<a href="#section-1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="use-cases">
@@ -1542,50 +1536,56 @@ general, the claims includes enough information about a user key and its hosting
 a Relying Party to make judicious decisions about the key, such as whether to issue a certificate for the key.<a href="#section-3-6.12.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-6.13">Platform:</dt>
+<dt id="section-3-6.13">RATS:</dt>
         <dd style="margin-left: 1.5em" id="section-3-6.14">
-          <p id="section-3-6.14.1">The module or device that embodies the Attester. In this specification, it is interchangeable with
-"Attester" or "HSM".<a href="#section-3-6.14.1" class="pilcrow">¶</a></p>
+          <p id="section-3-6.14.1">Remote ATtestation procedureS. In this document, refers to the RATS Architecture as introduced
+in <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>. RATS and RATS Architecture is used interchangeably.<a href="#section-3-6.14.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-6.15">Platform Attestation:</dt>
+<dt id="section-3-6.15">Platform:</dt>
         <dd style="margin-left: 1.5em" id="section-3-6.16">
-          <p id="section-3-6.16.1">Evidence containing claims pertaining to attributes associated with the platform itself. In general, the claims include
-enough information about the platform to allow a Relying Party to make judicious decisions about the
-platform, such as those carried out during audit reviews.<a href="#section-3-6.16.1" class="pilcrow">¶</a></p>
+          <p id="section-3-6.16.1">The module or device that embodies the Attester. In this specification, it is interchangeable with
+"Attester" or "HSM".<a href="#section-3-6.16.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-6.17">Presenter:</dt>
+<dt id="section-3-6.17">Platform Attestation:</dt>
         <dd style="margin-left: 1.5em" id="section-3-6.18">
-          <p id="section-3-6.18.1">Role that facilitates communication between the Attester and the Verifier. The
+          <p id="section-3-6.18.1">Evidence containing claims pertaining to attributes associated with the platform itself. In general, the claims include
+enough information about the platform to allow a Relying Party to make judicious decisions about the
+platform, such as those carried out during audit reviews.<a href="#section-3-6.18.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-3-6.19">Presenter:</dt>
+        <dd style="margin-left: 1.5em" id="section-3-6.20">
+          <p id="section-3-6.20.1">Role that facilitates communication between the Attester and the Verifier. The
 Presenter initiates the operation of generating evidence at the Attester and
 passes the generated evidence to the Verifier. In the case of HSMs, the Presenter
-is responsible of selecting the claims that are part of the generated evidence.<a href="#section-3-6.18.1" class="pilcrow">¶</a></p>
+is responsible of selecting the claims that are part of the generated evidence.<a href="#section-3-6.20.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-6.19">Trust Anchor:</dt>
-        <dd style="margin-left: 1.5em" id="section-3-6.20">
-          <p id="section-3-6.20.1">As defined in <span>[<a href="#RFC6024" class="cite xref">RFC6024</a>]</span> and <span>[<a href="#RFC9019" class="cite xref">RFC9019</a>]</span>, a Trust Anchor
+<dt id="section-3-6.21">Trust Anchor:</dt>
+        <dd style="margin-left: 1.5em" id="section-3-6.22">
+          <p id="section-3-6.22.1">As defined in <span>[<a href="#RFC6024" class="cite xref">RFC6024</a>]</span> and <span>[<a href="#RFC9019" class="cite xref">RFC9019</a>]</span>, a Trust Anchor
 "represents an authoritative entity via a public key and
 associated data. The public key is used to verify digital
 signatures, and the associated data is used to constrain the types
 of information for which the trust anchor is authoritative." The
 Trust Anchor may be a certificate, a raw public key, or other
-structure, as appropriate.<a href="#section-3-6.20.1" class="pilcrow">¶</a></p>
+structure, as appropriate.<a href="#section-3-6.22.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-6.21">Trusted Platform Module (TPM):</dt>
-        <dd style="margin-left: 1.5em" id="section-3-6.22">
-          <p id="section-3-6.22.1">A tamper-resistance processor generally located on a computer's motherboard used to enhance attestation
-functions for the hosting platform. TPMs are very specialized Hardware Security Modules and generally use
-other protocols (than the one presented in this specification) to transmit evidence.<a href="#section-3-6.22.1" class="pilcrow">¶</a></p>
-</dd>
-        <dd class="break"></dd>
-<dt id="section-3-6.23">User Key:</dt>
+<dt id="section-3-6.23">Trusted Platform Module (TPM):</dt>
         <dd style="margin-left: 1.5em" id="section-3-6.24">
-          <p id="section-3-6.24.1">A user key consists of a key hosted by an HSM (the platform) and intended to be used by a client
+          <p id="section-3-6.24.1">A tamper-resistance processor generally located on a computer's motherboard used to enhance attestation
+functions for the hosting platform. TPMs are very specialized Hardware Security Modules and generally use
+other protocols (than the one presented in this specification) to transmit evidence.<a href="#section-3-6.24.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-3-6.25">User Key:</dt>
+        <dd style="margin-left: 1.5em" id="section-3-6.26">
+          <p id="section-3-6.26.1">A user key consists of a key hosted by an HSM (the platform) and intended to be used by a client
 of the HSM. Other terms used for a user key are "application key", "client key" or "operational key".
-The access and operations on a user key is controlled by the HSM.<a href="#section-3-6.24.1" class="pilcrow">¶</a></p>
+The access and operations on a user key is controlled by the HSM.<a href="#section-3-6.26.1" class="pilcrow">¶</a></p>
 </dd>
       <dd class="break"></dd>
 </dl>
@@ -1593,24 +1593,58 @@ The access and operations on a user key is controlled by the HSM.<a href="#secti
 "<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
 described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
 appear in all capitals, as shown here.<a href="#section-3-7" class="pilcrow">¶</a></p>
-<div id="sec-ak-chain">
+<div id="claims-and-measurements-in-pkix-evidence">
 <section id="section-3.1">
-        <h3 id="name-attestation-key-certificate">
-<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-attestation-key-certificate" class="section-name selfRef">Attestation Key Certificate Chain</a>
+        <h3 id="name-claims-and-measurements-in-">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-claims-and-measurements-in-" class="section-name selfRef">Claims and measurements in PKIX Evidence</a>
         </h3>
-<p id="section-3.1-1">The data format in this specification represents PKIX evidence and
+<p id="section-3.1-1"><span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span> states that Evidence is made up of claims and that a claim is "a piece of
+asserted information, often in the form of a name/value pair". The RATS Architecture also mentions
+the concept of "measurements" that "can describe a variety of attributes of system components, such
+as hardware, firmware, BIOS, software, etc., and how they are hardened."<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">Some HSMs have a large amount of memory and can therefore contain a substantial amount of elements that
+can be observed independently by the Attestation Service. Each of those elements, in turn, can contain a
+number of measurable attributes.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.1-3">A certain level of complexity arises as multiple elements of the same class can be observed while generating
+Evidence. In that case, the "name" of the claim must also include the "address" of the element.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.1-4">To that end, in this specification, the claims are organized as tuples of "entity", "attribute" and "value":<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.1-5.1">
+            <p id="section-3.1-5.1.1">the entity represents the encapsulation of an element as a set of attributes;<a href="#section-3.1-5.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.1-5.2">
+            <p id="section-3.1-5.2.1">the attribute represents one property of the entity, which can be repeated to other entities of the
+same class; and,<a href="#section-3.1-5.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.1-5.3">
+            <p id="section-3.1-5.3.1">the value is the actual measurement performed by the Attestation Service.<a href="#section-3.1-5.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.1-6">Therefore, each entity is a collection of claims, where the "name/value" pair represents one attribute
+and its measured value for an entity.<a href="#section-3.1-6" class="pilcrow">¶</a></p>
+<p id="section-3.1-7">The grouping of claims into entities facilitates the comprehension of a large addressable space into
+elements recognizable by the user. More importantly, it curtails the produced Evidence to portions of the
+Target Environment that relate to the needs of the Verifier. See <span class="contact-name">sec-cons-privacy</span>.<a href="#section-3.1-7" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-ak-chain">
+<section id="section-3.2">
+        <h3 id="name-attestation-key-certificate">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-attestation-key-certificate" class="section-name selfRef">Attestation Key Certificate Chain</a>
+        </h3>
+<p id="section-3.2-1">The data format in this specification represents PKIX evidence and
 requires third-party endorsement in order to establish trust. Part of this
 endorsement is a trust anchor that chains to the HSM's attestation key (AK)
 which signs the evidence. In practice the trust anchor will usually be a
 manufacturing CA belonging to the device vendor which proves
 that the device is genuine and not counterfeit. The trust anchor can also belong
 to the device operator as would be the case when the AK certificate is replaced
-as part of onboarding the device into a new operational network.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
-<p id="section-3.1-2">The AK certificate that signs the evidence <span class="bcp14">MUST</span> have the Extended Key Usage
-<code>id-kp-attest</code> defined in [TODO-submit-2-pager-to-lamps].<a href="#section-3.1-2" class="pilcrow">¶</a></p>
-<p id="section-3.1-3">Note that the data format specified in <a href="#sec-data-model" class="auto internal xref">Section 5</a> allows for zero, one, or multiple
+as part of onboarding the device into a new operational network.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-2">The AK certificate that signs the evidence <span class="bcp14">MUST</span> have the Extended Key Usage
+<code>id-kp-attest</code> defined in [TODO-submit-2-pager-to-lamps].<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.2-3">Note that the data format specified in <a href="#sec-data-model" class="auto internal xref">Section 5</a> allows for zero, one, or multiple
 'SignatureBlock's, so a single evidence statement could be un-protected, or could be endorsed by multiple
-AK chains leading to different trust anchors. See <a href="#sec-verif-proc" class="auto internal xref">Section 6</a> for a discussion of handling multiple SignatureBlocks.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+AK chains leading to different trust anchors. See <a href="#sec-verif-proc" class="auto internal xref">Section 6</a> for a discussion of handling multiple SignatureBlocks.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
