@@ -833,48 +833,6 @@ Note that each SignatureBlock is a fully detached signature over the tbs content
 counter-signature of the evidence after the fact, or an attacker can remove a SignatureBlock without leaving any artifact. See {#sec-detached-sigs} for further discussion.
 
 
-# Appraisal Policies and Profiles {#sec-profiles}
-
-This section provides some sample profiles of appraisal policies that verifiers
-MAY apply when evaluating evidence. These appraisal policy profiles represent environment-specific requirements
-on the contents of the evidence and / or endorsement certificate chain.
-
-
-## Key Import into an HSM
-
-An HSM which is compliant with this draft SHOULD validate any PKIX evidence that is provided
-along with the key being imported.
-
-The SignatureBlocks MUST be validated and MUST chain to a trust anchor known to the HSM. In most cases this will
-be the same trust anchor that endorsed the HSM's own AK, but the HSM MAY be configured with set of third-party trust anchors from which it will accept key attestations.
-
-If the HSM is operating in FIPS Mode, then it MUST only import keys from HSMs also operating in FIPS Mode.
-
-The claims `key-extractable`, `key-never-extractable`, and `key-local` MUST be checked and honoured during key import, which typically means that after import, the key MUST NOT claim a stronger protection property than it had within the previous HSM. In other words, Key Attestation allows and requires that key protection properties be preserved over export / import operations between different HSMs, and this format provides a vendor-agnostic
-way to achieve this.
-
-How to handle errors is outside the scope of this specification and is left to implementors; for example the
-key import MAY be aborted, or a prompt MAY be given to the user administrator, or any similar reasonable error handling logic may be used.
-
-
-
-
-## CA/Browser Forum Code-Signing
-
-TODO: ... intro text
-
-The subscriber MUST:
-
-* Provide the CA with a CSR containing the subscriber key.
-* Provide PKIX evidence, as per this specification, describing the private key protection properties of the subscriber's private key. This evidence MAY be transported inside the CSR as per draft-ietf-lamps-csr-attest, or it MAY be transported adjacent to the CSR over any other certificate enrollment mechanism.
-
-The CA / RA / RP / Verifier MUST:
-
-* Ensure that the subscriber key which is the subject of the CSR is also described by a KAT by matching either the key fingerprint or full SubjectPublicKeyInfo.
-* The hardware root-of-trust described by a PAT has a valid and active FIPS certificate according to the NIST CMVP database.
-* The attestation key (AK) which has signed the PKIX evidence chains to a root certificate that A) belongs to the hardware vendor described in the PAT token, and B) is trusted by the CA / RA / RP / Verifier to endorse hardware from this vendor, for example through a CA's partner program or through a network operator's device on-boarding process.
-* The key is protected by a module running in FIPS mode. The parsing logic is to start at the leaf KAT token that matches the key in the CSR and parsing towards the root PAT ensuring that there is at least one `fipsboot=true` and no `fipsboot=false` on that path.
-
 # Attestation Requests {#sec-reqs}
 
 This section is informative in nature and implementers of this specification do not need to adhere to it. The aim of this section is
