@@ -1240,9 +1240,6 @@ whether the storage properties of this key meet the requirements of a given cert
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1.2.4">
                     <p id="section-toc.1-1.5.2.1.2.4.1"><a href="#section-5.1.4" class="auto internal xref">5.1.4</a>.  <a href="#name-fipsboot-fipsver-fipslevel-" class="internal xref">fipsboot, fipsver, fipslevel and fipsmodule</a></p>
 </li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1.2.5">
-                    <p id="section-toc.1-1.5.2.1.2.5.1"><a href="#section-5.1.5" class="auto internal xref">5.1.5</a>.  <a href="#name-envdesc" class="internal xref">envdesc</a></p>
-</li>
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
@@ -1255,7 +1252,7 @@ whether the storage properties of this key meet the requirements of a given cert
                     <p id="section-toc.1-1.5.2.2.2.2.1"><a href="#section-5.2.2" class="auto internal xref">5.2.2</a>.  <a href="#name-spki" class="internal xref">spki</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2.2.3">
-                    <p id="section-toc.1-1.5.2.2.2.3.1"><a href="#section-5.2.3" class="auto internal xref">5.2.3</a>.  <a href="#name-purpose-extractable-sensiti" class="internal xref">purpose, extractable, sensitive, never-extractable, local</a></p>
+                    <p id="section-toc.1-1.5.2.2.2.3.1"><a href="#section-5.2.3" class="auto internal xref">5.2.3</a>.  <a href="#name-extractable-sensitive-never" class="internal xref">extractable, sensitive, never-extractable, local</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2.2.4">
                     <p id="section-toc.1-1.5.2.2.2.4.1"><a href="#section-5.2.4" class="auto internal xref">5.2.4</a>.  <a href="#name-expiry" class="internal xref">expiry</a></p>
@@ -2006,13 +2003,6 @@ Attributes defined in this specification have further details below.<a href="#se
               <td class="text-left" rowspan="1" colspan="1">No</td>
               <td class="text-left" rowspan="1" colspan="1">id-pkix-evidence-attribute-platform-fipsmodule</td>
             </tr>
-            <tr>
-              <td class="text-left" rowspan="1" colspan="1">envdesc</td>
-              <td class="text-left" rowspan="1" colspan="1">utf8String</td>
-              <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
-              <td class="text-left" rowspan="1" colspan="1">Yes</td>
-              <td class="text-left" rowspan="1" colspan="1">id-pkix-evidence-attribute-platform-envdesc</td>
-            </tr>
           </tbody>
         </table>
 <p id="section-5.1-5">TODO: find the actual reference for "FIPS Mode" -- FIPS 140-3 does not define it (at least not the 11 page useless version of 140-3 that I found).<a href="#section-5.1-5" class="pilcrow">¶</a></p>
@@ -2077,14 +2067,6 @@ As an example, some devices may have the option to enable FIPS mode in configura
 A Relying Party wishing to know the validation status of the device <span class="bcp14">MUST</span> couple the device state information contained in the Evidence with a valid FIPS CMVP certificate for the device.<a href="#section-5.1.4-6" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="envdesc">
-<section id="section-5.1.5">
-          <h4 id="name-envdesc">
-<a href="#section-5.1.5" class="section-number selfRef">5.1.5. </a><a href="#name-envdesc" class="section-name selfRef">envdesc</a>
-          </h4>
-<p id="section-5.1.5-1">Further description of the environment beyond vendor, hwmodel, hwserial, swversion; for example if there is a need to describe multiple logical partitions within the same device. Contents could be a human-readable description or other identifiers.<a href="#section-5.1.5-1" class="pilcrow">¶</a></p>
-</section>
-</div>
 </section>
 </div>
 <div id="key-entity">
@@ -2131,15 +2113,6 @@ for the attribute value can be found.<a href="#section-5.2-4" class="pilcrow">¶
               <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
               <td class="text-left" rowspan="1" colspan="1">id-pkix-evidence-attribute-key-spki</td>
-            </tr>
-            <tr>
-              <td class="text-left" rowspan="1" colspan="1">purpose</td>
-              <td class="text-left" rowspan="1" colspan="1">bytes</td>
-              <td class="text-left" rowspan="1" colspan="1">
-                <span>[<a href="#PKCS11" class="cite xref">PKCS11</a>]</span>
-</td>
-              <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">id-pkix-evidence-attribute-key-purpose</td>
             </tr>
             <tr>
               <td class="text-left" rowspan="1" colspan="1">extractable</td>
@@ -2209,24 +2182,22 @@ cryptographic key.<a href="#section-5.2.1-2" class="pilcrow">¶</a></p>
 key.<a href="#section-5.2.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="purpose-extractable-sensitive-never-extractable-local">
+<div id="extractable-sensitive-never-extractable-local">
 <section id="section-5.2.3">
-          <h4 id="name-purpose-extractable-sensiti">
-<a href="#section-5.2.3" class="section-number selfRef">5.2.3. </a><a href="#name-purpose-extractable-sensiti" class="section-name selfRef">purpose, extractable, sensitive, never-extractable, local</a>
+          <h4 id="name-extractable-sensitive-never">
+<a href="#section-5.2.3" class="section-number selfRef">5.2.3. </a><a href="#name-extractable-sensitive-never" class="section-name selfRef">extractable, sensitive, never-extractable, local</a>
           </h4>
 <p id="section-5.2.3-1">These attributes are defined in <span>[<a href="#PKCS11" class="cite xref">PKCS11</a>]</span> and reused in this specification for interoperability. Small
 descriptions are offered for each to ease the reading of this specification. In case of confusion between the
 description offered here and the one in <span>[<a href="#PKCS11" class="cite xref">PKCS11</a>]</span>, the definition offered in the latter shall prevail.<a href="#section-5.2.3-1" class="pilcrow">¶</a></p>
-<p id="section-5.2.3-2">The attribute "purpose" defines the intended usage for the key.<a href="#section-5.2.3-2" class="pilcrow">¶</a></p>
-<p id="section-5.2.3-3">EDNOTE: JPF: I do not see "purpose" as part of PKCS#11<a href="#section-5.2.3-3" class="pilcrow">¶</a></p>
-<p id="section-5.2.3-4">The attribute "extractable" indicates that the key can be exported from the HSM. Corresponds directly to the attribute CKA_EXTRACTABLE
-found in PKCS#11.<a href="#section-5.2.3-4" class="pilcrow">¶</a></p>
-<p id="section-5.2.3-5">The attribute "sensitive" indicates that the key cannot leave the HSM in plaintext. Corresponds directly to the attribute CKA_SENSITIVE
+<p id="section-5.2.3-2">The attribute "extractable" indicates that the key can be exported from the HSM. Corresponds directly to the attribute CKA_EXTRACTABLE
+found in PKCS#11.<a href="#section-5.2.3-2" class="pilcrow">¶</a></p>
+<p id="section-5.2.3-3">The attribute "sensitive" indicates that the key cannot leave the HSM in plaintext. Corresponds directly to the attribute CKA_SENSITIVE
+found in PKCS#11.<a href="#section-5.2.3-3" class="pilcrow">¶</a></p>
+<p id="section-5.2.3-4">The attribute "never-extractable" indicates if the key was never extractable from the HSM throughout the life of the key. Corresponds
+directly to the attribute CKA_NEVER_EXTRACTABLE found in PKCS#11.<a href="#section-5.2.3-4" class="pilcrow">¶</a></p>
+<p id="section-5.2.3-5">The attribute "local" indicates whether the key was generated locally or imported.. Corresponds directly to the attribute CKA_LOCAL
 found in PKCS#11.<a href="#section-5.2.3-5" class="pilcrow">¶</a></p>
-<p id="section-5.2.3-6">The attribute "never-extractable" indicates if the key was never extractable from the HSM throughout the life of the key. Corresponds
-directly to the attribute CKA_NEVER_EXTRACTABLE found in PKCS#11.<a href="#section-5.2.3-6" class="pilcrow">¶</a></p>
-<p id="section-5.2.3-7">The attribute "local" indicates whether the key was generated locally or imported.. Corresponds directly to the attribute CKA_LOCAL
-found in PKCS#11.<a href="#section-5.2.3-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="expiry">
@@ -2390,7 +2361,7 @@ along with the key being imported.<a href="#section-7.1-1" class="pilcrow">¶</a
 <p id="section-7.1-2">The SignatureBlocks <span class="bcp14">MUST</span> be validated and <span class="bcp14">MUST</span> chain to a trust anchor known to the HSM. In most cases this will
 be the same trust anchor that endorsed the HSM's own AK, but the HSM <span class="bcp14">MAY</span> be configured with set of third-party trust anchors from which it will accept key attestations.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
 <p id="section-7.1-3">If the HSM is operating in FIPS Mode, then it <span class="bcp14">MUST</span> only import keys from HSMs also operating in FIPS Mode.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
-<p id="section-7.1-4">The claims <code>key-purpose</code>, <code>key-extractable</code>, <code>key-never-extractable</code>, and <code>key-local</code> <span class="bcp14">MUST</span> be checked and honoured during key import, which typically means that after import, the key <span class="bcp14">MUST NOT</span> claim a stronger protection property than it had within the previous HSM. In other words, Key Attestation allows and requires that key protection properties be preserved over export / import operations between different HSMs, and this format provides a vendor-agnostic
+<p id="section-7.1-4">The claims <code>key-extractable</code>, <code>key-never-extractable</code>, and <code>key-local</code> <span class="bcp14">MUST</span> be checked and honoured during key import, which typically means that after import, the key <span class="bcp14">MUST NOT</span> claim a stronger protection property than it had within the previous HSM. In other words, Key Attestation allows and requires that key protection properties be preserved over export / import operations between different HSMs, and this format provides a vendor-agnostic
 way to achieve this.<a href="#section-7.1-4" class="pilcrow">¶</a></p>
 <p id="section-7.1-5">How to handle errors is outside the scope of this specification and is left to implementors; for example the
 key import <span class="bcp14">MAY</span> be aborted, or a prompt <span class="bcp14">MAY</span> be given to the user administrator, or any similar reasonable error handling logic may be used.<a href="#section-7.1-5" class="pilcrow">¶</a></p>
@@ -2768,8 +2739,6 @@ id-pkix-evidence-attribute-platform-fipslevel  OBJECT IDENTIFIER ::\
                          = { id-pkix-evidence-attribute-platform 13 }
 id-pkix-evidence-attribute-platform-fipsmodule OBJECT IDENTIFIER ::\
                          = { id-pkix-evidence-attribute-platform 14 }
-id-pkix-evidence-attribute-platform-envdesc    OBJECT IDENTIFIER ::\
-                         = { id-pkix-evidence-attribute-platform 15 }
 
 
 
@@ -2779,18 +2748,16 @@ id-pkix-evidence-attribute-key-identifier        OBJECT IDENTIFIER :\
                               := { id-pkix-evidence-attribute-key 0 }
 id-pkix-evidence-attribute-key-spki              OBJECT IDENTIFIER :\
                               := { id-pkix-evidence-attribute-key 1 }
-id-pkix-evidence-attribute-key-purpose           OBJECT IDENTIFIER :\
-                              := { id-pkix-evidence-attribute-key 2 }
 id-pkix-evidence-attribute-key-extractable       OBJECT IDENTIFIER :\
-                              := { id-pkix-evidence-attribute-key 3 }
+                              := { id-pkix-evidence-attribute-key 2 }
 id-pkix-evidence-attribute-key-sensitive         OBJECT IDENTIFIER :\
-                              := { id-pkix-evidence-attribute-key 4 }
+                              := { id-pkix-evidence-attribute-key 3 }
 id-pkix-evidence-attribute-key-never-extractable OBJECT IDENTIFIER :\
-                              := { id-pkix-evidence-attribute-key 5 }
+                              := { id-pkix-evidence-attribute-key 4 }
 id-pkix-evidence-attribute-key-local             OBJECT IDENTIFIER :\
-                              := { id-pkix-evidence-attribute-key 6 }
+                              := { id-pkix-evidence-attribute-key 5 }
 id-pkix-evidence-attribute-key-expiry            OBJECT IDENTIFIER :\
-                              := { id-pkix-evidence-attribute-key 7 }
+                              := { id-pkix-evidence-attribute-key 6 }
 
 &lt;CODE ENDS&gt;
 
