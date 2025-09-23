@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-09-21T00:47:27.383791+00:00",
+  "timestamp": "2025-09-23T00:42:18.799639+00:00",
   "repo": "ietf-rats-wg/key-attestation",
   "labels": [
     {
@@ -437,14 +437,22 @@
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/37",
       "state": "OPEN",
       "author": "bluegate010",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The term \"entity\" could refer to many things.\n\nIn the specified ASN.1, a `PkixEvidence` has a `ClaimDescriptionTbs` which has multiple `ReportedEntity`, each of which has a type and multiple attributes. We could replace \"entity\" with \"claim\":\n\n```\nPkixEvidence ::= SEQUENCE {\n    tbs        ClaimDescriptionTbs,\n    signatures SEQUENCE SIZE (0..MAX) of SignatureBlock\n}\n\nClaimDescriptionTbs ::= SEQUENCE {\n    version        INTEGER,\n    reportedClaims SEQUENCE SIZE (1..MAX) OF ReportedClaim\n}\n\nReportedClaim ::= SEQUENCE {\n    claimType          OBJECT IDENTIFIER,\n    reportedAttributes SEQUENCE SIZE (1..MAX) OF ReportedAttribute\n}\n```",
       "createdAt": "2025-06-18T20:46:49Z",
-      "updatedAt": "2025-06-18T20:46:49Z",
+      "updatedAt": "2025-09-22T19:15:52Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The term \"subject\" was offered instead of \"entity\"",
+          "createdAt": "2025-09-22T19:15:52Z",
+          "updatedAt": "2025-09-22T19:15:52Z"
+        }
+      ]
     },
     {
       "number": 38,
@@ -625,14 +633,22 @@
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/45",
       "state": "OPEN",
       "author": "bluegate010",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Early on the spec states that \"this specification assumes that the Attesting Environment and the Target Environment, as outlined in {{!RFC9334}}, are the same.\"\n\nThe [Architecture diagram](https://github.com/ietf-rats-wg/key-attestation/blob/bfba6f50dabc8ff69d35175b69ae50792648cc67/draft-ietf-rats-pkix-key-attestation.md?plain=1#L915-L944) depicts them as separate. Should it unify them?",
       "createdAt": "2025-06-18T20:59:01Z",
-      "updatedAt": "2025-06-18T20:59:01Z",
+      "updatedAt": "2025-09-22T16:29:41Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "body": "If we take a step back, we are defining a request-response protocol for a Presenter to get an attestation out of an HSM. What the HSM does internally to generate that is really out of scope.\n\nSo I support simplifying the diagrams and text so that we are not implying anything about the internal architecture of the HSM.",
+          "createdAt": "2025-09-22T16:29:41Z",
+          "updatedAt": "2025-09-22T16:29:41Z"
+        }
+      ]
     },
     {
       "number": 46,
@@ -748,7 +764,7 @@
       "labels": [],
       "body": "In Section 5.3,  the epoch id is not mentioned as one mechanism to achieve time freshness.\n\nIn Section 5.3.1, the nonce is distributed by the presenter, rather than the relying party and verifier. Does it fit current attestation service architecture as usually the verifier generates the nonce, to avoid replay attack?",
       "createdAt": "2025-07-10T12:16:41Z",
-      "updatedAt": "2025-09-18T14:45:13Z",
+      "updatedAt": "2025-09-22T19:17:55Z",
       "closedAt": null,
       "comments": [
         {
@@ -771,6 +787,20 @@
           "body": "The role of Presenter is not a trusted position. Therefore, the Presenter can not be the one generating the nonce.\n\nThe role of Presenter is privileged in that it controls the amount of information that is disclosed. But, it is not trusted.",
           "createdAt": "2025-09-18T14:45:12Z",
           "updatedAt": "2025-09-18T14:45:12Z"
+        },
+        {
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@junzhanghw This document is really written from the perspective of the HSM, and we assume that it only has communication with the presenter (for example, the presenter is the HSM driver). So all inputs to the HSM must come through the presenter. If that data originated somewhere else, that is hard for the HSM to know -- IE even if the nonce comes from the Verifier, the HSM can't really know that and from its perspective, it comes from the Presenter.\n\nI have no issues with also mentioning Epochs.\n\n",
+          "createdAt": "2025-09-22T16:25:21Z",
+          "updatedAt": "2025-09-22T16:25:21Z"
+        },
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "During the meeting on Sep 22nd, the authors were wondering if the \"Epoch Markers\" document was going to move forward, soon. We are hoping to not delay this specification based on a dependency.",
+          "createdAt": "2025-09-22T19:17:55Z",
+          "updatedAt": "2025-09-22T19:17:55Z"
         }
       ]
     },
@@ -819,15 +849,62 @@
       "id": "I_kwDONUAin87MfNmm",
       "title": "Remove section on \"Appraisal Policies and Profiles\"",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/56",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "jpfiset",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "This section provides little value to the document. If it was to remain, it would most likely need a lot of supporting documentation from outside the IETF.\n\nCertainly, these documents and requirements influenced the creation of the specification, but do we need to capture this information?",
       "createdAt": "2025-09-18T14:49:58Z",
-      "updatedAt": "2025-09-18T14:49:58Z",
+      "updatedAt": "2025-09-22T19:14:10Z",
+      "closedAt": "2025-09-22T19:14:10Z",
+      "comments": [
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "JJust take it out",
+          "createdAt": "2025-09-22T16:20:01Z",
+          "updatedAt": "2025-09-22T16:20:01Z"
+        },
+        {
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I agree with taking it out.",
+          "createdAt": "2025-09-22T16:20:58Z",
+          "updatedAt": "2025-09-22T16:20:58Z"
+        }
+      ]
+    },
+    {
+      "number": 57,
+      "id": "I_kwDONUAin87NGWKK",
+      "title": "Link EKU to terminology section",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/issues/57",
+      "state": "OPEN",
+      "author": "jpfiset",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "There is currently an undefined link with the text:\n\n\\[TODO-submit-2-pager-to-lamps\\]",
+      "createdAt": "2025-09-22T13:24:14Z",
+      "updatedAt": "2025-09-22T13:24:14Z",
       "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 58,
+      "id": "I_kwDONUAin87NGXln",
+      "title": "Move claims/measurement distinction to terminology section",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/issues/58",
+      "state": "CLOSED",
+      "author": "jpfiset",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Move the paragraph in Introduction to Terminology and expand.",
+      "createdAt": "2025-09-22T13:25:10Z",
+      "updatedAt": "2025-09-22T20:01:46Z",
+      "closedAt": "2025-09-22T20:01:46Z",
       "comments": []
     }
   ],
