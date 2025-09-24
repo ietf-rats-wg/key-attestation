@@ -1060,7 +1060,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Ounsworth, et al.</td>
-<td class="center">Expires 26 March 2026</td>
+<td class="center">Expires 28 March 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1073,12 +1073,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-rats-pkix-key-attestation-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-09-22" class="published">22 September 2025</time>
+<time datetime="2025-09-24" class="published">24 September 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-03-26">26 March 2026</time></dd>
+<dd class="expires"><time datetime="2026-03-28">28 March 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1154,7 +1154,7 @@ whether the storage properties of this key meet the requirements of a given cert
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 26 March 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 28 March 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -2396,15 +2396,15 @@ required to launch the process of creating the PKIX evidence and capturing it to
               <path d="M 112,296 L 112,408" fill="none" stroke="black"></path>
               <path d="M 128,160 L 128,232" fill="none" stroke="black"></path>
               <path d="M 136,288 L 136,408" fill="none" stroke="black"></path>
-              <path d="M 184,80 L 184,160" fill="none" stroke="black"></path>
               <path d="M 184,416 L 184,448" fill="none" stroke="black"></path>
+              <path d="M 216,80 L 216,160" fill="none" stroke="black"></path>
               <path d="M 216,240 L 216,288" fill="none" stroke="black"></path>
               <path d="M 248,32 L 248,336" fill="none" stroke="black"></path>
               <path d="M 280,416 L 280,448" fill="none" stroke="black"></path>
               <path d="M 384,416 L 384,448" fill="none" stroke="black"></path>
               <path d="M 8,32 L 248,32" fill="none" stroke="black"></path>
-              <path d="M 64,80 L 184,80" fill="none" stroke="black"></path>
-              <path d="M 64,160 L 184,160" fill="none" stroke="black"></path>
+              <path d="M 64,80 L 216,80" fill="none" stroke="black"></path>
+              <path d="M 64,160 L 216,160" fill="none" stroke="black"></path>
               <path d="M 64,240 L 216,240" fill="none" stroke="black"></path>
               <path d="M 64,288 L 216,288" fill="none" stroke="black"></path>
               <path d="M 8,336 L 248,336" fill="none" stroke="black"></path>
@@ -2422,12 +2422,13 @@ required to launch the process of creating the PKIX evidence and capturing it to
                 <text x="120" y="52">(HSM)</text>
                 <text x="100" y="100">Target</text>
                 <text x="120" y="116">Environment</text>
-                <text x="120" y="132">(Entities,&amp;</text>
+                <text x="112" y="132">(Entities</text>
+                <text x="160" y="132">&amp;</text>
                 <text x="128" y="148">attributes)</text>
                 <text x="168" y="196">Collect</text>
                 <text x="164" y="212">Claims</text>
-                <text x="112" y="260">Attesting</text>
-                <text x="120" y="276">Environment</text>
+                <text x="120" y="260">Attestation</text>
+                <text x="104" y="276">Service</text>
                 <text x="56" y="372">Attestation</text>
                 <text x="180" y="372">PKIX</text>
                 <text x="40" y="388">Request</text>
@@ -2444,23 +2445,29 @@ required to launch the process of creating the PKIX evidence and capturing it to
 </div>
 <p id="section-7-6">An Attestation Request (request) is assembled by the Presenter and submitted to the HSM. The HSM parses the request and produces PKIX evidence
 which is returned to the Presenter for distribution.<a href="#section-7-6" class="pilcrow">¶</a></p>
-<p id="section-7-7">The request consists of a structure <code>TbsPkixEvidence</code> containing one <code>ReportedEntity</code> for each entity expected to be included in the evidence produced by the HSM.<a href="#section-7-7" class="pilcrow">¶</a></p>
-<p id="section-7-8">Each instance of <code>ReportedEntity</code> included in the request is referred to as a request entity. A request entity contains a number of instances
+<p id="section-7-7">In the previous figure, the HSM is represented as being composed of an attestation service and a Target Environment. This representation is offered
+as a simplified view and implementations are not required to adhere to this separation of concerns.<a href="#section-7-7" class="pilcrow">¶</a></p>
+<p id="section-7-8">The aim of the figure is to depict the position of the Presenter as an intermediate role between the Attester (in this case the HSM) and the Verifier.
+The role of "Presenter" is privileged as it controls the Evidence being generated by the Attester. However, the role is not "trusted" as
+the Verifier does not have to take into account the participation of the Presenter as part of the function of appraising the Evidence.<a href="#section-7-8" class="pilcrow">¶</a></p>
+<p id="section-7-9">The attestation request, show in the figure, consists of a structure <code>TbsPkixEvidence</code> containing one <code>ReportedEntity</code> for each entity expected to
+be included in the evidence produced by the HSM.<a href="#section-7-9" class="pilcrow">¶</a></p>
+<p id="section-7-10">Each instance of <code>ReportedEntity</code> included in the request is referred to as a request entity. A request entity contains a number of instances
 of <code>ReportedAttribute</code> known as request attributes. The collection of request entities and request attributes represent the information desired
-by the Presenter.<a href="#section-7-8" class="pilcrow">¶</a></p>
-<p id="section-7-9">In most cases the value of a request attribute should be left unspecified by the Presenter. In the process of generating
+by the Presenter.<a href="#section-7-10" class="pilcrow">¶</a></p>
+<p id="section-7-11">In most cases the value of a request attribute should be left unspecified by the Presenter. In the process of generating
 the evidence, the values of the desired attributes are observed by the Attestation Service within the HSM and reported accordingly. For the purpose
 of creating a request, the Presenter does not specify the value of the requested attributes and leaves them empty. This is possible because the definition of
-the structure <code>ReportedAttribute</code> specifies the element <code>value</code> as optional.<a href="#section-7-9" class="pilcrow">¶</a></p>
-<p id="section-7-10">On the other hand, there are circumstances where the value of a request attribute should be provided by the Presenter. For example, when a particular
+the structure <code>ReportedAttribute</code> specifies the element <code>value</code> as optional.<a href="#section-7-11" class="pilcrow">¶</a></p>
+<p id="section-7-12">On the other hand, there are circumstances where the value of a request attribute should be provided by the Presenter. For example, when a particular
 cryptographic key is to be included in the evidence, the request must include a key entity with one of the "identifier" attribute set to the value
-corresponding to the desired key.<a href="#section-7-10" class="pilcrow">¶</a></p>
-<p id="section-7-11">Some instances of <code>ReportedEntity</code>, such as those representing the platform or the transaction, do not need identifiers as the associated elements are
+corresponding to the desired key.<a href="#section-7-12" class="pilcrow">¶</a></p>
+<p id="section-7-13">Some instances of <code>ReportedEntity</code>, such as those representing the platform or the transaction, do not need identifiers as the associated elements are
 implicit in nature. Custom entity types might need selection during an attestation request and related documentation should specify how this is
-achieved.<a href="#section-7-11" class="pilcrow">¶</a></p>
-<p id="section-7-12">The instance of <code>TbsPkixEvidence</code> is unsigned and does not provide any means to maintain integrity when communicated from the Presenter to the HSM.
+achieved.<a href="#section-7-13" class="pilcrow">¶</a></p>
+<p id="section-7-14">The instance of <code>TbsPkixEvidence</code> is unsigned and does not provide any means to maintain integrity when communicated from the Presenter to the HSM.
 These details are left to the implementer. However, it is worth pointing out that the structure offered by <code>PkixEvidence</code> could be reused by an
-implementer to provide those capabilities, as described in <a href="#sec-cons-auth-the-presenter" class="auto internal xref">Section 10.5</a>.<a href="#section-7-12" class="pilcrow">¶</a></p>
+implementer to provide those capabilities, as described in <a href="#sec-cons-auth-the-presenter" class="auto internal xref">Section 10.5</a>.<a href="#section-7-14" class="pilcrow">¶</a></p>
 <div id="request-attributes-with-specified-values">
 <section id="section-7.1">
         <h3 id="name-request-attributes-with-spe">
