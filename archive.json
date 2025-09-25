@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-09-23T00:42:18.799639+00:00",
+  "timestamp": "2025-09-25T00:43:00.019042+00:00",
   "repo": "ietf-rats-wg/key-attestation",
   "labels": [
     {
@@ -442,7 +442,7 @@
       "labels": [],
       "body": "The term \"entity\" could refer to many things.\n\nIn the specified ASN.1, a `PkixEvidence` has a `ClaimDescriptionTbs` which has multiple `ReportedEntity`, each of which has a type and multiple attributes. We could replace \"entity\" with \"claim\":\n\n```\nPkixEvidence ::= SEQUENCE {\n    tbs        ClaimDescriptionTbs,\n    signatures SEQUENCE SIZE (0..MAX) of SignatureBlock\n}\n\nClaimDescriptionTbs ::= SEQUENCE {\n    version        INTEGER,\n    reportedClaims SEQUENCE SIZE (1..MAX) OF ReportedClaim\n}\n\nReportedClaim ::= SEQUENCE {\n    claimType          OBJECT IDENTIFIER,\n    reportedAttributes SEQUENCE SIZE (1..MAX) OF ReportedAttribute\n}\n```",
       "createdAt": "2025-06-18T20:46:49Z",
-      "updatedAt": "2025-09-22T19:15:52Z",
+      "updatedAt": "2025-09-24T20:57:17Z",
       "closedAt": null,
       "comments": [
         {
@@ -451,6 +451,27 @@
           "body": "The term \"subject\" was offered instead of \"entity\"",
           "createdAt": "2025-09-22T19:15:52Z",
           "updatedAt": "2025-09-22T19:15:52Z"
+        },
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I tried to make a global change to \"subject\". Now, this term clashes with the \"subject\" of a certificate.",
+          "createdAt": "2025-09-24T19:09:19Z",
+          "updatedAt": "2025-09-24T19:09:19Z"
+        },
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Other possible terms to replace entity:\n- element\n- component",
+          "createdAt": "2025-09-24T19:13:36Z",
+          "updatedAt": "2025-09-24T19:13:36Z"
+        },
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "\"Component\" is already used in RATS",
+          "createdAt": "2025-09-24T20:57:17Z",
+          "updatedAt": "2025-09-24T20:57:17Z"
         }
       ]
     },
@@ -631,15 +652,15 @@
       "id": "I_kwDONUAin868PXf9",
       "title": "The \"Architecture\" figure depicts separate Attesting and Target environments",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/45",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bluegate010",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Early on the spec states that \"this specification assumes that the Attesting Environment and the Target Environment, as outlined in {{!RFC9334}}, are the same.\"\n\nThe [Architecture diagram](https://github.com/ietf-rats-wg/key-attestation/blob/bfba6f50dabc8ff69d35175b69ae50792648cc67/draft-ietf-rats-pkix-key-attestation.md?plain=1#L915-L944) depicts them as separate. Should it unify them?",
       "createdAt": "2025-06-18T20:59:01Z",
-      "updatedAt": "2025-09-22T16:29:41Z",
-      "closedAt": null,
+      "updatedAt": "2025-09-24T18:44:09Z",
+      "closedAt": "2025-09-24T18:44:09Z",
       "comments": [
         {
           "author": "ounsworth",
