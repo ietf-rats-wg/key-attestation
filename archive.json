@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-09-25T00:43:00.019042+00:00",
+  "timestamp": "2025-09-28T00:48:35.335922+00:00",
   "repo": "ietf-rats-wg/key-attestation",
   "labels": [
     {
@@ -785,7 +785,7 @@
       "labels": [],
       "body": "In Section 5.3,  the epoch id is not mentioned as one mechanism to achieve time freshness.\n\nIn Section 5.3.1, the nonce is distributed by the presenter, rather than the relying party and verifier. Does it fit current attestation service architecture as usually the verifier generates the nonce, to avoid replay attack?",
       "createdAt": "2025-07-10T12:16:41Z",
-      "updatedAt": "2025-09-22T19:17:55Z",
+      "updatedAt": "2025-09-26T14:50:28Z",
       "closedAt": null,
       "comments": [
         {
@@ -822,6 +822,13 @@
           "body": "During the meeting on Sep 22nd, the authors were wondering if the \"Epoch Markers\" document was going to move forward, soon. We are hoping to not delay this specification based on a dependency.",
           "createdAt": "2025-09-22T19:17:55Z",
           "updatedAt": "2025-09-22T19:17:55Z"
+        },
+        {
+          "author": "junzhanghw",
+          "authorAssociation": "NONE",
+          "body": "@ounsworth. Thanks for your reply. In such a perspective I am OK for the description. Three more points:\n1.   There is a typo in 5.3.1, it should be \"generated Evidence\" rather than  \"geenrated Evidence\".\n \n2.    Is it possible that \"A Presenter requesting a PkixEvidence message MAY provide a its own timestamp value as part of the request.\" if there exists the time synchronization between the Presenter and the Verifier\uff0c when the HSM does not have its own timestamp, or its timestamp is not reliable?\n \n3.   In the security consideration part, is there a need for the discussion about how the presenter should handle nonce and Evidence, to avoid selective forwarding of Evidences? ",
+          "createdAt": "2025-09-26T14:50:28Z",
+          "updatedAt": "2025-09-26T14:50:28Z"
         }
       ]
     },
