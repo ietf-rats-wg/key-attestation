@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-09-28T00:48:35.335922+00:00",
+  "timestamp": "2025-09-30T00:43:05.289414+00:00",
   "repo": "ietf-rats-wg/key-attestation",
   "labels": [
     {
@@ -442,7 +442,7 @@
       "labels": [],
       "body": "The term \"entity\" could refer to many things.\n\nIn the specified ASN.1, a `PkixEvidence` has a `ClaimDescriptionTbs` which has multiple `ReportedEntity`, each of which has a type and multiple attributes. We could replace \"entity\" with \"claim\":\n\n```\nPkixEvidence ::= SEQUENCE {\n    tbs        ClaimDescriptionTbs,\n    signatures SEQUENCE SIZE (0..MAX) of SignatureBlock\n}\n\nClaimDescriptionTbs ::= SEQUENCE {\n    version        INTEGER,\n    reportedClaims SEQUENCE SIZE (1..MAX) OF ReportedClaim\n}\n\nReportedClaim ::= SEQUENCE {\n    claimType          OBJECT IDENTIFIER,\n    reportedAttributes SEQUENCE SIZE (1..MAX) OF ReportedAttribute\n}\n```",
       "createdAt": "2025-06-18T20:46:49Z",
-      "updatedAt": "2025-09-24T20:57:17Z",
+      "updatedAt": "2025-09-28T21:55:42Z",
       "closedAt": null,
       "comments": [
         {
@@ -472,6 +472,13 @@
           "body": "\"Component\" is already used in RATS",
           "createdAt": "2025-09-24T20:57:17Z",
           "updatedAt": "2025-09-24T20:57:17Z"
+        },
+        {
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Wouldn't \"ClaimAttributes\" or simply \"Attributes\" make more sense than \"ReportedAttributes\" since the bounding statement captures whether it's been reported already?\n\nI assume the type of claim determines which attributes are appropriate?\n\nAnd Attributes have a name-value structure?",
+          "createdAt": "2025-09-28T21:51:38Z",
+          "updatedAt": "2025-09-28T21:55:42Z"
         }
       ]
     },
