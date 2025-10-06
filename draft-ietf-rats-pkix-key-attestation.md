@@ -10,7 +10,11 @@ submissiontype: IETF
 ipr: trust200902
 area: "Security"
 workgroup: "RATS"
-keyword: Internet-Draft
+keyword:
+  - Internet-Draft
+  - RATS
+  - PKIX
+  - HSM
 coding: utf-8
 
 stand_alone: yes
@@ -54,23 +58,22 @@ author:
     email: jp@crypto4a.com
 
   - name: Hannes Tschofenig
-    organization: University of Applied Sciences Bonn-Rhein-Sieg
+    org: University of Applied Sciences Bonn-Rhein-Sieg
     abbrev: H-BRS
     country: Germany
     email: Hannes.Tschofenig@gmx.net
 
   - name: Henk Birkholz
-    organization: Fraunhofer SIT
+    org: Fraunhofer SIT
     email: henk.birkholz@ietf.contact
 
   - name: Monty Wiseman
-    org:
-    country: USA
+    country: United States of America
     email: montywiseman32@gmail.com
 
   - name: Ned Smith
-    organization: Intel Corporation
-    country: USA
+    org: Intel Corporation
+    country: United States of America
     email: ned.smith@intel.com
 
 normative:
@@ -79,30 +82,31 @@ normative:
   RFC5280:
   RFC9711:
   X.680:
-     title: "Information technology -- Abstract Syntax Notation One (ASN.1): Specification of basic notation"
-     author:
-        org: ITU-T
-        date: false
-     target: https://www.itu.int/rec/T-REC-X.680
+    anchor: X680
+    title: "Information technology — ASN.1: Specification of basic notation"
+    author:
+      - org: ITU-T
+    target: https://www.itu.int/rec/T-REC-X.680
   X.690:
-      title: "Information technology - ASN.1 encoding Rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"
-      date: November 2015
-      author:
-        org: ITU-T
-      seriesinfo:
-        ISO/IEC: 8825-1:2015
+    anchor: X690
+    title: "Information technology — ASN.1 encoding rules: BER, CER, DER"
+    author:
+      - org: ITU-T
+    target: https://www.itu.int/rec/T-REC-X.690
   PKCS11:
+    anchor: PKCS11v3_1
     title: "PKCS #11 Specification Version 3.1"
     author:
-      name: Dieter Bong, Tony Cox
-      org: OASIS PKCS 11 TC
-      date: 11 August 2022
+      - name: Dieter Bong
+      - name: Tony Cox
+      - org: OASIS PKCS 11 TC
+    date: 2022-08-11
     target: https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/pkcs11-spec-v3.1-cs01.html
   FIPS.140-3:
-    -: fips
-    title: SECURITY REQUIREMENTS FOR CRYPTOGRAPHIC MODULES
+    anchor: FIPS140-3
+    title: "Security Requirements for Cryptographic Modules"
     author:
-      org: NIST - Information Technology Laboratory
+      - org: NIST, Information Technology Laboratory
     seriesinfo:
       FIPS: 140-3
     target: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-3.pdf
@@ -117,11 +121,13 @@ informative:
   I-D.ietf-rats-msg-wrap:
   CNSA2.0:
     title: "Commercial National Security Algorithm Suite 2.0"
-    org: National Security Agency
+    author:
+      - org: National Security Agency
     target: https://media.defense.gov/2022/Sep/07/2003071834/-1/-1/0/CSA_CNSA_2.0_ALGORITHMS_.PDF
   codesigningbrsv3.8:
-    title: "Baseline Requirements for the Issuance and Management of Publicly‐Trusted Code Signing Certificates Version 3.8.0"
-    org: CA/Browser Forum
+    title: "Baseline Requirements for the Issuance and Management of Publicly-Trusted Code Signing Certificates Version 3.8.0"
+    author:
+      - org: CA/Browser Forum
     target: https://cabforum.org/working-groups/code-signing/documents/
 
 entity:
@@ -222,10 +228,10 @@ to certain jurisdiction policies (such as FIPS mode) and the constraints applied
 For relatively simple HSM devices, storage properties such as "extractable" may always be false for all keys
 since the devices are not capable of key export and so the attestation could be essentially a hard-coded template asserting these
 immutable attributes. However, more complex HSM devices require a more complex evidence format that encompasses the
-mutability of these attributes
-.
+mutability of these attributes.
+
 Also, a client requesting a key attestation might wish to scope-down the content of the produced Evidence as
-the HSM contains mush more information than that which is relevant to the transaction.
+the HSM contains much more information than that which is relevant to the transaction.
 The inability to scope-down the generated Evidence could, in some scenarios, constitute a privacy violation.
 
 
@@ -280,12 +286,12 @@ USB tokens, TPMs, cryptographic co-processors (PCI cards) and "enterprise-grade"
 
 Key Attestation:
 : Process of producing Evidence containing claims pertaining to user keys found within an HSM. In
-general, the claims includes enough information about a user key and its hosting platform to allow
+general, the claims include enough information about a user key and its hosting platform to allow
 a Relying Party to make judicious decisions about the key, such as whether to issue a certificate for the key.
 
 RATS:
 : Remote ATtestation procedureS. In this document, refers to the RATS Architecture as introduced
-in {{RFC9334}}. RATS and RATS Architecture is used interchangeably.
+in {{RFC9334}}. RATS and RATS Architecture are used interchangeably.
 
 Platform:
 : The module or device that embodies the Attester. In this specification, it is interchangeable with
@@ -312,7 +318,7 @@ Trust Anchor may be a certificate, a raw public key, or other
 structure, as appropriate.
 
 Trusted Platform Module (TPM):
-: A tamper-resistance processor generally located on a computer's motherboard used to enhance attestation
+: A tamper-resistant processor generally located on a computer's motherboard used to enhance attestation
 functions for the hosting platform. TPMs are very specialized Hardware Security Modules and generally use
 other protocols (than the one presented in this specification) to transmit evidence.
 
@@ -352,7 +358,7 @@ and its measured value for an entity.
 
 The grouping of claims into entities facilitates the comprehension of a large addressable space into
 elements recognizable by the user. More importantly, it curtails the produced Evidence to portions of the
-Target Environment that relate to the needs of the Verifier. See {{{sec-cons-privacy}}.
+Target Environment that relate to the needs of the Verifier. See {{sec-cons-privacy}}.
 
 
 ## Attestation Key Certificate Chain {#sec-ak-chain}
@@ -400,11 +406,11 @@ addressable via an identifier such as a UUID or a handle (as expressed in [PKCS1
 entity refers to a component recognized by users of the HSM, such as a key or the platform itself.
 
 An entity is composed of a type, the entity type, and a set of attributes. The entity type
-describes the class of the entity while its attributes defines its state.
+describes the class of the entity while its attributes define its state.
 
 An entity MUST be reported at most once in a claim description. The claim description can
 have multiple entities of the same type (for example reporting multiple keys), but each
-entity MUST be relating to different portions of the Target Environment.
+entity MUST relate to different portions of the Target Environment.
 
 It is possible for two entities to be quite similar such as in a situation where a key is imported
 twice in a HSM. In this case, the two related entities could have similar attributes. However, they
@@ -503,17 +509,17 @@ are used. A complete ASN.1 module is provided in {{sec-asn1-mod}}.
 
 The top-level structures are:
 
-~~~asn.1
+~~~ asn.1
 PkixEvidence ::= SEQUENCE {
     tbs                           TbsPkixEvidence,
-    signatures                    SEQUENCE SIZE (0..MAX) of SignatureBlock,
-    intermediateCertificates  [0] IMPLICIT SEQUENCE of Certificate OPTIONAL
+    signatures                    SEQUENCE SIZE (0..MAX) OF SignatureBlock,
+    intermediateCertificates  [0] EXPLICIT SEQUENCE SIZE (1..MAX) OF Certificate OPTIONAL
                                   -- As defined in RFC 5280
 }
 
 TbsPkixEvidence ::= SEQUENCE {
-    version INTEGER,
-    reportedEntities SEQUENCE SIZE (1..MAX) OF ReportedEntity
+    version           INTEGER,
+    reportedEntities  SEQUENCE SIZE (1..MAX) OF ReportedEntity
 }
 
 SignatureBlock ::= SEQUENCE {
@@ -523,11 +529,11 @@ SignatureBlock ::= SEQUENCE {
 }
 
 SignerIdentifier ::= SEQUENCE {
-   keyId                [0] EXPLICIT OCTET STRING OPTIONAL,
-   subjectKeyIdentifier [1] EXPLICIT SubjectPublicKeyInfo OPTIONAL,
-                            -- As defined in RFC 5280
-   certificate          [2] EXPLICIT Certificate OPTIONAL
-                            -- As defined in RFC 5280
+   keyId                  [0] EXPLICIT OCTET STRING OPTIONAL,
+   subjectPublicKeyInfo   [1] EXPLICIT SubjectPublicKeyInfo OPTIONAL,
+                           -- As defined in RFC 5280
+   certificate            [2] EXPLICIT Certificate OPTIONAL
+                           -- As defined in RFC 5280
 }
 ~~~
 
@@ -549,21 +555,21 @@ This envelope format is not extensible; future specifications which make compati
 A `SignatureBlock` is included for each signature submitted against the TBS section. The `SignatureBlock` includes
 the signature algorithm (signatureAlgorithm) and the signature itself (signatureValue). It also includes
 information to identify the authority that provided the signature which is the structure `SignerIdentifier` (sid).
-The signer identifier includes a combination of X.509 certificate, Subject Public Key Identifier (SPKI) and/or
+The signer identifier includes a combination of X.509 certificate, SubjectPublicKeyInfo (SPKI) and/or
 key identifier (keyId). It is expected that a X.509 certificate will be generally used, as it provides the public key needed
 to verify the signature and clearly identifies the subject that provided the signature. The SPKI and keyId are allowed
 to support environments where X.509 certificates are not used.
 
-The optional certificates provided in `PkixEvidence.intermediateCertificates` enables the insertion
+The optional certificates provided in `PkixEvidence.intermediateCertificates` enable the insertion
 of X.509 certificates to support trusting the signatures found in signature blocks. This information is intended to provide
-the certificates required by the Verifier to verified the endorsement on the certificates included
-with the signatures.
+the certificates required by the Verifier to verify the endorsement on the certificates included
+with the signatures. `intermediateCertificates` MAY include any or all intermediate CA certificates needed to build paths (excluding trust anchors). Order is not significant.
 
 As described in {{sec-info-model}}, the `TbsPkixEvidence` is a set of entities. Each entity
 is associated with a type that defines its class. The entity types are represented by object identifiers
 (OIDs). The following ASN.1 definition defines the structures associated with entities:
 
-~~~asn.1
+~~~ asn.1
 ReportedEntity ::= SEQUENCE {
     entityType         OBJECT IDENTIFIER,
     reportedAttributes SEQUENCE SIZE (1..MAX) OF ReportedAttribute
@@ -580,14 +586,14 @@ In turn, entities are composed of attributes. Each attribute is composed of a ty
 The attribute types are represented by object identifiers (OIDs). The
 following ASN.1 definition defines the structures associated with attributes:
 
-~~~asn.1
+~~~ asn.1
 ReportedAttribute ::= SEQUENCE {
     attributeType      OBJECT IDENTIFIER,
-    value              OPTIONAL AttributeValue
+    value              AttributeValue OPTIONAL
 }
 
-AttributeValue :== CHOICE {
-   bytes       [0] IMPLICIT OCTET STRING
+AttributeValue ::= CHOICE {
+   bytes       [0] IMPLICIT OCTET STRING,
    utf8String  [1] IMPLICIT UTF8String,
    bool        [2] IMPLICIT BOOLEAN,
    time        [3] IMPLICIT GeneralizedTime,
@@ -608,7 +614,7 @@ The remainder of this section describes the entity types and their associated at
 ## Platform Entity
 
 A platform entity reports information about the device where the Evidence is generated and is
-composed of a set of attributes that are global to the Target Environment..
+composed of a set of attributes that are global to the Target Environment.
 It is associated with the type identifier `id-pkix-evidence-entity-platform`.
 
 A platform entity, if provided, MUST be included only once within the reported entities. If a
@@ -621,31 +627,29 @@ the "Reference" column refers to the specification where the semantics
 for the attribute value can be found.
 Attributes defined in this specification have further details below.
 
-| Attribute       | AttributeValue  | Reference    | Multiple? | OID                                            |
-| ---             | ---             | ---          | ---       | ---                                            |
-| vendor          | utf8String      | {{&SELF}}    | No        | id-pkix-evidence-attribute-platform-vendor     |
-| oemid           | bytes           | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-oemid      |
-| hwmodel         | bytes           | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-hwmodel    |
-| hwversion       | utf8String      | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-hwversion  |
-| hwserial        | utf8String      | {{&SELF}}    | No        | id-pkix-evidence-attribute-platform-hwserial   |
-| swname          | utf8String      | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-swname     |
-| swversion       | utf8String      | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-swversion  |
-| dbgstat         | int             | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-debugstat  |
-| uptime          | int             | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-uptime     |
-| bootcount       | int             | {{!RFC9711}} | No        | id-pkix-evidence-attribute-platform-bootcount  |
-| fipsboot        | bool            | {{-fips}}    | No        | id-pkix-evidence-attribute-platform-fipsboot   |
-| fipsver         | utf8String      | {{-fips}}    | No        | id-pkix-evidence-attribute-platform-fipsver    |
-| fipslevel       | int             | {{-fips}}    | No        | id-pkix-evidence-attribute-platform-fipslevel  |
-| fipsmodule      | utf8String      | {{-fips}}    | No        | id-pkix-evidence-attribute-platform-fipsmodule |
-
-TODO: find the actual reference for "FIPS Mode" -- FIPS 140-3 does not define it (at least not the 11 page useless version of 140-3 that I found).
+| Attribute       | AttributeValue  | Reference     | Multiple? | OID                                            |
+| ---             | ---             | ---           | ---       | ---                                            |
+| vendor          | utf8String      | {{&SELF}}     | No        | id-pkix-evidence-attribute-platform-vendor     |
+| oemid           | bytes           | {{!RFC9711}}  | No        | id-pkix-evidence-attribute-platform-oemid      |
+| hwmodel         | bytes           | {{!RFC9711}}  | No        | id-pkix-evidence-attribute-platform-hwmodel    |
+| hwversion       | utf8String      | {{!RFC9711}}  | No        | id-pkix-evidence-attribute-platform-hwversion  |
+| hwserial        | utf8String      | {{&SELF}}     | No        | id-pkix-evidence-attribute-platform-hwserial   |
+| swname          | utf8String      | {{!RFC9711}}  | No        | id-pkix-evidence-attribute-platform-swname     |
+| swversion       | utf8String      | {{!RFC9711}}  | No        | id-pkix-evidence-attribute-platform-swversion  |
+| dbgstat         | int             | {{!RFC9711}}  | No        | id-pkix-evidence-attribute-platform-debugstat  |
+| uptime          | int             | {{!RFC9711}}  | No        | id-pkix-evidence-attribute-platform-uptime     |
+| bootcount       | int             | {{!RFC9711}}  | No        | id-pkix-evidence-attribute-platform-bootcount  |
+| fipsboot        | bool            | {{?FIPS140-3}}| No        | id-pkix-evidence-attribute-platform-fipsboot   |
+| fipsver         | utf8String      | {{?FIPS140-3}}| No        | id-pkix-evidence-attribute-platform-fipsver    |
+| fipslevel       | int             | {{?FIPS140-3}}| No        | id-pkix-evidence-attribute-platform-fipslevel  |
+| fipsmodule      | utf8String      | {{?FIPS140-3}}| No        | id-pkix-evidence-attribute-platform-fipsmodule |
 
 Each attribute defined in the table above is described in the following sub-sections.
 
 ### vendor
 
 A human-readable string that reports the name of the device's manufacturer. If the device is submitted to
-FIPS validation, this string should corresponds to the vendor field of the submission.
+FIPS validation, this string should correspond to the vendor field of the submission.
 
 ### oemid, hwmodel, hwversion, swname, swversion, dbgstat, uptime, bootcount
 
@@ -659,7 +663,7 @@ sequence of bytes and is not meant to be a human readable string.
 The attribute "hwmodel" differentiates models, products, and variants manufactured by a particular OEM. A model
 must be unique within a given "oemid". This is a sequence of bytes and is not meant to be a human readable string.
 
-The attribute "hwversion" is a text string reporting the version of the hardware. This attributes must be
+The attribute "hwversion" is a text string reporting the version of the hardware. This attribute must be
 interpreted along with the attribute "hwmodel".
 
 The attribute "swname" is a text string reporting the name of the firmware running on the platform.
@@ -672,7 +676,7 @@ value describing the current state as described in {{!RFC9711}}.
 
 The attribute "uptime" reports the number of seconds that have elapsed since the HSM was last booted.
 
-The attribute "bootcount" reported the number of times the HSM was booted.
+The attribute "bootcount" reports the number of times the HSM was booted.
 
 ### hwserial
 
@@ -706,7 +710,7 @@ A key entity is associated with the type `id-pkix-evidence-entity-key`. Each ins
 key entity represents a different addressable key found in the Target Environment. There can
 be multiple key entities found in a claim description, but each reported key entity MUST
 describe a different key. Two key entities may represent the same underlying cryptographic key
-(keys with the exact same value) but they must be different portion of the Target Environment's
+(keys with the exact same value) but they must be different portions of the Target Environment's
 state.
 
 A key entity is composed of a set of attributes relating to the cryptographic key. At
@@ -720,15 +724,15 @@ The following table lists the attributes for a key entity defined
 within this specification. The "Reference" column refers to the specification where the semantics
 for the attribute value can be found.
 
-| Attribute         | AttributeValue  | Reference   | Multiple? | OID                                              |
-| ---               | ---             | ---         | ---       | ---                                              |
-| identifier        | utf8String      | {{&SELF}}   | Yes       | id-pkix-evidence-attribute-key-identifier        |
-| spki              | bytes           | {{&SELF}}   | No        | id-pkix-evidence-attribute-key-spki              |
-| extractable       | bool            | [PKCS11]    | No        | id-pkix-evidence-attribute-key-extractable       |
-| sensitive         | bool            | [PKCS11]    | No        | id-pkix-evidence-attribute-key-sensitive         |
-| never-extractable | bool            | [PKCS11]    | No        | id-pkix-evidence-attribute-key-never-extractable |
-| local             | bool            | [PKCS11]    | No        | id-pkix-evidence-attribute-key-local             |
-| expiry            | time            | {{&SELF}}   | No        | id-pkix-evidence-attribute-key-expiry            |
+| Attribute         | AttributeValue  | Reference    | Multiple? | OID                                              |
+| ---               | ---             | ---          | ---       | ---                                              |
+| identifier        | utf8String      | {{&SELF}}    | Yes       | id-pkix-evidence-attribute-key-identifier        |
+| spki              | bytes           | {{&SELF}}    | No        | id-pkix-evidence-attribute-key-spki              |
+| extractable       | bool            | [PKCS11]     | No        | id-pkix-evidence-attribute-key-extractable       |
+| sensitive         | bool            | [PKCS11]     | No        | id-pkix-evidence-attribute-key-sensitive         |
+| never-extractable | bool            | [PKCS11]     | No        | id-pkix-evidence-attribute-key-never-extractable |
+| local             | bool            | [PKCS11]     | No        | id-pkix-evidence-attribute-key-local             |
+| expiry            | time            | {{&SELF}}    | No        | id-pkix-evidence-attribute-key-expiry            |
 
 An attestation key might be visible to a client of the device and be reported along with other cryptographic keys. Therefore,
 it is acceptable to include a key entity providing claims about an attestation key like any other cryptographic key. An
@@ -762,7 +766,7 @@ found in PKCS#11.
 The attribute "never-extractable" indicates if the key was never extractable from the HSM throughout the life of the key. Corresponds
 directly to the attribute CKA_NEVER_EXTRACTABLE found in PKCS#11.
 
-The attribute "local" indicates whether the key was generated locally or imported.. Corresponds directly to the attribute CKA_LOCAL
+The attribute "local" indicates whether the key was generated locally or imported. Corresponds directly to the attribute CKA_LOCAL
 found in PKCS#11.
 
 ### expiry
@@ -791,15 +795,15 @@ within this specification. The "Reference" column refers to the specification wh
 for the attribute value can be found.
 
 
-| Attribute       | AttributeValue  | Reference    | Multiple? | OID                                               |
-| ---             | ---             | ---          | ---       | ---                                               |
-| nonce           | bytes           | {{!RFC9711}} | No        | id-pkix-evidence-attribute-transaction-nonce      |
-| timestamp       | time            | {{!RFC9711}} | No        | id-pkix-evidence-attribute-transaction-timestamp  |
-| ak-spki         | bytes           | {{&SELF}}    | Yes       | id-pkix-evidence-attribute-transaction-ak-spki    |
+| Attribute       | AttributeValue  | Reference     | Multiple? | OID                                               |
+| ---             | ---             | ---           | ---       | ---                                               |
+| nonce           | bytes           | {{!RFC9711}}  | No        | id-pkix-evidence-attribute-transaction-nonce      |
+| timestamp       | time            | {{!RFC9711}}  | No        | id-pkix-evidence-attribute-transaction-timestamp  |
+| ak-spki         | bytes           | {{&SELF}}     | Yes       | id-pkix-evidence-attribute-transaction-ak-spki    |
 
 ### nonce
 
-The attribute "nonce" is used to provide "freshness" quality as to the claims provided in the PkixEvidence message. A Presenter requesting a PkixEvidence message MAY provide a nonce value as part of the request. This nonce value, if provided, SHOULD be repeated in the geenrated Evidence as an attribute within the transaction entity.
+The attribute "nonce" is used to provide "freshness" quality as to the claims provided in the PkixEvidence message. A Presenter requesting a PkixEvidence message MAY provide a nonce value as part of the request. This nonce value, if provided, SHOULD be repeated in the generated Evidence as an attribute within the transaction entity. Unlike EAT, only a single `transaction.nonce` is permitted to simplify verifier logic and reduce ambiguity.
 
 This is similar to the attribute "eat_nonce" as defined in {{!RFC9711}}. According to that specification, this attribute may be specified multiple times with
 different values. However, within the scope of this specification, the "nonce" value can be specified only once within a transaction.
@@ -832,30 +836,28 @@ See {{sec-req-processing}}, {{sec-req-verification}} and {{sec-cons-verifier}} f
 
 A PkixEvidence is to be DER encoded [X.690].
 
-If a textual representation is required, then the DER encoding MAY be subsequently encoded into Base64.
-
-EDNOTE: I think we have to be precise about which flavour of Base64 we are referring to.
+If a textual representation is required, then the DER encoding MAY be subsequently encoded into Base64 as defined in RFC 4648.
 
 
 
 # Signing and Verification Procedures {#sec-verif-proc}
 
-EDNOTE: This section needs to be re-written
-
 The `SignatureBlock.signatureValue` signs over the DER-encoded to-be-signed evidence data
 `PkixEvidence.tbs` and MUST be validated with the subject public key of the leaf
-X.509 certificate contained in the `SignatureBlock.certChain`.
+X.509 certificate contained in the `SignerIdentifier.certificate`. Verifiers MAY also use
+`PkixEvidence.intermediateCertificates` to build a certification path to a trust anchor.
 
 Note that a PkixEvidence MAY contain zero or more SignatureBlocks.
-A PkixEvidence with zero SignatureBlocks is unsigned, MUST be treated as un-protected and un-trusted,
-and any signature validation procedure MUST fail.
+A PkixEvidence with zero SignatureBlocks is unsigned and unprotected; Verifiers MUST treat it as untrusted and MUST NOT rely on its claims.
 
-More than one SignatureBlocks MAY be used to convey a number of different semantics.
+More than one SignatureBlock MAY be used to convey a number of different semantics.
 For example, the HSM's Attesting Service might hold multiple Attestation Keys on different cryptographic
 algorithms in order to provide algorithm redundancy in the case that one algorithm becomes cryptographically broken. In this case a Verifier would be expected to validate all SignatureBlocks. Alternatively, the HSM's Attesting Service may hold multiple Attestation Keys (or multiple X.509 certificates for the same key) from multiple operational environments to which it belongs. In this case a Verifier would be expected to only validate the SignatureBlock corresponding to its own environment. Alternatively, multiple SignatureBlocks could be used to convey counter-signatures from external parties, in which case the Verifier will need to be equipped with environment-specific verification logic. Multiple of these cases, and potentially others, could be supported by a single PkixEvidence object.
 
 Note that each SignatureBlock is a fully detached signature over the tbs content with no binding between the signed content and the SignatureBlocks, or between SignatureBlocks, meaning that a third-party can add a
-counter-signature of the evidence after the fact, or an attacker can remove a SignatureBlock without leaving any artifact. See {#sec-detached-sigs} for further discussion.
+counter-signature of the evidence after the fact, or an attacker can remove a SignatureBlock without leaving any artifact. See {{sec-detached-sigs}} for further discussion.
+
+If any `transaction.ak-spki` attributes are present, the Verifier SHOULD verify that each `SignerIdentifier`’s SubjectPublicKeyInfo (or the SPKI of its `certificate`) matches at least one `ak-spki` value.
 
 
 # Attestation Requests {#sec-reqs}
@@ -877,7 +879,7 @@ This section introduces the role of "Presenter" as shown in {{fig-arch}}. The Pr
 evidence. Since HSMs are generally servers (client/server relationship) or peripherals (controller/peripheral relationship), a Presenter is
 required to launch the process of creating the PKIX evidence and capturing it to forward it to the Verifier.
 
-~~~aasvg
+~~~ aasvg
 +-----------------------------+
 |  Attester (HSM)             |
 |                             |
@@ -919,7 +921,7 @@ The aim of the figure is to depict the position of the Presenter as an intermedi
 The role of "Presenter" is privileged as it controls the Evidence being generated by the Attester. However, the role is not "trusted" as
 the Verifier does not have to take into account the participation of the Presenter as part of the function of appraising the Evidence.
 
-The attestation request, show in the figure, consists of a structure `TbsPkixEvidence` containing one `ReportedEntity` for each entity expected to
+The attestation request, shown in the figure, consists of a structure `TbsPkixEvidence` containing one `ReportedEntity` for each entity expected to
 be included in the evidence produced by the HSM.
 
 Each instance of `ReportedEntity` included in the request is referred to as a request entity. A request entity contains a number of instances
@@ -932,7 +934,7 @@ of creating a request, the Presenter does not specify the value of the requested
 the structure `ReportedAttribute` specifies the element `value` as optional.
 
 On the other hand, there are circumstances where the value of a request attribute should be provided by the Presenter. For example, when a particular
-cryptographic key is to be included in the evidence, the request must include a key entity with one of the "identifier" attribute set to the value
+cryptographic key is to be included in the evidence, the request must include a key entity with one of the "identifier" attributes set to the value
 corresponding to the desired key.
 
 Some instances of `ReportedEntity`, such as those representing the platform or the transaction, do not need identifiers as the associated elements are
@@ -1072,7 +1074,14 @@ Further privacy concerns are discussed in {{sec-cons-privacy}}.
 
 Please replace "{{&SELF}}" with the RFC number assigned to this document.
 
-TODO: list out all the OIDs that need IANA registration.
+The following OIDs are defined in this document and will require IANA registration under the assigned arc:
+
+* `id-pkix-evidence`
+* `id-pkix-evidence-entity-type`
+* `id-pkix-evidence-entity-transaction`
+* `id-pkix-evidence-entity-platform`
+* `id-pkix-evidence-entity-key`
+* Attribute OIDs referenced in the Platform, Key, and Transaction tables (e.g., `id-pkix-evidence-attribute-platform-*`, `id-pkix-evidence-attribute-key-*`, `id-pkix-evidence-attribute-transaction-*`).
 
 # Security Considerations
 
@@ -1143,8 +1152,7 @@ based on a missing signature, as the signature could have been removed in transi
 This specification provides the transaction attribute "ak-spki" to effectively bind the content with
 the signature blocks that were generated by the Attester. When this attribute is provided, it reports
 the SPKI of one of the attestation keys used by the Attester to produce the evidence. This attribute
-is repeated for each of the attestation key used by the Attester.
-
+is repeated for each of the attestation keys used by the Attester.
 
 ## Privacy {#sec-cons-privacy}
 
@@ -1153,7 +1161,7 @@ it is referred to as a multi-tenant configuration.
 
 For example, an enterprise-grade HSM in a large multi-tenant cloud service could host TLS keys fronting multiple un-related web domains. Providing evidence for
 attesting attributes of any one of the keys would involve a Presenter that could potentially access any of the hosted keys.
-In such a case, private violations could occur if the Presenter was to disclose information that does not relate to the subject key.
+In such a case, privacy violations could occur if the Presenter was to disclose information that does not relate to the subject key.
 
 Implementers SHOULD be careful to avoid over-disclosure of information, for example by authenticating the Presenter as described in {{sec-cons-auth-the-presenter}} and only returning results for keys and environments for which it is authorized.
 In absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request MAY be authenticated by embedding the TbsPkixEvidence of the request inside a PkixEvidence signed with a certificate belonging to the Presenter.
@@ -1222,3 +1230,4 @@ based on discussions in that design team and also with great amounts of
 input taken from discussions on the RATS mailing list.
 
 We would like to thank Jeff Andersen for the review comments.
+
