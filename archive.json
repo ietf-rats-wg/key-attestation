@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-09-30T00:43:05.289414+00:00",
+  "timestamp": "2025-10-07T00:42:15.403396+00:00",
   "repo": "ietf-rats-wg/key-attestation",
   "labels": [
     {
@@ -941,6 +941,70 @@
       "updatedAt": "2025-09-22T20:01:46Z",
       "closedAt": "2025-09-22T20:01:46Z",
       "comments": []
+    },
+    {
+      "number": 59,
+      "id": "I_kwDONUAin87Pvnb5",
+      "title": "Change Monty's email address to mwiseman@computer.org",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/issues/59",
+      "state": "OPEN",
+      "author": "ounsworth",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-10-06T00:58:36Z",
+      "updatedAt": "2025-10-06T00:58:36Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 61,
+      "id": "I_kwDONUAin87P7XFU",
+      "title": "Reference for \"FIPS Mode\"",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/issues/61",
+      "state": "OPEN",
+      "author": "hannestschofenig",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "TODO: find the actual reference for \"FIPS Mode\" -- FIPS 140-3 does not define it (at least not the 11 page useless version of 140-3 that I found).",
+      "createdAt": "2025-10-06T18:04:40Z",
+      "updatedAt": "2025-10-06T18:04:40Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 62,
+      "id": "I_kwDONUAin87P7X5M",
+      "title": "Base64",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/issues/62",
+      "state": "OPEN",
+      "author": "hannestschofenig",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "EDNOTE: I think we have to be precise about which flavour of Base64 we are referring to.",
+      "createdAt": "2025-10-06T18:05:33Z",
+      "updatedAt": "2025-10-06T18:05:33Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 63,
+      "id": "I_kwDONUAin87P9IC-",
+      "title": "Expand on key purpose/capabilities",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/issues/63",
+      "state": "OPEN",
+      "author": "jpfiset",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "After the authors' meeting today, it was decided to introduce an attribute to key entities where all key capabilities will be reported.\n\nThis is a sequence of OIDs (new OIDs needed) to refer to the PKCS#11 attributes:\n- CKA_ENCRYPT\n- CKA_DECRYPT\n- CKA_WRAP\n- CKA_UNWRAP\n- CKA_SIGN\n- CKA_SIGN_RECOVER\n- CKA_VERIFY\n- CKA_VERIFY_RECOVER\n- CKA_DERIVE\n",
+      "createdAt": "2025-10-06T20:12:20Z",
+      "updatedAt": "2025-10-06T20:12:20Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -1719,6 +1783,53 @@
       },
       "comments": [],
       "reviews": []
+    },
+    {
+      "number": 60,
+      "id": "PR_kwDONUAin86sVYyz",
+      "title": "High-Level Review Comments",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/pull/60",
+      "state": "OPEN",
+      "author": "hannestschofenig",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Nits here and there.",
+      "createdAt": "2025-10-06T18:03:29Z",
+      "updatedAt": "2025-10-06T18:05:54Z",
+      "baseRepository": "ietf-rats-wg/key-attestation",
+      "baseRefName": "main",
+      "baseRefOid": "4a582f5f574bb8df9d1b8d71e489f5d767980f64",
+      "headRepository": "ietf-rats-wg/key-attestation",
+      "headRefName": "hannestschofenig-patch-2",
+      "headRefOid": "cdfb6e65b8f10727023db5196ca45f6d4c440db4",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDONUAin87FE1ZM",
+          "commit": {
+            "abbreviatedOid": "493d408"
+          },
+          "author": "hannestschofenig",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-10-06T18:05:50Z",
+          "updatedAt": "2025-10-06T18:05:50Z",
+          "comments": [
+            {
+              "originalPosition": 501,
+              "body": "```suggestion\r\n```",
+              "createdAt": "2025-10-06T18:05:50Z",
+              "updatedAt": "2025-10-06T18:05:50Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
