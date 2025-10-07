@@ -81,20 +81,17 @@ normative:
   RFC9334:
   RFC5280:
   RFC9711:
-  X.680:
-    anchor: X680
+  X680:
     title: "Information technology — ASN.1: Specification of basic notation"
     author:
       - org: ITU-T
     target: https://www.itu.int/rec/T-REC-X.680
-  X.690:
-    anchor: X690
+  X690:
     title: "Information technology — ASN.1 encoding rules: BER, CER, DER"
     author:
       - org: ITU-T
     target: https://www.itu.int/rec/T-REC-X.690
   PKCS11:
-    anchor: PKCS11v3_1
     title: "PKCS #11 Specification Version 3.1"
     author:
       - name: Dieter Bong
@@ -102,8 +99,7 @@ normative:
       - org: OASIS PKCS 11 TC
     date: 2022-08-11
     target: https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/pkcs11-spec-v3.1-cs01.html
-  FIPS.140-3:
-    anchor: FIPS140-3
+  FIPS140-3:
     title: "Security Requirements for Cryptographic Modules"
     author:
       - org: NIST, Information Technology Laboratory
