@@ -724,15 +724,16 @@ The following table lists the attributes for a key entity defined
 within this specification. The "Reference" column refers to the specification where the semantics
 for the attribute value can be found.
 
-| Attribute         | AttributeValue  | Reference    | Multiple? | OID                                              |
-| ---               | ---             | ---          | ---       | ---                                              |
-| identifier        | utf8String      | {{&SELF}}    | Yes       | id-pkix-evidence-attribute-key-identifier        |
-| spki              | bytes           | {{&SELF}}    | No        | id-pkix-evidence-attribute-key-spki              |
-| extractable       | bool            | [PKCS11]     | No        | id-pkix-evidence-attribute-key-extractable       |
-| sensitive         | bool            | [PKCS11]     | No        | id-pkix-evidence-attribute-key-sensitive         |
-| never-extractable | bool            | [PKCS11]     | No        | id-pkix-evidence-attribute-key-never-extractable |
-| local             | bool            | [PKCS11]     | No        | id-pkix-evidence-attribute-key-local             |
-| expiry            | time            | {{&SELF}}    | No        | id-pkix-evidence-attribute-key-expiry            |
+| Attribute         | AttributeValue  | Reference   | Multiple? | OID                                              |
+| ---               | ---             | ---         | ---       | ---                                              |
+| identifier        | utf8String      | {{&SELF}}   | Yes       | id-pkix-evidence-attribute-key-identifier        |
+| spki              | bytes           | {{&SELF}}   | No        | id-pkix-evidence-attribute-key-spki              |
+| extractable       | bool            | [PKCS11]    | No        | id-pkix-evidence-attribute-key-extractable       |
+| sensitive         | bool            | [PKCS11]    | No        | id-pkix-evidence-attribute-key-sensitive         |
+| never-extractable | bool            | [PKCS11]    | No        | id-pkix-evidence-attribute-key-never-extractable |
+| local             | bool            | [PKCS11]    | No        | id-pkix-evidence-attribute-key-local             |
+| expiry            | time            | {{&SELF}}   | No        | id-pkix-evidence-attribute-key-expiry            |
+| purpose           | bytes           | {{&SELF}}   | No        | id-pkix-evidence-attribute-key-purpose           |
 
 An attestation key might be visible to a client of the device and be reported along with other cryptographic keys. Therefore,
 it is acceptable to include a key entity providing claims about an attestation key like any other cryptographic key. An
@@ -774,6 +775,41 @@ found in PKCS#11.
 Reports a time after which the key is not to be used. The device MAY enforce this policy based on its internal clock.
 
 Note that security considerations should be taken relating to HSMs and their internal clocks. See {{sec-cons-hsm-timestamps}}.
+
+### purpose
+
+Reports the key capabilities associated with the subject key. Since multiple capabilities can be associated with a single key,
+the value of this attribute is a list of capabilities, each reported as an object identifier (OID).
+
+The value of this attribute is the DER encoding of the following structure:
+
+~~~ asn.1
+
+<CODE STARTS>
+
+PkixEvidenceKeyCapabilities ::= SEQUENCE OF OBJECT IDENTIFIER
+
+<CODE ENDS>
+
+~~~
+
+The following table describes the key capabilities defined in this specification. The key capabilities offered are based on key
+attributes provided by PKCS#11. Each capability is assigned an object identifier (OID). 
+
+| Capability       | PKCS#11            | OID                                            |
+| ---              | ---                | ---                                            |
+| encrypt          | CKA_ENCRYPT        | id-pkix-evidence-key-capability-encrypt        |
+| decrypt          | CKA_DECRYPT        | id-pkix-evidence-key-capability-decrypt        |
+| wrap             | CKA_WRAP           | id-pkix-evidence-key-capability-wrap           |
+| unwrap           | CKA_UNWRAP         | id-pkix-evidence-key-capability-unwrap         |
+| sign             | CKA_SIGN           | id-pkix-evidence-key-capability-sign           |
+| sign-recover     | CKA_SIGN_RECOVER   | id-pkix-evidence-key-capability-sign-recover   |
+| verify           | CKA_VERIFY         | id-pkix-evidence-key-capability-verify         |
+| verify-recover   | CKA_VERIFY_RECOVER | id-pkix-evidence-key-capability-verify-recover |
+| derive           | CKA_DERIVE         | id-pkix-evidence-key-capability-derive         |
+
+The use of an object identifier to report a capability allows third parties to extend this list to support
+implementations that have other key capabilities.
 
 ## Transaction Entity
 

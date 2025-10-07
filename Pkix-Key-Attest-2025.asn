@@ -50,14 +50,16 @@ SignerIdentifier ::= SEQUENCE {
                             -- As defined in RFC 5280
 }
 
+PkixEvidenceKeyCapabilities ::= SEQUENCE OF OBJECT IDENTIFIER
+
 id-pkix-evidence OBJECT IDENTIFIER ::= { 1 2 3 999 }
 
-id-pkix-evidence-entity-type        OBJECT IDENTIFIER ::= { id-pkix-evidence- 0 }
+id-pkix-evidence-entity-type        OBJECT IDENTIFIER ::= { id-pkix-evidence 0 }
 id-pkix-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 0 }
 id-pkix-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 1 }
 id-pkix-evidence-entity-key         OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 2 }
 
-id-pkix-evidence-attribute-type OBJECT IDENTIFIER ::= { id-pkix-evidence- 1 }
+id-pkix-evidence-attribute-type OBJECT IDENTIFIER ::= { id-pkix-evidence 1 }
 
 id-pkix-evidence-attribute-transaction           OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-type 0 }
 id-pkix-evidence-attribute-transaction-nonce     OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-transaction 0 }
@@ -82,7 +84,6 @@ id-pkix-evidence-attribute-platform-fipslevel  OBJECT IDENTIFIER ::= { id-pkix-e
 id-pkix-evidence-attribute-platform-fipsmodule OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-platform 14 }
 
 
-
 id-pkix-evidence-attribute-key                   OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-type 2 }
 id-pkix-evidence-attribute-key-identifier        OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 0 }
 id-pkix-evidence-attribute-key-spki              OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 1 }
@@ -91,3 +92,17 @@ id-pkix-evidence-attribute-key-sensitive         OBJECT IDENTIFIER ::= { id-pkix
 id-pkix-evidence-attribute-key-never-extractable OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 4 }
 id-pkix-evidence-attribute-key-local             OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 5 }
 id-pkix-evidence-attribute-key-expiry            OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 6 }
+id-pkix-evidence-attribute-key-purpose           OBJECT IDENTIFIER ::= { id-pkix-evidence-attribute-key 7 }
+
+
+id-pkix-evidence-key-capability                  OBJECT IDENTIFIER ::= { id-pkix-evidence 2 }
+id-pkix-evidence-key-capability-encrypt          OBJECT IDENTIFIER ::= { id-pkix-evidence-key-capability 0 }
+id-pkix-evidence-key-capability-decrypt          OBJECT IDENTIFIER ::= { id-pkix-evidence-key-capability 1 }
+id-pkix-evidence-key-capability-wrap             OBJECT IDENTIFIER ::= { id-pkix-evidence-key-capability 2 }
+id-pkix-evidence-key-capability-unwrap           OBJECT IDENTIFIER ::= { id-pkix-evidence-key-capability 3 }
+id-pkix-evidence-key-capability-sign             OBJECT IDENTIFIER ::= { id-pkix-evidence-key-capability 4 }
+id-pkix-evidence-key-capability-sign-recover     OBJECT IDENTIFIER ::= { id-pkix-evidence-key-capability 5 }
+id-pkix-evidence-key-capability-verify           OBJECT IDENTIFIER ::= { id-pkix-evidence-key-capability 6 }
+id-pkix-evidence-key-capability-verify-recover   OBJECT IDENTIFIER ::= { id-pkix-evidence-key-capability 7 }
+id-pkix-evidence-key-capability-derive           OBJECT IDENTIFIER ::= { id-pkix-evidence-key-capability 8 }
+
