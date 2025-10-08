@@ -1516,13 +1516,13 @@ format outlined in this specification. It collects claims from the platform and 
 Key to digitally sign the collection.<a href="#section-3-7.4.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-7.5">Attester :</dt>
+<dt id="section-3-7.5">Attester:</dt>
         <dd style="margin-left: 1.5em" id="section-3-7.6">
           <p id="section-3-7.6.1">The term Attester respects the definition offered in <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>. In this specification, it
 is also interchangeable with "platform" or "HSM".<a href="#section-3-7.6.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-7.7">Evidence :</dt>
+<dt id="section-3-7.7">Evidence:</dt>
         <dd style="margin-left: 1.5em" id="section-3-7.8">
           <p id="section-3-7.8.1">The term Evidence respects the definition offered in <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>. In this specification, it
 refers to claims, encoded according to the format defined within this document, and signed using
@@ -1598,10 +1598,6 @@ The access and operations on a user key is controlled by the HSM.<a href="#secti
 </dd>
       <dd class="break"></dd>
 </dl>
-<p id="section-3-8">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
-"<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
-described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
-appear in all capitals, as shown here.<a href="#section-3-8" class="pilcrow">¶</a></p>
 <div id="claims-and-measurements-in-pkix-evidence">
 <section id="section-3.1">
         <h3 id="name-claims-and-measurements-in-">
@@ -1650,7 +1646,7 @@ that the device is genuine and not counterfeit. The trust anchor can also belong
 to the device operator as would be the case when the AK certificate is replaced
 as part of onboarding the device into a new operational network.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 <p id="section-3.2-2">The AK certificate that signs the evidence <span class="bcp14">MUST</span> have the Extended Key Usage
-<code>id-kp-attest</code> defined in <span>[<a href="#KeyAttestationEKU" class="cite xref">KeyAttestationEKU</a>]</span>.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<code>id-kp-attest</code>, as defined in <span>[<a href="#I-D.jpfiset-lamps-attestationkey-eku" class="cite xref">I-D.jpfiset-lamps-attestationkey-eku</a>]</span>, set.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
 <p id="section-3.2-3">Note that the data format specified in <a href="#sec-data-model" class="auto internal xref">Section 5</a> allows for zero, one, or multiple
 'SignatureBlock's, so a single evidence statement could be un-protected, or could be endorsed by multiple
 AK chains leading to different trust anchors. See <a href="#sec-verif-proc" class="auto internal xref">Section 6</a> for a discussion of handling multiple SignatureBlocks.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
@@ -3045,9 +3041,9 @@ such as the "nonce" attribute of the "transaction" entity, introduced this speci
         <dd>
 <span class="refAuthor">NIST, Information Technology Laboratory</span>, <span class="refTitle">"Security Requirements for Cryptographic Modules"</span>, <span class="seriesInfo">FIPS 140-3</span>, <span>n.d.</span>, <span>&lt;<a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-3.pdf">https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-3.pdf</a>&gt;</span>. </dd>
 <dd class="break"></dd>
-<dt id="KeyAttestationEKU">[KeyAttestationEKU]</dt>
+<dt id="I-D.jpfiset-lamps-attestationkey-eku">[I-D.jpfiset-lamps-attestationkey-eku]</dt>
         <dd>
-<span class="refAuthor">DRAFT</span>, <span class="refTitle">"Extended Key Usage (EKU) for X.509 Certificates associated with Attestation Keys"</span>, <span>n.d.</span>, <span>&lt;<a href="https://github.com/jpfiset/draft-jpfiset-attestationkey-eku">https://github.com/jpfiset/draft-jpfiset-attestationkey-eku</a>&gt;</span>. </dd>
+<span class="refAuthor">Fiset, J.</span>, <span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, and <span class="refAuthor">M. Wiseman</span>, <span class="refTitle">"Extended Key Usage (EKU) for X.509 Certificates associated with Attestation Keys"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-jpfiset-lamps-attestationkey-eku-00</span>, <time datetime="2025-08-05" class="refDate">5 August 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-jpfiset-lamps-attestationkey-eku-00">https://datatracker.ietf.org/doc/html/draft-jpfiset-lamps-attestationkey-eku-00</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="PKCS11">[PKCS11]</dt>
         <dd>

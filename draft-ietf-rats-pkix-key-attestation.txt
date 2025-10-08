@@ -296,12 +296,12 @@ Table of Contents
       specification.  It collects claims from the platform and uses the
       Attestation Key to digitally sign the collection.
 
-   Attester :
+   Attester:
       The term Attester respects the definition offered in [RFC9334].
       In this specification, it is also interchangeable with "platform"
       or "HSM".
 
-   Evidence :
+   Evidence:
       The term Evidence respects the definition offered in [RFC9334].
       In this specification, it refers to claims, encoded according to
       the format defined within this document, and signed using the
@@ -370,12 +370,6 @@ Table of Contents
       key".  The access and operations on a user key is controlled by
       the HSM.
 
-   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
-   "OPTIONAL" in this document are to be interpreted as described in
-   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
-   capitals, as shown here.
-
 3.1.  Claims and measurements in PKIX Evidence
 
    [RFC9334] states that Evidence is made up of claims and that a claim
@@ -429,7 +423,8 @@ Table of Contents
    the device into a new operational network.
 
    The AK certificate that signs the evidence MUST have the Extended Key
-   Usage id-kp-attest defined in [KeyAttestationEKU].
+   Usage id-kp-attest, as defined in
+   [I-D.jpfiset-lamps-attestationkey-eku], set.
 
    Note that the data format specified in Section 5 allows for zero,
    one, or multiple 'SignatureBlock's, so a single evidence statement
@@ -1935,11 +1930,13 @@ Table of Contents
               <https://nvlpubs.nist.gov/nistpubs/FIPS/
               NIST.FIPS.140-3.pdf>.
 
-   [KeyAttestationEKU]
-              DRAFT, "Extended Key Usage (EKU) for X.509 Certificates
-              associated with Attestation Keys", n.d.,
-              <https://github.com/jpfiset/draft-jpfiset-attestationkey-
-              eku>.
+   [I-D.jpfiset-lamps-attestationkey-eku]
+              Fiset, J., Ounsworth, M., Tschofenig, H., and M. Wiseman,
+              "Extended Key Usage (EKU) for X.509 Certificates
+              associated with Attestation Keys", Work in Progress,
+              Internet-Draft, draft-jpfiset-lamps-attestationkey-eku-00,
+              5 August 2025, <https://datatracker.ietf.org/doc/html/
+              draft-jpfiset-lamps-attestationkey-eku-00>.
 
    [PKCS11]   Bong, D., Cox, T., and OASIS PKCS 11 TC, "PKCS #11
               Specification Version 3.1", 11 August 2022,
