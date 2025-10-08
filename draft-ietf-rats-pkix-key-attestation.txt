@@ -5,7 +5,7 @@
 RATS                                                        M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 28 March 2026                                          Crypto4A
+Expires: 11 April 2026                                          Crypto4A
                                                            H. Tschofenig
                                                                    H-BRS
                                                              H. Birkholz
@@ -14,7 +14,7 @@ Expires: 28 March 2026                                          Crypto4A
                                                                         
                                                                 N. Smith
                                                        Intel Corporation
-                                                       24 September 2025
+                                                          8 October 2025
 
 
    PKIX Evidence for Remote Attestation of Hardware Security Modules
@@ -70,7 +70,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 28 March 2026.
+   This Internet-Draft will expire on 11 April 2026.
 
 Copyright Notice
 
@@ -93,7 +93,7 @@ Table of Contents
      2.1.  Remote audit of a Hardware Security Module (HSM)
      2.2.  Key import and HSM clustering
      2.3.  Attesting subject of a certificate issuance
-   3.  Terminology
+   3.  Conventions and Terminology
      3.1.  Claims and measurements in PKIX Evidence
      3.2.  Attestation Key Certificate Chain
    4.  Information Model
@@ -112,6 +112,7 @@ Table of Contents
        5.2.2.  spki
        5.2.3.  extractable, sensitive, never-extractable, local
        5.2.4.  expiry
+       5.2.5.  purpose
      5.3.  Transaction Entity
        5.3.1.  nonce
        5.3.2.  timestamp
@@ -232,8 +233,8 @@ Table of Contents
    behalf of a subject, a number of procedures are required to verify
    that the subject of the certificate is associated with the key that
    is certified.  In some cases, such as issuing a code signing
-   certificate [CNSA2.0], [codesigningbrsv3.8], a CA must ensure that
-   the subject key is located in a Hardware Security Module (HSM).
+   certificate [CNSA2.0] [CSBR], a CA must ensure that the subject key
+   is located in a Hardware Security Module (HSM).
 
    The Evidence format offered by this specification is designed to
    carry the information necessary for a CA to assess the location of
@@ -248,14 +249,21 @@ Table of Contents
    not capable of key export and so the attestation could be essentially
    a hard-coded template asserting these immutable attributes.  However,
    more complex HSM devices require a more complex evidence format that
-   encompasses the mutability of these attributes . Also, a client
-   requesting a key attestation might wish to scope-down the content of
-   the produced Evidence as the HSM contains mush more information than
-   that which is relevant to the transaction.  The inability to scope-
-   down the generated Evidence could, in some scenarios, constitute a
-   privacy violation.
+   encompasses the mutability of these attributes.
 
-3.  Terminology
+   Also, a client requesting a key attestation might wish to scope-down
+   the content of the produced Evidence as the HSM contains much more
+   information than that which is relevant to the transaction.  The
+   inability to scope-down the generated Evidence could, in some
+   scenarios, constitute a privacy violation.
+
+3.  Conventions and Terminology
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
 
    This specification uses a necessary mixture of RATS and PKI
    terminology in order to map concepts between the two domains.
@@ -311,7 +319,7 @@ Table of Contents
 
    Key Attestation:
       Process of producing Evidence containing claims pertaining to user
-      keys found within an HSM.  In general, the claims includes enough
+      keys found within an HSM.  In general, the claims include enough
       information about a user key and its hosting platform to allow a
       Relying Party to make judicious decisions about the key, such as
       whether to issue a certificate for the key.
@@ -319,7 +327,7 @@ Table of Contents
    RATS:
       Remote ATtestation procedureS.  In this document, refers to the
       RATS Architecture as introduced in [RFC9334].  RATS and RATS
-      Architecture is used interchangeably.
+      Architecture are used interchangeably.
 
    Platform:
       The module or device that embodies the Attester.  In this
@@ -349,7 +357,7 @@ Table of Contents
       appropriate.
 
    Trusted Platform Module (TPM):
-      A tamper-resistance processor generally located on a computer's
+      A tamper-resistant processor generally located on a computer's
       motherboard used to enhance attestation functions for the hosting
       platform.  TPMs are very specialized Hardware Security Modules and
       generally use other protocols (than the one presented in this
@@ -406,7 +414,7 @@ Table of Contents
    a large addressable space into elements recognizable by the user.
    More importantly, it curtails the produced Evidence to portions of
    the Target Environment that relate to the needs of the Verifier.  See
-   sec-cons-privacy.
+   Section 10.4.
 
 3.2.  Attestation Key Certificate Chain
 
@@ -462,11 +470,11 @@ Table of Contents
 
    An entity is composed of a type, the entity type, and a set of
    attributes.  The entity type describes the class of the entity while
-   its attributes defines its state.
+   its attributes define its state.
 
    An entity MUST be reported at most once in a claim description.  The
    claim description can have multiple entities of the same type (for
-   example reporting multiple keys), but each entity MUST be relating to
+   example reporting multiple keys), but each entity MUST relate to
    different portions of the Target Environment.
 
    It is possible for two entities to be quite similar such as in a
@@ -585,14 +593,14 @@ Table of Contents
 
    PkixEvidence ::= SEQUENCE {
        tbs                           TbsPkixEvidence,
-       signatures                    SEQUENCE SIZE (0..MAX) of SignatureBlock,
-       intermediateCertificates  [0] IMPLICIT SEQUENCE of Certificate OPTIONAL
+       signatures                    SEQUENCE SIZE (0..MAX) OF SignatureBlock,
+       intermediateCertificates  [0] EXPLICIT SEQUENCE SIZE (1..MAX) OF Certificate OPTIONAL
                                      -- As defined in RFC 5280
    }
 
    TbsPkixEvidence ::= SEQUENCE {
-       version INTEGER,
-       reportedEntities SEQUENCE SIZE (1..MAX) OF ReportedEntity
+       version           INTEGER,
+       reportedEntities  SEQUENCE SIZE (1..MAX) OF ReportedEntity
    }
 
    SignatureBlock ::= SEQUENCE {
@@ -602,11 +610,11 @@ Table of Contents
    }
 
    SignerIdentifier ::= SEQUENCE {
-      keyId                [0] EXPLICIT OCTET STRING OPTIONAL,
-      subjectKeyIdentifier [1] EXPLICIT SubjectPublicKeyInfo OPTIONAL,
-                               -- As defined in RFC 5280
-      certificate          [2] EXPLICIT Certificate OPTIONAL
-                               -- As defined in RFC 5280
+      keyId                  [0] EXPLICIT OCTET STRING OPTIONAL,
+      subjectPublicKeyInfo   [1] EXPLICIT SubjectPublicKeyInfo OPTIONAL,
+                              -- As defined in RFC 5280
+      certificate            [2] EXPLICIT Certificate OPTIONAL
+                              -- As defined in RFC 5280
    }
 
    A PkixEvidence message is composed of a protected section known as
@@ -636,8 +644,8 @@ Table of Contents
    (signatureAlgorithm) and the signature itself (signatureValue).  It
    also includes information to identify the authority that provided the
    signature which is the structure SignerIdentifier (sid).  The signer
-   identifier includes a combination of X.509 certificate, Subject
-   Public Key Identifier (SPKI) and/or key identifier (keyId).  It is
+   identifier includes a combination of X.509 certificate,
+   SubjectPublicKeyInfo (SPKI) and/or key identifier (keyId).  It is
    expected that a X.509 certificate will be generally used, as it
    provides the public key needed to verify the signature and clearly
    identifies the subject that provided the signature.  The SPKI and
@@ -645,11 +653,13 @@ Table of Contents
    are not used.
 
    The optional certificates provided in
-   PkixEvidence.intermediateCertificates enables the insertion of X.509
+   PkixEvidence.intermediateCertificates enable the insertion of X.509
    certificates to support trusting the signatures found in signature
    blocks.  This information is intended to provide the certificates
-   required by the Verifier to verified the endorsement on the
-   certificates included with the signatures.
+   required by the Verifier to verify the endorsement on the
+   certificates included with the signatures. intermediateCertificates
+   MAY include any or all intermediate CA certificates needed to build
+   paths (excluding trust anchors).  Order is not significant.
 
    As described in Section 4, the TbsPkixEvidence is a set of entities.
    Each entity is associated with a type that defines its class.  The
@@ -675,11 +685,11 @@ Table of Contents
 
    ReportedAttribute ::= SEQUENCE {
        attributeType      OBJECT IDENTIFIER,
-       value              OPTIONAL AttributeValue
+       value              AttributeValue OPTIONAL
    }
 
-   AttributeValue :== CHOICE {
-      bytes       [0] IMPLICIT OCTET STRING
+   AttributeValue ::= CHOICE {
+      bytes       [0] IMPLICIT OCTET STRING,
       utf8String  [1] IMPLICIT UTF8String,
       bool        [2] IMPLICIT BOOLEAN,
       time        [3] IMPLICIT GeneralizedTime,
@@ -702,7 +712,7 @@ Table of Contents
 
    A platform entity reports information about the device where the
    Evidence is generated and is composed of a set of attributes that are
-   global to the Target Environment.. It is associated with the type
+   global to the Target Environment.  It is associated with the type
    identifier id-pkix-evidence-entity-platform.
 
    A platform entity, if provided, MUST be included only once within the
@@ -717,99 +727,95 @@ Table of Contents
    for the attribute value can be found.  Attributes defined in this
    specification have further details below.
 
-    +==========+================+==============+=========+============+
-    |Attribute | AttributeValue | Reference    |Multiple?| OID        |
-    +==========+================+==============+=========+============+
-    |vendor    | utf8String     | RFCthis      |No       | id-pkix-   |
-    |          |                |              |         | evidence-  |
-    |          |                |              |         | attribute- |
-    |          |                |              |         | platform-  |
-    |          |                |              |         | vendor     |
-    +----------+----------------+--------------+---------+------------+
-    |oemid     | bytes          | [RFC9711]    |No       | id-pkix-   |
-    |          |                |              |         | evidence-  |
-    |          |                |              |         | attribute- |
-    |          |                |              |         | platform-  |
-    |          |                |              |         | oemid      |
-    +----------+----------------+--------------+---------+------------+
-    |hwmodel   | bytes          | [RFC9711]    |No       | id-pkix-   |
-    |          |                |              |         | evidence-  |
-    |          |                |              |         | attribute- |
-    |          |                |              |         | platform-  |
-    |          |                |              |         | hwmodel    |
-    +----------+----------------+--------------+---------+------------+
-    |hwversion | utf8String     | [RFC9711]    |No       | id-pkix-   |
-    |          |                |              |         | evidence-  |
-    |          |                |              |         | attribute- |
-    |          |                |              |         | platform-  |
-    |          |                |              |         | hwversion  |
-    +----------+----------------+--------------+---------+------------+
-    |hwserial  | utf8String     | RFCthis      |No       | id-pkix-   |
-    |          |                |              |         | evidence-  |
-    |          |                |              |         | attribute- |
-    |          |                |              |         | platform-  |
-    |          |                |              |         | hwserial   |
-    +----------+----------------+--------------+---------+------------+
-    |swname    | utf8String     | [RFC9711]    |No       | id-pkix-   |
-    |          |                |              |         | evidence-  |
-    |          |                |              |         | attribute- |
-    |          |                |              |         | platform-  |
-    |          |                |              |         | swname     |
-    +----------+----------------+--------------+---------+------------+
-    |swversion | utf8String     | [RFC9711]    |No       | id-pkix-   |
-    |          |                |              |         | evidence-  |
-    |          |                |              |         | attribute- |
-    |          |                |              |         | platform-  |
-    |          |                |              |         | swversion  |
-    +----------+----------------+--------------+---------+------------+
-    |dbgstat   | int            | [RFC9711]    |No       | id-pkix-   |
-    |          |                |              |         | evidence-  |
-    |          |                |              |         | attribute- |
-    |          |                |              |         | platform-  |
-    |          |                |              |         | debugstat  |
-    +----------+----------------+--------------+---------+------------+
-    |uptime    | int            | [RFC9711]    |No       | id-pkix-   |
-    |          |                |              |         | evidence-  |
-    |          |                |              |         | attribute- |
-    |          |                |              |         | platform-  |
-    |          |                |              |         | uptime     |
-    +----------+----------------+--------------+---------+------------+
-    |bootcount | int            | [RFC9711]    |No       | id-pkix-   |
-    |          |                |              |         | evidence-  |
-    |          |                |              |         | attribute- |
-    |          |                |              |         | platform-  |
-    |          |                |              |         | bootcount  |
-    +----------+----------------+--------------+---------+------------+
-    |fipsboot  | bool           | [FIPS.140-3] |No       | id-pkix-   |
-    |          |                |              |         | evidence-  |
-    |          |                |              |         | attribute- |
-    |          |                |              |         | platform-  |
-    |          |                |              |         | fipsboot   |
-    +----------+----------------+--------------+---------+------------+
-    |fipsver   | utf8String     | [FIPS.140-3] |No       | id-pkix-   |
-    |          |                |              |         | evidence-  |
-    |          |                |              |         | attribute- |
-    |          |                |              |         | platform-  |
-    |          |                |              |         | fipsver    |
-    +----------+----------------+--------------+---------+------------+
-    |fipslevel | int            | [FIPS.140-3] |No       | id-pkix-   |
-    |          |                |              |         | evidence-  |
-    |          |                |              |         | attribute- |
-    |          |                |              |         | platform-  |
-    |          |                |              |         | fipslevel  |
-    +----------+----------------+--------------+---------+------------+
-    |fipsmodule| utf8String     | [FIPS.140-3] |No       | id-pkix-   |
-    |          |                |              |         | evidence-  |
-    |          |                |              |         | attribute- |
-    |          |                |              |         | platform-  |
-    |          |                |              |         | fipsmodule |
-    +----------+----------------+--------------+---------+------------+
+   +============+================+=============+=========+============+
+   | Attribute  | AttributeValue | Reference   |Multiple?| OID        |
+   +============+================+=============+=========+============+
+   | vendor     | utf8String     | RFCthis     |No       | id-pkix-   |
+   |            |                |             |         | evidence-  |
+   |            |                |             |         | attribute- |
+   |            |                |             |         | platform-  |
+   |            |                |             |         | vendor     |
+   +------------+----------------+-------------+---------+------------+
+   | oemid      | bytes          | [RFC9711]   |No       | id-pkix-   |
+   |            |                |             |         | evidence-  |
+   |            |                |             |         | attribute- |
+   |            |                |             |         | platform-  |
+   |            |                |             |         | oemid      |
+   +------------+----------------+-------------+---------+------------+
+   | hwmodel    | bytes          | [RFC9711]   |No       | id-pkix-   |
+   |            |                |             |         | evidence-  |
+   |            |                |             |         | attribute- |
+   |            |                |             |         | platform-  |
+   |            |                |             |         | hwmodel    |
+   +------------+----------------+-------------+---------+------------+
+   | hwversion  | utf8String     | [RFC9711]   |No       | id-pkix-   |
+   |            |                |             |         | evidence-  |
+   |            |                |             |         | attribute- |
+   |            |                |             |         | platform-  |
+   |            |                |             |         | hwversion  |
+   +------------+----------------+-------------+---------+------------+
+   | hwserial   | utf8String     | RFCthis     |No       | id-pkix-   |
+   |            |                |             |         | evidence-  |
+   |            |                |             |         | attribute- |
+   |            |                |             |         | platform-  |
+   |            |                |             |         | hwserial   |
+   +------------+----------------+-------------+---------+------------+
+   | swname     | utf8String     | [RFC9711]   |No       | id-pkix-   |
+   |            |                |             |         | evidence-  |
+   |            |                |             |         | attribute- |
+   |            |                |             |         | platform-  |
+   |            |                |             |         | swname     |
+   +------------+----------------+-------------+---------+------------+
+   | swversion  | utf8String     | [RFC9711]   |No       | id-pkix-   |
+   |            |                |             |         | evidence-  |
+   |            |                |             |         | attribute- |
+   |            |                |             |         | platform-  |
+   |            |                |             |         | swversion  |
+   +------------+----------------+-------------+---------+------------+
+   | dbgstat    | int            | [RFC9711]   |No       | id-pkix-   |
+   |            |                |             |         | evidence-  |
+   |            |                |             |         | attribute- |
+   |            |                |             |         | platform-  |
+   |            |                |             |         | debugstat  |
+   +------------+----------------+-------------+---------+------------+
+   | uptime     | int            | [RFC9711]   |No       | id-pkix-   |
+   |            |                |             |         | evidence-  |
+   |            |                |             |         | attribute- |
+   |            |                |             |         | platform-  |
+   |            |                |             |         | uptime     |
+   +------------+----------------+-------------+---------+------------+
+   | bootcount  | int            | [RFC9711]   |No       | id-pkix-   |
+   |            |                |             |         | evidence-  |
+   |            |                |             |         | attribute- |
+   |            |                |             |         | platform-  |
+   |            |                |             |         | bootcount  |
+   +------------+----------------+-------------+---------+------------+
+   | fipsboot   | bool           | [FIPS140-3] |No       | id-pkix-   |
+   |            |                |             |         | evidence-  |
+   |            |                |             |         | attribute- |
+   |            |                |             |         | platform-  |
+   |            |                |             |         | fipsboot   |
+   +------------+----------------+-------------+---------+------------+
+   | fipsver    | utf8String     | [FIPS140-3] |No       | id-pkix-   |
+   |            |                |             |         | evidence-  |
+   |            |                |             |         | attribute- |
+   |            |                |             |         | platform-  |
+   |            |                |             |         | fipsver    |
+   +------------+----------------+-------------+---------+------------+
+   | fipslevel  | int            | [FIPS140-3] |No       | id-pkix-   |
+   |            |                |             |         | evidence-  |
+   |            |                |             |         | attribute- |
+   |            |                |             |         | platform-  |
+   |            |                |             |         | fipslevel  |
+   +------------+----------------+-------------+---------+------------+
+   | fipsmodule | utf8String     | [FIPS140-3] |No       | id-pkix-   |
+   |            |                |             |         | evidence-  |
+   |            |                |             |         | attribute- |
+   |            |                |             |         | platform-  |
+   |            |                |             |         | fipsmodule |
+   +------------+----------------+-------------+---------+------------+
 
-                                  Table 1
-
-   TODO: find the actual reference for "FIPS Mode" -- FIPS 140-3 does
-   not define it (at least not the 11 page useless version of 140-3 that
-   I found).
+                                 Table 1
 
    Each attribute defined in the table above is described in the
    following sub-sections.
@@ -818,7 +824,7 @@ Table of Contents
 
    A human-readable string that reports the name of the device's
    manufacturer.  If the device is submitted to FIPS validation, this
-   string should corresponds to the vendor field of the submission.
+   string should correspond to the vendor field of the submission.
 
 5.1.2.  oemid, hwmodel, hwversion, swname, swversion, dbgstat, uptime,
         bootcount
@@ -839,7 +845,7 @@ Table of Contents
    human readable string.
 
    The attribute "hwversion" is a text string reporting the version of
-   the hardware.  This attributes must be interpreted along with the
+   the hardware.  This attribute must be interpreted along with the
    attribute "hwmodel".
 
    The attribute "swname" is a text string reporting the name of the
@@ -856,7 +862,7 @@ Table of Contents
    The attribute "uptime" reports the number of seconds that have
    elapsed since the HSM was last booted.
 
-   The attribute "bootcount" reported the number of times the HSM was
+   The attribute "bootcount" reports the number of times the HSM was
    booted.
 
 5.1.3.  hwserial
@@ -921,7 +927,7 @@ Table of Contents
    found in a claim description, but each reported key entity MUST
    describe a different key.  Two key entities may represent the same
    underlying cryptographic key (keys with the exact same value) but
-   they must be different portion of the Target Environment's state.
+   they must be different portions of the Target Environment's state.
 
    A key entity is composed of a set of attributes relating to the
    cryptographic key.  At minimum, a key entity MUST report the
@@ -979,6 +985,11 @@ Table of Contents
    |             |                |         |           | attribute-  |
    |             |                |         |           | key-expiry  |
    +-------------+----------------+---------+-----------+-------------+
+   | purpose     | bytes          |RFCthis  | No        | id-pkix-    |
+   |             |                |         |           | evidence-   |
+   |             |                |         |           | attribute-  |
+   |             |                |         |           | key-purpose |
+   +-------------+----------------+---------+-----------+-------------+
 
                                  Table 2
 
@@ -1025,7 +1036,7 @@ Table of Contents
    directly to the attribute CKA_NEVER_EXTRACTABLE found in PKCS#11.
 
    The attribute "local" indicates whether the key was generated locally
-   or imported.. Corresponds directly to the attribute CKA_LOCAL found
+   or imported.  Corresponds directly to the attribute CKA_LOCAL found
    in PKCS#11.
 
 5.2.4.  expiry
@@ -1035,6 +1046,64 @@ Table of Contents
 
    Note that security considerations should be taken relating to HSMs
    and their internal clocks.  See Section 10.7.
+
+5.2.5.  purpose
+
+   Reports the key capabilities associated with the subject key.  Since
+   multiple capabilities can be associated with a single key, the value
+   of this attribute is a list of capabilities, each reported as an
+   object identifier (OID).
+
+   The value of this attribute is the DER encoding of the following
+   structure:
+
+   <CODE STARTS>
+
+   PkixEvidenceKeyCapabilities ::= SEQUENCE OF OBJECT IDENTIFIER
+
+   <CODE ENDS>
+
+   The following table describes the key capabilities defined in this
+   specification.  The key capabilities offered are based on key
+   attributes provided by PKCS#11.  Each capability is assigned an
+   object identifier (OID).
+
+      +============+====================+===========================+
+      | Capability | PKCS#11            | OID                       |
+      +============+====================+===========================+
+      | encrypt    | CKA_ENCRYPT        | id-pkix-evidence-key-     |
+      |            |                    | capability-encrypt        |
+      +------------+--------------------+---------------------------+
+      | decrypt    | CKA_DECRYPT        | id-pkix-evidence-key-     |
+      |            |                    | capability-decrypt        |
+      +------------+--------------------+---------------------------+
+      | wrap       | CKA_WRAP           | id-pkix-evidence-key-     |
+      |            |                    | capability-wrap           |
+      +------------+--------------------+---------------------------+
+      | unwrap     | CKA_UNWRAP         | id-pkix-evidence-key-     |
+      |            |                    | capability-unwrap         |
+      +------------+--------------------+---------------------------+
+      | sign       | CKA_SIGN           | id-pkix-evidence-key-     |
+      |            |                    | capability-sign           |
+      +------------+--------------------+---------------------------+
+      | sign-      | CKA_SIGN_RECOVER   | id-pkix-evidence-key-     |
+      | recover    |                    | capability-sign-recover   |
+      +------------+--------------------+---------------------------+
+      | verify     | CKA_VERIFY         | id-pkix-evidence-key-     |
+      |            |                    | capability-verify         |
+      +------------+--------------------+---------------------------+
+      | verify-    | CKA_VERIFY_RECOVER | id-pkix-evidence-key-     |
+      | recover    |                    | capability-verify-recover |
+      +------------+--------------------+---------------------------+
+      | derive     | CKA_DERIVE         | id-pkix-evidence-key-     |
+      |            |                    | capability-derive         |
+      +------------+--------------------+---------------------------+
+
+                                  Table 3
+
+   The use of an object identifier to report a capability allows third
+   parties to extend this list to support implementations that have
+   other key capabilities.
 
 5.3.  Transaction Entity
 
@@ -1082,7 +1151,7 @@ Table of Contents
     |         |                |           |           | ak-spki      |
     +---------+----------------+-----------+-----------+--------------+
 
-                                  Table 3
+                                  Table 4
 
 5.3.1.  nonce
 
@@ -1090,7 +1159,9 @@ Table of Contents
    the claims provided in the PkixEvidence message.  A Presenter
    requesting a PkixEvidence message MAY provide a nonce value as part
    of the request.  This nonce value, if provided, SHOULD be repeated in
-   the geenrated Evidence as an attribute within the transaction entity.
+   the generated Evidence as an attribute within the transaction entity.
+   Unlike EAT, only a single transaction.nonce is permitted to simplify
+   verifier logic and reduce ambiguity.
 
    This is similar to the attribute "eat_nonce" as defined in [RFC9711].
    According to that specification, this attribute may be specified
@@ -1136,26 +1207,22 @@ Table of Contents
    A PkixEvidence is to be DER encoded [X.690].
 
    If a textual representation is required, then the DER encoding MAY be
-   subsequently encoded into Base64.
-
-   EDNOTE: I think we have to be precise about which flavour of Base64
-   we are referring to.
+   subsequently encoded into Base64 as defined in RFC 4648.
 
 6.  Signing and Verification Procedures
-
-   EDNOTE: This section needs to be re-written
 
    The SignatureBlock.signatureValue signs over the DER-encoded to-be-
    signed evidence data PkixEvidence.tbs and MUST be validated with the
    subject public key of the leaf X.509 certificate contained in the
-   SignatureBlock.certChain.
+   SignerIdentifier.certificate.  Verifiers MAY also use
+   PkixEvidence.intermediateCertificates to build a certification path
+   to a trust anchor.
 
    Note that a PkixEvidence MAY contain zero or more SignatureBlocks.  A
-   PkixEvidence with zero SignatureBlocks is unsigned, MUST be treated
-   as un-protected and un-trusted, and any signature validation
-   procedure MUST fail.
+   PkixEvidence with zero SignatureBlocks is unsigned and unprotected;
+   Verifiers MUST treat it as untrusted and MUST NOT rely on its claims.
 
-   More than one SignatureBlocks MAY be used to convey a number of
+   More than one SignatureBlock MAY be used to convey a number of
    different semantics.  For example, the HSM's Attesting Service might
    hold multiple Attestation Keys on different cryptographic algorithms
    in order to provide algorithm redundancy in the case that one
@@ -1177,7 +1244,11 @@ Table of Contents
    SignatureBlocks, or between SignatureBlocks, meaning that a third-
    party can add a counter-signature of the evidence after the fact, or
    an attacker can remove a SignatureBlock without leaving any artifact.
-   See {#sec-detached-sigs} for further discussion.
+   See Section 10.3 for further discussion.
+
+   If any transaction.ak-spki attributes are present, the Verifier
+   SHOULD verify that each SignerIdentifier’s SubjectPublicKeyInfo (or
+   the SPKI of its certificate) matches at least one ak-spki value.
 
 7.  Attestation Requests
 
@@ -1257,7 +1328,7 @@ Table of Contents
    participation of the Presenter as part of the function of appraising
    the Evidence.
 
-   The attestation request, show in the figure, consists of a structure
+   The attestation request, shown in the figure, consists of a structure
    TbsPkixEvidence containing one ReportedEntity for each entity
    expected to be included in the evidence produced by the HSM.
 
@@ -1280,7 +1351,7 @@ Table of Contents
    request attribute should be provided by the Presenter.  For example,
    when a particular cryptographic key is to be included in the
    evidence, the request must include a key entity with one of the
-   "identifier" attribute set to the value corresponding to the desired
+   "identifier" attributes set to the value corresponding to the desired
    key.
 
    Some instances of ReportedEntity, such as those representing the
@@ -1509,10 +1580,12 @@ Table of Contents
                                -- As defined in RFC 5280
    }
 
+   PkixEvidenceKeyCapabilities ::= SEQUENCE OF OBJECT IDENTIFIER
+
    id-pkix-evidence OBJECT IDENTIFIER ::= { 1 2 3 999 }
 
    id-pkix-evidence-entity-type        OBJECT IDENTIFIER ::= { id-pkix-\
-                                                           evidence- 0 }
+                                                            evidence 0 }
    id-pkix-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-\
                                                 evidence-entity-type 0 }
    id-pkix-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-\
@@ -1521,7 +1594,7 @@ Table of Contents
                                                 evidence-entity-type 2 }
 
    id-pkix-evidence-attribute-type OBJECT IDENTIFIER ::= { id-pkix-\
-                                                           evidence- 1 }
+                                                            evidence 1 }
 
    id-pkix-evidence-attribute-transaction           OBJECT IDENTIFIER :\
                                 := { id-pkix-evidence-attribute-type 0 }
@@ -1566,7 +1639,6 @@ Table of Contents
                             = { id-pkix-evidence-attribute-platform 14 }
 
 
-
    id-pkix-evidence-attribute-key                   OBJECT IDENTIFIER :\
                                 := { id-pkix-evidence-attribute-type 2 }
    id-pkix-evidence-attribute-key-identifier        OBJECT IDENTIFIER :\
@@ -1583,6 +1655,31 @@ Table of Contents
                                  := { id-pkix-evidence-attribute-key 5 }
    id-pkix-evidence-attribute-key-expiry            OBJECT IDENTIFIER :\
                                  := { id-pkix-evidence-attribute-key 6 }
+   id-pkix-evidence-attribute-key-purpose           OBJECT IDENTIFIER :\
+                                 := { id-pkix-evidence-attribute-key 7 }
+
+
+   id-pkix-evidence-key-capability                  OBJECT IDENTIFIER :\
+                                               := { id-pkix-evidence 2 }
+   id-pkix-evidence-key-capability-encrypt          OBJECT IDENTIFIER :\
+                                := { id-pkix-evidence-key-capability 0 }
+   id-pkix-evidence-key-capability-decrypt          OBJECT IDENTIFIER :\
+                                := { id-pkix-evidence-key-capability 1 }
+   id-pkix-evidence-key-capability-wrap             OBJECT IDENTIFIER :\
+                                := { id-pkix-evidence-key-capability 2 }
+   id-pkix-evidence-key-capability-unwrap           OBJECT IDENTIFIER :\
+                                := { id-pkix-evidence-key-capability 3 }
+   id-pkix-evidence-key-capability-sign             OBJECT IDENTIFIER :\
+                                := { id-pkix-evidence-key-capability 4 }
+   id-pkix-evidence-key-capability-sign-recover     OBJECT IDENTIFIER :\
+                                := { id-pkix-evidence-key-capability 5 }
+   id-pkix-evidence-key-capability-verify           OBJECT IDENTIFIER :\
+                                := { id-pkix-evidence-key-capability 6 }
+   id-pkix-evidence-key-capability-verify-recover   OBJECT IDENTIFIER :\
+                                := { id-pkix-evidence-key-capability 7 }
+   id-pkix-evidence-key-capability-derive           OBJECT IDENTIFIER :\
+                                := { id-pkix-evidence-key-capability 8 }
+
 
    <CODE ENDS>
 
@@ -1591,7 +1688,23 @@ Table of Contents
    Please replace "RFCthis" with the RFC number assigned to this
    document.
 
-   TODO: list out all the OIDs that need IANA registration.
+   The following OIDs are defined in this document and will require IANA
+   registration under the assigned arc:
+
+   *  id-pkix-evidence
+
+   *  id-pkix-evidence-entity-type
+
+   *  id-pkix-evidence-entity-transaction
+
+   *  id-pkix-evidence-entity-platform
+
+   *  id-pkix-evidence-entity-key
+
+   *  Attribute OIDs referenced in the Platform, Key, and Transaction
+      tables (e.g., id-pkix-evidence-attribute-platform-*, id-pkix-
+      evidence-attribute-key-*, id-pkix-evidence-attribute-
+      transaction-*).
 
 10.  Security Considerations
 
@@ -1683,7 +1796,7 @@ Table of Contents
    generated by the Attester.  When this attribute is provided, it
    reports the SPKI of one of the attestation keys used by the Attester
    to produce the evidence.  This attribute is repeated for each of the
-   attestation key used by the Attester.
+   attestation keys used by the Attester.
 
 10.4.  Privacy
 
@@ -1696,7 +1809,7 @@ Table of Contents
    service could host TLS keys fronting multiple un-related web domains.
    Providing evidence for attesting attributes of any one of the keys
    would involve a Presenter that could potentially access any of the
-   hosted keys.  In such a case, private violations could occur if the
+   hosted keys.  In such a case, privacy violations could occur if the
    Presenter was to disclose information that does not relate to the
    subject key.
 
@@ -1814,13 +1927,14 @@ Table of Contents
 
 11.1.  Normative References
 
-   [FIPS.140-3]
-              NIST - Information Technology Laboratory, "SECURITY
-              REQUIREMENTS FOR CRYPTOGRAPHIC MODULES", FIPS 140-3, n.d.,
+   [FIPS140-3]
+              NIST, Information Technology Laboratory, "Security
+              Requirements for Cryptographic Modules", FIPS 140-3, n.d.,
               <https://nvlpubs.nist.gov/nistpubs/FIPS/
               NIST.FIPS.140-3.pdf>.
 
-   [PKCS11]   Cox, D. B. T., "PKCS #11 Specification Version 3.1", n.d.,
+   [PKCS11]   Bong, D., Cox, T., and OASIS PKCS 11 TC, "PKCS #11
+              Specification Version 3.1", 11 August 2022,
               <https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/
               pkcs11-spec-v3.1-cs01.html>.
 
@@ -1849,26 +1963,31 @@ Table of Contents
               DOI 10.17487/RFC9711, April 2025,
               <https://www.rfc-editor.org/rfc/rfc9711>.
 
-   [X.680]    ITU-T, "Information technology -- Abstract Syntax Notation
-              One (ASN.1): Specification of basic notation", n.d.,
-              <https://www.itu.int/rec/T-REC-X.680>.
-
-   [X.690]    ITU-T, "Information technology - ASN.1 encoding Rules:
+   [X.690]    ITU-T, "Information technology -- ASN.1 encoding rules:
               Specification of Basic Encoding Rules (BER), Canonical
               Encoding Rules (CER) and Distinguished Encoding Rules
-              (DER)", ISO/IEC 8825-1:2015, November 2015.
+              (DER)", ITU-T Recommendation X.690, ISO/IEC 8825-1:2021,
+              February 2021, <https://www.itu.int/rec/T-REC-X.690>.
+
+   [X680]     ITU-T, "Information technology — ASN.1: Specification of
+              basic notation", n.d.,
+              <https://www.itu.int/rec/T-REC-X.680>.
+
+   [X690]     ITU-T, "Information technology — ASN.1 encoding rules:
+              BER, CER, DER", n.d.,
+              <https://www.itu.int/rec/T-REC-X.690>.
 
 11.2.  Informative References
 
-   [CNSA2.0]  "Commercial National Security Algorithm Suite 2.0", n.d.,
+   [CNSA2.0]  National Security Agency, "Commercial National Security
+              Algorithm Suite 2.0", n.d.,
               <https://media.defense.gov/2022/Sep/07/2003071834/-1/-1/0/
               CSA_CNSA_2.0_ALGORITHMS_.PDF>.
 
-   [codesigningbrsv3.8]
-              "Baseline Requirements for the Issuance and Management of
-              Publicly‐Trusted Code Signing Certificates Version 3.8.0",
-              n.d., <https://cabforum.org/working-groups/code-signing/
-              documents/>.
+   [CSBR]     CA/Browser Forum, "Baseline Requirements for the Issuance
+              and Management of Publicly-Trusted Code Signing
+              Certificates Version 3.8.0", n.d., <https://cabforum.org/
+              working-groups/code-signing/documents/>.
 
    [I-D.fossati-tls-attestation]
               Tschofenig, H., Sheffer, Y., Howard, P., Mihalcea, I.,
@@ -1883,16 +2002,16 @@ Table of Contents
               Ounsworth, M., Tschofenig, H., Birkholz, H., Wiseman, M.,
               and N. Smith, "Use of Remote Attestation with
               Certification Signing Requests", Work in Progress,
-              Internet-Draft, draft-ietf-lamps-csr-attestation-20, 7
-              July 2025, <https://datatracker.ietf.org/doc/html/draft-
-              ietf-lamps-csr-attestation-20>.
+              Internet-Draft, draft-ietf-lamps-csr-attestation-21, 5
+              October 2025, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-lamps-csr-attestation-21>.
 
    [I-D.ietf-rats-msg-wrap]
               Birkholz, H., Smith, N., Fossati, T., Tschofenig, H., and
               D. Glaze, "RATS Conceptual Messages Wrapper (CMW)", Work
-              in Progress, Internet-Draft, draft-ietf-rats-msg-wrap-17,
-              12 August 2025, <https://datatracker.ietf.org/doc/html/
-              draft-ietf-rats-msg-wrap-17>.
+              in Progress, Internet-Draft, draft-ietf-rats-msg-wrap-18,
+              29 September 2025, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-rats-msg-wrap-18>.
 
    [RFC2986]  Nystrom, M. and B. Kaliski, "PKCS #10: Certification
               Request Syntax Specification Version 1.7", RFC 2986,
