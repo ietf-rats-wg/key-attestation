@@ -80,6 +80,7 @@ normative:
   RFC9334:
   RFC5280:
   RFC9711:
+  RFC4648:
   X680:
     title: "Information technology — ASN.1: Specification of basic notation"
     author:
@@ -879,8 +880,16 @@ See {{sec-req-processing}}, {{sec-req-verification}} and {{sec-cons-verifier}} f
 
 A PkixEvidence is to be DER encoded {{X.690}}.
 
-If a textual representation is required, then the DER encoding MAY be subsequently encoded into Base64 as defined in RFC 4648.
+If a textual representation is required, then the DER encoding MAY be subsequently encoded into Standard Base64 as defined in {{RFC4648}}.
 
+PEM-like representations are also allowed where a MIME-compliant Base64 transformation of the DER encoding is used, provided that the
+header label is "EVIDENCE". For example:
+
+~~~
+-----BEGIN EVIDENCE-----
+(...)
+-----END EVIDENCE-----
+~~~
 
 
 # Signing and Verification Procedures {#sec-verif-proc}
