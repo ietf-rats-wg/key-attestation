@@ -117,6 +117,11 @@ normative:
     seriesinfo:
       ITU-T Recommendation: X.690
       ISO/IEC: 8825-1:2021
+  KeyAttestationEKU:
+    title: "Extended Key Usage (EKU) for X.509 Certificates associated with Attestation Keys"
+    author:
+      - name: DRAFT
+    target: https://github.com/jpfiset/draft-jpfiset-attestationkey-eku
 
 informative:
   RFC2986:
@@ -382,7 +387,7 @@ to the device operator as would be the case when the AK certificate is replaced
 as part of onboarding the device into a new operational network.
 
 The AK certificate that signs the evidence MUST have the Extended Key Usage
-`id-kp-attest` defined in \[TODO-submit-2-pager-to-lamps\].
+`id-kp-attest` defined in {{KeyAttestationEKU}}.
 
 Note that the data format specified in {{sec-data-model}} allows for zero, one, or multiple
 'SignatureBlock's, so a single evidence statement could be un-protected, or could be endorsed by multiple
