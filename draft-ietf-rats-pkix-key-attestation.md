@@ -516,19 +516,19 @@ This section describes the data model associated with PKIX Evidence. For ease of
 deployment within the target ecosystem, ASN.1 definitions and DER encoding
 are used. A complete ASN.1 module is provided in {{sec-asn1-mod}}.
 
-The top-level structures are:
+The top-level structures, as ASN.1 snippets, are:
 
 ~~~ asn.1
 PkixEvidence ::= SEQUENCE {
     tbs                           TbsPkixEvidence,
     signatures                    SEQUENCE SIZE (0..MAX) OF SignatureBlock,
-    intermediateCertificates  [0] EXPLICIT SEQUENCE SIZE (1..MAX) OF Certificate OPTIONAL
+    intermediateCertificates  [0] SEQUENCE OF Certificate OPTIONAL
                                   -- As defined in RFC 5280
 }
 
 TbsPkixEvidence ::= SEQUENCE {
-    version           INTEGER,
-    reportedEntities  SEQUENCE SIZE (1..MAX) OF ReportedEntity
+    version INTEGER,
+    reportedEntities SEQUENCE SIZE (1..MAX) OF ReportedEntity
 }
 
 SignatureBlock ::= SEQUENCE {
@@ -538,11 +538,11 @@ SignatureBlock ::= SEQUENCE {
 }
 
 SignerIdentifier ::= SEQUENCE {
-   keyId                  [0] EXPLICIT OCTET STRING OPTIONAL,
-   subjectPublicKeyInfo   [1] EXPLICIT SubjectPublicKeyInfo OPTIONAL,
-                           -- As defined in RFC 5280
-   certificate            [2] EXPLICIT Certificate OPTIONAL
-                           -- As defined in RFC 5280
+   keyId                [0] EXPLICIT OCTET STRING OPTIONAL,
+   subjectKeyIdentifier [1] EXPLICIT SubjectPublicKeyInfo OPTIONAL,
+                            -- As defined in RFC 5280
+   certificate          [2] EXPLICIT Certificate OPTIONAL
+                            -- As defined in RFC 5280
 }
 ~~~
 
