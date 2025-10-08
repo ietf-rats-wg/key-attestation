@@ -245,7 +245,7 @@ The inability to scope-down the generated Evidence could, in some scenarios, con
 
 # Conventions and Terminology {#terminology}
 
-{::boilerplate bcp14}
+{::boilerplate bcp14-tagged}
 
 This specification uses a necessary mixture of RATS and PKI terminology
 in order to map concepts between the two domains.
@@ -278,11 +278,11 @@ Attestation Service (AttS):
 format outlined in this specification. It collects claims from the platform and uses the Attestation
 Key to digitally sign the collection.
 
-Attester :
+Attester:
 : The term Attester respects the definition offered in {{RFC9334}}. In this specification, it
 is also interchangeable with "platform" or "HSM".
 
-Evidence :
+Evidence:
 : The term Evidence respects the definition offered in {{RFC9334}}. In this specification, it
 refers to claims, encoded according to the format defined within this document, and signed using
 the Attestation Key.
@@ -336,9 +336,6 @@ User Key:
 : A user key consists of a key hosted by an HSM (the platform) and intended to be used by a client
 of the HSM. Other terms used for a user key are "application key", "client key" or "operational key".
 The access and operations on a user key is controlled by the HSM.
-
-
-{::boilerplate bcp14-tagged}
 
 ## Claims and measurements in PKIX Evidence
 
