@@ -117,11 +117,7 @@ normative:
     seriesinfo:
       ITU-T Recommendation: X.690
       ISO/IEC: 8825-1:2021
-  KeyAttestationEKU:
-    title: "Extended Key Usage (EKU) for X.509 Certificates associated with Attestation Keys"
-    author:
-      - name: DRAFT
-    target: https://github.com/jpfiset/draft-jpfiset-attestationkey-eku
+  I-D.jpfiset-lamps-attestationkey-eku: KeyAttestationEKU
 
 informative:
   RFC2986:
