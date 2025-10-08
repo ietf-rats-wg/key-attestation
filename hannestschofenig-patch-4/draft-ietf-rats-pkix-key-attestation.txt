@@ -296,12 +296,12 @@ Table of Contents
       specification.  It collects claims from the platform and uses the
       Attestation Key to digitally sign the collection.
 
-   Attester :
+   Attester:
       The term Attester respects the definition offered in [RFC9334].
       In this specification, it is also interchangeable with "platform"
       or "HSM".
 
-   Evidence :
+   Evidence:
       The term Evidence respects the definition offered in [RFC9334].
       In this specification, it refers to claims, encoded according to
       the format defined within this document, and signed using the
@@ -369,12 +369,6 @@ Table of Contents
       a user key are "application key", "client key" or "operational
       key".  The access and operations on a user key is controlled by
       the HSM.
-
-   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
-   "OPTIONAL" in this document are to be interpreted as described in
-   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
-   capitals, as shown here.
 
 3.1.  Claims and measurements in PKIX Evidence
 
