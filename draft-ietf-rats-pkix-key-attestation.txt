@@ -1202,7 +1202,15 @@ Table of Contents
    A PkixEvidence is to be DER encoded [X.690].
 
    If a textual representation is required, then the DER encoding MAY be
-   subsequently encoded into Base64 as defined in RFC 4648.
+   subsequently encoded into Standard Base64 as defined in [RFC4648].
+
+   PEM-like representations are also allowed where a MIME-compliant
+   Base64 transformation of the DER encoding is used, provided that the
+   header label is "EVIDENCE".  For example:
+
+   -----BEGIN EVIDENCE-----
+   (...)
+   -----END EVIDENCE-----
 
 6.  Signing and Verification Procedures
 
@@ -1947,6 +1955,10 @@ Table of Contents
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC4648]  Josefsson, S., "The Base16, Base32, and Base64 Data
+              Encodings", RFC 4648, DOI 10.17487/RFC4648, October 2006,
+              <https://www.rfc-editor.org/rfc/rfc4648>.
 
    [RFC5280]  Cooper, D., Santesson, S., Farrell, S., Boeyen, S.,
               Housley, R., and W. Polk, "Internet X.509 Public Key

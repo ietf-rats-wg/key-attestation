@@ -2433,7 +2433,16 @@ explain the meaning of the types and the frequency that values can be provided.<
 <a href="#section-5.5" class="section-number selfRef">5.5. </a><a href="#name-encoding" class="section-name selfRef">Encoding</a>
         </h3>
 <p id="section-5.5-1">A PkixEvidence is to be DER encoded <span>[<a href="#X.690" class="cite xref">X.690</a>]</span>.<a href="#section-5.5-1" class="pilcrow">¶</a></p>
-<p id="section-5.5-2">If a textual representation is required, then the DER encoding <span class="bcp14">MAY</span> be subsequently encoded into Base64 as defined in RFC 4648.<a href="#section-5.5-2" class="pilcrow">¶</a></p>
+<p id="section-5.5-2">If a textual representation is required, then the DER encoding <span class="bcp14">MAY</span> be subsequently encoded into Standard Base64 as defined in <span>[<a href="#RFC4648" class="cite xref">RFC4648</a>]</span>.<a href="#section-5.5-2" class="pilcrow">¶</a></p>
+<p id="section-5.5-3">PEM-like representations are also allowed where a MIME-compliant Base64 transformation of the DER encoding is used, provided that the
+header label is "EVIDENCE". For example:<a href="#section-5.5-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5.5-4">
+<pre>
+-----BEGIN EVIDENCE-----
+(...)
+-----END EVIDENCE-----
+</pre><a href="#section-5.5-4" class="pilcrow">¶</a>
+</div>
 </section>
 </div>
 </section>
@@ -3052,6 +3061,10 @@ such as the "nonce" attribute of the "transaction" entity, introduced this speci
 <dt id="RFC2119">[RFC2119]</dt>
         <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4648">[RFC4648]</dt>
+        <dd>
+<span class="refAuthor">Josefsson, S.</span>, <span class="refTitle">"The Base16, Base32, and Base64 Data Encodings"</span>, <span class="seriesInfo">RFC 4648</span>, <span class="seriesInfo">DOI 10.17487/RFC4648</span>, <time datetime="2006-10" class="refDate">October 2006</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4648">https://www.rfc-editor.org/rfc/rfc4648</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC5280">[RFC5280]</dt>
         <dd>
