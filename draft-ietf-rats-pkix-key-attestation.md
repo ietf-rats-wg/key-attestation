@@ -117,11 +117,7 @@ normative:
     seriesinfo:
       ITU-T Recommendation: X.690
       ISO/IEC: 8825-1:2021
-  KeyAttestationEKU:
-    title: "Extended Key Usage (EKU) for X.509 Certificates associated with Attestation Keys"
-    author:
-      - name: DRAFT
-    target: https://github.com/jpfiset/draft-jpfiset-attestationkey-eku
+  I-D.jpfiset-lamps-attestationkey-eku:
 
 informative:
   RFC2986:
@@ -249,7 +245,7 @@ The inability to scope-down the generated Evidence could, in some scenarios, con
 
 # Conventions and Terminology {#terminology}
 
-{::boilerplate bcp14}
+{::boilerplate bcp14-tagged}
 
 This specification uses a necessary mixture of RATS and PKI terminology
 in order to map concepts between the two domains.
@@ -282,11 +278,11 @@ Attestation Service (AttS):
 format outlined in this specification. It collects claims from the platform and uses the Attestation
 Key to digitally sign the collection.
 
-Attester :
+Attester:
 : The term Attester respects the definition offered in {{RFC9334}}. In this specification, it
 is also interchangeable with "platform" or "HSM".
 
-Evidence :
+Evidence:
 : The term Evidence respects the definition offered in {{RFC9334}}. In this specification, it
 refers to claims, encoded according to the format defined within this document, and signed using
 the Attestation Key.
@@ -341,9 +337,6 @@ User Key:
 of the HSM. Other terms used for a user key are "application key", "client key" or "operational key".
 The access and operations on a user key is controlled by the HSM.
 
-
-{::boilerplate bcp14-tagged}
-
 ## Claims and measurements in PKIX Evidence
 
 {{RFC9334}} states that Evidence is made up of claims and that a claim is "a piece of
@@ -387,7 +380,7 @@ to the device operator as would be the case when the AK certificate is replaced
 as part of onboarding the device into a new operational network.
 
 The AK certificate that signs the evidence MUST have the Extended Key Usage
-`id-kp-attest` defined in {{KeyAttestationEKU}}.
+`id-kp-attest`, as defined in {{I-D.jpfiset-lamps-attestationkey-eku}}, set.
 
 Note that the data format specified in {{sec-data-model}} allows for zero, one, or multiple
 'SignatureBlock's, so a single evidence statement could be un-protected, or could be endorsed by multiple
