@@ -117,7 +117,7 @@ normative:
     seriesinfo:
       ITU-T Recommendation: X.690
       ISO/IEC: 8825-1:2021
-  I-D.jpfiset-lamps-attestationkey-eku: KeyAttestationEKU
+  I-D.jpfiset-lamps-attestationkey-eku:
 
 informative:
   RFC2986:
@@ -383,7 +383,7 @@ to the device operator as would be the case when the AK certificate is replaced
 as part of onboarding the device into a new operational network.
 
 The AK certificate that signs the evidence MUST have the Extended Key Usage
-`id-kp-attest` defined in {{KeyAttestationEKU}}.
+`id-kp-attest`, as defined in {{I-D.jpfiset-lamps-attestationkey-eku}}, set.
 
 Note that the data format specified in {{sec-data-model}} allows for zero, one, or multiple
 'SignatureBlock's, so a single evidence statement could be un-protected, or could be endorsed by multiple
