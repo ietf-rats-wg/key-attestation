@@ -77,7 +77,6 @@ author:
     email: ned.smith@intel.com
 
 normative:
-  RFC2119:
   RFC9334:
   RFC5280:
   RFC9711:
@@ -106,6 +105,18 @@ normative:
     seriesinfo:
       FIPS: 140-3
     target: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-3.pdf
+  X.690:
+    target: https://www.itu.int/rec/T-REC-X.690
+    title: >
+      Information technology --
+      ASN.1 encoding rules: Specification of Basic Encoding Rules (BER),
+      Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)
+    author:
+    - org: ITU-T
+    date: 2021-02
+    seriesinfo:
+      ITU-T Recommendation: X.690
+      ISO/IEC: 8825-1:2021
 
 informative:
   RFC2986:
@@ -120,7 +131,7 @@ informative:
     author:
       - org: National Security Agency
     target: https://media.defense.gov/2022/Sep/07/2003071834/-1/-1/0/CSA_CNSA_2.0_ALGORITHMS_.PDF
-  codesigningbrsv3.8:
+  CSBR:
     title: "Baseline Requirements for the Issuance and Management of Publicly-Trusted Code Signing Certificates Version 3.8.0"
     author:
       - org: CA/Browser Forum
@@ -149,15 +160,15 @@ This specification also offers a format for requesting a cryptographic module to
 This specification defines a format to transmit Evidence from an Attester to a Verifier within a PKIX
 environment. This environment refers to the components generally used to support PKI applications
 such as Certification Authorities and their clients, or more generally that rely upon X.509 certificates.
-As outlined in {{sec-terminology}}, this specification uses a necessary mixture of RATS and PKI terminology
+As outlined in {{terminology}}, this specification uses a necessary mixture of RATS and PKI terminology
 in order to map concepts between the two domains.
 
-Within this specification, the concepts found in the Remote Attestation Procedures (RATS {{!RFC9334}}) are
+Within this specification, the concepts found in the Remote Attestation Procedures (RATS {{RFC9334}}) are
 mapped to the PKIX environment. There are many other specifications that are based on the RATS architecture
 which offer formats to carry evidence. This specification deals with peculiar aspects of the PKIX environment
 which make the existing evidence formats inappropriate:
 
-* ASN.1 is the preferred encoding format in this environment. X.509 certificates ({{!RFC5280}}) are used
+* ASN.1 is the preferred encoding format in this environment. X.509 certificates ({{RFC5280}}) are used
 widely within this environment and the majority of tools are designed to support ASN.1. There are
 many specialized devices (Hardware Security Modules) that are inflexible in adopting other formats because
 of internal constraints or validation difficulties. This specification defines the format in ASN.1 to ease the
@@ -213,7 +224,7 @@ an HSM is acting as Verifier and Relying Party.
 
 Prior to a Certification Authority (CA) issuing a certificate on behalf of a subject, a number of procedures
 are required to verify that the subject of the certificate is associated with the key that is certified.
-In some cases, such as issuing a code signing certificate [CNSA2.0], [codesigningbrsv3.8], a CA must ensure that
+In some cases, such as issuing a code signing certificate {{CNSA2.0}} {{CSBR}}, a CA must ensure that
 the subject key is located in a Hardware Security Module (HSM).
 
 The Evidence format offered by this specification is designed to carry the information necessary for a CA to
@@ -231,24 +242,26 @@ the HSM contains much more information than that which is relevant to the transa
 The inability to scope-down the generated Evidence could, in some scenarios, constitute a privacy violation.
 
 
-# Terminology {#sec-terminology}
+# Conventions and Terminology {#terminology}
+
+{::boilerplate bcp14}
 
 This specification uses a necessary mixture of RATS and PKI terminology
 in order to map concepts between the two domains.
 
 The reader is assumed to be familiar with the vocabulary and concepts
-defined in the RATS architecture ({{!RFC9334}}) such as Attester,
+defined in the RATS architecture ({{RFC9334}}) such as Attester,
 Relying Party, Verifier.
 
 The reader is assumed to be familiar with common vocabulary and concepts
-defined in {{!RFC5280}} such as certificate, signature, attribute, verifier.
+defined in {{RFC5280}} such as certificate, signature, attribute, verifier.
 
 In order to avoid confusion, this document generally
 capitalizes RATS terms such as Attester, Relying Party, and Claim.
 Therefore, for example, a "Verifier"
-should be assumed to be an entity that checks the validity of Evidence as per {{!RFC9334}},
+should be assumed to be an entity that checks the validity of Evidence as per {{RFC9334}},
 whereas a "verifier" could be a more general reference to a PKI entity that checks
-the validity of an X.509 certificate or other digital signature as per {{!RFC5280}}.
+the validity of an X.509 certificate or other digital signature as per {{RFC5280}}.
 
 The following terms are used in this document:
 
@@ -265,11 +278,11 @@ format outlined in this specification. It collects claims from the platform and 
 Key to digitally sign the collection.
 
 Attester :
-: The term Attester respects the definition offered in {{!RFC9334}}. In this specification, it
+: The term Attester respects the definition offered in {{RFC9334}}. In this specification, it
 is also interchangeable with "platform" or "HSM".
 
 Evidence :
-: The term Evidence respects the definition offered in {{!RFC9334}}. In this specification, it
+: The term Evidence respects the definition offered in {{RFC9334}}. In this specification, it
 refers to claims, encoded according to the format defined within this document, and signed using
 the Attestation Key.
 
@@ -626,19 +639,19 @@ Attributes defined in this specification have further details below.
 | Attribute       | AttributeValue  | Reference     | Multiple? | OID                                            |
 | ---             | ---             | ---           | ---       | ---                                            |
 | vendor          | utf8String      | {{&SELF}}     | No        | id-pkix-evidence-attribute-platform-vendor     |
-| oemid           | bytes           | {{!RFC9711}}  | No        | id-pkix-evidence-attribute-platform-oemid      |
-| hwmodel         | bytes           | {{!RFC9711}}  | No        | id-pkix-evidence-attribute-platform-hwmodel    |
-| hwversion       | utf8String      | {{!RFC9711}}  | No        | id-pkix-evidence-attribute-platform-hwversion  |
+| oemid           | bytes           | {{RFC9711}}  | No        | id-pkix-evidence-attribute-platform-oemid      |
+| hwmodel         | bytes           | {{RFC9711}}  | No        | id-pkix-evidence-attribute-platform-hwmodel    |
+| hwversion       | utf8String      | {{RFC9711}}  | No        | id-pkix-evidence-attribute-platform-hwversion  |
 | hwserial        | utf8String      | {{&SELF}}     | No        | id-pkix-evidence-attribute-platform-hwserial   |
-| swname          | utf8String      | {{!RFC9711}}  | No        | id-pkix-evidence-attribute-platform-swname     |
-| swversion       | utf8String      | {{!RFC9711}}  | No        | id-pkix-evidence-attribute-platform-swversion  |
-| dbgstat         | int             | {{!RFC9711}}  | No        | id-pkix-evidence-attribute-platform-debugstat  |
-| uptime          | int             | {{!RFC9711}}  | No        | id-pkix-evidence-attribute-platform-uptime     |
-| bootcount       | int             | {{!RFC9711}}  | No        | id-pkix-evidence-attribute-platform-bootcount  |
-| fipsboot        | bool            | {{?FIPS140-3}}| No        | id-pkix-evidence-attribute-platform-fipsboot   |
-| fipsver         | utf8String      | {{?FIPS140-3}}| No        | id-pkix-evidence-attribute-platform-fipsver    |
-| fipslevel       | int             | {{?FIPS140-3}}| No        | id-pkix-evidence-attribute-platform-fipslevel  |
-| fipsmodule      | utf8String      | {{?FIPS140-3}}| No        | id-pkix-evidence-attribute-platform-fipsmodule |
+| swname          | utf8String      | {{RFC9711}}  | No        | id-pkix-evidence-attribute-platform-swname     |
+| swversion       | utf8String      | {{RFC9711}}  | No        | id-pkix-evidence-attribute-platform-swversion  |
+| dbgstat         | int             | {{RFC9711}}  | No        | id-pkix-evidence-attribute-platform-debugstat  |
+| uptime          | int             | {{RFC9711}}  | No        | id-pkix-evidence-attribute-platform-uptime     |
+| bootcount       | int             | {{RFC9711}}  | No        | id-pkix-evidence-attribute-platform-bootcount  |
+| fipsboot        | bool            | {{FIPS140-3}} | No        | id-pkix-evidence-attribute-platform-fipsboot   |
+| fipsver         | utf8String      | {{FIPS140-3}} | No        | id-pkix-evidence-attribute-platform-fipsver    |
+| fipslevel       | int             | {{FIPS140-3}} | No        | id-pkix-evidence-attribute-platform-fipslevel  |
+| fipsmodule      | utf8String      | {{FIPS140-3}} | No        | id-pkix-evidence-attribute-platform-fipsmodule |
 
 Each attribute defined in the table above is described in the following sub-sections.
 
@@ -649,9 +662,9 @@ FIPS validation, this string should correspond to the vendor field of the submis
 
 ### oemid, hwmodel, hwversion, swname, swversion, dbgstat, uptime, bootcount
 
-These attributes are defined in {{!RFC9711}} and reused in this specification for interoperability. Small
+These attributes are defined in {{RFC9711}} and reused in this specification for interoperability. Small
 descriptions are offered for each to ease the reading of this specification. In case of confusion between the
-description offered here and the one in {{!RFC9711}}, the definition offered in the latter shall prevail.
+description offered here and the one in {{RFC9711}}, the definition offered in the latter shall prevail.
 
 The attribute "oemid" uniquely identifies the Original Equipment Manufacturer (OEM) of the HSM. This is a
 sequence of bytes and is not meant to be a human readable string.
@@ -668,7 +681,7 @@ The attribute "swversion" differentiates between the various revisions of a firm
 is a string that is expected to be human readable.
 
 The attribute "dbgstat" refers to the state of the debug facilities offered by the HSM. This is an integer
-value describing the current state as described in {{!RFC9711}}.
+value describing the current state as described in {{RFC9711}}.
 
 The attribute "uptime" reports the number of seconds that have elapsed since the HSM was last booted.
 
@@ -745,7 +758,7 @@ cryptographic key.
 
 ### spki
 
-The value of this attribute contains the DER-encoded field SubjectPublicKeyInfo (see {{!RFC5280}}) associated with the cryptographic
+The value of this attribute contains the DER-encoded field SubjectPublicKeyInfo (see {{RFC5280}}) associated with the cryptographic
 key.
 
 ### extractable, sensitive, never-extractable, local
@@ -790,7 +803,7 @@ PkixEvidenceKeyCapabilities ::= SEQUENCE OF OBJECT IDENTIFIER
 ~~~
 
 The following table describes the key capabilities defined in this specification. The key capabilities offered are based on key
-attributes provided by PKCS#11. Each capability is assigned an object identifier (OID). 
+attributes provided by PKCS#11. Each capability is assigned an object identifier (OID).
 
 | Capability       | PKCS#11            | OID                                            |
 | ---              | ---                | ---                                            |
@@ -829,28 +842,28 @@ for the attribute value can be found.
 
 | Attribute       | AttributeValue  | Reference     | Multiple? | OID                                               |
 | ---             | ---             | ---           | ---       | ---                                               |
-| nonce           | bytes           | {{!RFC9711}}  | No        | id-pkix-evidence-attribute-transaction-nonce      |
-| timestamp       | time            | {{!RFC9711}}  | No        | id-pkix-evidence-attribute-transaction-timestamp  |
+| nonce           | bytes           | {{RFC9711}}  | No        | id-pkix-evidence-attribute-transaction-nonce      |
+| timestamp       | time            | {{RFC9711}}  | No        | id-pkix-evidence-attribute-transaction-timestamp  |
 | ak-spki         | bytes           | {{&SELF}}     | Yes       | id-pkix-evidence-attribute-transaction-ak-spki    |
 
 ### nonce
 
 The attribute "nonce" is used to provide "freshness" quality as to the claims provided in the PkixEvidence message. A Presenter requesting a PkixEvidence message MAY provide a nonce value as part of the request. This nonce value, if provided, SHOULD be repeated in the generated Evidence as an attribute within the transaction entity. Unlike EAT, only a single `transaction.nonce` is permitted to simplify verifier logic and reduce ambiguity.
 
-This is similar to the attribute "eat_nonce" as defined in {{!RFC9711}}. According to that specification, this attribute may be specified multiple times with
+This is similar to the attribute "eat_nonce" as defined in {{RFC9711}}. According to that specification, this attribute may be specified multiple times with
 different values. However, within the scope of this specification, the "nonce" value can be specified only once within a transaction.
 
 ### timestamp
 
 The time at which the PKIX Evidence was generated, according to the internal system clock of the Attester. This is similar to the
-"iat" claim in {{!RFC9711}}.
+"iat" claim in {{RFC9711}}.
 
 Note that security considerations should be taken relating to the evaluation of timestamps generated by HSMs. See {{sec-cons-hsm-timestamps}}.
 
 ### ak-spki
 
 This field contains the encoded Subject Public Key Information (SPKI) for the attestation key used to sign the evidence. The definition
-and encoding for SPKIs are defined in X.509 certificates ({{!RFC5280}}).
+and encoding for SPKIs are defined in X.509 certificates ({{RFC5280}}).
 
 This transaction attribute is used to bind the content of the evidence with the key(s) used to sign that evidence. The importance
 of this binding is discussed in {{sec-detached-sigs}}.
@@ -866,7 +879,7 @@ See {{sec-req-processing}}, {{sec-req-verification}} and {{sec-cons-verifier}} f
 
 ## Encoding
 
-A PkixEvidence is to be DER encoded [X.690].
+A PkixEvidence is to be DER encoded {{X.690}}.
 
 If a textual representation is required, then the DER encoding MAY be subsequently encoded into Base64 as defined in RFC 4648.
 
@@ -1036,7 +1049,7 @@ non-specified value (left empty).
 
 In this case, the Attester adds a transaction attribute of type "ak-spki" for each Attestation Key used to sign the evidence. The
 value of this attribute is an octet string (bytes) which is the encoding of the Subject Public Key Information (SPKI) associated
-with the Attestation Key. Details on SPKIs and their encoding can be found in X.509 certificates ({{!RFC5280}}).
+with the Attestation Key. Details on SPKIs and their encoding can be found in X.509 certificates ({{RFC5280}}).
 
 This reporting effectively binds the signature blocks to the content (see {{sec-detached-sigs}}).
 
