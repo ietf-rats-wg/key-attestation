@@ -2702,13 +2702,14 @@ PKIX-Evidence-2025
         security(5) mechanisms(5) pkix(7) id-mod(0)
         id-mod-pkix-evidence-2025(TBDMOD) }
 
+DEFINITIONS IMPLICIT TAGS ::=
+BEGIN
 
 PkixEvidence ::= SEQUENCE {
     tbs                           TbsPkixEvidence,
-    signatures                    SEQUENCE SIZE (0..MAX) of \
+    signatures                    SEQUENCE SIZE (0..MAX) OF \
                                                       SignatureBlock,
-    intermediateCertificates  [0] IMPLICIT SEQUENCE of Certificate \
-                                                             OPTIONAL
+    intermediateCertificates  [0] SEQUENCE OF Certificate OPTIONAL
                                   -- As defined in RFC 5280
 }
 
@@ -2724,17 +2725,17 @@ ReportedEntity ::= SEQUENCE {
 
 ReportedAttribute ::= SEQUENCE {
     attributeType      OBJECT IDENTIFIER,
-    value              OPTIONAL AttributeValue
+    value              AttributeValue OPTIONAL
 }
 
-AttributeValue :== CHOICE {
-   bytes       [0] IMPLICIT OCTET STRING
-   utf8String  [1] IMPLICIT UTF8String,
-   bool        [2] IMPLICIT BOOLEAN,
-   time        [3] IMPLICIT GeneralizedTime,
-   int         [4] IMPLICIT INTEGER,
-   oid         [5] IMPLICIT OBJECT IDENTIFIER,
-   null        [6] IMPLICIT NULL
+AttributeValue ::= CHOICE {
+   bytes       [0] OCTET STRING,
+   utf8String  [1] UTF8String,
+   bool        [2] BOOLEAN,
+   time        [3] GeneralizedTime,
+   int         [4] INTEGER,
+   oid         [5] OBJECT IDENTIFIER,
+   null        [6] NULL
 }
 
 SignatureBlock ::= SEQUENCE {
@@ -2851,6 +2852,7 @@ id-pkix-evidence-key-capability-verify-recover   OBJECT IDENTIFIER :\
 id-pkix-evidence-key-capability-derive           OBJECT IDENTIFIER :\
                              := { id-pkix-evidence-key-capability 8 }
 
+END
 
 &lt;CODE ENDS&gt;
 
