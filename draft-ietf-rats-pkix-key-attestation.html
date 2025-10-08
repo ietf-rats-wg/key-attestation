@@ -1650,7 +1650,7 @@ that the device is genuine and not counterfeit. The trust anchor can also belong
 to the device operator as would be the case when the AK certificate is replaced
 as part of onboarding the device into a new operational network.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 <p id="section-3.2-2">The AK certificate that signs the evidence <span class="bcp14">MUST</span> have the Extended Key Usage
-<code>id-kp-attest</code> defined in [TODO-submit-2-pager-to-lamps].<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<code>id-kp-attest</code> defined in <span>[<a href="#KeyAttestationEKU" class="cite xref">KeyAttestationEKU</a>]</span>.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
 <p id="section-3.2-3">Note that the data format specified in <a href="#sec-data-model" class="auto internal xref">Section 5</a> allows for zero, one, or multiple
 'SignatureBlock's, so a single evidence statement could be un-protected, or could be endorsed by multiple
 AK chains leading to different trust anchors. See <a href="#sec-verif-proc" class="auto internal xref">Section 6</a> for a discussion of handling multiple SignatureBlocks.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
@@ -3044,6 +3044,10 @@ such as the "nonce" attribute of the "transaction" entity, introduced this speci
 <dt id="FIPS140-3">[FIPS140-3]</dt>
         <dd>
 <span class="refAuthor">NIST, Information Technology Laboratory</span>, <span class="refTitle">"Security Requirements for Cryptographic Modules"</span>, <span class="seriesInfo">FIPS 140-3</span>, <span>n.d.</span>, <span>&lt;<a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-3.pdf">https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-3.pdf</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="KeyAttestationEKU">[KeyAttestationEKU]</dt>
+        <dd>
+<span class="refAuthor">DRAFT</span>, <span class="refTitle">"Extended Key Usage (EKU) for X.509 Certificates associated with Attestation Keys"</span>, <span>n.d.</span>, <span>&lt;<a href="https://github.com/jpfiset/draft-jpfiset-attestationkey-eku">https://github.com/jpfiset/draft-jpfiset-attestationkey-eku</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="PKCS11">[PKCS11]</dt>
         <dd>

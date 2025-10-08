@@ -429,7 +429,7 @@ Table of Contents
    the device into a new operational network.
 
    The AK certificate that signs the evidence MUST have the Extended Key
-   Usage id-kp-attest defined in [TODO-submit-2-pager-to-lamps].
+   Usage id-kp-attest defined in [KeyAttestationEKU].
 
    Note that the data format specified in Section 5 allows for zero,
    one, or multiple 'SignatureBlock's, so a single evidence statement
@@ -1934,6 +1934,12 @@ Table of Contents
               Requirements for Cryptographic Modules", FIPS 140-3, n.d.,
               <https://nvlpubs.nist.gov/nistpubs/FIPS/
               NIST.FIPS.140-3.pdf>.
+
+   [KeyAttestationEKU]
+              DRAFT, "Extended Key Usage (EKU) for X.509 Certificates
+              associated with Attestation Keys", n.d.,
+              <https://github.com/jpfiset/draft-jpfiset-attestationkey-
+              eku>.
 
    [PKCS11]   Bong, D., Cox, T., and OASIS PKCS 11 TC, "PKCS #11
               Specification Version 3.1", 11 August 2022,
