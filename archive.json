@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-07T00:42:15.403396+00:00",
+  "timestamp": "2025-10-09T00:43:04.398473+00:00",
   "repo": "ietf-rats-wg/key-attestation",
   "labels": [
     {
@@ -915,15 +915,15 @@
       "id": "I_kwDONUAin87NGWKK",
       "title": "Link EKU to terminology section",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/57",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "jpfiset",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "There is currently an undefined link with the text:\n\n\\[TODO-submit-2-pager-to-lamps\\]",
       "createdAt": "2025-09-22T13:24:14Z",
-      "updatedAt": "2025-09-22T13:24:14Z",
-      "closedAt": null,
+      "updatedAt": "2025-10-08T18:13:00Z",
+      "closedAt": "2025-10-08T18:13:00Z",
       "comments": []
     },
     {
@@ -947,15 +947,15 @@
       "id": "I_kwDONUAin87Pvnb5",
       "title": "Change Monty's email address to mwiseman@computer.org",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/59",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "ounsworth",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2025-10-06T00:58:36Z",
-      "updatedAt": "2025-10-06T00:58:36Z",
-      "closedAt": null,
+      "updatedAt": "2025-10-08T18:07:34Z",
+      "closedAt": "2025-10-08T18:07:34Z",
       "comments": []
     },
     {
@@ -986,24 +986,32 @@
       "labels": [],
       "body": "EDNOTE: I think we have to be precise about which flavour of Base64 we are referring to.",
       "createdAt": "2025-10-06T18:05:33Z",
-      "updatedAt": "2025-10-06T18:05:33Z",
+      "updatedAt": "2025-10-08T18:37:50Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Hannes, I wonder if this is what you had in mind.",
+          "createdAt": "2025-10-08T18:37:50Z",
+          "updatedAt": "2025-10-08T18:37:50Z"
+        }
+      ]
     },
     {
       "number": 63,
       "id": "I_kwDONUAin87P9IC-",
       "title": "Expand on key purpose/capabilities",
       "url": "https://github.com/ietf-rats-wg/key-attestation/issues/63",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "jpfiset",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "After the authors' meeting today, it was decided to introduce an attribute to key entities where all key capabilities will be reported.\n\nThis is a sequence of OIDs (new OIDs needed) to refer to the PKCS#11 attributes:\n- CKA_ENCRYPT\n- CKA_DECRYPT\n- CKA_WRAP\n- CKA_UNWRAP\n- CKA_SIGN\n- CKA_SIGN_RECOVER\n- CKA_VERIFY\n- CKA_VERIFY_RECOVER\n- CKA_DERIVE\n",
       "createdAt": "2025-10-06T20:12:20Z",
-      "updatedAt": "2025-10-06T20:12:20Z",
-      "closedAt": null,
+      "updatedAt": "2025-10-07T19:11:59Z",
+      "closedAt": "2025-10-07T19:11:59Z",
       "comments": []
     }
   ],
@@ -1789,24 +1797,26 @@
       "id": "PR_kwDONUAin86sVYyz",
       "title": "High-Level Review Comments",
       "url": "https://github.com/ietf-rats-wg/key-attestation/pull/60",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "hannestschofenig",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Nits here and there.",
       "createdAt": "2025-10-06T18:03:29Z",
-      "updatedAt": "2025-10-06T18:05:54Z",
+      "updatedAt": "2025-10-07T19:46:42Z",
       "baseRepository": "ietf-rats-wg/key-attestation",
       "baseRefName": "main",
-      "baseRefOid": "4a582f5f574bb8df9d1b8d71e489f5d767980f64",
+      "baseRefOid": "9d2882093a5770549537951ca5be547a5a9cf51f",
       "headRepository": "ietf-rats-wg/key-attestation",
       "headRefName": "hannestschofenig-patch-2",
-      "headRefOid": "cdfb6e65b8f10727023db5196ca45f6d4c440db4",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "09f99854c5c52117a619a6c3765988886feb4721",
+      "closedAt": "2025-10-07T19:46:42Z",
+      "mergedAt": "2025-10-07T19:46:42Z",
+      "mergedBy": "jpfiset",
+      "mergeCommit": {
+        "oid": "b1f0a137d13a739cea97f8a492c15b61f31e95dd"
+      },
       "comments": [],
       "reviews": [
         {
@@ -1828,8 +1838,162 @@
               "updatedAt": "2025-10-06T18:05:50Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDONUAin87FY9mA",
+          "commit": {
+            "abbreviatedOid": "09f9985"
+          },
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-10-07T19:46:25Z",
+          "updatedAt": "2025-10-07T19:46:25Z",
+          "comments": []
         }
       ]
+    },
+    {
+      "number": 64,
+      "id": "PR_kwDONUAin86smnne",
+      "title": "asn1 mod wouldn't compile.",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/pull/64",
+      "state": "MERGED",
+      "author": "ounsworth",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-10-08T02:09:14Z",
+      "updatedAt": "2025-10-08T17:58:29Z",
+      "baseRepository": "ietf-rats-wg/key-attestation",
+      "baseRefName": "main",
+      "baseRefOid": "ad904446bc376d1cddabe795a470e7ae9bc471a3",
+      "headRepository": "ietf-rats-wg/key-attestation",
+      "headRefName": "mikeo_fix_asn",
+      "headRefOid": "cd5e9aa4fbb67f5bd113eea55b47af26ca5da4a5",
+      "closedAt": "2025-10-08T17:58:15Z",
+      "mergedAt": "2025-10-08T17:58:15Z",
+      "mergedBy": "jpfiset",
+      "mergeCommit": {
+        "oid": "fe64672997781a01fc2414e19492cba79d92f69b"
+      },
+      "comments": [
+        {
+          "author": "hannestschofenig",
+          "authorAssociation": "COLLABORATOR",
+          "body": "We have to include the ASN.1 file as an import into the draft since otherwise we will get the .asn file and the draft out of sync. ",
+          "createdAt": "2025-10-08T17:08:04Z",
+          "updatedAt": "2025-10-08T17:08:04Z"
+        },
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks Mike!",
+          "createdAt": "2025-10-08T17:58:29Z",
+          "updatedAt": "2025-10-08T17:58:29Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDONUAin87Fn2Zu",
+          "commit": {
+            "abbreviatedOid": "cd5e9aa"
+          },
+          "author": "nedmsmith",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "LGTM",
+          "createdAt": "2025-10-08T16:04:14Z",
+          "updatedAt": "2025-10-08T16:04:14Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 65,
+      "id": "PR_kwDONUAin86swHrs",
+      "title": "Aligning ASN.1 in draft and in the external ASN.1 file",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/pull/65",
+      "state": "MERGED",
+      "author": "hannestschofenig",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-10-08T18:03:45Z",
+      "updatedAt": "2025-10-08T18:06:39Z",
+      "baseRepository": "ietf-rats-wg/key-attestation",
+      "baseRefName": "main",
+      "baseRefOid": "fe64672997781a01fc2414e19492cba79d92f69b",
+      "headRepository": "ietf-rats-wg/key-attestation",
+      "headRefName": "hannestschofenig-patch-3",
+      "headRefOid": "842b52c0c2d0d1f3a6479ae38e21d4d4f23e3189",
+      "closedAt": "2025-10-08T18:06:38Z",
+      "mergedAt": "2025-10-08T18:06:38Z",
+      "mergedBy": "jpfiset",
+      "mergeCommit": {
+        "oid": "dd8066a08a647f5c507bcbbff33deeb2b6777be7"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 66,
+      "id": "PR_kwDONUAin86swQUj",
+      "title": "Better reference for attestationkey-eku",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/pull/66",
+      "state": "MERGED",
+      "author": "hannestschofenig",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-10-08T18:16:34Z",
+      "updatedAt": "2025-10-08T18:23:39Z",
+      "baseRepository": "ietf-rats-wg/key-attestation",
+      "baseRefName": "main",
+      "baseRefOid": "159a894395b8dfe642cebf1e38265fab5cfceea3",
+      "headRepository": "ietf-rats-wg/key-attestation",
+      "headRefName": "hannestschofenig-patch-4",
+      "headRefOid": "ea7c0ef7815bb3ca3f2a1d33b0ba7ba874c7b034",
+      "closedAt": "2025-10-08T18:23:39Z",
+      "mergedAt": "2025-10-08T18:23:39Z",
+      "mergedBy": "jpfiset",
+      "mergeCommit": {
+        "oid": "4af5a5d0342992b677a6ce0a28e76043d4f7ae15"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 67,
+      "id": "PR_kwDONUAin86swT0E",
+      "title": "Terminology Section Update",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/pull/67",
+      "state": "MERGED",
+      "author": "hannestschofenig",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-10-08T18:20:47Z",
+      "updatedAt": "2025-10-08T18:23:26Z",
+      "baseRepository": "ietf-rats-wg/key-attestation",
+      "baseRefName": "hannestschofenig-patch-4",
+      "baseRefOid": "4f70d9a4e095ec91f168492eb8593d742bcd954c",
+      "headRepository": "ietf-rats-wg/key-attestation",
+      "headRefName": "hannestschofenig-patch-5",
+      "headRefOid": "64c687f72820afdded28853d12b172ce00c825f5",
+      "closedAt": "2025-10-08T18:23:26Z",
+      "mergedAt": "2025-10-08T18:23:26Z",
+      "mergedBy": "jpfiset",
+      "mergeCommit": {
+        "oid": "ea7c0ef7815bb3ca3f2a1d33b0ba7ba874c7b034"
+      },
+      "comments": [],
+      "reviews": []
     }
   ]
 }
