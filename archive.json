@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-09T00:43:04.398473+00:00",
+  "timestamp": "2025-10-12T00:45:14.467072+00:00",
   "repo": "ietf-rats-wg/key-attestation",
   "labels": [
     {
@@ -363,7 +363,7 @@
       "labels": [],
       "body": "Given the name of the draft changed to include pkix, should the repo name be updated as well to disambiguate from prior naming?",
       "createdAt": "2025-03-19T18:20:20Z",
-      "updatedAt": "2025-07-14T15:30:05Z",
+      "updatedAt": "2025-10-09T20:38:48Z",
       "closedAt": null,
       "comments": [
         {
@@ -372,6 +372,13 @@
           "body": "I think that the name could be changed to \"pkix-evidence\". However, I am not sure of all the changes required to keep datatracker and GitHub consistent.",
           "createdAt": "2025-07-14T15:30:05Z",
           "updatedAt": "2025-07-14T15:30:05Z"
+        },
+        {
+          "author": "mwiseman32",
+          "authorAssociation": "NONE",
+          "body": "I recommend changing to \"pkix-evidence-for-hsm\"",
+          "createdAt": "2025-10-09T20:38:48Z",
+          "updatedAt": "2025-10-09T20:38:48Z"
         }
       ]
     },
@@ -1012,6 +1019,62 @@
       "createdAt": "2025-10-06T20:12:20Z",
       "updatedAt": "2025-10-07T19:11:59Z",
       "closedAt": "2025-10-07T19:11:59Z",
+      "comments": []
+    },
+    {
+      "number": 68,
+      "id": "I_kwDONUAin87Qpq5d",
+      "title": "Platform may be a superfluous term",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/issues/68",
+      "state": "OPEN",
+      "author": "mwiseman32",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Giving this a fresh read, the term \"Platform\" seems superfluous. The document specifically defines Platform as: \"interchangeable with \"Attester\" or \"HSM\" \" why not just use the term 'HSM'. Further, this document specifically states the target entity (intentionally lower case) is an HSM, why not just remove the indirection and replace 'Platform' with 'HSM'.",
+      "createdAt": "2025-10-09T20:47:50Z",
+      "updatedAt": "2025-10-09T20:47:50Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 69,
+      "id": "I_kwDONUAin87QptMu",
+      "title": "Be specific about the TPM",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/issues/69",
+      "state": "OPEN",
+      "author": "mwiseman32",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "The term \"TPM\" is often used as a generic \"HSM\" outside the one defined by TCG. I recommend this document be specific that this definition refers specifically to TCG's defined TPM. This document's definitions already state that this draft can be applied more broadly anyway.",
+      "createdAt": "2025-10-09T20:52:13Z",
+      "updatedAt": "2025-10-10T13:22:06Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "jpfiset",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Specifically, what changes would you like to see in the draft?",
+          "createdAt": "2025-10-10T13:22:06Z",
+          "updatedAt": "2025-10-10T13:22:06Z"
+        }
+      ]
+    },
+    {
+      "number": 70,
+      "id": "I_kwDONUAin87Q9xi2",
+      "title": "ASN1 naming conventions",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/issues/70",
+      "state": "OPEN",
+      "author": "ounsworth",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Are you sure about \n\n```\nid-pkix-evidence-entity-type \nid-pkix-evidence-attribute-type\n```\n\nas the base OID arcs that we'll put everything else under? Specifically, why the \"-type\"? Couldn't they just be\n\n\n```\nid-pkix-evidence-entity\nid-pkix-evidence-attribute\n```\n\n?",
+      "createdAt": "2025-10-11T13:43:58Z",
+      "updatedAt": "2025-10-11T13:43:58Z",
+      "closedAt": null,
       "comments": []
     }
   ],
