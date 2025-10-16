@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-12T00:45:14.467072+00:00",
+  "timestamp": "2025-10-16T00:44:07.314889+00:00",
   "repo": "ietf-rats-wg/key-attestation",
   "labels": [
     {
@@ -1074,6 +1074,22 @@
       "body": "Are you sure about \n\n```\nid-pkix-evidence-entity-type \nid-pkix-evidence-attribute-type\n```\n\nas the base OID arcs that we'll put everything else under? Specifically, why the \"-type\"? Couldn't they just be\n\n\n```\nid-pkix-evidence-entity\nid-pkix-evidence-attribute\n```\n\n?",
       "createdAt": "2025-10-11T13:43:58Z",
       "updatedAt": "2025-10-11T13:43:58Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 71,
+      "id": "I_kwDONUAin87RgOh-",
+      "title": "Review of 02 by Russ Housley",
+      "url": "https://github.com/ietf-rats-wg/key-attestation/issues/71",
+      "state": "OPEN",
+      "author": "jpfiset",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Review from Russ Housley:\n\n```txt\nI have a few concerns about the -02 version of the document.\n\nMAJOR:\n\nS 5: Why allow a SEQUENCE OF SignatureBlock with zero items?  The text says that \"The integrity of the TBS section is ensured with one or multiple cryptographic signatures...\", but the syntax allows for no signature at all.\n\n\nMINOR:\n\nS 3.2: The EKU certificate extension does not \"set\" various values.  The KU certificate extensions does; it is a bit mask.  However, EKU is a SEQUENCE of object identifiers.\n\nOLD:\n\n   The AK certificate that signs the evidence MUST have the Extended Key\t\n   Usage id-kp-attest, as defined in\n   [I-D.jpfiset-lamps-attestationkey-eku], set.\n\nNEW:\n\n   The AK certificate that signs the evidence MUST include the Extended Key\t\n   Usage (EKU) certificate extension, and the EKU certificate extension MUST\n   include the  id-kp-attest, as defined in [I-D.jpfiset-lamps-attestationkey-eku].\n\n\nNITS:\n\nS 1: s/The claims reported within the generated Evidence is generally/The claims reported within the generated Evidence are generally/\n\nS 2.3: s/inability to scope-down the generated Evidence/not reducing the scope of the generated Evidence/\n\nS 3.1: s/[RFC9334]/The RATS Architecture [RFC9334]/\n\nS 3.2: s/id-kp-attest, as defined in [I-D.jpfiset-lamps-attestationkey-eku], set./id-kp-attest, as defined in [I-D.jpfiset-lamps-attestationkey-eku], set./\n\nS 5.1.2: Wouldn't it be cleaner to have a section for each of these attributes, even if they are only one paragraph each?\n\nS 5.1.4: Wouldn't it be cleaner to have a section for each of these attributes, even if they are only one paragraph each?\n\nS 8: Please get rid of all back slash characters in the ASN.1 module.  They are not needed!  Example without '\\':\n\n   id-pkix-evidence-key-capability-derive OBJECT IDENTIFIER ::=\n      { id-pkix-evidence-key-capability 8 }\n\n```",
+      "createdAt": "2025-10-14T17:36:06Z",
+      "updatedAt": "2025-10-14T17:36:06Z",
       "closedAt": null,
       "comments": []
     }
