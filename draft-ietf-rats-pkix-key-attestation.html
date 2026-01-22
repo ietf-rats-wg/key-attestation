@@ -1508,17 +1508,18 @@ of producing Evidence. In other words, it is used to digitally sign the claims c
 the Attester.<a href="#section-3-7.2.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-7.3">Attestation Service (AttS):</dt>
+<dt id="section-3-7.3">Attester:</dt>
         <dd style="margin-left: 1.5em" id="section-3-7.4">
-          <p id="section-3-7.4.1">A logical module within the HSM that is responsible for generating Evidence compatible with the
-format outlined in this specification. It collects claims from the platform and uses the Attestation
-Key to digitally sign the collection.<a href="#section-3-7.4.1" class="pilcrow">¶</a></p>
+          <p id="section-3-7.4.1">The term Attester respects the definition offered in <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>. In this specification, it
+is also interchangeable with "platform" or "HSM".<a href="#section-3-7.4.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-7.5">Attester:</dt>
+<dt id="section-3-7.5">Attesting Environment:</dt>
         <dd style="margin-left: 1.5em" id="section-3-7.6">
-          <p id="section-3-7.6.1">The term Attester respects the definition offered in <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>. In this specification, it
-is also interchangeable with "platform" or "HSM".<a href="#section-3-7.6.1" class="pilcrow">¶</a></p>
+          <p id="section-3-7.6.1">As defined in <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>, the Attesting Environment collects the information to be represented
+in Claims. In practical terms, an implementation may be designed with services to perform this function.
+To remain consistent with the RATS architecture, the term "Attesting Environment" is used throughout
+this specification.<a href="#section-3-7.6.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 <dt id="section-3-7.7">Evidence:</dt>
@@ -1607,7 +1608,7 @@ asserted information, often in the form of a name/value pair". The RATS Architec
 the concept of "measurements" that "can describe a variety of attributes of system components, such
 as hardware, firmware, BIOS, software, etc., and how they are hardened."<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 <p id="section-3.1-2">Some HSMs have a large amount of memory and can therefore contain a substantial amount of elements that
-can be observed independently by the Attestation Service. Each of those elements, in turn, can contain a
+can be observed independently by the Attesting Environment. Each of those elements, in turn, can contain a
 number of measurable attributes.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
 <p id="section-3.1-3">A certain level of complexity arises as multiple elements of the same class can be observed while generating
 Evidence. In that case, the "name" of the claim must also include the "address" of the element.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
@@ -1621,7 +1622,7 @@ Evidence. In that case, the "name" of the claim must also include the "address" 
 same class; and,<a href="#section-3.1-5.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-3.1-5.3">
-            <p id="section-3.1-5.3.1">the value is the actual measurement performed by the Attestation Service.<a href="#section-3.1-5.3.1" class="pilcrow">¶</a></p>
+            <p id="section-3.1-5.3.1">the value is the actual measurement performed by the Attesting Environment.<a href="#section-3.1-5.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-3.1-6">Therefore, each entity is a collection of claims, where the "name/value" pair represents one attribute
@@ -2526,8 +2527,8 @@ required to launch the process of creating the PKIX Evidence and capturing it to
                 <text x="128" y="148">attributes)</text>
                 <text x="168" y="196">Collect</text>
                 <text x="164" y="212">Claims</text>
-                <text x="120" y="260">Attestation</text>
-                <text x="104" y="276">Service</text>
+                <text x="112" y="260">Attesting</text>
+                <text x="120" y="276">Environment</text>
                 <text x="56" y="372">Attestation</text>
                 <text x="180" y="372">PKIX</text>
                 <text x="40" y="388">Request</text>
@@ -2544,7 +2545,7 @@ required to launch the process of creating the PKIX Evidence and capturing it to
 </div>
 <p id="section-7-6">An Attestation Request (request) is assembled by the Presenter and submitted to the HSM. The HSM parses the request and produces PKIX Evidence
 which is returned to the Presenter for distribution.<a href="#section-7-6" class="pilcrow">¶</a></p>
-<p id="section-7-7">In the previous figure, the HSM is represented as being composed of an attestation service and a Target Environment. This representation is offered
+<p id="section-7-7">In the previous figure, the HSM is represented as being composed of an Attesting Environment and a Target Environment. This representation is offered
 as a simplified view and implementations are not required to adhere to this separation of concerns.<a href="#section-7-7" class="pilcrow">¶</a></p>
 <p id="section-7-8">The aim of the figure is to depict the position of the Presenter as an intermediate role between the Attester (in this case the HSM) and the Verifier.
 The role of "Presenter" is privileged as it controls the Evidence being generated by the Attester. However, the role is not "trusted" as
@@ -2555,7 +2556,7 @@ be included in the Evidence produced by the HSM.<a href="#section-7-9" class="pi
 of <code>ReportedAttribute</code> known as request attributes. The collection of request entities and request attributes represent the information desired
 by the Presenter.<a href="#section-7-10" class="pilcrow">¶</a></p>
 <p id="section-7-11">In most cases the value of a request attribute should be left unspecified by the Presenter. In the process of generating
-the Evidence, the values of the desired attributes are observed by the Attestation Service within the HSM and reported accordingly. For the purpose
+the Evidence, the values of the desired attributes are observed by the Attesting Environment within the HSM and reported accordingly. For the purpose
 of creating a request, the Presenter does not specify the value of the requested attributes and leaves them empty. This is possible because the definition of
 the structure <code>ReportedAttribute</code> specifies the element <code>value</code> as optional.<a href="#section-7-11" class="pilcrow">¶</a></p>
 <p id="section-7-12">On the other hand, there are circumstances where the value of a request attribute should be provided by the Presenter. For example, when a particular
@@ -2925,19 +2926,19 @@ fosters a higher likelihood of achieving interoperability.<a href="#section-10.1
         <h3 id="name-simple-to-implement">
 <a href="#section-10.2" class="section-number selfRef">10.2. </a><a href="#name-simple-to-implement" class="section-name selfRef">Simple to Implement</a>
         </h3>
-<p id="section-10.2-1">The nature of attestation requires the Attestation Service to be implemented in an extremely
-privileged position within the HSM so that it can collect measurements of both the hardware
-environment and the user keys being attested. For many HSM architectures, this will
-place the Attestation Service inside the "security kernel" and potentially subject to FIPS 140-3
-or Common Criteria validation and change control. For both security and compliance reasons
+<p id="section-10.2-1">The nature of attestation requires the Attesting Environment to be implemented in an extremely
+privileged position within the HSM so that it can collect the required measurements such as
+hardware registers and the user keys. For many HSM architectures, this will
+place the Attesting Environment inside the "security kernel" and potentially subject to FIPS 140-3
+or Common Criteria validation and change control. For both security and compliance reasons,
 there is incentive for the generation and parsing logic to be simple and easy to implement
 correctly. Additionally, when the data formats contained in this specification are parsed
-within an HSM boundary -- that would be parsing a request entity, or parsing an attestation
+within an HSM boundary -- that would be parsing a request entity, or parsing Evidence
 produced by a different HSM -- implementers <span class="bcp14">SHOULD</span> opt for simple logic that rejects any
 data that does not match the expected format, instead of attempting to be flexible.<a href="#section-10.2-1" class="pilcrow">¶</a></p>
-<p id="section-10.2-2">In particular, the Attestation Service <span class="bcp14">SHOULD</span> generate the PKIX Evidence from scratch and
-avoid copying any content from the request. The Attestation Service <span class="bcp14">MUST</span> generate PKIX Evidence
-only from attributes and values that are observed by the service.<a href="#section-10.2-2" class="pilcrow">¶</a></p>
+<p id="section-10.2-2">In particular, the Attesting Environment <span class="bcp14">SHOULD</span> generate the PKIX Evidence from scratch and
+avoid copying any content from the request. The Attesting Environment <span class="bcp14">MUST</span> generate PKIX Evidence
+only from information and measurements that are directly observable by it.<a href="#section-10.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-detached-sigs">
@@ -3014,7 +3015,7 @@ below.<a href="#section-10.6-2" class="pilcrow">¶</a></p>
 <p id="section-10.6-3">First, a user key intended for TLS, as an example, <span class="bcp14">SHOULD</span> only be used with the TLS protocol. Introducing a signature oracle whereby the TLS application key is used to sign PKIX Evidence could lead to cross-protocol attacks.
 In this example, an attacker could submit a "nonce" value which is in fact not random but is crafted in such a way as to appear as a valid message in some other protocol context or exploit some other weakness in the signature algorithm.<a href="#section-10.6-3" class="pilcrow">¶</a></p>
 <p id="section-10.6-4">Second, the Presenter who has connected to the HSM to request PKIX Evidence may have permissions to view the requested application keys but not permission to use them, as in the case where the Presenter is an administrative UI displaying HSM status information to an systems administrator or auditor.<a href="#section-10.6-4" class="pilcrow">¶</a></p>
-<p id="section-10.6-5">Requiring the Attestation Service to use the attested application keys could, in some architectures, require the Attestation Service to resolve complex access control logic and handle complex error conditions for each requested key, which violates the "simple to implement" design principle outlined in <a href="#sec-cons-simple" class="auto internal xref">Section 10.2</a>. More discussion of authenticating the Presenter can be found in <a href="#sec-cons-auth-the-presenter" class="auto internal xref">Section 10.5</a>.<a href="#section-10.6-5" class="pilcrow">¶</a></p>
+<p id="section-10.6-5">Requiring the Attesting Environment to use the reported application keys to geenrate Evidence could, in some architectures, require the Attesting Environment to resolve complex access control logic and handle complex error conditions, which violates the "simple to implement" design principle outlined in <a href="#sec-cons-simple" class="auto internal xref">Section 10.2</a>. More discussions on authenticating the Presenter can be found in <a href="#sec-cons-auth-the-presenter" class="auto internal xref">Section 10.5</a>.<a href="#section-10.6-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-cons-hsm-timestamps">

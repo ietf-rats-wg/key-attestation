@@ -290,16 +290,18 @@ Table of Contents
       for the purpose of producing Evidence.  In other words, it is used
       to digitally sign the claims collected by the Attester.
 
-   Attestation Service (AttS):
-      A logical module within the HSM that is responsible for generating
-      Evidence compatible with the format outlined in this
-      specification.  It collects claims from the platform and uses the
-      Attestation Key to digitally sign the collection.
-
    Attester:
       The term Attester respects the definition offered in [RFC9334].
       In this specification, it is also interchangeable with "platform"
       or "HSM".
+
+   Attesting Environment:
+      As defined in [RFC9334], the Attesting Environment collects the
+      information to be represented in Claims.  In practical terms, an
+      implementation may be designed with services to perform this
+      function.  To remain consistent with the RATS architecture, the
+      term "Attesting Environment" is used throughout this
+      specification.
 
    Evidence:
       The term Evidence respects the definition offered in [RFC9334].
@@ -381,7 +383,7 @@ Table of Contents
 
    Some HSMs have a large amount of memory and can therefore contain a
    substantial amount of elements that can be observed independently by
-   the Attestation Service.  Each of those elements, in turn, can
+   the Attesting Environment.  Each of those elements, in turn, can
    contain a number of measurable attributes.
 
    A certain level of complexity arises as multiple elements of the same
@@ -397,8 +399,8 @@ Table of Contents
    *  the attribute represents one property of the entity, which can be
       repeated to other entities of the same class; and,
 
-   *  the value is the actual measurement performed by the Attestation
-      Service.
+   *  the value is the actual measurement performed by the Attesting
+      Environment.
 
    Therefore, each entity is a collection of claims, where the "name/
    value" pair represents one attribute and its measured value for an
@@ -1298,8 +1300,8 @@ Table of Contents
    |              | Claims       |
    |              v              |
    |      +------------------+   |
-   |      | Attestation      |   |
-   |      | Service          |   |
+   |      | Attesting        |   |
+   |      | Environment      |   |
    |      +--------+---------+   |
    |            ^  |             |
    |            |  |             |
@@ -1319,9 +1321,9 @@ Table of Contents
    Evidence which is returned to the Presenter for distribution.
 
    In the previous figure, the HSM is represented as being composed of
-   an attestation service and a Target Environment.  This representation
-   is offered as a simplified view and implementations are not required
-   to adhere to this separation of concerns.
+   an Attesting Environment and a Target Environment.  This
+   representation is offered as a simplified view and implementations
+   are not required to adhere to this separation of concerns.
 
    The aim of the figure is to depict the position of the Presenter as
    an intermediate role between the Attester (in this case the HSM) and
@@ -1344,8 +1346,8 @@ Table of Contents
    In most cases the value of a request attribute should be left
    unspecified by the Presenter.  In the process of generating the
    Evidence, the values of the desired attributes are observed by the
-   Attestation Service within the HSM and reported accordingly.  For the
-   purpose of creating a request, the Presenter does not specify the
+   Attesting Environment within the HSM and reported accordingly.  For
+   the purpose of creating a request, the Presenter does not specify the
    value of the requested attributes and leaves them empty.  This is
    possible because the definition of the structure ReportedAttribute
    specifies the element value as optional.
@@ -1741,25 +1743,25 @@ Table of Contents
 
 10.2.  Simple to Implement
 
-   The nature of attestation requires the Attestation Service to be
+   The nature of attestation requires the Attesting Environment to be
    implemented in an extremely privileged position within the HSM so
-   that it can collect measurements of both the hardware environment and
-   the user keys being attested.  For many HSM architectures, this will
-   place the Attestation Service inside the "security kernel" and
+   that it can collect the required measurements such as hardware
+   registers and the user keys.  For many HSM architectures, this will
+   place the Attesting Environment inside the "security kernel" and
    potentially subject to FIPS 140-3 or Common Criteria validation and
-   change control.  For both security and compliance reasons there is
+   change control.  For both security and compliance reasons, there is
    incentive for the generation and parsing logic to be simple and easy
    to implement correctly.  Additionally, when the data formats
    contained in this specification are parsed within an HSM boundary --
-   that would be parsing a request entity, or parsing an attestation
-   produced by a different HSM -- implementers SHOULD opt for simple
-   logic that rejects any data that does not match the expected format,
-   instead of attempting to be flexible.
+   that would be parsing a request entity, or parsing Evidence produced
+   by a different HSM -- implementers SHOULD opt for simple logic that
+   rejects any data that does not match the expected format, instead of
+   attempting to be flexible.
 
-   In particular, the Attestation Service SHOULD generate the PKIX
+   In particular, the Attesting Environment SHOULD generate the PKIX
    Evidence from scratch and avoid copying any content from the request.
-   The Attestation Service MUST generate PKIX Evidence only from
-   attributes and values that are observed by the service.
+   The Attesting Environment MUST generate PKIX Evidence only from
+   information and measurements that are directly observable by it.
 
 10.3.  Detached Signatures
 
@@ -1896,12 +1898,12 @@ Table of Contents
    an administrative UI displaying HSM status information to an systems
    administrator or auditor.
 
-   Requiring the Attestation Service to use the attested application
-   keys could, in some architectures, require the Attestation Service to
-   resolve complex access control logic and handle complex error
-   conditions for each requested key, which violates the "simple to
+   Requiring the Attesting Environment to use the reported application
+   keys to geenrate Evidence could, in some architectures, require the
+   Attesting Environment to resolve complex access control logic and
+   handle complex error conditions, which violates the "simple to
    implement" design principle outlined in Section 10.2.  More
-   discussion of authenticating the Presenter can be found in
+   discussions on authenticating the Presenter can be found in
    Section 10.5.
 
 10.7.  Timestamps and HSMs
