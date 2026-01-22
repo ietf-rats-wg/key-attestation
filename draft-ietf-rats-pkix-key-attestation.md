@@ -274,14 +274,15 @@ Attestation Key (AK):
 of producing Evidence. In other words, it is used to digitally sign the claims collected by
 the Attester.
 
-Attestation Service (AttS):
-: A logical module within the HSM that is responsible for generating Evidence compatible with the
-format outlined in this specification. It collects claims from the platform and uses the Attestation
-Key to digitally sign the collection.
-
 Attester:
 : The term Attester respects the definition offered in {{RFC9334}}. In this specification, it
 is also interchangeable with "platform" or "HSM".
+
+Attesting Environment:
+: As defined in {{RFC9334}}, the Attesting Environment collects the information to be represented
+in Claims. In practical terms, an implementation may be designed with services to perform this function.
+To remain consistent with the RATS architecture, the term "Attesting Environment" is used throughout
+this specification.
 
 Evidence:
 : The term Evidence respects the definition offered in {{RFC9334}}. In this specification, it
@@ -346,7 +347,7 @@ the concept of "measurements" that "can describe a variety of attributes of syst
 as hardware, firmware, BIOS, software, etc., and how they are hardened."
 
 Some HSMs have a large amount of memory and can therefore contain a substantial amount of elements that
-can be observed independently by the Attestation Service. Each of those elements, in turn, can contain a
+can be observed independently by the Attesting Environment. Each of those elements, in turn, can contain a
 number of measurable attributes.
 
 A certain level of complexity arises as multiple elements of the same class can be observed while generating
@@ -359,7 +360,7 @@ To that end, in this specification, the claims are organized as tuples of "entit
 * the attribute represents one property of the entity, which can be repeated to other entities of the
 same class; and,
 
-* the value is the actual measurement performed by the Attestation Service.
+* the value is the actual measurement performed by the Attesting Environment.
 
 Therefore, each entity is a collection of claims, where the "name/value" pair represents one attribute
 and its measured value for an entity.
@@ -946,8 +947,8 @@ required to launch the process of creating the PKIX Evidence and capturing it to
 |              | Claims       |
 |              v              |
 |      +------------------+   |
-|      | Attestation      |   |
-|      | Service          |   |
+|      | Attesting        |   |
+|      | Environment      |   |
 |      +--------+---------+   |
 |            ^  |             |
 |            |  |             |
@@ -966,7 +967,7 @@ required to launch the process of creating the PKIX Evidence and capturing it to
 An Attestation Request (request) is assembled by the Presenter and submitted to the HSM. The HSM parses the request and produces PKIX Evidence
 which is returned to the Presenter for distribution.
 
-In the previous figure, the HSM is represented as being composed of an attestation service and a Target Environment. This representation is offered
+In the previous figure, the HSM is represented as being composed of an Attesting Environment and a Target Environment. This representation is offered
 as a simplified view and implementations are not required to adhere to this separation of concerns.
 
 The aim of the figure is to depict the position of the Presenter as an intermediate role between the Attester (in this case the HSM) and the Verifier.
@@ -981,7 +982,7 @@ of `ReportedAttribute` known as request attributes. The collection of request en
 by the Presenter.
 
 In most cases the value of a request attribute should be left unspecified by the Presenter. In the process of generating
-the Evidence, the values of the desired attributes are observed by the Attestation Service within the HSM and reported accordingly. For the purpose
+the Evidence, the values of the desired attributes are observed by the Attesting Environment within the HSM and reported accordingly. For the purpose
 of creating a request, the Presenter does not specify the value of the requested attributes and leaves them empty. This is possible because the definition of
 the structure `ReportedAttribute` specifies the element `value` as optional.
 
@@ -1160,20 +1161,20 @@ fosters a higher likelihood of achieving interoperability.
 
 ## Simple to Implement {#sec-cons-simple}
 
-The nature of attestation requires the Attestation Service to be implemented in an extremely
-privileged position within the HSM so that it can collect measurements of both the hardware
-environment and the user keys being attested. For many HSM architectures, this will
-place the Attestation Service inside the "security kernel" and potentially subject to FIPS 140-3
-or Common Criteria validation and change control. For both security and compliance reasons
+The nature of attestation requires the Attesting Environment to be implemented in an extremely
+privileged position within the HSM so that it can collect the required measurements such as
+hardware registers and the user keys. For many HSM architectures, this will
+place the Attesting Environment inside the "security kernel" and potentially subject to FIPS 140-3
+or Common Criteria validation and change control. For both security and compliance reasons,
 there is incentive for the generation and parsing logic to be simple and easy to implement
 correctly. Additionally, when the data formats contained in this specification are parsed
-within an HSM boundary -- that would be parsing a request entity, or parsing an attestation
+within an HSM boundary -- that would be parsing a request entity, or parsing Evidence
 produced by a different HSM -- implementers SHOULD opt for simple logic that rejects any
 data that does not match the expected format, instead of attempting to be flexible.
 
-In particular, the Attestation Service SHOULD generate the PKIX Evidence from scratch and
-avoid copying any content from the request. The Attestation Service MUST generate PKIX Evidence
-only from attributes and values that are observed by the service.
+In particular, the Attesting Environment SHOULD generate the PKIX Evidence from scratch and
+avoid copying any content from the request. The Attesting Environment MUST generate PKIX Evidence
+only from information and measurements that are directly observable by it.
 
 ## Detached Signatures {#sec-detached-sigs}
 
@@ -1246,7 +1247,7 @@ In this example, an attacker could submit a "nonce" value which is in fact not r
 
 Second, the Presenter who has connected to the HSM to request PKIX Evidence may have permissions to view the requested application keys but not permission to use them, as in the case where the Presenter is an administrative UI displaying HSM status information to an systems administrator or auditor.
 
-Requiring the Attestation Service to use the attested application keys could, in some architectures, require the Attestation Service to resolve complex access control logic and handle complex error conditions for each requested key, which violates the "simple to implement" design principle outlined in {{sec-cons-simple}}. More discussion of authenticating the Presenter can be found in {{sec-cons-auth-the-presenter}}.
+Requiring the Attesting Environment to use the reported application keys to geenrate Evidence could, in some architectures, require the Attesting Environment to resolve complex access control logic and handle complex error conditions, which violates the "simple to implement" design principle outlined in {{sec-cons-simple}}. More discussions on authenticating the Presenter can be found in {{sec-cons-auth-the-presenter}}.
 
 ## Timestamps and HSMs {#sec-cons-hsm-timestamps}
 
