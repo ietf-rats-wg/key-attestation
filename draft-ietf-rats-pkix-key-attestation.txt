@@ -5,7 +5,7 @@
 RATS                                                        M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 11 April 2026                                          Crypto4A
+Expires: 26 July 2026                                           Crypto4A
                                                            H. Tschofenig
                                                                    H-BRS
                                                              H. Birkholz
@@ -14,7 +14,7 @@ Expires: 11 April 2026                                          Crypto4A
                                                                         
                                                                 N. Smith
                                                        Intel Corporation
-                                                          8 October 2025
+                                                         22 January 2026
 
 
    PKIX Evidence for Remote Attestation of Hardware Security Modules
@@ -22,20 +22,20 @@ Expires: 11 April 2026                                          Crypto4A
 
 Abstract
 
-   This document specifies a vendor-agnostic format for evidence
-   produced and verified within a PKIX context.  The evidence produced
+   This document specifies a vendor-agnostic format for Evidence
+   produced and verified within a PKIX context.  The Evidence produced
    this way includes claims collected about a cryptographic module and
    elements found within it such as cryptographic keys.
 
    One scenario envisaged is that the state information about the
    cryptographic module can be securely presented to a remote operator
    or auditor in a vendor-agnostic verifiable format.  A more complex
-   scenario would be to submit this evidence to a Certification
+   scenario would be to submit this Evidence to a Certification
    Authority to aid in determining whether the storage properties of
    this key meet the requirements of a given certificate profile.
 
    This specification also offers a format for requesting a
-   cryptographic module to produce evidence tailored for expected use.
+   cryptographic module to produce Evidence tailored for expected use.
 
 About This Document
 
@@ -70,11 +70,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 April 2026.
+   This Internet-Draft will expire on 26 July 2026.
 
 Copyright Notice
 
-   Copyright (c) 2025 IETF Trust and the persons identified as the
+   Copyright (c) 2026 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -157,11 +157,11 @@ Table of Contents
    PKI terminology in order to map concepts between the two domains.
 
    Within this specification, the concepts found in the Remote
-   Attestation Procedures (RATS [RFC9334]) are mapped to the PKIX
+   ATtestation procedureS (RATS [RFC9334]) are mapped to the PKIX
    environment.  There are many other specifications that are based on
-   the RATS architecture which offer formats to carry evidence.  This
+   the RATS architecture which offer formats to carry Evidence.  This
    specification deals with peculiar aspects of the PKIX environment
-   which make the existing evidence formats inappropriate:
+   which make the existing Evidence formats inappropriate:
 
    *  ASN.1 is the preferred encoding format in this environment.  X.509
       certificates ([RFC5280]) are used widely within this environment
@@ -205,13 +205,13 @@ Table of Contents
 
    Consider that an HSM is being added to a logical HSM cluster.  Part
    of the onboarding process could involve the newly-added HSM providing
-   proof of its running state, for example that it is a genuine device
-   from the same manufacturer as the existing clustered HSMs, firmware
-   patch level, FIPS mode, etc.  It could also be required to provide
-   attestation of any system-level keys required for secure
-   establishment of cluster communication.  In this scenario, the
-   Verifier and Relying Party will be the other HSMs in the cluster
-   deciding whether or not to admit the new HSM.
+   Evidence of its running state, for example that it is a genuine
+   device from the same manufacturer as the existing clustered HSMs,
+   firmware patch level, FIPS mode, etc.  It could also be required to
+   provide information about any system-level keys required to establish
+   secure cluster communication.  In this scenario, the Verifier and
+   Relying Party will typically be other HSMs in the cluster deciding
+   whether or not to admit the new HSM.
 
    A related scenario is when performing a key export-import across
    HSMs.  If the key is being imported with certain properties, for
@@ -248,7 +248,7 @@ Table of Contents
    "extractable" may always be false for all keys since the devices are
    not capable of key export and so the attestation could be essentially
    a hard-coded template asserting these immutable attributes.  However,
-   more complex HSM devices require a more complex evidence format that
+   more complex HSM devices require a more complex Evidence format that
    encompasses the mutability of these attributes.
 
    Also, a client requesting a key attestation might wish to scope-down
@@ -274,7 +274,7 @@ Table of Contents
 
    The reader is assumed to be familiar with common vocabulary and
    concepts defined in [RFC5280] such as certificate, signature,
-   attribute, verifier.
+   attribute, verification and validation.
 
    In order to avoid confusion, this document generally capitalizes RATS
    terms such as Attester, Relying Party, and Claim.  Therefore, for
@@ -343,9 +343,9 @@ Table of Contents
    Presenter:
       Role that facilitates communication between the Attester and the
       Verifier.  The Presenter initiates the operation of generating
-      evidence at the Attester and passes the generated evidence to the
+      Evidence at the Attester and passes the generated Evidence to the
       Verifier.  In the case of HSMs, the Presenter is responsible of
-      selecting the claims that are part of the generated evidence.
+      selecting the claims that are part of the generated Evidence.
 
    Trust Anchor:
       As defined in [RFC6024] and [RFC9019], a Trust Anchor "represents
@@ -361,7 +361,7 @@ Table of Contents
       motherboard used to enhance attestation functions for the hosting
       platform.  TPMs are very specialized Hardware Security Modules and
       generally use other protocols (than the one presented in this
-      specification) to transmit evidence.
+      specification) to transmit Evidence.
 
    User Key:
       A user key consists of a key hosted by an HSM (the platform) and
@@ -412,22 +412,22 @@ Table of Contents
 
 3.2.  Attestation Key Certificate Chain
 
-   The data format in this specification represents PKIX evidence and
+   The data format in this specification represents PKIX Evidence and
    requires third-party endorsement in order to establish trust.  Part
    of this endorsement is a trust anchor that chains to the HSM's
-   attestation key (AK) which signs the evidence.  In practice the trust
+   attestation key (AK) which signs the Evidence.  In practice the trust
    anchor will usually be a manufacturing CA belonging to the device
    vendor which proves that the device is genuine and not counterfeit.
    The trust anchor can also belong to the device operator as would be
    the case when the AK certificate is replaced as part of onboarding
    the device into a new operational network.
 
-   The AK certificate that signs the evidence MUST have the Extended Key
+   The AK certificate that signs the Evidence MUST have the Extended Key
    Usage id-kp-attest, as defined in
    [I-D.jpfiset-lamps-attestationkey-eku], set.
 
    Note that the data format specified in Section 5 allows for zero,
-   one, or multiple 'SignatureBlock's, so a single evidence statement
+   one, or multiple 'SignatureBlock's, so a single Evidence statement
    could be un-protected, or could be endorsed by multiple AK chains
    leading to different trust anchors.  See Section 6 for a discussion
    of handling multiple SignatureBlocks.
@@ -570,7 +570,7 @@ Table of Contents
 
    If a Verifier encounters, within a single entity, multiple copies of
    an attribute specified as "Multiple Allowed: No", it MUST reject the
-   evidence as malformed.
+   Evidence as malformed.
 
    If a Verifier encounters, within the context of an entity, a repeated
    attribute for a type where multiple attributes are allowed, it MUST
@@ -613,19 +613,19 @@ Table of Contents
    }
 
    A PkixEvidence message is composed of a protected section known as
-   the To-Be-Signed (TBS) section where the evidence reported by the HSM
+   the To-Be-Signed (TBS) section where the Evidence reported by the HSM
    is assembled.  The integrity of the TBS section is ensured with one
    or multiple cryptographic signatures over the content of this
    section.  There is a provision to carry X.509 certificates supporting
    each signature.  The SEQUENCE OF SignatureBlock allows for both
    multi-algorithm protection and for counter-signatures of the
-   evidence.  In an effort to keep the evidence format simple,
+   Evidence.  In an effort to keep the Evidence format simple,
    distinguishing between these two cases is left up to Verifier policy,
    potentially by making use of the certificates that accompany each
    signature.
 
    This design also does not prevent an attacker from removing, adding
-   or re-ordering signatures without leaving evidence.  This is
+   or re-ordering signatures without leaving Evidence.  This is
    discussed as part of the security considerations in Section 10.3.
 
    The TBS section is composed of a version number, to ensure future
@@ -1176,11 +1176,11 @@ Table of Contents
 5.3.3.  ak-spki
 
    This field contains the encoded Subject Public Key Information (SPKI)
-   for the attestation key used to sign the evidence.  The definition
+   for the attestation key used to sign the Evidence.  The definition
    and encoding for SPKIs are defined in X.509 certificates ([RFC5280]).
 
    This transaction attribute is used to bind the content of the
-   evidence with the key(s) used to sign that evidence.  The importance
+   Evidence with the key(s) used to sign that Evidence.  The importance
    of this binding is discussed in Section 10.3.
 
 5.4.  Additional Entity and Attribute Types
@@ -1215,7 +1215,7 @@ Table of Contents
 6.  Signing and Verification Procedures
 
    The SignatureBlock.signatureValue signs over the DER-encoded to-be-
-   signed evidence data PkixEvidence.tbs and MUST be validated with the
+   signed Evidence data PkixEvidence.tbs and MUST be validated with the
    subject public key of the leaf X.509 certificate contained in the
    SignerIdentifier.certificate.  Verifiers MAY also use
    PkixEvidence.intermediateCertificates to build a certification path
@@ -1245,7 +1245,7 @@ Table of Contents
    Note that each SignatureBlock is a fully detached signature over the
    tbs content with no binding between the signed content and the
    SignatureBlocks, or between SignatureBlocks, meaning that a third-
-   party can add a counter-signature of the evidence after the fact, or
+   party can add a counter-signature of the Evidence after the fact, or
    an attacker can remove a SignatureBlock without leaving any artifact.
    See Section 10.3 for further discussion.
 
@@ -1258,31 +1258,31 @@ Table of Contents
    This section is informative in nature and implementers of this
    specification do not need to adhere to it.  The aim of this section
    is to provide a standard interface between a Presenter and an HSM
-   producing PKIX evidence.  The authors hope that this standard
+   producing PKIX Evidence.  The authors hope that this standard
    interface will yield interoperable tools between offerings from
    different vendors.
 
    The interface presented in this section might be too complex for
    manufacturers of HSMs with limited capabilities such as smartcards or
    personal ID tokens.  For devices with limited capabilities, a fixed
-   PKIX evidence endorsed by the vendor might be installed during
+   PKIX Evidence endorsed by the vendor might be installed during
    manufacturing.  Other approaches for constrained HSMs might be to
    report entities and attributes that are fixed or offer limited
    variations.
 
    On the other hand, an enterprise-grade HSM with the capability to
    hold a large number of private keys is expected to be capable of
-   generating PKIX evidence catered to the specific constraints imposed
+   generating PKIX Evidence catered to the specific constraints imposed
    by a Verifier and without exposing extraneous information.  The aim
    of the request interface is to provide the means to select and report
-   specific information in the PKIX evidence.
+   specific information in the PKIX Evidence.
 
    This section introduces the role of "Presenter" as shown in Figure 1.
    The Presenter is the role that initiates the generation of PKIX
-   evidence.  Since HSMs are generally servers (client/server
+   Evidence.  Since HSMs are generally servers (client/server
    relationship) or peripherals (controller/peripheral relationship), a
    Presenter is required to launch the process of creating the PKIX
-   evidence and capturing it to forward it to the Verifier.
+   Evidence and capturing it to forward it to the Verifier.
 
    +-----------------------------+
    |  Attester (HSM)             |
@@ -1316,7 +1316,7 @@ Table of Contents
 
    An Attestation Request (request) is assembled by the Presenter and
    submitted to the HSM.  The HSM parses the request and produces PKIX
-   evidence which is returned to the Presenter for distribution.
+   Evidence which is returned to the Presenter for distribution.
 
    In the previous figure, the HSM is represented as being composed of
    an attestation service and a Target Environment.  This representation
@@ -1333,7 +1333,7 @@ Table of Contents
 
    The attestation request, shown in the figure, consists of a structure
    TbsPkixEvidence containing one ReportedEntity for each entity
-   expected to be included in the evidence produced by the HSM.
+   expected to be included in the Evidence produced by the HSM.
 
    Each instance of ReportedEntity included in the request is referred
    to as a request entity.  A request entity contains a number of
@@ -1343,7 +1343,7 @@ Table of Contents
 
    In most cases the value of a request attribute should be left
    unspecified by the Presenter.  In the process of generating the
-   evidence, the values of the desired attributes are observed by the
+   Evidence, the values of the desired attributes are observed by the
    Attestation Service within the HSM and reported accordingly.  For the
    purpose of creating a request, the Presenter does not specify the
    value of the requested attributes and leaves them empty.  This is
@@ -1353,7 +1353,7 @@ Table of Contents
    On the other hand, there are circumstances where the value of a
    request attribute should be provided by the Presenter.  For example,
    when a particular cryptographic key is to be included in the
-   evidence, the request must include a key entity with one of the
+   Evidence, the request must include a key entity with one of the
    "identifier" attributes set to the value corresponding to the desired
    key.
 
@@ -1384,7 +1384,7 @@ Table of Contents
 7.1.1.  Key Identifiers
 
    A Presenter may choose to select which cryptographic keys are
-   reported as part of the PKIX evidence.  For each selected
+   reported as part of the PKIX Evidence.  For each selected
    cryptographic key, the Presenter includes a request entity of type
    id-pkix-evidence-entity-key.  Among the request attributes for this
    entity, the Presenter includes one attribute with the type id-pkix-
@@ -1399,7 +1399,7 @@ Table of Contents
 7.1.2.  Nonce
 
    A Presenter may choose to include a nonce as part of the attestation
-   request.  When producing the PKIX evidence, the HSM repeats the nonce
+   request.  When producing the PKIX Evidence, the HSM repeats the nonce
    that was provided as part of the request.
 
    When providing a nonce, a Presenter includes, in the attestation
@@ -1416,7 +1416,7 @@ Table of Contents
    to the key identifier as this is unique to each key.  A HSM
    supporting this scheme could select all the cryptographic keys
    matching the specified attribute and report them in the PKIX
-   evidence.
+   Evidence.
 
    This is a departure from the base request interface, as multiple key
    entities are reported from a single request entity.
@@ -1431,18 +1431,18 @@ Table of Contents
 
    The extensibility offered by the proposed request interface allows an
    implementer to add custom attributes to the transaction entity in
-   order to influence the way that the evidence generation is performed.
+   order to influence the way that the Evidence generation is performed.
 
    In such an approach, a new custom attribute for request entities of
    type "transaction" is defined.  Then, an attribute of that type is
    included in the attestation request (as part of the transaction
    entity) while specifying a value.  This value is considered by the
-   HSM while generating the PKIX evidence.
+   HSM while generating the PKIX Evidence.
 
 7.2.  Reporting of Attestation Keys
 
    There is a provision for the Attester to report the Attestation
-   Key(s) used during the generation of the evidence.  To this end, the
+   Key(s) used during the generation of the Evidence.  To this end, the
    transaction attribute "ak-spki" is used.
 
    A Presenter invokes this provision by submitting an attestation
@@ -1450,7 +1450,7 @@ Table of Contents
    specified value (left empty).
 
    In this case, the Attester adds a transaction attribute of type "ak-
-   spki" for each Attestation Key used to sign the evidence.  The value
+   spki" for each Attestation Key used to sign the Evidence.  The value
    of this attribute is an octet string (bytes) which is the encoding of
    the Subject Public Key Information (SPKI) associated with the
    Attestation Key. Details on SPKIs and their encoding can be found in
@@ -1485,7 +1485,7 @@ Table of Contents
    vendors.
 
    An Attester MUST NOT include entities and attributes in the generated
-   evidence if these entities and attributes were not specified as part
+   Evidence if these entities and attributes were not specified as part
    of the request.  This is to give the Presenter the control on what
    information is disclosed by the Attester.
 
@@ -1496,27 +1496,27 @@ Table of Contents
 7.4.  Verification by Presenter
 
    This sub-section deals with the rules that should be considered when
-   a Presenter receives PKIX evidence from the Attester (the HSM) prior
+   a Presenter receives PKIX Evidence from the Attester (the HSM) prior
    to distribution.  This section is non-normative and implementers MAY
    choose to not follow these recommendations.
 
-   These recommendations apply to any PKIX evidence and are not
-   restricted solely to evidence generated from the proposed request
+   These recommendations apply to any PKIX Evidence and are not
+   restricted solely to Evidence generated from the proposed request
    interface.
 
-   A Presenter MUST review the evidence produced by an Attester for
+   A Presenter MUST review the Evidence produced by an Attester for
    fitness prior to distribution.
 
-   A Presenter MUST NOT disclose evidence if it contains information it
+   A Presenter MUST NOT disclose Evidence if it contains information it
    cannot parse.  This restriction applies to entity types and
    attributes type.  This is to ensure that the information provided by
    the Attester can be evaluated by the Presenter.
 
-   A Presenter MUST NOT disclose evidence if it contains entities others
+   A Presenter MUST NOT disclose Evidence if it contains entities others
    than the ones that were requested of the Attester.  This is to ensure
    that only the selected entities are exposed to the Verifier.
 
-   A Presenter MUST NOT disclose evidence if it contains an entity with
+   A Presenter MUST NOT disclose Evidence if it contains an entity with
    an attribute that was not requested of the Attester.  This is to
    ensure that only the selected information is disclosed to the
    Verifier.
@@ -1715,7 +1715,7 @@ Table of Contents
 
 10.1.  Policies relating to Verifier and Relying Party
 
-   The generation of PKIX evidence by an HSM is to provide sufficient
+   The generation of PKIX Evidence by an HSM is to provide sufficient
    information to a Verifier and a Relying Party to appraise the Target
    Environment (the HSM) and make decisions based on this appraisal.
 
@@ -1723,18 +1723,18 @@ Table of Contents
    generation of the Attestation Results.  Those results, in turn, are
    consumed by the Relying Party to make decisions about the HSM, which
    might be based on a set of rules and policies.  Therefore, the
-   interpretation of PKIX evidence may greatly influence the outcome of
+   interpretation of PKIX Evidence may greatly influence the outcome of
    some decisions.
 
-   A Verifier MAY reject a PKIX evidence if it lacks required attributes
+   A Verifier MAY reject a PKIX Evidence if it lacks required attributes
    per the Verifier's appraisal policy.  For example, if a Relying Party
-   mandates a FIPS-certified device, it SHOULD reject evidence lacking
+   mandates a FIPS-certified device, it SHOULD reject Evidence lacking
    sufficient information to verify the device's FIPS certification
    status.
 
    If a Verifier encounters an attribute with an unrecognized attribute
    type, it MAY ignore it and treat it as extraneous information.  By
-   ignoring an attribute, the Verifier may accept PKIX evidence that
+   ignoring an attribute, the Verifier may accept PKIX Evidence that
    would be deemed malformed to a Verifier with different policies.
    However, this approach fosters a higher likelihood of achieving
    interoperability.
@@ -1757,13 +1757,13 @@ Table of Contents
    instead of attempting to be flexible.
 
    In particular, the Attestation Service SHOULD generate the PKIX
-   evidence from scratch and avoid copying any content from the request.
-   The Attestation Service MUST generate PKIX evidence only from
+   Evidence from scratch and avoid copying any content from the request.
+   The Attestation Service MUST generate PKIX Evidence only from
    attributes and values that are observed by the service.
 
 10.3.  Detached Signatures
 
-   The construction of the evidence structure (PkixEvidence) includes a
+   The construction of the Evidence structure (PkixEvidence) includes a
    collection of signature blocks that are not explicitly bound to the
    content.  This approach was influenced by the following motivations:
 
@@ -1781,16 +1781,16 @@ Table of Contents
    between the Attester and the Verifier, to validate the original
    signature(s) and apply its own afterwards.
 
-   The ability to add signature blocks to the evidence after the
+   The ability to add signature blocks to the Evidence after the
    original generation by the Attester leads to the unfortunate
    situation where signature blocks can also be removed without leaving
    any trace.  Therefore, the signature blocks can be deemed as
    "detachable" or "stapled".
 
-   Manipulation of the evidence after it was generated can lead to
+   Manipulation of the Evidence after it was generated can lead to
    undesired outcomes at the Verifier.
 
-   Therefore, Verifiers MUST be designed to accept evidence based on
+   Therefore, Verifiers MUST be designed to accept Evidence based on
    their appraisal policies, regardless of the presence or absence of
    certain signature(s).  Consequently, Verifiers MUST NOT make any
    inferences based on a missing signature, as the signature could have
@@ -1800,7 +1800,7 @@ Table of Contents
    effectively bind the content with the signature blocks that were
    generated by the Attester.  When this attribute is provided, it
    reports the SPKI of one of the attestation keys used by the Attester
-   to produce the evidence.  This attribute is repeated for each of the
+   to produce the Evidence.  This attribute is repeated for each of the
    attestation keys used by the Attester.
 
 10.4.  Privacy
@@ -1812,7 +1812,7 @@ Table of Contents
 
    For example, an enterprise-grade HSM in a large multi-tenant cloud
    service could host TLS keys fronting multiple un-related web domains.
-   Providing evidence for attesting attributes of any one of the keys
+   Providing Evidence for attesting attributes of any one of the keys
    would involve a Presenter that could potentially access any of the
    hosted keys.  In such a case, privacy violations could occur if the
    Presenter was to disclose information that does not relate to the
@@ -1830,7 +1830,7 @@ Table of Contents
    Furthermore, enterprise and cloud-services grade HSMs SHOULD support
    the full set of attestation request functionality described in
    Section 7 so that Presenters can fine-tune the content of a PKIX
-   evidence such that it is appropriate for the intended Verifier.
+   Evidence such that it is appropriate for the intended Verifier.
 
 10.5.  Authenticating and Authorizing the Presenter
 
@@ -1839,7 +1839,7 @@ Table of Contents
    keys and their protection properties, as well as details of the
    platform.  The Presenter is in the position of deciding how much
    information to disclose to the Verifier, and to request a suitably
-   redacted evidence from the HSM.
+   redacted Evidence from the HSM.
 
    For personal cryptographic tokens it might be appropriate for the
    attestation request interface to be un-authenticated.  However, for
@@ -1849,17 +1849,17 @@ Table of Contents
    However, it is RECOMMENDED to implement an authorization framework
    similar to the following.
 
-   A Presenter SHOULD be allowed to request evidence for any user keys
+   A Presenter SHOULD be allowed to request Evidence for any user keys
    which it is allowed to use.  For example, a TLS application that is
    correctly authenticated to the HSM in order to use its TLS keys
-   SHOULD be able to request evidence of those same keys without needing
+   SHOULD be able to request Evidence of those same keys without needing
    to perform any additional authentication or requiring any additional
    roles or permissions.  HSMs that wish to allow a Presenter to request
-   evidence of keys which is not allowed to use, for example for the
+   Evidence of keys which is not allowed to use, for example for the
    purposes of displaying HSM status information on an administrative
    console or UI, SHOULD have a "Attestation Requester" role or
    permission and SHOULD enforce the HSM's native access controls such
-   that the Presenter can only retrieve evidence for keys for which it
+   that the Presenter can only retrieve Evidence for keys for which it
    has read access.
 
    In the absence of an existing mechanism for authenticating and
@@ -1884,14 +1884,14 @@ Table of Contents
 
    First, a user key intended for TLS, as an example, SHOULD only be
    used with the TLS protocol.  Introducing a signature oracle whereby
-   the TLS application key is used to sign PKIX evidence could lead to
+   the TLS application key is used to sign PKIX Evidence could lead to
    cross-protocol attacks.  In this example, an attacker could submit a
    "nonce" value which is in fact not random but is crafted in such a
    way as to appear as a valid message in some other protocol context or
    exploit some other weakness in the signature algorithm.
 
    Second, the Presenter who has connected to the HSM to request PKIX
-   evidence may have permissions to view the requested application keys
+   Evidence may have permissions to view the requested application keys
    but not permission to use them, as in the case where the Presenter is
    an administrative UI displaying HSM status information to an systems
    administrator or auditor.
@@ -1920,7 +1920,7 @@ Table of Contents
    behavior of the system clock SHOULD be considered.
 
    More specifically, the timestamp SHOULD NOT be relied on for
-   establishing the freshness of the evidence generated by a HSM.
+   establishing the freshness of the Evidence generated by a HSM.
    Instead, Verifiers SHOULD rely on other provisions such as the
    "nonce" attribute of the "transaction" entity, introduced this
    specification.
@@ -1942,9 +1942,9 @@ Table of Contents
               Fiset, J., Ounsworth, M., Tschofenig, H., and M. Wiseman,
               "Extended Key Usage (EKU) for X.509 Certificates
               associated with Attestation Keys", Work in Progress,
-              Internet-Draft, draft-jpfiset-lamps-attestationkey-eku-00,
-              5 August 2025, <https://datatracker.ietf.org/doc/html/
-              draft-jpfiset-lamps-attestationkey-eku-00>.
+              Internet-Draft, draft-jpfiset-lamps-attestationkey-eku-01,
+              20 October 2025, <https://datatracker.ietf.org/doc/html/
+              draft-jpfiset-lamps-attestationkey-eku-01>.
 
    [PKCS11]   Bong, D., Cox, T., and OASIS PKCS 11 TC, "PKCS #11
               Specification Version 3.1", 11 August 2022,
@@ -2026,9 +2026,9 @@ Table of Contents
    [I-D.ietf-rats-msg-wrap]
               Birkholz, H., Smith, N., Fossati, T., Tschofenig, H., and
               D. Glaze, "RATS Conceptual Messages Wrapper (CMW)", Work
-              in Progress, Internet-Draft, draft-ietf-rats-msg-wrap-18,
-              29 September 2025, <https://datatracker.ietf.org/doc/html/
-              draft-ietf-rats-msg-wrap-18>.
+              in Progress, Internet-Draft, draft-ietf-rats-msg-wrap-23,
+              11 December 2025, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-rats-msg-wrap-23>.
 
    [RFC2986]  Nystrom, M. and B. Kaliski, "PKCS #10: Certification
               Request Syntax Specification Version 1.7", RFC 2986,
@@ -2054,7 +2054,7 @@ Appendix A.  Samples
    A reference implementation of this specification can be found at
    https://github.com/ietf-rats-wg/key-attestation
 
-   It produces the following sample evidence:
+   It produces the following sample Evidence:
 
    =============== NOTE: '\' line wrapping per RFC 8792 ================
 

@@ -12,35 +12,34 @@
 <meta content="Monty Wiseman" name="author">
 <meta content="Ned Smith" name="author">
 <meta content="
-       This document specifies a vendor-agnostic format for evidence produced and verified within a PKIX context.
-The evidence produced this way includes claims collected about a cryptographic module
+       This document specifies a vendor-agnostic format for Evidence produced and verified within a PKIX context.
+The Evidence produced this way includes claims collected about a cryptographic module
 and elements found within it such as cryptographic keys. 
        One scenario envisaged is that the state information about the cryptographic module can be securely presented
 to a remote operator or auditor in a vendor-agnostic verifiable format.
-A more complex scenario would be to submit this evidence to a Certification Authority to aid in determining
+A more complex scenario would be to submit this Evidence to a Certification Authority to aid in determining
 whether the storage properties of this key meet the requirements of a given certificate profile. 
-       This specification also offers a format for requesting a cryptographic module to produce evidence tailored for expected use. 
+       This specification also offers a format for requesting a cryptographic module to produce Evidence tailored for expected use. 
     " name="description">
-<meta content="xml2rfc 3.30.2" name="generator">
+<meta content="xml2rfc 3.31.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="RATS" name="keyword">
 <meta content="PKIX" name="keyword">
 <meta content="HSM" name="keyword">
 <meta content="draft-ietf-rats-pkix-key-attestation-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.30.2
-    Python 3.12.11
+  xml2rfc 3.31.0
+    Python 3.12.12
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
-    intervaltree 3.1.0
+    intervaltree 3.2.1
     Jinja2 3.1.6
-    lxml 5.3.1
-    platformdirs 4.4.0
+    lxml 6.0.2
+    platformdirs 4.5.1
     pycountry 24.6.1
-    PyYAML 6.0.2
+    PyYAML 6.0.3
     requests 2.32.5
-    setuptools 80.9.0
-    wcwidth 0.2.14
+    wcwidth 0.3.0
 -->
 <link href="draft-ietf-rats-pkix-key-attestation.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -1059,11 +1058,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">PKIX Evidence for Remote Attestation of </td>
-<td class="right">October 2025</td>
+<td class="right">January 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Ounsworth, et al.</td>
-<td class="center">Expires 11 April 2026</td>
+<td class="center">Expires 26 July 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1076,12 +1075,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-rats-pkix-key-attestation-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-10-08" class="published">8 October 2025</time>
+<time datetime="2026-01-22" class="published">22 January 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-04-11">11 April 2026</time></dd>
+<dd class="expires"><time datetime="2026-07-26">26 July 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1113,14 +1112,14 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">PKIX Evidence for Remote Attestation of Hardware Security Modules</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document specifies a vendor-agnostic format for evidence produced and verified within a PKIX context.
-The evidence produced this way includes claims collected about a cryptographic module
+<p id="section-abstract-1">This document specifies a vendor-agnostic format for Evidence produced and verified within a PKIX context.
+The Evidence produced this way includes claims collected about a cryptographic module
 and elements found within it such as cryptographic keys.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 <p id="section-abstract-2">One scenario envisaged is that the state information about the cryptographic module can be securely presented
 to a remote operator or auditor in a vendor-agnostic verifiable format.
-A more complex scenario would be to submit this evidence to a Certification Authority to aid in determining
+A more complex scenario would be to submit this Evidence to a Certification Authority to aid in determining
 whether the storage properties of this key meet the requirements of a given certificate profile.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
-<p id="section-abstract-3">This specification also offers a format for requesting a cryptographic module to produce evidence tailored for expected use.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
+<p id="section-abstract-3">This specification also offers a format for requesting a cryptographic module to produce Evidence tailored for expected use.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1157,7 +1156,7 @@ whether the storage properties of this key meet the requirements of a given cert
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 11 April 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 26 July 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1166,7 +1165,7 @@ whether the storage properties of this key meet the requirements of a given cert
 <a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
         </h2>
 <p id="section-boilerplate.2-1">
-            Copyright (c) 2025 IETF Trust and the persons identified as the
+            Copyright (c) 2026 IETF Trust and the persons identified as the
             document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.2-2">
             This document is subject to BCP 78 and the IETF Trust's Legal
@@ -1390,10 +1389,10 @@ environment. This environment refers to the components generally used to support
 such as Certification Authorities and their clients, or more generally that rely upon X.509 certificates.
 As outlined in <a href="#terminology" class="auto internal xref">Section 3</a>, this specification uses a necessary mixture of RATS and PKI terminology
 in order to map concepts between the two domains.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">Within this specification, the concepts found in the Remote Attestation Procedures (RATS <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>) are
+<p id="section-1-2">Within this specification, the concepts found in the Remote ATtestation procedureS (RATS <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>) are
 mapped to the PKIX environment. There are many other specifications that are based on the RATS architecture
-which offer formats to carry evidence. This specification deals with peculiar aspects of the PKIX environment
-which make the existing evidence formats inappropriate:<a href="#section-1-2" class="pilcrow">¶</a></p>
+which offer formats to carry Evidence. This specification deals with peculiar aspects of the PKIX environment
+which make the existing Evidence formats inappropriate:<a href="#section-1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1-3.1">
           <p id="section-1-3.1.1">ASN.1 is the preferred encoding format in this environment. X.509 certificates (<span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>) are used
@@ -1438,10 +1437,10 @@ other collected claims necessary in critical deployments.<a href="#section-2.1-2
 <a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-key-import-and-hsm-clusteri" class="section-name selfRef">Key import and HSM clustering</a>
         </h3>
 <p id="section-2.2-1">Consider that an HSM is being added to a logical HSM cluster. Part of the onboarding process could involve
-the newly-added HSM providing proof of its running state, for example that it is a genuine device from
+the newly-added HSM providing Evidence of its running state, for example that it is a genuine device from
 the same manufacturer as the existing clustered HSMs, firmware patch level, FIPS mode, etc.
-It could also be required to provide attestation of any system-level keys required for secure establishment
-of cluster communication. In this scenario, the Verifier and Relying Party will be the other HSMs in the cluster
+It could also be required to provide information about any system-level keys required to establish
+secure cluster communication. In this scenario, the Verifier and Relying Party will typically be other HSMs in the cluster
 deciding whether or not to admit the new HSM.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
 <p id="section-2.2-2">A related scenario is when performing a key export-import across HSMs.
 If the key is being imported with certain properties, for example an environment running in FIPS mode at
@@ -1469,7 +1468,7 @@ determine which HSM was used to generate the subject key, whether this device ad
 to certain jurisdiction policies (such as FIPS mode) and the constraints applied to the key (such as whether is it extractable).<a href="#section-2.3-2" class="pilcrow">¶</a></p>
 <p id="section-2.3-3">For relatively simple HSM devices, storage properties such as "extractable" may always be false for all keys
 since the devices are not capable of key export and so the attestation could be essentially a hard-coded template asserting these
-immutable attributes. However, more complex HSM devices require a more complex evidence format that encompasses the
+immutable attributes. However, more complex HSM devices require a more complex Evidence format that encompasses the
 mutability of these attributes.<a href="#section-2.3-3" class="pilcrow">¶</a></p>
 <p id="section-2.3-4">Also, a client requesting a key attestation might wish to scope-down the content of the produced Evidence as
 the HSM contains much more information than that which is relevant to the transaction.
@@ -1493,7 +1492,7 @@ in order to map concepts between the two domains.<a href="#section-3-2" class="p
 defined in the RATS architecture (<span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>) such as Attester,
 Relying Party, Verifier.<a href="#section-3-3" class="pilcrow">¶</a></p>
 <p id="section-3-4">The reader is assumed to be familiar with common vocabulary and concepts
-defined in <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span> such as certificate, signature, attribute, verifier.<a href="#section-3-4" class="pilcrow">¶</a></p>
+defined in <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span> such as certificate, signature, attribute, verification and validation.<a href="#section-3-4" class="pilcrow">¶</a></p>
 <p id="section-3-5">In order to avoid confusion, this document generally
 capitalizes RATS terms such as Attester, Relying Party, and Claim.
 Therefore, for example, a "Verifier"
@@ -1567,9 +1566,9 @@ platform, such as those carried out during audit reviews.<a href="#section-3-7.1
 <dt id="section-3-7.19">Presenter:</dt>
         <dd style="margin-left: 1.5em" id="section-3-7.20">
           <p id="section-3-7.20.1">Role that facilitates communication between the Attester and the Verifier. The
-Presenter initiates the operation of generating evidence at the Attester and
-passes the generated evidence to the Verifier. In the case of HSMs, the Presenter
-is responsible of selecting the claims that are part of the generated evidence.<a href="#section-3-7.20.1" class="pilcrow">¶</a></p>
+Presenter initiates the operation of generating Evidence at the Attester and
+passes the generated Evidence to the Verifier. In the case of HSMs, the Presenter
+is responsible of selecting the claims that are part of the generated Evidence.<a href="#section-3-7.20.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 <dt id="section-3-7.21">Trust Anchor:</dt>
@@ -1587,7 +1586,7 @@ structure, as appropriate.<a href="#section-3-7.22.1" class="pilcrow">¶</a></p>
         <dd style="margin-left: 1.5em" id="section-3-7.24">
           <p id="section-3-7.24.1">A tamper-resistant processor generally located on a computer's motherboard used to enhance attestation
 functions for the hosting platform. TPMs are very specialized Hardware Security Modules and generally use
-other protocols (than the one presented in this specification) to transmit evidence.<a href="#section-3-7.24.1" class="pilcrow">¶</a></p>
+other protocols (than the one presented in this specification) to transmit Evidence.<a href="#section-3-7.24.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 <dt id="section-3-7.25">User Key:</dt>
@@ -1637,18 +1636,18 @@ Target Environment that relate to the needs of the Verifier. See <a href="#sec-c
         <h3 id="name-attestation-key-certificate">
 <a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-attestation-key-certificate" class="section-name selfRef">Attestation Key Certificate Chain</a>
         </h3>
-<p id="section-3.2-1">The data format in this specification represents PKIX evidence and
+<p id="section-3.2-1">The data format in this specification represents PKIX Evidence and
 requires third-party endorsement in order to establish trust. Part of this
 endorsement is a trust anchor that chains to the HSM's attestation key (AK)
-which signs the evidence. In practice the trust anchor will usually be a
+which signs the Evidence. In practice the trust anchor will usually be a
 manufacturing CA belonging to the device vendor which proves
 that the device is genuine and not counterfeit. The trust anchor can also belong
 to the device operator as would be the case when the AK certificate is replaced
 as part of onboarding the device into a new operational network.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
-<p id="section-3.2-2">The AK certificate that signs the evidence <span class="bcp14">MUST</span> have the Extended Key Usage
+<p id="section-3.2-2">The AK certificate that signs the Evidence <span class="bcp14">MUST</span> have the Extended Key Usage
 <code>id-kp-attest</code>, as defined in <span>[<a href="#I-D.jpfiset-lamps-attestationkey-eku" class="cite xref">I-D.jpfiset-lamps-attestationkey-eku</a>]</span>, set.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
 <p id="section-3.2-3">Note that the data format specified in <a href="#sec-data-model" class="auto internal xref">Section 5</a> allows for zero, one, or multiple
-'SignatureBlock's, so a single evidence statement could be un-protected, or could be endorsed by multiple
+'SignatureBlock's, so a single Evidence statement could be un-protected, or could be endorsed by multiple
 AK chains leading to different trust anchors. See <a href="#sec-verif-proc" class="auto internal xref">Section 6</a> for a discussion of handling multiple SignatureBlocks.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1770,7 +1769,7 @@ a "ak-spki" <span class="bcp14">MAY</span> be repeated, each attribute describin
 Therefore, the definition of an attribute specifies whether or not multiple copies of that
 attribute are allowed.<a href="#section-4.3-7" class="pilcrow">¶</a></p>
 <p id="section-4.3-8">If a Verifier encounters, within a single entity, multiple copies of an attribute specified as
-"Multiple Allowed: No", it <span class="bcp14">MUST</span> reject the evidence as malformed.<a href="#section-4.3-8" class="pilcrow">¶</a></p>
+"Multiple Allowed: No", it <span class="bcp14">MUST</span> reject the Evidence as malformed.<a href="#section-4.3-8" class="pilcrow">¶</a></p>
 <p id="section-4.3-9">If a Verifier encounters, within the context of an entity, a repeated attribute for a type where
 multiple attributes are allowed, it <span class="bcp14">MUST</span> treat each one as an independent attribute and <span class="bcp14">MUST NOT</span>
 consider later ones to overwrite the previous one.<a href="#section-4.3-9" class="pilcrow">¶</a></p>
@@ -1816,14 +1815,14 @@ SignerIdentifier ::= SEQUENCE {
 }
 </pre><a href="#section-5-3" class="pilcrow">¶</a>
 </div>
-<p id="section-5-4">A <code>PkixEvidence</code> message is composed of a protected section known as the To-Be-Signed (TBS) section where the evidence
+<p id="section-5-4">A <code>PkixEvidence</code> message is composed of a protected section known as the To-Be-Signed (TBS) section where the Evidence
 reported by the HSM is assembled. The integrity of the TBS section is ensured with one or multiple cryptographic signatures
 over the content of this section. There is a provision to carry X.509 certificates supporting each signature.
 The SEQUENCE OF <code>SignatureBlock</code> allows for both multi-algorithm protection and for counter-signatures
-of the evidence.
-In an effort to keep the evidence format simple, distinguishing between these two cases is left up to Verifier policy,
+of the Evidence.
+In an effort to keep the Evidence format simple, distinguishing between these two cases is left up to Verifier policy,
 potentially by making use of the certificates that accompany each signature.<a href="#section-5-4" class="pilcrow">¶</a></p>
-<p id="section-5-5">This design also does not prevent an attacker from removing, adding or re-ordering signatures without leaving evidence.
+<p id="section-5-5">This design also does not prevent an attacker from removing, adding or re-ordering signatures without leaving Evidence.
 This is discussed as part of the security considerations in <a href="#sec-detached-sigs" class="auto internal xref">Section 10.3</a>.<a href="#section-5-5" class="pilcrow">¶</a></p>
 <p id="section-5-6">The TBS section is composed of a version number, to ensure future extensibility, and a sequence of reported entities.
 For compliance with this specification, <code>TbsPkixEvidence.version</code> <span class="bcp14">MUST</span> be <code>1</code>.
@@ -2408,9 +2407,9 @@ different values. However, within the scope of this specification, the "nonce" v
           <h4 id="name-ak-spki">
 <a href="#section-5.3.3" class="section-number selfRef">5.3.3. </a><a href="#name-ak-spki" class="section-name selfRef">ak-spki</a>
           </h4>
-<p id="section-5.3.3-1">This field contains the encoded Subject Public Key Information (SPKI) for the attestation key used to sign the evidence. The definition
+<p id="section-5.3.3-1">This field contains the encoded Subject Public Key Information (SPKI) for the attestation key used to sign the Evidence. The definition
 and encoding for SPKIs are defined in X.509 certificates (<span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>).<a href="#section-5.3.3-1" class="pilcrow">¶</a></p>
-<p id="section-5.3.3-2">This transaction attribute is used to bind the content of the evidence with the key(s) used to sign that evidence. The importance
+<p id="section-5.3.3-2">This transaction attribute is used to bind the content of the Evidence with the key(s) used to sign that Evidence. The importance
 of this binding is discussed in <a href="#sec-detached-sigs" class="auto internal xref">Section 10.3</a>.<a href="#section-5.3.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2452,7 +2451,7 @@ header label is "EVIDENCE". For example:<a href="#section-5.5-3" class="pilcrow"
       <h2 id="name-signing-and-verification-pr">
 <a href="#section-6" class="section-number selfRef">6. </a><a href="#name-signing-and-verification-pr" class="section-name selfRef">Signing and Verification Procedures</a>
       </h2>
-<p id="section-6-1">The <code>SignatureBlock.signatureValue</code> signs over the DER-encoded to-be-signed evidence data
+<p id="section-6-1">The <code>SignatureBlock.signatureValue</code> signs over the DER-encoded to-be-signed Evidence data
 <code>PkixEvidence.tbs</code> and <span class="bcp14">MUST</span> be validated with the subject public key of the leaf
 X.509 certificate contained in the <code>SignerIdentifier.certificate</code>. Verifiers <span class="bcp14">MAY</span> also use
 <code>PkixEvidence.intermediateCertificates</code> to build a certification path to a trust anchor.<a href="#section-6-1" class="pilcrow">¶</a></p>
@@ -2462,7 +2461,7 @@ A PkixEvidence with zero SignatureBlocks is unsigned and unprotected; Verifiers 
 For example, the HSM's Attesting Service might hold multiple Attestation Keys on different cryptographic
 algorithms in order to provide algorithm redundancy in the case that one algorithm becomes cryptographically broken. In this case a Verifier would be expected to validate all SignatureBlocks. Alternatively, the HSM's Attesting Service may hold multiple Attestation Keys (or multiple X.509 certificates for the same key) from multiple operational environments to which it belongs. In this case a Verifier would be expected to only validate the SignatureBlock corresponding to its own environment. Alternatively, multiple SignatureBlocks could be used to convey counter-signatures from external parties, in which case the Verifier will need to be equipped with environment-specific verification logic. Multiple of these cases, and potentially others, could be supported by a single PkixEvidence object.<a href="#section-6-3" class="pilcrow">¶</a></p>
 <p id="section-6-4">Note that each SignatureBlock is a fully detached signature over the tbs content with no binding between the signed content and the SignatureBlocks, or between SignatureBlocks, meaning that a third-party can add a
-counter-signature of the evidence after the fact, or an attacker can remove a SignatureBlock without leaving any artifact. See <a href="#sec-detached-sigs" class="auto internal xref">Section 10.3</a> for further discussion.<a href="#section-6-4" class="pilcrow">¶</a></p>
+counter-signature of the Evidence after the fact, or an attacker can remove a SignatureBlock without leaving any artifact. See <a href="#sec-detached-sigs" class="auto internal xref">Section 10.3</a> for further discussion.<a href="#section-6-4" class="pilcrow">¶</a></p>
 <p id="section-6-5">If any <code>transaction.ak-spki</code> attributes are present, the Verifier <span class="bcp14">SHOULD</span> verify that each <code>SignerIdentifier</code>’s SubjectPublicKeyInfo (or the SPKI of its <code>certificate</code>) matches at least one <code>ak-spki</code> value.<a href="#section-6-5" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2472,18 +2471,18 @@ counter-signature of the evidence after the fact, or an attacker can remove a Si
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-attestation-requests" class="section-name selfRef">Attestation Requests</a>
       </h2>
 <p id="section-7-1">This section is informative in nature and implementers of this specification do not need to adhere to it. The aim of this section is
-to provide a standard interface between a Presenter and an HSM producing PKIX evidence. The authors hope that this standard interface will
+to provide a standard interface between a Presenter and an HSM producing PKIX Evidence. The authors hope that this standard interface will
 yield interoperable tools between offerings from different vendors.<a href="#section-7-1" class="pilcrow">¶</a></p>
 <p id="section-7-2">The interface presented in this section might be too complex for manufacturers of HSMs with limited capabilities such as smartcards
-or personal ID tokens. For devices with limited capabilities, a fixed PKIX evidence endorsed by the vendor might be installed
+or personal ID tokens. For devices with limited capabilities, a fixed PKIX Evidence endorsed by the vendor might be installed
 during manufacturing. Other approaches for constrained HSMs might be to report entities and attributes that are fixed or offer limited
 variations.<a href="#section-7-2" class="pilcrow">¶</a></p>
 <p id="section-7-3">On the other hand, an enterprise-grade HSM with the capability to hold a large number of private keys is expected to be capable of generating
-PKIX evidence catered to the specific constraints imposed by a Verifier and without exposing extraneous information. The aim of the request
-interface is to provide the means to select and report specific information in the PKIX evidence.<a href="#section-7-3" class="pilcrow">¶</a></p>
+PKIX Evidence catered to the specific constraints imposed by a Verifier and without exposing extraneous information. The aim of the request
+interface is to provide the means to select and report specific information in the PKIX Evidence.<a href="#section-7-3" class="pilcrow">¶</a></p>
 <p id="section-7-4">This section introduces the role of "Presenter" as shown in <a href="#fig-arch" class="auto internal xref">Figure 1</a>. The Presenter is the role that initiates the generation of PKIX
-evidence. Since HSMs are generally servers (client/server relationship) or peripherals (controller/peripheral relationship), a Presenter is
-required to launch the process of creating the PKIX evidence and capturing it to forward it to the Verifier.<a href="#section-7-4" class="pilcrow">¶</a></p>
+Evidence. Since HSMs are generally servers (client/server relationship) or peripherals (controller/peripheral relationship), a Presenter is
+required to launch the process of creating the PKIX Evidence and capturing it to forward it to the Verifier.<a href="#section-7-4" class="pilcrow">¶</a></p>
 <span id="name-architecture"></span><div id="fig-arch">
 <figure id="figure-1">
         <div id="section-7-5.1">
@@ -2543,7 +2542,7 @@ required to launch the process of creating the PKIX evidence and capturing it to
 <a href="#name-architecture" class="selfRef">Architecture</a>
         </figcaption></figure>
 </div>
-<p id="section-7-6">An Attestation Request (request) is assembled by the Presenter and submitted to the HSM. The HSM parses the request and produces PKIX evidence
+<p id="section-7-6">An Attestation Request (request) is assembled by the Presenter and submitted to the HSM. The HSM parses the request and produces PKIX Evidence
 which is returned to the Presenter for distribution.<a href="#section-7-6" class="pilcrow">¶</a></p>
 <p id="section-7-7">In the previous figure, the HSM is represented as being composed of an attestation service and a Target Environment. This representation is offered
 as a simplified view and implementations are not required to adhere to this separation of concerns.<a href="#section-7-7" class="pilcrow">¶</a></p>
@@ -2551,16 +2550,16 @@ as a simplified view and implementations are not required to adhere to this sepa
 The role of "Presenter" is privileged as it controls the Evidence being generated by the Attester. However, the role is not "trusted" as
 the Verifier does not have to take into account the participation of the Presenter as part of the function of appraising the Evidence.<a href="#section-7-8" class="pilcrow">¶</a></p>
 <p id="section-7-9">The attestation request, shown in the figure, consists of a structure <code>TbsPkixEvidence</code> containing one <code>ReportedEntity</code> for each entity expected to
-be included in the evidence produced by the HSM.<a href="#section-7-9" class="pilcrow">¶</a></p>
+be included in the Evidence produced by the HSM.<a href="#section-7-9" class="pilcrow">¶</a></p>
 <p id="section-7-10">Each instance of <code>ReportedEntity</code> included in the request is referred to as a request entity. A request entity contains a number of instances
 of <code>ReportedAttribute</code> known as request attributes. The collection of request entities and request attributes represent the information desired
 by the Presenter.<a href="#section-7-10" class="pilcrow">¶</a></p>
 <p id="section-7-11">In most cases the value of a request attribute should be left unspecified by the Presenter. In the process of generating
-the evidence, the values of the desired attributes are observed by the Attestation Service within the HSM and reported accordingly. For the purpose
+the Evidence, the values of the desired attributes are observed by the Attestation Service within the HSM and reported accordingly. For the purpose
 of creating a request, the Presenter does not specify the value of the requested attributes and leaves them empty. This is possible because the definition of
 the structure <code>ReportedAttribute</code> specifies the element <code>value</code> as optional.<a href="#section-7-11" class="pilcrow">¶</a></p>
 <p id="section-7-12">On the other hand, there are circumstances where the value of a request attribute should be provided by the Presenter. For example, when a particular
-cryptographic key is to be included in the evidence, the request must include a key entity with one of the "identifier" attributes set to the value
+cryptographic key is to be included in the Evidence, the request must include a key entity with one of the "identifier" attributes set to the value
 corresponding to the desired key.<a href="#section-7-12" class="pilcrow">¶</a></p>
 <p id="section-7-13">Some instances of <code>ReportedEntity</code>, such as those representing the platform or the transaction, do not need identifiers as the associated elements are
 implicit in nature. Custom entity types might need selection during an attestation request and related documentation should specify how this is
@@ -2582,7 +2581,7 @@ should not have a specified value (left empty).<a href="#section-7.1-1" class="p
           <h4 id="name-key-identifiers">
 <a href="#section-7.1.1" class="section-number selfRef">7.1.1. </a><a href="#name-key-identifiers" class="section-name selfRef">Key Identifiers</a>
           </h4>
-<p id="section-7.1.1-1">A Presenter may choose to select which cryptographic keys are reported as part of the PKIX evidence. For each selected cryptographic key,
+<p id="section-7.1.1-1">A Presenter may choose to select which cryptographic keys are reported as part of the PKIX Evidence. For each selected cryptographic key,
 the Presenter includes a request entity of type <code>id-pkix-evidence-entity-key</code>. Among the request attributes for this entity, the
 Presenter includes one attribute with the type <code>id-pkix-evidence-attribute-key-identifier</code>. The value of this attribute should be
 set to the utf8String that represents the identifier for the specific key.<a href="#section-7.1.1-1" class="pilcrow">¶</a></p>
@@ -2595,7 +2594,7 @@ key associated with the specified identifier.<a href="#section-7.1.1-2" class="p
           <h4 id="name-nonce-2">
 <a href="#section-7.1.2" class="section-number selfRef">7.1.2. </a><a href="#name-nonce-2" class="section-name selfRef">Nonce</a>
           </h4>
-<p id="section-7.1.2-1">A Presenter may choose to include a nonce as part of the attestation request. When producing the PKIX evidence, the HSM repeats the
+<p id="section-7.1.2-1">A Presenter may choose to include a nonce as part of the attestation request. When producing the PKIX Evidence, the HSM repeats the
 nonce that was provided as part of the request.<a href="#section-7.1.2-1" class="pilcrow">¶</a></p>
 <p id="section-7.1.2-2">When providing a nonce, a Presenter includes, in the attestation request, an entity of type <code>id-pkix-evidence-entity-transaction</code>
 with an attribute of type <code>id-pkix-evidence-attribute-transaction-nonce</code>. This attribute is set with the value of the
@@ -2610,7 +2609,7 @@ nonce as "bytes".<a href="#section-7.1.2-2" class="pilcrow">¶</a></p>
 <p id="section-7.1.3-1">An implementer might desire to select multiple cryptographic keys based on a shared attribute. A possible approach
 is to include a single request entity of type <code>id-pkix-evidence-entity-key</code> including an attribute with a set value. This attribute
 would not be related to the key identifier as this is unique to each key. A HSM supporting this scheme could select all the cryptographic
-keys matching the specified attribute and report them in the PKIX evidence.<a href="#section-7.1.3-1" class="pilcrow">¶</a></p>
+keys matching the specified attribute and report them in the PKIX Evidence.<a href="#section-7.1.3-1" class="pilcrow">¶</a></p>
 <p id="section-7.1.3-2">This is a departure from the base request interface, as multiple key entities are reported from a single request entity.<a href="#section-7.1.3-2" class="pilcrow">¶</a></p>
 <p id="section-7.1.3-3">More elaborate selection schemes can be envisaged where multiple request attributes specifying values would be tested against cryptographic keys.
 Whether these attributes are combined in a logical "and" or in a logical "or" would need to be specified by the implementer.<a href="#section-7.1.3-3" class="pilcrow">¶</a></p>
@@ -2622,10 +2621,10 @@ Whether these attributes are combined in a logical "and" or in a logical "or" wo
 <a href="#section-7.1.4" class="section-number selfRef">7.1.4. </a><a href="#name-custom-transaction-entity-a" class="section-name selfRef">Custom Transaction Entity Attributes</a>
           </h4>
 <p id="section-7.1.4-1">The extensibility offered by the proposed request interface allows an implementer to add custom attributes to the transaction entity in
-order to influence the way that the evidence generation is performed.<a href="#section-7.1.4-1" class="pilcrow">¶</a></p>
+order to influence the way that the Evidence generation is performed.<a href="#section-7.1.4-1" class="pilcrow">¶</a></p>
 <p id="section-7.1.4-2">In such an approach, a new custom attribute for request entities of type "transaction" is defined. Then, an
 attribute of that type is included in the attestation request (as part of the transaction entity) while specifying a value. This value
-is considered by the HSM while generating the PKIX evidence.<a href="#section-7.1.4-2" class="pilcrow">¶</a></p>
+is considered by the HSM while generating the PKIX Evidence.<a href="#section-7.1.4-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2635,11 +2634,11 @@ is considered by the HSM while generating the PKIX evidence.<a href="#section-7.
         <h3 id="name-reporting-of-attestation-ke">
 <a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-reporting-of-attestation-ke" class="section-name selfRef">Reporting of Attestation Keys</a>
         </h3>
-<p id="section-7.2-1">There is a provision for the Attester to report the Attestation Key(s) used during the generation of the evidence. To this end,
+<p id="section-7.2-1">There is a provision for the Attester to report the Attestation Key(s) used during the generation of the Evidence. To this end,
 the transaction attribute "ak-spki" is used.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
 <p id="section-7.2-2">A Presenter invokes this provision by submitting an attestation request with a transaction attribute of type "ak-spki" with a
 non-specified value (left empty).<a href="#section-7.2-2" class="pilcrow">¶</a></p>
-<p id="section-7.2-3">In this case, the Attester adds a transaction attribute of type "ak-spki" for each Attestation Key used to sign the evidence. The
+<p id="section-7.2-3">In this case, the Attester adds a transaction attribute of type "ak-spki" for each Attestation Key used to sign the Evidence. The
 value of this attribute is an octet string (bytes) which is the encoding of the Subject Public Key Information (SPKI) associated
 with the Attestation Key. Details on SPKIs and their encoding can be found in X.509 certificates (<span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>).<a href="#section-7.2-3" class="pilcrow">¶</a></p>
 <p id="section-7.2-4">This reporting effectively binds the signature blocks to the content (see <a href="#sec-detached-sigs" class="auto internal xref">Section 10.3</a>).<a href="#section-7.2-4" class="pilcrow">¶</a></p>
@@ -2661,7 +2660,7 @@ empty). This represents a situation where the Presenter is selecting specific in
 <p id="section-7.3-5">An Attester <span class="bcp14">SHOULD</span> ignore unrecognized attribute types in an attestation request. In this situation, the Attester <span class="bcp14">SHOULD NOT</span> include
 the attribute as part of the response. This guidance is to increase the likelihood of interoperability between tools of various
 vendors.<a href="#section-7.3-5" class="pilcrow">¶</a></p>
-<p id="section-7.3-6">An Attester <span class="bcp14">MUST NOT</span> include entities and attributes in the generated evidence if these entities and attributes were
+<p id="section-7.3-6">An Attester <span class="bcp14">MUST NOT</span> include entities and attributes in the generated Evidence if these entities and attributes were
 not specified as part of the request. This is to give the Presenter the control on what information is disclosed by the Attester.<a href="#section-7.3-6" class="pilcrow">¶</a></p>
 <p id="section-7.3-7">An Attester <span class="bcp14">MUST</span> fail an attestation request if the Presenter does not have the appropriate access rights to the entities included
 in the request.<a href="#section-7.3-7" class="pilcrow">¶</a></p>
@@ -2672,18 +2671,18 @@ in the request.<a href="#section-7.3-7" class="pilcrow">¶</a></p>
         <h3 id="name-verification-by-presenter">
 <a href="#section-7.4" class="section-number selfRef">7.4. </a><a href="#name-verification-by-presenter" class="section-name selfRef">Verification by Presenter</a>
         </h3>
-<p id="section-7.4-1">This sub-section deals with the rules that should be considered when a Presenter receives PKIX evidence from the Attester (the HSM)
+<p id="section-7.4-1">This sub-section deals with the rules that should be considered when a Presenter receives PKIX Evidence from the Attester (the HSM)
 prior to distribution. This section is non-normative and implementers <span class="bcp14">MAY</span> choose to not follow these recommendations.<a href="#section-7.4-1" class="pilcrow">¶</a></p>
-<p id="section-7.4-2">These recommendations apply to any PKIX evidence and are not restricted solely to evidence generated from the proposed request interface.<a href="#section-7.4-2" class="pilcrow">¶</a></p>
-<p id="section-7.4-3">A Presenter <span class="bcp14">MUST</span> review the evidence produced by an Attester for fitness prior to distribution.<a href="#section-7.4-3" class="pilcrow">¶</a></p>
-<p id="section-7.4-4">A Presenter <span class="bcp14">MUST NOT</span> disclose evidence if it contains information it
+<p id="section-7.4-2">These recommendations apply to any PKIX Evidence and are not restricted solely to Evidence generated from the proposed request interface.<a href="#section-7.4-2" class="pilcrow">¶</a></p>
+<p id="section-7.4-3">A Presenter <span class="bcp14">MUST</span> review the Evidence produced by an Attester for fitness prior to distribution.<a href="#section-7.4-3" class="pilcrow">¶</a></p>
+<p id="section-7.4-4">A Presenter <span class="bcp14">MUST NOT</span> disclose Evidence if it contains information it
 cannot parse. This restriction applies to entity types and attributes type. This is
 to ensure that the information provided by the Attester can be evaluated by the
 Presenter.<a href="#section-7.4-4" class="pilcrow">¶</a></p>
-<p id="section-7.4-5">A Presenter <span class="bcp14">MUST NOT</span> disclose evidence if it contains entities others
+<p id="section-7.4-5">A Presenter <span class="bcp14">MUST NOT</span> disclose Evidence if it contains entities others
 than the ones that were requested of the Attester. This is to ensure that only the
 selected entities are exposed to the Verifier.<a href="#section-7.4-5" class="pilcrow">¶</a></p>
-<p id="section-7.4-6">A Presenter <span class="bcp14">MUST NOT</span> disclose evidence if it contains an entity with an attribute
+<p id="section-7.4-6">A Presenter <span class="bcp14">MUST NOT</span> disclose Evidence if it contains an entity with an attribute
 that was not requested of the Attester. This is to ensure that only the selected
 information is disclosed to the Verifier.<a href="#section-7.4-6" class="pilcrow">¶</a></p>
 <p id="section-7.4-7">Further privacy concerns are discussed in <a href="#sec-cons-privacy" class="auto internal xref">Section 10.4</a>.<a href="#section-7.4-7" class="pilcrow">¶</a></p>
@@ -2904,19 +2903,19 @@ END
         <h3 id="name-policies-relating-to-verifi">
 <a href="#section-10.1" class="section-number selfRef">10.1. </a><a href="#name-policies-relating-to-verifi" class="section-name selfRef">Policies relating to Verifier and Relying Party</a>
         </h3>
-<p id="section-10.1-1">The generation of PKIX evidence by an HSM is to provide sufficient information to
+<p id="section-10.1-1">The generation of PKIX Evidence by an HSM is to provide sufficient information to
 a Verifier and a Relying Party to appraise the Target Environment (the HSM) and make
 decisions based on this appraisal.<a href="#section-10.1-1" class="pilcrow">¶</a></p>
 <p id="section-10.1-2">The Appraisal Policy associated with the Verifier influences the generation of the Attestation
 Results. Those results, in turn, are consumed by the Relying Party to make decisions about
 the HSM, which might be based on a set of rules and policies. Therefore, the interpretation of
-PKIX evidence may greatly influence the outcome of some decisions.<a href="#section-10.1-2" class="pilcrow">¶</a></p>
-<p id="section-10.1-3">A Verifier <span class="bcp14">MAY</span> reject a PKIX evidence if it lacks required attributes per the Verifier's
+PKIX Evidence may greatly influence the outcome of some decisions.<a href="#section-10.1-2" class="pilcrow">¶</a></p>
+<p id="section-10.1-3">A Verifier <span class="bcp14">MAY</span> reject a PKIX Evidence if it lacks required attributes per the Verifier's
 appraisal policy. For example, if a Relying Party mandates a FIPS-certified device,
-it <span class="bcp14">SHOULD</span> reject evidence lacking sufficient information to verify the device's FIPS
+it <span class="bcp14">SHOULD</span> reject Evidence lacking sufficient information to verify the device's FIPS
 certification status.<a href="#section-10.1-3" class="pilcrow">¶</a></p>
 <p id="section-10.1-4">If a Verifier encounters an attribute with an unrecognized attribute type, it <span class="bcp14">MAY</span> ignore it and
-treat it as extraneous information. By ignoring an attribute, the Verifier may accept PKIX evidence
+treat it as extraneous information. By ignoring an attribute, the Verifier may accept PKIX Evidence
 that would be deemed malformed to a Verifier with different policies. However, this approach
 fosters a higher likelihood of achieving interoperability.<a href="#section-10.1-4" class="pilcrow">¶</a></p>
 </section>
@@ -2936,8 +2935,8 @@ correctly. Additionally, when the data formats contained in this specification a
 within an HSM boundary -- that would be parsing a request entity, or parsing an attestation
 produced by a different HSM -- implementers <span class="bcp14">SHOULD</span> opt for simple logic that rejects any
 data that does not match the expected format, instead of attempting to be flexible.<a href="#section-10.2-1" class="pilcrow">¶</a></p>
-<p id="section-10.2-2">In particular, the Attestation Service <span class="bcp14">SHOULD</span> generate the PKIX evidence from scratch and
-avoid copying any content from the request. The Attestation Service <span class="bcp14">MUST</span> generate PKIX evidence
+<p id="section-10.2-2">In particular, the Attestation Service <span class="bcp14">SHOULD</span> generate the PKIX Evidence from scratch and
+avoid copying any content from the request. The Attestation Service <span class="bcp14">MUST</span> generate PKIX Evidence
 only from attributes and values that are observed by the service.<a href="#section-10.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2946,7 +2945,7 @@ only from attributes and values that are observed by the service.<a href="#secti
         <h3 id="name-detached-signatures">
 <a href="#section-10.3" class="section-number selfRef">10.3. </a><a href="#name-detached-signatures" class="section-name selfRef">Detached Signatures</a>
         </h3>
-<p id="section-10.3-1">The construction of the evidence structure (<code>PkixEvidence</code>) includes a collection of signature
+<p id="section-10.3-1">The construction of the Evidence structure (<code>PkixEvidence</code>) includes a collection of signature
 blocks that are not explicitly bound to the content. This approach was influenced by the following
 motivations:<a href="#section-10.3-1" class="pilcrow">¶</a></p>
 <ul class="normal">
@@ -2962,16 +2961,16 @@ policies.<a href="#section-10.3-2.1.1" class="pilcrow">¶</a></p>
 <p id="section-10.3-3">The concept of counter-signatures is important for environments where a number of heterogeneous
 devices are deployed. In those environments, it is possible for a trusted actor, intermediary between
 the Attester and the Verifier, to validate the original signature(s) and apply its own afterwards.<a href="#section-10.3-3" class="pilcrow">¶</a></p>
-<p id="section-10.3-4">The ability to add signature blocks to the evidence after the original generation by the Attester leads
+<p id="section-10.3-4">The ability to add signature blocks to the Evidence after the original generation by the Attester leads
 to the unfortunate situation where signature blocks can also be removed without leaving any trace.
 Therefore, the signature blocks can be deemed as "detachable" or "stapled".<a href="#section-10.3-4" class="pilcrow">¶</a></p>
-<p id="section-10.3-5">Manipulation of the evidence after it was generated can lead to undesired outcomes at the Verifier.<a href="#section-10.3-5" class="pilcrow">¶</a></p>
-<p id="section-10.3-6">Therefore, Verifiers <span class="bcp14">MUST</span> be designed to accept evidence based on their appraisal policies, regardless
+<p id="section-10.3-5">Manipulation of the Evidence after it was generated can lead to undesired outcomes at the Verifier.<a href="#section-10.3-5" class="pilcrow">¶</a></p>
+<p id="section-10.3-6">Therefore, Verifiers <span class="bcp14">MUST</span> be designed to accept Evidence based on their appraisal policies, regardless
 of the presence or absence of certain signature(s). Consequently, Verifiers <span class="bcp14">MUST NOT</span> make any inferences
 based on a missing signature, as the signature could have been removed in transit.<a href="#section-10.3-6" class="pilcrow">¶</a></p>
 <p id="section-10.3-7">This specification provides the transaction attribute "ak-spki" to effectively bind the content with
 the signature blocks that were generated by the Attester. When this attribute is provided, it reports
-the SPKI of one of the attestation keys used by the Attester to produce the evidence. This attribute
+the SPKI of one of the attestation keys used by the Attester to produce the Evidence. This attribute
 is repeated for each of the attestation keys used by the Attester.<a href="#section-10.3-7" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2982,12 +2981,12 @@ is repeated for each of the attestation keys used by the Attester.<a href="#sect
         </h3>
 <p id="section-10.4-1">Some HSMs have the capacity of supporting cryptographic keys controlled by separate entities referred to as "tenants", and when the HSM is used in that mode
 it is referred to as a multi-tenant configuration.<a href="#section-10.4-1" class="pilcrow">¶</a></p>
-<p id="section-10.4-2">For example, an enterprise-grade HSM in a large multi-tenant cloud service could host TLS keys fronting multiple un-related web domains. Providing evidence for
+<p id="section-10.4-2">For example, an enterprise-grade HSM in a large multi-tenant cloud service could host TLS keys fronting multiple un-related web domains. Providing Evidence for
 attesting attributes of any one of the keys would involve a Presenter that could potentially access any of the hosted keys.
 In such a case, privacy violations could occur if the Presenter was to disclose information that does not relate to the subject key.<a href="#section-10.4-2" class="pilcrow">¶</a></p>
 <p id="section-10.4-3">Implementers <span class="bcp14">SHOULD</span> be careful to avoid over-disclosure of information, for example by authenticating the Presenter as described in <a href="#sec-cons-auth-the-presenter" class="auto internal xref">Section 10.5</a> and only returning results for keys and environments for which it is authorized.
 In absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request <span class="bcp14">MAY</span> be authenticated by embedding the TbsPkixEvidence of the request inside a PkixEvidence signed with a certificate belonging to the Presenter.<a href="#section-10.4-3" class="pilcrow">¶</a></p>
-<p id="section-10.4-4">Furthermore, enterprise and cloud-services grade HSMs <span class="bcp14">SHOULD</span> support the full set of attestation request functionality described in <a href="#sec-reqs" class="auto internal xref">Section 7</a> so that Presenters can fine-tune the content of a PKIX evidence such that it is appropriate for the intended Verifier.<a href="#section-10.4-4" class="pilcrow">¶</a></p>
+<p id="section-10.4-4">Furthermore, enterprise and cloud-services grade HSMs <span class="bcp14">SHOULD</span> support the full set of attestation request functionality described in <a href="#sec-reqs" class="auto internal xref">Section 7</a> so that Presenters can fine-tune the content of a PKIX Evidence such that it is appropriate for the intended Verifier.<a href="#section-10.4-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-cons-auth-the-presenter">
@@ -2996,11 +2995,11 @@ In absence of an existing mechanism for authenticating and authorizing administr
 <a href="#section-10.5" class="section-number selfRef">10.5. </a><a href="#name-authenticating-and-authoriz" class="section-name selfRef">Authenticating and Authorizing the Presenter</a>
         </h3>
 <p id="section-10.5-1">The Presenter represents a privileged role within the architecture of this specification as it gets to learn about the existence of user keys and their protection properties, as well as details of the platform.
-The Presenter is in the position of deciding how much information to disclose to the Verifier, and to request a suitably redacted evidence from the HSM.<a href="#section-10.5-1" class="pilcrow">¶</a></p>
+The Presenter is in the position of deciding how much information to disclose to the Verifier, and to request a suitably redacted Evidence from the HSM.<a href="#section-10.5-1" class="pilcrow">¶</a></p>
 <p id="section-10.5-2">For personal cryptographic tokens it might be appropriate for the attestation request interface to be un-authenticated. However, for enterprise and cloud-services grade HSMs the Presenter <span class="bcp14">SHOULD</span> be authenticated using the HSM's native authentication mechanism. The details are HSM-specific and are thus left up to the implementer. However, it is <span class="bcp14">RECOMMENDED</span> to implement an authorization framework similar to the following.<a href="#section-10.5-2" class="pilcrow">¶</a></p>
-<p id="section-10.5-3">A Presenter <span class="bcp14">SHOULD</span> be allowed to request evidence for any user keys which it is allowed to use.
-For example, a TLS application that is correctly authenticated to the HSM in order to use its TLS keys <span class="bcp14">SHOULD</span> be able to request evidence of those same keys without needing to perform any additional authentication or requiring any additional roles or permissions.
-HSMs that wish to allow a Presenter to request evidence of keys which is not allowed to use, for example for the purposes of displaying HSM status information on an administrative console or UI, <span class="bcp14">SHOULD</span> have a "Attestation Requester" role or permission and <span class="bcp14">SHOULD</span> enforce the HSM's native access controls such that the Presenter can only retrieve evidence for keys for which it has read access.<a href="#section-10.5-3" class="pilcrow">¶</a></p>
+<p id="section-10.5-3">A Presenter <span class="bcp14">SHOULD</span> be allowed to request Evidence for any user keys which it is allowed to use.
+For example, a TLS application that is correctly authenticated to the HSM in order to use its TLS keys <span class="bcp14">SHOULD</span> be able to request Evidence of those same keys without needing to perform any additional authentication or requiring any additional roles or permissions.
+HSMs that wish to allow a Presenter to request Evidence of keys which is not allowed to use, for example for the purposes of displaying HSM status information on an administrative console or UI, <span class="bcp14">SHOULD</span> have a "Attestation Requester" role or permission and <span class="bcp14">SHOULD</span> enforce the HSM's native access controls such that the Presenter can only retrieve Evidence for keys for which it has read access.<a href="#section-10.5-3" class="pilcrow">¶</a></p>
 <p id="section-10.5-4">In the absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request <span class="bcp14">MAY</span> be authenticated by embedding the <code>TbsPkixEvidence</code> of the request inside a <code>PkixEvidence</code> signed with a certificate belonging to the Presenter.<a href="#section-10.5-4" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -3012,9 +3011,9 @@ HSMs that wish to allow a Presenter to request evidence of keys which is not all
 <p id="section-10.6-1">With asymmetric keys within a Public Key Infrastructure (PKI) it is common to require a key holder to prove that they are in control of the private key by using it. This is called "proof-of-possession (PoP)". This specification intentionally does not provide a mechanism for PoP of user keys and relies on the Presenter, Verifier, and Relying Party trusting the Attester to correctly report the cryptographic keys that it is holding.<a href="#section-10.6-1" class="pilcrow">¶</a></p>
 <p id="section-10.6-2">It would be trivial to add a PoP Key Attribute that uses the attested user key to sign over, for example, the Transaction Entity. However, this approach leads to undesired consequences, as explained
 below.<a href="#section-10.6-2" class="pilcrow">¶</a></p>
-<p id="section-10.6-3">First, a user key intended for TLS, as an example, <span class="bcp14">SHOULD</span> only be used with the TLS protocol. Introducing a signature oracle whereby the TLS application key is used to sign PKIX evidence could lead to cross-protocol attacks.
+<p id="section-10.6-3">First, a user key intended for TLS, as an example, <span class="bcp14">SHOULD</span> only be used with the TLS protocol. Introducing a signature oracle whereby the TLS application key is used to sign PKIX Evidence could lead to cross-protocol attacks.
 In this example, an attacker could submit a "nonce" value which is in fact not random but is crafted in such a way as to appear as a valid message in some other protocol context or exploit some other weakness in the signature algorithm.<a href="#section-10.6-3" class="pilcrow">¶</a></p>
-<p id="section-10.6-4">Second, the Presenter who has connected to the HSM to request PKIX evidence may have permissions to view the requested application keys but not permission to use them, as in the case where the Presenter is an administrative UI displaying HSM status information to an systems administrator or auditor.<a href="#section-10.6-4" class="pilcrow">¶</a></p>
+<p id="section-10.6-4">Second, the Presenter who has connected to the HSM to request PKIX Evidence may have permissions to view the requested application keys but not permission to use them, as in the case where the Presenter is an administrative UI displaying HSM status information to an systems administrator or auditor.<a href="#section-10.6-4" class="pilcrow">¶</a></p>
 <p id="section-10.6-5">Requiring the Attestation Service to use the attested application keys could, in some architectures, require the Attestation Service to resolve complex access control logic and handle complex error conditions for each requested key, which violates the "simple to implement" design principle outlined in <a href="#sec-cons-simple" class="auto internal xref">Section 10.2</a>. More discussion of authenticating the Presenter can be found in <a href="#sec-cons-auth-the-presenter" class="auto internal xref">Section 10.5</a>.<a href="#section-10.6-5" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -3028,7 +3027,7 @@ are subject to these issues.<a href="#section-10.7-1" class="pilcrow">¶</a></p>
 <p id="section-10.7-2">There are many situations where HSMs can not naturally correct their internal system clocks. For example, consider a HSM hosting a trust anchor and usually kept offline
 and booted up infrequently in a network without a reliable time management service. Another example is a smart card which boots up only when held against an NFC reader.<a href="#section-10.7-2" class="pilcrow">¶</a></p>
 <p id="section-10.7-3">When a timestamp generated from a HSM is evaluated, the expected behavior of the system clock <span class="bcp14">SHOULD</span> be considered.<a href="#section-10.7-3" class="pilcrow">¶</a></p>
-<p id="section-10.7-4">More specifically, the timestamp <span class="bcp14">SHOULD NOT</span> be relied on for establishing the freshness of the evidence generated by a HSM. Instead, Verifiers <span class="bcp14">SHOULD</span> rely on other provisions
+<p id="section-10.7-4">More specifically, the timestamp <span class="bcp14">SHOULD NOT</span> be relied on for establishing the freshness of the Evidence generated by a HSM. Instead, Verifiers <span class="bcp14">SHOULD</span> rely on other provisions
 such as the "nonce" attribute of the "transaction" entity, introduced this specification.<a href="#section-10.7-4" class="pilcrow">¶</a></p>
 <p id="section-10.7-5">Furthermore, the internal system clock of HSMs <span class="bcp14">SHOULD NOT</span> be relied on to enforce expiration policies.<a href="#section-10.7-5" class="pilcrow">¶</a></p>
 </section>
@@ -3052,7 +3051,7 @@ such as the "nonce" attribute of the "transaction" entity, introduced this speci
 <dd class="break"></dd>
 <dt id="I-D.jpfiset-lamps-attestationkey-eku">[I-D.jpfiset-lamps-attestationkey-eku]</dt>
         <dd>
-<span class="refAuthor">Fiset, J.</span>, <span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, and <span class="refAuthor">M. Wiseman</span>, <span class="refTitle">"Extended Key Usage (EKU) for X.509 Certificates associated with Attestation Keys"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-jpfiset-lamps-attestationkey-eku-00</span>, <time datetime="2025-08-05" class="refDate">5 August 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-jpfiset-lamps-attestationkey-eku-00">https://datatracker.ietf.org/doc/html/draft-jpfiset-lamps-attestationkey-eku-00</a>&gt;</span>. </dd>
+<span class="refAuthor">Fiset, J.</span>, <span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, and <span class="refAuthor">M. Wiseman</span>, <span class="refTitle">"Extended Key Usage (EKU) for X.509 Certificates associated with Attestation Keys"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-jpfiset-lamps-attestationkey-eku-01</span>, <time datetime="2025-10-20" class="refDate">20 October 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-jpfiset-lamps-attestationkey-eku-01">https://datatracker.ietf.org/doc/html/draft-jpfiset-lamps-attestationkey-eku-01</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="PKCS11">[PKCS11]</dt>
         <dd>
@@ -3121,7 +3120,7 @@ such as the "nonce" attribute of the "transaction" entity, introduced this speci
 <dd class="break"></dd>
 <dt id="I-D.ietf-rats-msg-wrap">[I-D.ietf-rats-msg-wrap]</dt>
         <dd>
-<span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Smith, N.</span>, <span class="refAuthor">Fossati, T.</span>, <span class="refAuthor">Tschofenig, H.</span>, and <span class="refAuthor">D. Glaze</span>, <span class="refTitle">"RATS Conceptual Messages Wrapper (CMW)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-rats-msg-wrap-18</span>, <time datetime="2025-09-29" class="refDate">29 September 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-rats-msg-wrap-18">https://datatracker.ietf.org/doc/html/draft-ietf-rats-msg-wrap-18</a>&gt;</span>. </dd>
+<span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Smith, N.</span>, <span class="refAuthor">Fossati, T.</span>, <span class="refAuthor">Tschofenig, H.</span>, and <span class="refAuthor">D. Glaze</span>, <span class="refTitle">"RATS Conceptual Messages Wrapper (CMW)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-rats-msg-wrap-23</span>, <time datetime="2025-12-11" class="refDate">11 December 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-rats-msg-wrap-23">https://datatracker.ietf.org/doc/html/draft-ietf-rats-msg-wrap-23</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC2986">[RFC2986]</dt>
         <dd>
@@ -3150,7 +3149,7 @@ such as the "nonce" attribute of the "transaction" entity, introduced this speci
 <a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-samples" class="section-name selfRef">Samples</a>
       </h2>
 <p id="appendix-A-1">A reference implementation of this specification can be found at https://github.com/ietf-rats-wg/key-attestation<a href="#appendix-A-1" class="pilcrow">¶</a></p>
-<p id="appendix-A-2">It produces the following sample evidence:<a href="#appendix-A-2" class="pilcrow">¶</a></p>
+<p id="appendix-A-2">It produces the following sample Evidence:<a href="#appendix-A-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="appendix-A-3">
 <pre>
 =============== NOTE: '\' line wrapping per RFC 8792 ================
