@@ -1333,7 +1333,7 @@ Table of Contents
 
    The Attesting Environemnt produces Evidence based on the collected
    information and returns it to the Presenter for distribution (4).
-   Finally, the Presenter forwards the Evidence to the Verifier.
+   Finally, the Presenter forwards the Evidence to the Verifier (5).
 
    The aim of the figure is to depict the position of the Presenter as
    an intermediate role between the Attester and the Verifier.  The role
