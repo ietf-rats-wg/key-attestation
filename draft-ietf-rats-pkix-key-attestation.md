@@ -976,7 +976,7 @@ The process of generating Evidence generally starts at the Verifier with the gen
 and this quality of the Evidence is guaranteed by the Verifier. Therefore, if a nonce is used, it must be provided to the Presenter by
 the Verifier (1).
 
-An Attestation Request (request) is assembled by the Presenter and submitted to the HSM (2). The Attesting Environment parses the request and 
+An Attestation Request (request) is assembled by the Presenter and submitted to the HSM (2). The Attesting Environment parses the request and
 collects the appropriate measurements from the Target Environment.
 
 In the previous figure, the HSM is represented as being composed of an Attesting Environment and a Target Environment. This representation is offered
