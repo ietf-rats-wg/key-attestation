@@ -2488,20 +2488,20 @@ required to launch the process of creating the PKIX Evidence and capturing it to
 <figure id="figure-1">
         <div id="section-7-5.1">
           <div class="alignLeft art-svg artwork" id="section-7-5.1.1">
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="464" width="392" viewBox="0 0 392 464" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="496" width="408" viewBox="0 0 408 496" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
               <path d="M 8,32 L 8,336" fill="none" stroke="black"></path>
-              <path d="M 48,416 L 48,448" fill="none" stroke="black"></path>
+              <path d="M 48,416 L 48,480" fill="none" stroke="black"></path>
               <path d="M 64,80 L 64,160" fill="none" stroke="black"></path>
               <path d="M 64,240 L 64,288" fill="none" stroke="black"></path>
               <path d="M 112,296 L 112,408" fill="none" stroke="black"></path>
               <path d="M 128,160 L 128,232" fill="none" stroke="black"></path>
               <path d="M 136,288 L 136,408" fill="none" stroke="black"></path>
-              <path d="M 184,416 L 184,448" fill="none" stroke="black"></path>
+              <path d="M 184,416 L 184,480" fill="none" stroke="black"></path>
               <path d="M 216,80 L 216,160" fill="none" stroke="black"></path>
               <path d="M 216,240 L 216,288" fill="none" stroke="black"></path>
               <path d="M 248,32 L 248,336" fill="none" stroke="black"></path>
-              <path d="M 280,416 L 280,448" fill="none" stroke="black"></path>
-              <path d="M 384,416 L 384,448" fill="none" stroke="black"></path>
+              <path d="M 296,416 L 296,480" fill="none" stroke="black"></path>
+              <path d="M 400,416 L 400,480" fill="none" stroke="black"></path>
               <path d="M 8,32 L 248,32" fill="none" stroke="black"></path>
               <path d="M 64,80 L 216,80" fill="none" stroke="black"></path>
               <path d="M 64,160 L 216,160" fill="none" stroke="black"></path>
@@ -2509,11 +2509,13 @@ required to launch the process of creating the PKIX Evidence and capturing it to
               <path d="M 64,288 L 216,288" fill="none" stroke="black"></path>
               <path d="M 8,336 L 248,336" fill="none" stroke="black"></path>
               <path d="M 48,416 L 184,416" fill="none" stroke="black"></path>
-              <path d="M 280,416 L 384,416" fill="none" stroke="black"></path>
-              <path d="M 192,432 L 272,432" fill="none" stroke="black"></path>
-              <path d="M 48,448 L 184,448" fill="none" stroke="black"></path>
-              <path d="M 280,448 L 384,448" fill="none" stroke="black"></path>
-              <polygon class="arrowhead" points="280,432 268,426.4 268,437.6" fill="black" transform="rotate(0,272,432)"></polygon>
+              <path d="M 296,416 L 400,416" fill="none" stroke="black"></path>
+              <path d="M 192,432 L 288,432" fill="none" stroke="black"></path>
+              <path d="M 192,464 L 288,464" fill="none" stroke="black"></path>
+              <path d="M 48,480 L 184,480" fill="none" stroke="black"></path>
+              <path d="M 296,480 L 400,480" fill="none" stroke="black"></path>
+              <polygon class="arrowhead" points="296,464 284,458.4 284,469.6" fill="black" transform="rotate(0,288,464)"></polygon>
+              <polygon class="arrowhead" points="200,432 188,426.4 188,437.6" fill="black" transform="rotate(180,192,432)"></polygon>
               <polygon class="arrowhead" points="144,408 132,402.4 132,413.6" fill="black" transform="rotate(90,136,408)"></polygon>
               <polygon class="arrowhead" points="136,232 124,226.4 124,237.6" fill="black" transform="rotate(90,128,232)"></polygon>
               <polygon class="arrowhead" points="120,296 108,290.4 108,301.6" fill="black" transform="rotate(270,112,296)"></polygon>
@@ -2526,15 +2528,16 @@ required to launch the process of creating the PKIX Evidence and capturing it to
                 <text x="160" y="132">&amp;</text>
                 <text x="112" y="148">values)</text>
                 <text x="168" y="196">Collect</text>
-                <text x="164" y="212">Claims</text>
+                <text x="176" y="212">Claims(3)</text>
                 <text x="112" y="260">Attesting</text>
                 <text x="120" y="276">Environment</text>
                 <text x="56" y="372">Attestation</text>
-                <text x="180" y="372">PKIX</text>
-                <text x="40" y="388">Request</text>
-                <text x="196" y="388">Evidence</text>
-                <text x="120" y="436">Presenter</text>
-                <text x="332" y="436">Verifier</text>
+                <text x="208" y="372">Evidence(4)</text>
+                <text x="52" y="388">Request(2)</text>
+                <text x="244" y="420">Nonce(1)</text>
+                <text x="120" y="452">Presenter</text>
+                <text x="348" y="452">Verifier</text>
+                <text x="240" y="484">Evidence(5)</text>
               </g>
             </svg><a href="#section-7-5.1.1" class="pilcrow">¶</a>
 </div>
@@ -2543,31 +2546,36 @@ required to launch the process of creating the PKIX Evidence and capturing it to
 <a href="#name-architecture" class="selfRef">Architecture</a>
         </figcaption></figure>
 </div>
-<p id="section-7-6">An Attestation Request (request) is assembled by the Presenter and submitted to the HSM. The HSM parses the request and produces PKIX Evidence
-which is returned to the Presenter for distribution.<a href="#section-7-6" class="pilcrow">¶</a></p>
-<p id="section-7-7">In the previous figure, the HSM is represented as being composed of an Attesting Environment and a Target Environment. This representation is offered
-as a simplified view and implementations are not required to adhere to this separation of concerns.<a href="#section-7-7" class="pilcrow">¶</a></p>
-<p id="section-7-8">The aim of the figure is to depict the position of the Presenter as an intermediate role between the Attester (in this case the HSM) and the Verifier.
+<p id="section-7-6">The process of generating Evidence generally starts at the Verifier with the generation of a nonce. The nonce is used to ensure freshness
+and this quality of the Evidence is guaranteed by the Verifier. Therefore, if a nonce is used, it must be provided to the Presenter by
+the Verifier (1).<a href="#section-7-6" class="pilcrow">¶</a></p>
+<p id="section-7-7">An Attestation Request (request) is assembled by the Presenter and submitted to the HSM (2). The Attesting Environment parses the request and
+collects the appropriate measurements from the Target Environment.<a href="#section-7-7" class="pilcrow">¶</a></p>
+<p id="section-7-8">In the previous figure, the HSM is represented as being composed of an Attesting Environment and a Target Environment. This representation is offered
+as a simplified view and implementations are not required to adhere to this separation of concerns.<a href="#section-7-8" class="pilcrow">¶</a></p>
+<p id="section-7-9">The Attesting Environemnt produces Evidence based on the collected information and returns it to the Presenter for distribution (4). Finally, the
+Presenter forwards the Evidence to the Verifier.<a href="#section-7-9" class="pilcrow">¶</a></p>
+<p id="section-7-10">The aim of the figure is to depict the position of the Presenter as an intermediate role between the Attester and the Verifier.
 The role of "Presenter" is privileged as it controls the Evidence being generated by the Attester. However, the role is not "trusted" as
-the Verifier does not have to take into account the participation of the Presenter as part of the function of appraising the Evidence.<a href="#section-7-8" class="pilcrow">¶</a></p>
-<p id="section-7-9">The attestation request, shown in the figure, consists of a structure <code>TbsPkixEvidence</code> containing one <code>ReportedEntity</code> for each entity expected to
-be included in the Evidence produced by the HSM.<a href="#section-7-9" class="pilcrow">¶</a></p>
-<p id="section-7-10">Each instance of <code>ReportedEntity</code> included in the request is referred to as a requested entity. A requested entity contains a number of instances
+the Verifier does not have to take into account the participation of the Presenter as part of the function of appraising the Evidence.<a href="#section-7-10" class="pilcrow">¶</a></p>
+<p id="section-7-11">The attestation request, shown in the figure, consists of a structure <code>TbsPkixEvidence</code> containing one <code>ReportedEntity</code> for each entity expected to
+be included in the Evidence produced by the HSM.<a href="#section-7-11" class="pilcrow">¶</a></p>
+<p id="section-7-12">Each instance of <code>ReportedEntity</code> included in the request is referred to as a requested entity. A requested entity contains a number of instances
 of <code>ReportedClaim</code> known as requested claims. The collection of requested entities and requested claims represent the information desired
-by the Presenter.<a href="#section-7-10" class="pilcrow">¶</a></p>
-<p id="section-7-11">In most cases the value of a requested claim should be left unspecified by the Presenter. In the process of generating
+by the Presenter.<a href="#section-7-12" class="pilcrow">¶</a></p>
+<p id="section-7-13">In most cases the value of a requested claim should be left unspecified by the Presenter. In the process of generating
 the Evidence, the values of the desired claims are measured by the Attesting Environment within the HSM and reported accordingly. For the purpose
 of creating a request, the Presenter does not specify the value of the requested claims and leaves them empty. This is possible because the definition of
-the structure <code>ReportedClaim</code> specifies the element <code>value</code> as optional.<a href="#section-7-11" class="pilcrow">¶</a></p>
-<p id="section-7-12">On the other hand, there are circumstances where the value of a requested claim should be provided by the Presenter. For example, when a particular
+the structure <code>ReportedClaim</code> specifies the element <code>value</code> as optional.<a href="#section-7-13" class="pilcrow">¶</a></p>
+<p id="section-7-14">On the other hand, there are circumstances where the value of a requested claim should be provided by the Presenter. For example, when a particular
 cryptographic key is to be included in the Evidence, the request must include a key entity with one of the "identifier" claim set to the value
-corresponding to the desired key.<a href="#section-7-12" class="pilcrow">¶</a></p>
-<p id="section-7-13">Some instances of <code>ReportedEntity</code>, such as those representing the platform or the transaction, do not need identifiers as the associated elements are
+corresponding to the desired key.<a href="#section-7-14" class="pilcrow">¶</a></p>
+<p id="section-7-15">Some instances of <code>ReportedEntity</code>, such as those representing the platform or the transaction, do not need identifiers as the associated elements are
 implicit in nature. Custom entity types might need selection during an attestation request and related documentation should specify how this is
-achieved.<a href="#section-7-13" class="pilcrow">¶</a></p>
-<p id="section-7-14">The instance of <code>TbsPkixEvidence</code> is unsigned and does not provide any means to maintain integrity when communicated from the Presenter to the HSM.
+achieved.<a href="#section-7-15" class="pilcrow">¶</a></p>
+<p id="section-7-16">The instance of <code>TbsPkixEvidence</code> is unsigned and does not provide any means to maintain integrity when communicated from the Presenter to the HSM.
 These details are left to the implementer. However, it is worth pointing out that the structure offered by <code>PkixEvidence</code> could be reused by an
-implementer to provide those capabilities, as described in <a href="#sec-cons-auth-the-presenter" class="auto internal xref">Section 10.5</a>.<a href="#section-7-14" class="pilcrow">¶</a></p>
+implementer to provide those capabilities, as described in <a href="#sec-cons-auth-the-presenter" class="auto internal xref">Section 10.5</a>.<a href="#section-7-16" class="pilcrow">¶</a></p>
 <div id="requested-claims-with-specified-values">
 <section id="section-7.1">
         <h3 id="name-requested-claims-with-speci">
