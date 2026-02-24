@@ -176,7 +176,7 @@ many specialized devices (Hardware Security Modules) that are inflexible in adop
 of internal constraints or validation difficulties. This specification defines the format in ASN.1 to ease the
 adoption within the community.
 
-* The claims reported within the generated Evidence is generally a small subset of all possible claims about
+* The claims reported within the generated Evidence are generally a small subset of all possible claims about
 the Target Environment. The claims relate to elements such as "platform" and "keys" which are more numerous than
 what a Verifier requires for a specific function. This specification provides the means to moderate the information
 disseminated as part of the generated Evidence.
@@ -241,7 +241,7 @@ mutability of these attributes.
 
 Also, a client requesting a key attestation might wish to scope-down the content of the produced Evidence as
 the HSM contains much more information than that which is relevant to the transaction.
-The inability to scope-down the generated Evidence could, in some scenarios, constitute a privacy violation.
+Not reducing the scope of the generated Evidence could, in some scenarios, constitute a privacy violation.
 
 
 # Conventions and Terminology {#terminology}
@@ -342,7 +342,7 @@ The access and operations on a user key is controlled by the HSM.
 
 ## Claims and measurements in PKIX Evidence
 
-{{RFC9334}} states that Evidence is made up of claims and that a claim is "a piece of
+The RATS Architecture {{RFC9334}} states that Evidence is made up of claims and that a claim is "a piece of
 asserted information, often in the form of a name/value pair". The RATS Architecture also mentions
 the concept of "measurements" that "can describe a variety of attributes of system components, such
 as hardware, firmware, BIOS, software, etc., and how they are hardened."
@@ -380,8 +380,9 @@ that the device is genuine and not counterfeit. The trust anchor can also belong
 to the device operator as would be the case when the AK certificate is replaced
 as part of onboarding the device into a new operational environment.
 
-The AK certificate that signs the Evidence MUST have the Extended Key Usage
-`id-kp-attest`, as defined in {{I-D.jpfiset-lamps-attestationkey-eku}}, set.
+The AK certificate that signs the evidence MUST include the Extended Key
+Usage (EKU) certificate extension, and the EKU certificate extension MUST
+include the `id-kp-attest`, as defined in {{I-D.jpfiset-lamps-attestationkey-eku}}.
 
 Note that the data format specified in {{sec-data-model}} allows for zero, one, or multiple
 'SignatureBlock's, so a single Evidence statement could be un-protected, or could be endorsed by multiple
