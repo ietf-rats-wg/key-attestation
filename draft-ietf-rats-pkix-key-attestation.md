@@ -589,10 +589,10 @@ ReportedEntity ::= SEQUENCE {
 }
 
 id-pkix-evidence                    OBJECT IDENTIFIER ::= { 1 2 3 999 }
-id-pkix-evidence-entity-type        OBJECT IDENTIFIER ::= { id-pkix-evidence 0 }
-id-pkix-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 0 }
-id-pkix-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 1 }
-id-pkix-evidence-entity-key         OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 2 }
+id-pkix-evidence-entity             OBJECT IDENTIFIER ::= { id-pkix-evidence 0 }
+id-pkix-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-evidence-entity 0 }
+id-pkix-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-evidence-entity 1 }
+id-pkix-evidence-entity-key         OBJECT IDENTIFIER ::= { id-pkix-evidence-entity 2 }
 ~~~
 
 In turn, entities are composed of a claim set. Each claim is composed of a type and a value.
@@ -1149,7 +1149,7 @@ Please replace "{{&SELF}}" with the RFC number assigned to this document.
 The following OIDs are defined in this document and will require IANA registration under the assigned arc:
 
 * `id-pkix-evidence`
-* `id-pkix-evidence-entity-type`
+* `id-pkix-evidence-entity`
 * `id-pkix-evidence-entity-transaction`
 * `id-pkix-evidence-entity-platform`
 * `id-pkix-evidence-entity-key`

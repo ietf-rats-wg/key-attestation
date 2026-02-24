@@ -56,19 +56,19 @@ PkixEvidenceKeyCapabilities ::= SEQUENCE OF OBJECT IDENTIFIER
 
 id-pkix-evidence OBJECT IDENTIFIER ::= { 1 2 3 999 }
 
-id-pkix-evidence-entity-type        OBJECT IDENTIFIER ::= { id-pkix-evidence 0 }
-id-pkix-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 0 }
-id-pkix-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 1 }
-id-pkix-evidence-entity-key         OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 2 }
+id-pkix-evidence-entity             OBJECT IDENTIFIER ::= { id-pkix-evidence 0 }
+id-pkix-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-evidence-entity 0 }
+id-pkix-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-evidence-entity 1 }
+id-pkix-evidence-entity-key         OBJECT IDENTIFIER ::= { id-pkix-evidence-entity 2 }
 
-id-pkix-evidence-claim-type OBJECT IDENTIFIER ::= { id-pkix-evidence 1 }
+id-pkix-evidence-claim    OBJECT IDENTIFIER ::= { id-pkix-evidence 1 }
 
-id-pkix-evidence-claim-transaction           OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-type 0 }
+id-pkix-evidence-claim-transaction           OBJECT IDENTIFIER ::= { id-pkix-evidence-claim 0 }
 id-pkix-evidence-claim-transaction-nonce     OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-transaction 0 }
 id-pkix-evidence-claim-transaction-timestamp OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-transaction 1 }
 id-pkix-evidence-claim-transaction-ak-spki   OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-transaction 2 }
 
-id-pkix-evidence-claim-platform            OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-type 1 }
+id-pkix-evidence-claim-platform            OBJECT IDENTIFIER ::= { id-pkix-evidence-claim 1 }
 id-pkix-evidence-claim-platform-vendor     OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-platform 0 }
 id-pkix-evidence-claim-platform-oemid      OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-platform 1 }
 id-pkix-evidence-claim-platform-hwmodel    OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-platform 2 }
@@ -86,7 +86,7 @@ id-pkix-evidence-claim-platform-fipslevel  OBJECT IDENTIFIER ::= { id-pkix-evide
 id-pkix-evidence-claim-platform-fipsmodule OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-platform 14 }
 
 
-id-pkix-evidence-claim-key                   OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-type 2 }
+id-pkix-evidence-claim-key                   OBJECT IDENTIFIER ::= { id-pkix-evidence-claim 2 }
 id-pkix-evidence-claim-key-identifier        OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-key 0 }
 id-pkix-evidence-claim-key-spki              OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-key 1 }
 id-pkix-evidence-claim-key-extractable       OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-key 2 }
