@@ -5,7 +5,7 @@
 RATS                                                        M. Ounsworth
 Internet-Draft                                                   Entrust
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 30 July 2026                                           Crypto4A
+Expires: 28 August 2026                                         Crypto4A
                                                            H. Tschofenig
                                                                    H-BRS
                                                              H. Birkholz
@@ -14,7 +14,7 @@ Expires: 30 July 2026                                           Crypto4A
                                                                         
                                                                 N. Smith
                                                        Intel Corporation
-                                                         26 January 2026
+                                                        24 February 2026
 
 
    PKIX Evidence for Remote Attestation of Hardware Security Modules
@@ -70,7 +70,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 July 2026.
+   This Internet-Draft will expire on 28 August 2026.
 
 Copyright Notice
 
@@ -671,7 +671,7 @@ Table of Contents
 
    ReportedEntity ::= SEQUENCE {
        entityType  OBJECT IDENTIFIER,
-       claimSet    SEQUENCE SIZE (1..MAX) OF ReportedClaim
+       claims      SEQUENCE SIZE (1..MAX) OF ReportedClaim
    }
 
    id-pkix-evidence                    OBJECT IDENTIFIER ::= { 1 2 3 999 }
@@ -1567,7 +1567,7 @@ Table of Contents
 
    ReportedEntity ::= SEQUENCE {
        entityType         OBJECT IDENTIFIER,
-       claimSet           SEQUENCE SIZE (1..MAX) OF ReportedClaim
+       claims             SEQUENCE SIZE (1..MAX) OF ReportedClaim
    }
 
    ReportedClaim ::= SEQUENCE {
@@ -2033,9 +2033,9 @@ Table of Contents
               Ounsworth, M., Tschofenig, H., Birkholz, H., Wiseman, M.,
               and N. Smith, "Use of Remote Attestation with
               Certification Signing Requests", Work in Progress,
-              Internet-Draft, draft-ietf-lamps-csr-attestation-21, 5
-              October 2025, <https://datatracker.ietf.org/doc/html/
-              draft-ietf-lamps-csr-attestation-21>.
+              Internet-Draft, draft-ietf-lamps-csr-attestation-22, 11
+              February 2026, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-lamps-csr-attestation-22>.
 
    [I-D.ietf-rats-msg-wrap]
               Birkholz, H., Smith, N., Fossati, T., Tschofenig, H., and
