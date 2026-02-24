@@ -1850,10 +1850,10 @@ ReportedEntity ::= SEQUENCE {
 }
 
 id-pkix-evidence                    OBJECT IDENTIFIER ::= { 1 2 3 999 }
-id-pkix-evidence-entity-type        OBJECT IDENTIFIER ::= { id-pkix-evidence 0 }
-id-pkix-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 0 }
-id-pkix-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 1 }
-id-pkix-evidence-entity-key         OBJECT IDENTIFIER ::= { id-pkix-evidence-entity-type 2 }
+id-pkix-evidence-entity             OBJECT IDENTIFIER ::= { id-pkix-evidence 0 }
+id-pkix-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-evidence-entity 0 }
+id-pkix-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-evidence-entity 1 }
+id-pkix-evidence-entity-key         OBJECT IDENTIFIER ::= { id-pkix-evidence-entity 2 }
 </pre><a href="#section-5-10" class="pilcrow">¶</a>
 </div>
 <p id="section-5-11">In turn, entities are composed of a claim set. Each claim is composed of a type and a value.
@@ -2773,20 +2773,20 @@ PkixEvidenceKeyCapabilities ::= SEQUENCE OF OBJECT IDENTIFIER
 
 id-pkix-evidence OBJECT IDENTIFIER ::= { 1 2 3 999 }
 
-id-pkix-evidence-entity-type        OBJECT IDENTIFIER ::= { id-pkix-\
+id-pkix-evidence-entity             OBJECT IDENTIFIER ::= { id-pkix-\
                                                          evidence 0 }
 id-pkix-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-\
-                                             evidence-entity-type 0 }
+                                                  evidence-entity 0 }
 id-pkix-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-\
-                                             evidence-entity-type 1 }
+                                                  evidence-entity 1 }
 id-pkix-evidence-entity-key         OBJECT IDENTIFIER ::= { id-pkix-\
-                                             evidence-entity-type 2 }
+                                                  evidence-entity 2 }
 
-id-pkix-evidence-claim-type OBJECT IDENTIFIER ::= { id-pkix-\
-                                                         evidence 1 }
+id-pkix-evidence-claim    OBJECT IDENTIFIER ::= { id-pkix-evidence \
+                                                                  1 }
 
 id-pkix-evidence-claim-transaction           OBJECT IDENTIFIER ::= \
-                                    { id-pkix-evidence-claim-type 0 }
+                                         { id-pkix-evidence-claim 0 }
 id-pkix-evidence-claim-transaction-nonce     OBJECT IDENTIFIER ::= \
                              { id-pkix-evidence-claim-transaction 0 }
 id-pkix-evidence-claim-transaction-timestamp OBJECT IDENTIFIER ::= \
@@ -2795,7 +2795,7 @@ id-pkix-evidence-claim-transaction-ak-spki   OBJECT IDENTIFIER ::= \
                              { id-pkix-evidence-claim-transaction 2 }
 
 id-pkix-evidence-claim-platform            OBJECT IDENTIFIER ::= { \
-                                      id-pkix-evidence-claim-type 1 }
+                                           id-pkix-evidence-claim 1 }
 id-pkix-evidence-claim-platform-vendor     OBJECT IDENTIFIER ::= { \
                                   id-pkix-evidence-claim-platform 0 }
 id-pkix-evidence-claim-platform-oemid      OBJECT IDENTIFIER ::= { \
@@ -2829,7 +2829,7 @@ id-pkix-evidence-claim-platform-fipsmodule OBJECT IDENTIFIER ::= { \
 
 
 id-pkix-evidence-claim-key                   OBJECT IDENTIFIER ::= \
-                                    { id-pkix-evidence-claim-type 2 }
+                                         { id-pkix-evidence-claim 2 }
 id-pkix-evidence-claim-key-identifier        OBJECT IDENTIFIER ::= \
                                      { id-pkix-evidence-claim-key 0 }
 id-pkix-evidence-claim-key-spki              OBJECT IDENTIFIER ::= \
@@ -2889,7 +2889,7 @@ END
           <p id="section-9-3.1.1"><code>id-pkix-evidence</code><a href="#section-9-3.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-9-3.2">
-          <p id="section-9-3.2.1"><code>id-pkix-evidence-entity-type</code><a href="#section-9-3.2.1" class="pilcrow">¶</a></p>
+          <p id="section-9-3.2.1"><code>id-pkix-evidence-entity</code><a href="#section-9-3.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-9-3.3">
           <p id="section-9-3.3.1"><code>id-pkix-evidence-entity-transaction</code><a href="#section-9-3.3.1" class="pilcrow">¶</a></p>
