@@ -584,7 +584,7 @@ is associated with a type that defines its class. The entity types are represent
 ~~~ asn.1
 ReportedEntity ::= SEQUENCE {
     entityType  OBJECT IDENTIFIER,
-    claimSet    SEQUENCE SIZE (1..MAX) OF ReportedClaim
+    claims      SEQUENCE SIZE (1..MAX) OF ReportedClaim
 }
 
 id-pkix-evidence                    OBJECT IDENTIFIER ::= { 1 2 3 999 }

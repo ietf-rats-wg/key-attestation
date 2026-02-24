@@ -20,7 +20,7 @@ TbsPkixEvidence ::= SEQUENCE {
 
 ReportedEntity ::= SEQUENCE {
     entityType         OBJECT IDENTIFIER,
-    claimSet           SEQUENCE SIZE (1..MAX) OF ReportedClaim
+    claims             SEQUENCE SIZE (1..MAX) OF ReportedClaim
 }
 
 ReportedClaim ::= SEQUENCE {
