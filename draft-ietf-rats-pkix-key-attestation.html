@@ -1404,7 +1404,7 @@ of internal constraints or validation difficulties. This specification defines t
 adoption within the community.<a href="#section-1-3.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-1-3.2">
-          <p id="section-1-3.2.1">The claims reported within the generated Evidence is generally a small subset of all possible claims about
+          <p id="section-1-3.2.1">The claims reported within the generated Evidence are generally a small subset of all possible claims about
 the Target Environment. The claims relate to elements such as "platform" and "keys" which are more numerous than
 what a Verifier requires for a specific function. This specification provides the means to moderate the information
 disseminated as part of the generated Evidence.<a href="#section-1-3.2.1" class="pilcrow">¶</a></p>
@@ -1474,7 +1474,7 @@ immutable attributes. However, more complex HSM devices require a more complex E
 mutability of these attributes.<a href="#section-2.3-3" class="pilcrow">¶</a></p>
 <p id="section-2.3-4">Also, a client requesting a key attestation might wish to scope-down the content of the produced Evidence as
 the HSM contains much more information than that which is relevant to the transaction.
-The inability to scope-down the generated Evidence could, in some scenarios, constitute a privacy violation.<a href="#section-2.3-4" class="pilcrow">¶</a></p>
+Not reducing the scope of the generated Evidence could, in some scenarios, constitute a privacy violation.<a href="#section-2.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1606,7 +1606,7 @@ The access and operations on a user key is controlled by the HSM.<a href="#secti
         <h3 id="name-claims-and-measurements-in-">
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-claims-and-measurements-in-" class="section-name selfRef">Claims and measurements in PKIX Evidence</a>
         </h3>
-<p id="section-3.1-1"><span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span> states that Evidence is made up of claims and that a claim is "a piece of
+<p id="section-3.1-1">The RATS Architecture <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span> states that Evidence is made up of claims and that a claim is "a piece of
 asserted information, often in the form of a name/value pair". The RATS Architecture also mentions
 the concept of "measurements" that "can describe a variety of attributes of system components, such
 as hardware, firmware, BIOS, software, etc., and how they are hardened."<a href="#section-3.1-1" class="pilcrow">¶</a></p>
@@ -1640,8 +1640,9 @@ manufacturing CA belonging to the device vendor which proves
 that the device is genuine and not counterfeit. The trust anchor can also belong
 to the device operator as would be the case when the AK certificate is replaced
 as part of onboarding the device into a new operational environment.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
-<p id="section-3.2-2">The AK certificate that signs the Evidence <span class="bcp14">MUST</span> have the Extended Key Usage
-<code>id-kp-attest</code>, as defined in <span>[<a href="#I-D.jpfiset-lamps-attestationkey-eku" class="cite xref">I-D.jpfiset-lamps-attestationkey-eku</a>]</span>, set.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.2-2">The AK certificate that signs the evidence <span class="bcp14">MUST</span> include the Extended Key
+Usage (EKU) certificate extension, and the EKU certificate extension <span class="bcp14">MUST</span>
+include the <code>id-kp-attest</code>, as defined in <span>[<a href="#I-D.jpfiset-lamps-attestationkey-eku" class="cite xref">I-D.jpfiset-lamps-attestationkey-eku</a>]</span>.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
 <p id="section-3.2-3">Note that the data format specified in <a href="#sec-data-model" class="auto internal xref">Section 5</a> allows for zero, one, or multiple
 'SignatureBlock's, so a single Evidence statement could be un-protected, or could be endorsed by multiple
 AK chains leading to different trust anchors. See <a href="#sec-verif-proc" class="auto internal xref">Section 6</a> for a discussion of handling multiple SignatureBlocks.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
