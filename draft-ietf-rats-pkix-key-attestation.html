@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta content="Common,Latin" name="scripts">
 <meta content="initial-scale=1.0" name="viewport">
-<title>PKIX Evidence for Remote Attestation of Hardware Security Modules</title>
+<title>Evidence Encoding for Hardware Security Modules</title>
 <meta content="Mike Ounsworth" name="author">
 <meta content="Jean-Pierre Fiset" name="author">
 <meta content="Hannes Tschofenig" name="author">
@@ -13,7 +13,8 @@
 <meta content="Ned Smith" name="author">
 <meta content="
        This document specifies a vendor-agnostic format for Evidence produced and verified within a PKIX context.
-The Evidence produced this way includes claims collected about a cryptographic module
+The Evidence produced this way includes claims collected about a cryptographic module, such as a Hardware Security
+Module (HSM),
 and elements found within it such as cryptographic keys. 
        One scenario envisaged is that the state information about the cryptographic module can be securely presented
 to a remote operator or auditor in a vendor-agnostic verifiable format.
@@ -1059,12 +1060,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <table class="ears">
 <thead><tr>
 <td class="left">Internet-Draft</td>
-<td class="center">PKIX Evidence for Remote Attestation of </td>
+<td class="center">Evidence Encoding for HSMs</td>
 <td class="right">February 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Ounsworth, et al.</td>
-<td class="center">Expires 28 August 2026</td>
+<td class="center">Expires 29 August 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1077,12 +1078,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-rats-pkix-key-attestation-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-02-24" class="published">24 February 2026</time>
+<time datetime="2026-02-25" class="published">25 February 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-08-28">28 August 2026</time></dd>
+<dd class="expires"><time datetime="2026-08-29">29 August 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1111,11 +1112,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </dd>
 </dl>
 </div>
-<h1 id="title">PKIX Evidence for Remote Attestation of Hardware Security Modules</h1>
+<h1 id="title">Evidence Encoding for Hardware Security Modules</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
 <p id="section-abstract-1">This document specifies a vendor-agnostic format for Evidence produced and verified within a PKIX context.
-The Evidence produced this way includes claims collected about a cryptographic module
+The Evidence produced this way includes claims collected about a cryptographic module, such as a Hardware Security
+Module (HSM),
 and elements found within it such as cryptographic keys.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 <p id="section-abstract-2">One scenario envisaged is that the state information about the cryptographic module can be securely presented
 to a remote operator or auditor in a vendor-agnostic verifiable format.
@@ -1158,7 +1160,7 @@ whether the storage properties of this key meet the requirements of a given cert
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 28 August 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 29 August 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1208,7 +1210,7 @@ whether the storage properties of this key meet the requirements of a given cert
             <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-conventions-and-terminology" class="internal xref">Conventions and Terminology</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
-                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-claims-and-measurements-in-" class="internal xref">Claims and measurements in PKIX Evidence</a></p>
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-claims-and-measurements-in-" class="internal xref">Claims and measurements in generated Evidence</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
                 <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-attestation-key-certificate" class="internal xref">Attestation Key Certificate Chain</a></p>
@@ -1225,7 +1227,7 @@ whether the storage properties of this key meet the requirements of a given cert
                 <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-entity-type" class="internal xref">Entity Type</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
-                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-claim-set-and-claim-type" class="internal xref">Claim Set and Claim Type</a></p>
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-claim-type" class="internal xref">Claim Type</a></p>
 </li>
             </ul>
 </li>
@@ -1312,16 +1314,16 @@ whether the storage properties of this key meet the requirements of a given cert
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1.2.4">
                     <p id="section-toc.1-1.7.2.1.2.4.1"><a href="#section-7.1.4" class="auto internal xref">7.1.4</a>.  <a href="#name-custom-transaction-entity-c" class="internal xref">Custom Transaction Entity Claims</a></p>
 </li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1.2.5">
+                    <p id="section-toc.1-1.7.2.1.2.5.1"><a href="#section-7.1.5" class="auto internal xref">7.1.5</a>.  <a href="#name-reporting-of-attestation-ke" class="internal xref">Reporting of Attestation Keys</a></p>
+</li>
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
-                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-reporting-of-attestation-ke" class="internal xref">Reporting of Attestation Keys</a></p>
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-processing-an-attestation-r" class="internal xref">Processing an Attestation Request</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.3">
-                <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="auto internal xref">7.3</a>.  <a href="#name-processing-an-attestation-r" class="internal xref">Processing an Attestation Request</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.4">
-                <p id="section-toc.1-1.7.2.4.1"><a href="#section-7.4" class="auto internal xref">7.4</a>.  <a href="#name-verification-by-presenter" class="internal xref">Verification by Presenter</a></p>
+                <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="auto internal xref">7.3</a>.  <a href="#name-verification-by-presenter" class="internal xref">Verification by Presenter</a></p>
 </li>
             </ul>
 </li>
@@ -1410,7 +1412,7 @@ what a Verifier requires for a specific function. This specification provides th
 disseminated as part of the generated Evidence.<a href="#section-1-3.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-1-4">This specification also aims at providing an extensible framework to encode within Evidence claims other than
+<p id="section-1-4">This specification also aims at providing an extensible framework to encode, as part of the generated Evidence, claims other than
 the one proposed in this document. This allows implementations to introduce new claims and their associated
 semantics to the Evidence produced.<a href="#section-1-4" class="pilcrow">¶</a></p>
 </section>
@@ -1469,7 +1471,7 @@ assess the location of the subject key along a number of commonly-required attri
 determine which HSM was used to generate the subject key, whether this device adheres
 to certain jurisdiction policies (such as FIPS mode) and the constraints applied to the key (such as whether is it extractable).<a href="#section-2.3-2" class="pilcrow">¶</a></p>
 <p id="section-2.3-3">For relatively simple HSM devices, storage properties such as "extractable" may always be false for all keys
-since the devices are not capable of key export and so the attestation could be essentially a hard-coded template asserting these
+since the devices are not capable of key export and so the Evidence could be essentially a hard-coded template asserting these
 immutable attributes. However, more complex HSM devices require a more complex Evidence format that encompasses the
 mutability of these attributes.<a href="#section-2.3-3" class="pilcrow">¶</a></p>
 <p id="section-2.3-4">Also, a client requesting a key attestation might wish to scope-down the content of the produced Evidence as
@@ -1554,57 +1556,63 @@ under this umbrella of efforts. This specification is developed using concepts d
 particularly refers to the RATS Architecture as introduced in <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>.<a href="#section-3-7.14.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-7.15">Platform:</dt>
+<dt id="section-3-7.15">PKIX:</dt>
         <dd style="margin-left: 1.5em" id="section-3-7.16">
-          <p id="section-3-7.16.1">The module or device that embodies the Attester. In this specification, it is interchangeable with
-"Attester" or "HSM".<a href="#section-3-7.16.1" class="pilcrow">¶</a></p>
+          <p id="section-3-7.16.1">Public Key Infrastructure based on X.509 certificates. Refers to the framework of technology, policies and
+procedures used to manage and distribute digital certificate based on <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span> and related specifications.<a href="#section-3-7.16.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-7.17">Platform Attestation:</dt>
+<dt id="section-3-7.17">Platform:</dt>
         <dd style="margin-left: 1.5em" id="section-3-7.18">
-          <p id="section-3-7.18.1">Evidence containing claims pertaining to measured values associated with the platform itself. In general, the claims include
-enough information about the platform to allow a Relying Party to make judicious decisions about the
-platform, such as those carried out during audit reviews.<a href="#section-3-7.18.1" class="pilcrow">¶</a></p>
+          <p id="section-3-7.18.1">The module or device that embodies the Attester. In this specification, it is interchangeable with
+"Attester" or "HSM".<a href="#section-3-7.18.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-7.19">Presenter:</dt>
+<dt id="section-3-7.19">Platform Attestation:</dt>
         <dd style="margin-left: 1.5em" id="section-3-7.20">
-          <p id="section-3-7.20.1">Role that facilitates communication between the Attester and the Verifier. The
+          <p id="section-3-7.20.1">Evidence containing claims pertaining to measured values associated with the platform itself. In general, the claims include
+enough information about the platform to allow a Relying Party to make judicious decisions about the
+platform, such as those carried out during audit reviews.<a href="#section-3-7.20.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-3-7.21">Presenter:</dt>
+        <dd style="margin-left: 1.5em" id="section-3-7.22">
+          <p id="section-3-7.22.1">Role that facilitates communication between the Attester and the Verifier. The
 Presenter initiates the operation of generating Evidence at the Attester and
 passes the generated Evidence to the Verifier. In the case of HSMs, the Presenter
-is responsible of selecting the claims that are part of the generated Evidence.<a href="#section-3-7.20.1" class="pilcrow">¶</a></p>
+is responsible of selecting the claims that are part of the generated Evidence.<a href="#section-3-7.22.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-7.21">Trust Anchor:</dt>
-        <dd style="margin-left: 1.5em" id="section-3-7.22">
-          <p id="section-3-7.22.1">As defined in <span>[<a href="#RFC6024" class="cite xref">RFC6024</a>]</span> and <span>[<a href="#RFC9019" class="cite xref">RFC9019</a>]</span>, a Trust Anchor
+<dt id="section-3-7.23">Trust Anchor:</dt>
+        <dd style="margin-left: 1.5em" id="section-3-7.24">
+          <p id="section-3-7.24.1">As defined in <span>[<a href="#RFC6024" class="cite xref">RFC6024</a>]</span> and <span>[<a href="#RFC9019" class="cite xref">RFC9019</a>]</span>, a Trust Anchor
 "represents an authoritative entity via a public key and
 associated data. The public key is used to verify digital
 signatures, and the associated data is used to constrain the types
 of information for which the trust anchor is authoritative." The
 Trust Anchor may be a certificate, a raw public key, or other
-structure, as appropriate.<a href="#section-3-7.22.1" class="pilcrow">¶</a></p>
+structure, as appropriate.<a href="#section-3-7.24.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-3-7.23">Trusted Platform Module (TPM):</dt>
-        <dd style="margin-left: 1.5em" id="section-3-7.24">
-          <p id="section-3-7.24.1">A tamper-resistant processor generally located on a computer's motherboard used to enhance attestation
-functions for the hosting platform. TPMs are very specialized Hardware Security Modules and generally use
-other protocols (than the one presented in this specification) to transmit Evidence.<a href="#section-3-7.24.1" class="pilcrow">¶</a></p>
-</dd>
-        <dd class="break"></dd>
-<dt id="section-3-7.25">User Key:</dt>
+<dt id="section-3-7.25">Trusted Platform Module (TPM):</dt>
         <dd style="margin-left: 1.5em" id="section-3-7.26">
-          <p id="section-3-7.26.1">A user key consists of a key hosted by an HSM (the platform) and intended to be used by a client
+          <p id="section-3-7.26.1">A tamper-resistant processor generally located on a computer's motherboard used to enhance attestation
+functions for the hosting platform. TPMs are very specialized Hardware Security Modules and generally use
+other protocols (than the one presented in this specification) to transmit Evidence.<a href="#section-3-7.26.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-3-7.27">User Key:</dt>
+        <dd style="margin-left: 1.5em" id="section-3-7.28">
+          <p id="section-3-7.28.1">A user key consists of a key hosted by an HSM (the platform) and intended to be used by a client
 of the HSM. Other terms used for a user key are "application key", "client key" or "operational key".
-The access and operations on a user key is controlled by the HSM.<a href="#section-3-7.26.1" class="pilcrow">¶</a></p>
+The access and operations on a user key is controlled by the HSM.<a href="#section-3-7.28.1" class="pilcrow">¶</a></p>
 </dd>
       <dd class="break"></dd>
 </dl>
-<div id="claims-and-measurements-in-pkix-evidence">
+<div id="claims-and-measurements-in-generated-evidence">
 <section id="section-3.1">
         <h3 id="name-claims-and-measurements-in-">
-<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-claims-and-measurements-in-" class="section-name selfRef">Claims and measurements in PKIX Evidence</a>
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-claims-and-measurements-in-" class="section-name selfRef">Claims and measurements in generated Evidence</a>
         </h3>
 <p id="section-3.1-1">The RATS Architecture <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span> states that Evidence is made up of claims and that a claim is "a piece of
 asserted information, often in the form of a name/value pair". The RATS Architecture also mentions
@@ -1617,12 +1625,12 @@ number of measurable attributes.<a href="#section-3.1-2" class="pilcrow">¶</a><
 Evidence. In this case, multiple similar claims are reported simultaneously but associated with different elements.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
 <p id="section-3.1-4">For example, two independent user keys could be reported simultaneously in Evidence. Each key is associated with a
 SPKI (Subject Public Key Identifier). The measured values for the SPKI of the respective keys are different.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
-<p id="section-3.1-5">To that end, in this specification, the claims are organized as claim sets where each claim is the association of
-a claim type with the measured value. The claim sets, in turn, are organized by entities. An entity represents one
+<p id="section-3.1-5">To that end, in this specification, the claims are organized as collections where each claim is the association of
+a claim type with the measured value. The collections, in turn, are organized by entities. An entity represents one
 of the elements that is observed in the Target Environment.<a href="#section-3.1-5" class="pilcrow">¶</a></p>
-<p id="section-3.1-6">Thus, an entity is associated with a claim set. The claim set is a collection of claims. Each claim is a claim type
+<p id="section-3.1-6">Thus, an entity is associated with a collection of claims. Each claim is the association of a claim type
 with a measured value.<a href="#section-3.1-6" class="pilcrow">¶</a></p>
-<p id="section-3.1-7">The grouping of claim sets into entities facilitates the comprehension of a large addressable space into
+<p id="section-3.1-7">The grouping of claims into entities facilitates the comprehension of a large addressable space into
 elements recognizable by the user. More importantly, it curtails the produced Evidence to portions of the
 Target Environment that relate to the needs of the Verifier. See <a href="#sec-cons-privacy" class="auto internal xref">Section 10.4</a>.<a href="#section-3.1-7" class="pilcrow">¶</a></p>
 </section>
@@ -1632,10 +1640,10 @@ Target Environment that relate to the needs of the Verifier. See <a href="#sec-c
         <h3 id="name-attestation-key-certificate">
 <a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-attestation-key-certificate" class="section-name selfRef">Attestation Key Certificate Chain</a>
         </h3>
-<p id="section-3.2-1">The data format in this specification represents PKIX Evidence and
+<p id="section-3.2-1">The data format in this specification represents Evidence and
 requires third-party endorsement in order to establish trust. Part of this
 endorsement is a trust anchor that chains to the HSM's attestation key (AK)
-which signs the Evidence. In practice the trust anchor will usually be a
+which signs the Evidence. In practice the trust anchor usually is a
 manufacturing CA belonging to the device vendor which proves
 that the device is genuine and not counterfeit. The trust anchor can also belong
 to the device operator as would be the case when the AK certificate is replaced
@@ -1655,7 +1663,7 @@ AK chains leading to different trust anchors. See <a href="#sec-verif-proc" clas
       <h2 id="name-information-model">
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-information-model" class="section-name selfRef">Information Model</a>
       </h2>
-<p id="section-4-1">The PKIX Evidence format is composed of two main sections:<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-1">The Evidence format is composed of two main sections:<a href="#section-4-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4-2.1">
           <p id="section-4-2.1.1">An Evidence section which describes the list of reported entities.<a href="#section-4-2.1.1" class="pilcrow">¶</a></p>
@@ -1667,9 +1675,9 @@ Evidence and maintain its integrity.<a href="#section-4-2.2.1" class="pilcrow">�
       </ul>
 <p id="section-4-3">The details of the signature section is left to the data model. The remainder of this section
 deals with the way the information is organized to form the claims.<a href="#section-4-3" class="pilcrow">¶</a></p>
-<p id="section-4-4">The claim sets are associated with entities to help with the organization and comprehension
+<p id="section-4-4">The claims are associated with entities to help with the organization and comprehension
 of the information. Entities are elements observed in the Target Environment by the Attesting
-Environment. Each entity, in turn, is associated with a claim set that describes the attributes
+Environment. Each entity, in turn, is associated with a collection of claims that describes the attributes
 of the element.<a href="#section-4-4" class="pilcrow">¶</a></p>
 <p id="section-4-5">Therefore, the Claim description section is a set of entities and each entity is composed
 of a claim set.<a href="#section-4-5" class="pilcrow">¶</a></p>
@@ -1681,19 +1689,19 @@ of a claim set.<a href="#section-4-5" class="pilcrow">¶</a></p>
 <p id="section-4.1-1">An entity is a logical construct that refers to a portion of the Target Environment's state. It is
 addressable via an identifier such as a UUID or a handle (as expressed in <span>[<a href="#PKCS11" class="cite xref">PKCS11</a>]</span>). In general, an
 entity refers to a component recognized by users of the HSM, such as a key or the platform itself.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
-<p id="section-4.1-2">An entity is composed of a type, the entity type, and a claim set. The entity type
-describes the class of the entity while its claim set defines its state.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">An entity is composed of a type, the entity type, and a collection of claims. The entity type
+describes the class of the entity while the collection of claims defines its state.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
 <p id="section-4.1-3">An entity <span class="bcp14">MUST</span> be reported at most once in a claim description. The claim description can
 have multiple entities of the same type (for example reporting multiple keys), but each
 entity <span class="bcp14">MUST</span> relate to different portions of the Target Environment.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
 <p id="section-4.1-4">It is possible for two entities to be quite similar such as in a situation where a key is imported
-twice in a HSM. In this case, the two related entities could have similar claim sets. However, they
+twice in a HSM. In this case, the two related entities could be associated similar claims. However, they
 are treated as different entities as they are reporting different portions of the Target Environment.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
 <p id="section-4.1-5">The number of entities reported in a claim description, and their respective type, is
 left to the implementer. For a simple device where there is only one key, the list of
 reported entities could be fixed. For larger and more complex devices, the list of
-reported entities should be tailored to the demands of the Presenter.<a href="#section-4.1-5" class="pilcrow">¶</a></p>
-<p id="section-4.1-6">In particular, note that the nonce claim contained with the Transaction entity is optional,
+reported entities should be tailored to what is demanded by the Presenter.<a href="#section-4.1-5" class="pilcrow">¶</a></p>
+<p id="section-4.1-6">In particular, note that the <code>nonce</code> claim contained with the Transaction entity is optional,
 and therefore it is possible that an extremely simple device that holds one static key
 could have its Evidence generated at manufacturing time and injected
 statically into the device instead of
@@ -1711,23 +1719,23 @@ provided by the manufacturer as opposed to Evidence generated by the Attesting E
 <p id="section-4.2-1">An entity is defined by its type. This specification defines three entity types:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4.2-2.1">
-            <p id="section-4.2-2.1.1">Platform : This entity holds a claim set that describes the state of the platform (or device)
+            <p id="section-4.2-2.1.1">Platform : This entity holds claims that describes the state of the platform (or device)
 itself. Entities of this type hold claims that are global
 in nature within the Target Environment.<a href="#section-4.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-4.2-2.2">
             <p id="section-4.2-2.2.1">Key : The entities of this type represent a cryptographic key protected within the
-Target Environment and hold a claim set that describes that specific key.<a href="#section-4.2-2.2.1" class="pilcrow">¶</a></p>
+Target Environment and hold claims that describes that specific key.<a href="#section-4.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-4.2-2.3">
-            <p id="section-4.2-2.3.1">Transaction : This entity is logical in nature since it is associated with a claim set
-that does not describe anything found in the Target Environment. Instead, this claim set
-relates to the current request for Evidence such as a nonce to support freshness.<a href="#section-4.2-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-4.2-2.3.1">Transaction : This entity is logical in nature since it is associated with claims
+that does not describe anything found in the Target Environment. Instead, these claims
+relate to the current request for Evidence such as a <code>nonce</code> to support freshness.<a href="#section-4.2-2.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-4.2-3">Although this document defines a short list of entity types, this list is extensible
 to allow implementers to report on entities found in their implementation and not
-covered by this specification. By using an Object Identifier (OID) for specifying entity types
+covered by this specification. By using an Object Identifiers (OID) for specifying entity types
 and claim types, this format is inherently extensible;
 implementers of this specification <span class="bcp14">MAY</span> define new custom or proprietary entity types and
 place them alongside the standardized entities, or define new claim types
@@ -1738,12 +1746,12 @@ In other words, if a given Evidence would have been acceptable without the
 unrecognized entities or claims, then it <span class="bcp14">SHOULD</span> still be acceptable with them.<a href="#section-4.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="claim-set-and-claim-type">
+<div id="claim-type">
 <section id="section-4.3">
-        <h3 id="name-claim-set-and-claim-type">
-<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-claim-set-and-claim-type" class="section-name selfRef">Claim Set and Claim Type</a>
+        <h3 id="name-claim-type">
+<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-claim-type" class="section-name selfRef">Claim Type</a>
         </h3>
-<p id="section-4.3-1">Each claim found in an entity is composed of the claim type and value.
+<p id="section-4.3-1">Each claim found in an entity is composed of the claim type and a value.
 Each claim describes a portion of the state of the associated entity. For example,
 a platform entity could have a claim which indicates the firmware version currently running.
 Another example is a key entity with a claim that reports whether the key is extractable
@@ -1761,17 +1769,18 @@ report additional claims not covered by this specification.<a href="#section-4.3
 <p id="section-4.3-6">The number of claims reported within an entity, and their respective type, is
 left to the implementer. For a simple device, the reported list of claims for an entity
 might be fixed. However, for larger and more complex devices, the list of reported claims
-should be tailored to the demands of the Presenter.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
-<p id="section-4.3-7">Some claims <span class="bcp14">MAY</span> be repeated within an entity while others <span class="bcp14">MUST NOT</span>. For example, for a
+should be tailored to what is demanded by the Presenter.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
+<p id="section-4.3-7">Claims of a particular type <span class="bcp14">MAY</span> be repeated within an entity while others <span class="bcp14">MUST NOT</span>. For example, for a
 platform entity, there can only be one "firmware version" claim. Therefore, the associated claim
 <span class="bcp14">MUST NOT</span> be repeated as it may lead to confusion. However, a claim relating to
 a "ak-spki" <span class="bcp14">MAY</span> be repeated, each claim describing a different attesting key.
 Therefore, the definition of a claim specifies whether or not multiple copies of that
 claim are allowed within an entity claim set.<a href="#section-4.3-7" class="pilcrow">¶</a></p>
-<p id="section-4.3-8">If a Verifier encounters, within a single entity, multiple copies of a claim specified as
-"Multiple Allowed: No", it <span class="bcp14">MUST</span> reject the Evidence as malformed.<a href="#section-4.3-8" class="pilcrow">¶</a></p>
+<p id="section-4.3-8">If a Verifier detects, within a single entity, multiple copies of a claim type that should not
+be repeated, it <span class="bcp14">MUST</span> reject the Evidence as malformed. Since a Verifier is encouraged to ignore
+unrecognized claim types, it is possible that a potential rejection is missed.<a href="#section-4.3-8" class="pilcrow">¶</a></p>
 <p id="section-4.3-9">If a Verifier encounters, within the context of an entity, a repeated claim for a type where
-multiple claims are allowed, it <span class="bcp14">MUST</span> treat each one as an independent claim and <span class="bcp14">MUST NOT</span>
+it is allowed, it <span class="bcp14">MUST</span> treat each one as an independent claim and <span class="bcp14">MUST NOT</span>
 consider later ones to overwrite the previous one.<a href="#section-4.3-9" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1782,10 +1791,10 @@ consider later ones to overwrite the previous one.<a href="#section-4.3-9" class
       <h2 id="name-data-model">
 <a href="#section-5" class="section-number selfRef">5. </a><a href="#name-data-model" class="section-name selfRef">Data Model</a>
       </h2>
-<p id="section-5-1">This section describes the data model associated with PKIX Evidence. For ease of
+<p id="section-5-1">This section describes the data model associated with generated Evidence. For ease of
 deployment within the target ecosystem, ASN.1 definitions and DER encoding
 are used. A complete ASN.1 module is provided in <a href="#sec-asn1-mod" class="auto internal xref">Section 8</a>.<a href="#section-5-1" class="pilcrow">¶</a></p>
-<p id="section-5-2">The top-level structures, as ASN.1 snippets, are:<a href="#section-5-2" class="pilcrow">¶</a></p>
+<p id="section-5-2">The top-level structures, as ASN.1 fragments, are:<a href="#section-5-2" class="pilcrow">¶</a></p>
 <div class="lang-asn.1 sourcecode" id="section-5-3">
 <pre>
 PkixEvidence ::= SEQUENCE {
@@ -1839,7 +1848,7 @@ of X.509 certificates to support trusting the signatures found in signature bloc
 the certificates required by the Verifier to validate the endorsement on the certificates included
 with the signatures. <code>intermediateCertificates</code> <span class="bcp14">MAY</span> include any or all intermediate CA certificates needed to build paths.
 It is not required to include trust anchors. Order is not significant.<a href="#section-5-8" class="pilcrow">¶</a></p>
-<p id="section-5-9">As described in <a href="#sec-info-model" class="auto internal xref">Section 4</a>, the <code>TbsPkixEvidence</code> is a set of entities. Each entity
+<p id="section-5-9">As described in <a href="#sec-info-model" class="auto internal xref">Section 4</a>, the <code>TbsPkixEvidence</code> is a collection of entities. Each entity
 is associated with a type that defines its class. The entity types are represented by object identifiers
 (OIDs). The following ASN.1 definition defines the structures associated with entities:<a href="#section-5-9" class="pilcrow">¶</a></p>
 <div class="lang-asn.1 sourcecode" id="section-5-10">
@@ -1856,7 +1865,7 @@ id-pkix-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-evidence-ent
 id-pkix-evidence-entity-key         OBJECT IDENTIFIER ::= { id-pkix-evidence-entity 2 }
 </pre><a href="#section-5-10" class="pilcrow">¶</a>
 </div>
-<p id="section-5-11">In turn, entities are composed of a claim set. Each claim is composed of a type and a value.
+<p id="section-5-11">In turn, entities are composed of a collection of claims. Each claim is composed of a type and a value.
 The claim types are represented by object identifiers (OIDs). The
 following ASN.1 definition defines the structures associated with claims:<a href="#section-5-11" class="pilcrow">¶</a></p>
 <div class="lang-asn.1 sourcecode" id="section-5-12">
@@ -1887,7 +1896,7 @@ definition must include the type of the value, its semantic and interpretation.<
 <a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-platform-entity" class="section-name selfRef">Platform Entity</a>
         </h3>
 <p id="section-5.1-1">A platform entity reports information about the device where the Evidence is generated and is
-composed of a set of claims that are global to the Target Environment.
+composed of a collection of claims that are global to the Target Environment.
 It is associated with the type identifier <code>id-pkix-evidence-entity-platform</code>.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
 <p id="section-5.1-2">A platform entity, if provided, <span class="bcp14">MUST</span> be included only once within the reported entities. If a
 Verifier encounters multiple entities of type <code>id-pkix-evidence-entity-platform</code>, it <span class="bcp14">MUST</span>
@@ -2090,7 +2099,7 @@ restricted to the behavior limited by compliance.<a href="#section-5.1.4-2" clas
 <p id="section-5.1.4-4">The integer claim <code>fipslevel</code> indicates the compliance level to which the device is currently operating and <span class="bcp14">MUST</span> only be 1, 2, 3, or 4. The <code>fipslevel</code> claim has no meaning if <code>fipsboot</code> is absent or <code>false</code>.<a href="#section-5.1.4-4" class="pilcrow">¶</a></p>
 <p id="section-5.1.4-5">The claim <code>fipsmodule</code> is a textual field used to represent the name of the module that was submitted to CMVP for validation. The information derived by combining this claim with the vendor name shall
 be sufficient to find the associated records in the CMVP database.<a href="#section-5.1.4-5" class="pilcrow">¶</a></p>
-<p id="section-5.1.4-6">The FIPS status information in PKIX Evidence indicates only the mode of operation of the device and is not authoritative of its validation status.
+<p id="section-5.1.4-6">The FIPS status information found in Evidence indicates only the mode of operation of the device and is not authoritative of its validation status.
 This information is available on the NIST CMVP website or by contacting the device vendor.
 As an example, some devices may have the option to enable FIPS mode in configuration even if the vendor has not submitted this model for validation. As another example, a device may be running in a mode consistent with FIPS Level 3 but the device was only validated and certified to Level 2.
 A Relying Party wishing to know the validation status of the device <span class="bcp14">MUST</span> couple the device state information contained in the Evidence with a valid FIPS CMVP certificate for the device.<a href="#section-5.1.4-6" class="pilcrow">¶</a></p>
@@ -2107,12 +2116,11 @@ A Relying Party wishing to know the validation status of the device <span class=
 key entity represents a different addressable key found in the Target Environment. There can
 be multiple key entities found in Evidence, but each reported key entity <span class="bcp14">MUST</span>
 describe a different key from the Target Environment. Two key entities may represent the same underlying cryptographic key
-(keys with the exact same value) but they must be different portions of the Target Environment's
-state.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
-<p id="section-5.2-2">A key entity is composed of a set of claims relating to the cryptographic key. At
+(keys with the exact same value) but they must be different portions of the Target Environment.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<p id="section-5.2-2">A key entity is composed of a collection of claims relating to the cryptographic key. At
 minimum, a key entity <span class="bcp14">MUST</span> report the claim "identifier" to uniquely identify this cryptographic
 key from any others found in the same Target Environment.<a href="#section-5.2-2" class="pilcrow">¶</a></p>
-<p id="section-5.2-3">A Verifier that encounters Evidence with multiple key entities referring to the
+<p id="section-5.2-3">A Verifier that detects Evidence with multiple key entities referring to the
 same addressable key <span class="bcp14">MUST</span> reject the Evidence.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
 <p id="section-5.2-4">The following table lists the claims for a key entity defined
 within this specification. The "Reference" column refers to the specification where the semantics
@@ -2197,7 +2205,7 @@ for the claim can be found.<a href="#section-5.2-4" class="pilcrow">¶</a></p>
         </table>
 <p id="section-5.2-6">An attestation key might be visible to a client of the device and be reported along with other cryptographic keys. Therefore,
 it is acceptable to include a key entity providing claims about an attestation key like any other cryptographic key. An
-implementation <span class="bcp14">MAY</span> reject the generation of PKIX Evidence if it relates to an attestation key.<a href="#section-5.2-6" class="pilcrow">¶</a></p>
+implementation <span class="bcp14">MAY</span> reject the generation of Evidence if it relates to an attestation key.<a href="#section-5.2-6" class="pilcrow">¶</a></p>
 <div id="identifier">
 <section id="section-5.2.1">
           <h4 id="name-identifier">
@@ -2228,7 +2236,7 @@ descriptions are offered for each to ease the reading of this specification. In 
 description offered here and the one in <span>[<a href="#PKCS11" class="cite xref">PKCS11</a>]</span>, the definition offered in the latter shall prevail.<a href="#section-5.2.3-1" class="pilcrow">¶</a></p>
 <p id="section-5.2.3-2">The claim "extractable" indicates that the key can be exported from the HSM. Corresponds directly to the attribute CKA_EXTRACTABLE
 found in PKCS#11.<a href="#section-5.2.3-2" class="pilcrow">¶</a></p>
-<p id="section-5.2.3-3">The claim "sensitive" indicates that the key cannot leave the HSM in plaintext. Corresponds directly to the attribute CKA_SENSITIVE
+<p id="section-5.2.3-3">The claim "sensitive" indicates that the value of key cannot leave the HSM in plaintext. Corresponds directly to the attribute CKA_SENSITIVE
 found in PKCS#11.<a href="#section-5.2.3-3" class="pilcrow">¶</a></p>
 <p id="section-5.2.3-4">The claim "never-extractable" indicates if the key was never extractable from the HSM throughout the life of the key. Corresponds
 directly to the attribute CKA_NEVER_EXTRACTABLE found in PKCS#11.<a href="#section-5.2.3-4" class="pilcrow">¶</a></p>
@@ -2336,12 +2344,12 @@ implementations that have other key capabilities.<a href="#section-5.2.5-6" clas
 <p id="section-5.3-1">A transaction entity is associated with the type <code>id-pkix-evidence-entity-transaction</code>. This is
 a logical entity and does not relate to any state found in the Target Environment. Instead, it
 groups together claims that relate to the request of generating the Evidence.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
-<p id="section-5.3-2">For example, it is possible to include a "nonce" as part of the request to produce Evidence. This
-nonce is repeated as part of the Evidence to prove
-the freshness of the Evidence. This "nonce" is not related to any element in the Target Environment
+<p id="section-5.3-2">For example, it is possible to include a <code>nonce</code> as part of the request to produce Evidence. This
+<code>nonce</code> is repeated as part of the Evidence to support
+the freshness of the Evidence. The <code>nonce</code> is not related to any element in the Target Environment
 and the transaction entity is used to gather those values into claims.<a href="#section-5.3-2" class="pilcrow">¶</a></p>
 <p id="section-5.3-3">A transaction entity, if provided, <span class="bcp14">MUST</span> be included only once within the reported entities. If a
-Verifier encounters multiple entities of type <code>id-pkix-evidence-entity-transaction</code>, it <span class="bcp14">MUST</span>
+Verifier detects multiple entities of type <code>id-pkix-evidence-entity-transaction</code>, it <span class="bcp14">MUST</span>
 reject the Evidence.<a href="#section-5.3-3" class="pilcrow">¶</a></p>
 <p id="section-5.3-4">The following table lists the claims for a transaction entity defined
 within this specification. The "Reference" column refers to the specification where the semantics
@@ -2390,8 +2398,8 @@ for the claim value can be found.<a href="#section-5.3-4" class="pilcrow">¶</a>
           <h4 id="name-nonce">
 <a href="#section-5.3.1" class="section-number selfRef">5.3.1. </a><a href="#name-nonce" class="section-name selfRef">nonce</a>
           </h4>
-<p id="section-5.3.1-1">The claim "nonce" is used to provide "freshness" quality as to the generated Evidence. A Presenter requesting Evidence <span class="bcp14">MAY</span> provide a nonce value as part of the request. This nonce value, if specified, <span class="bcp14">SHOULD</span> be repeated in the generated Evidence as a claim within the transaction entity. Unlike EAT, only a single <code>transaction.nonce</code> is permitted to simplify verifier logic and reduce ambiguity.<a href="#section-5.3.1-1" class="pilcrow">¶</a></p>
-<p id="section-5.3.1-2">This is similar to the claim "eat_nonce" as defined in <span>[<a href="#RFC9711" class="cite xref">RFC9711</a>]</span>. According to that specification, this claim may be specified multiple times with
+<p id="section-5.3.1-1">The claim <code>nonce</code> is used to provide "freshness" quality as to the generated Evidence. A Presenter requesting Evidence <span class="bcp14">MAY</span> provide a nonce value as part of the request. This nonce value, if specified, <span class="bcp14">SHOULD</span> be repeated in the generated Evidence as a claim within the transaction entity.<a href="#section-5.3.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.3.1-2">This claim is similar to the "eat_nonce" as defined in <span>[<a href="#RFC9711" class="cite xref">RFC9711</a>]</span>. According to that specification, this claim may be specified multiple times with
 different values. However, within the scope of this specification, the "nonce" value can be specified only once within a transaction.<a href="#section-5.3.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2410,10 +2418,12 @@ different values. However, within the scope of this specification, the "nonce" v
           <h4 id="name-ak-spki">
 <a href="#section-5.3.3" class="section-number selfRef">5.3.3. </a><a href="#name-ak-spki" class="section-name selfRef">ak-spki</a>
           </h4>
-<p id="section-5.3.3-1">This field contains the encoded Subject Public Key Information (SPKI) for the attestation key used to sign the Evidence. The definition
+<p id="section-5.3.3-1">This claim contains the encoded Subject Public Key Information (SPKI) for the attestation key used to sign the Evidence. The definition
 and encoding for SPKIs are defined in X.509 certificates (<span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>).<a href="#section-5.3.3-1" class="pilcrow">¶</a></p>
 <p id="section-5.3.3-2">This transaction claim is used to bind the content of the Evidence with the key(s) used to sign that Evidence. The importance
 of this binding is discussed in <a href="#sec-detached-sigs" class="auto internal xref">Section 10.3</a>.<a href="#section-5.3.3-2" class="pilcrow">¶</a></p>
+<p id="section-5.3.3-3">This claim can be reported multiple times. Each included claim <span class="bcp14">MUST</span> refer to a different attestation key. In other words, this claim
+should be repeated only if multiple attestation keys are used to sign the Evidence.<a href="#section-5.3.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2425,8 +2435,8 @@ of this binding is discussed in <a href="#sec-detached-sigs" class="auto interna
         </h3>
 <p id="section-5.4-1">It is expected that HSM vendors will register additional Entity and Claim types by assigning OIDs from their own proprietary OID arcs to hold data describing additional proprietary key properties.<a href="#section-5.4-1" class="pilcrow">¶</a></p>
 <p id="section-5.4-2">When new entity and claim types are used, documentation similar to the one produced in this specification <span class="bcp14">SHOULD</span> be distributed to
-explain the meaning of the types and the frequency that values can be provided.<a href="#section-5.4-2" class="pilcrow">¶</a></p>
-<p id="section-5.4-3">See <a href="#sec-req-processing" class="auto internal xref">Section 7.3</a>, <a href="#sec-req-verification" class="auto internal xref">Section 7.4</a> and <a href="#sec-cons-verifier" class="auto internal xref">Section 10.1</a> for handling of unrecognized custom types.<a href="#section-5.4-3" class="pilcrow">¶</a></p>
+explain the semantics of the claims and the frequency that values can be provided.<a href="#section-5.4-2" class="pilcrow">¶</a></p>
+<p id="section-5.4-3">See <a href="#sec-req-processing" class="auto internal xref">Section 7.2</a>, <a href="#sec-req-verification" class="auto internal xref">Section 7.3</a> and <a href="#sec-cons-verifier" class="auto internal xref">Section 10.1</a> for handling of unrecognized custom types.<a href="#section-5.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="encoding">
@@ -2455,7 +2465,7 @@ header label is "EVIDENCE". For example:<a href="#section-5.5-3" class="pilcrow"
 <a href="#section-6" class="section-number selfRef">6. </a><a href="#name-signing-and-verification-pr" class="section-name selfRef">Signing and Verification Procedures</a>
       </h2>
 <p id="section-6-1">The <code>SignatureBlock.signatureValue</code> signs over the DER-encoded to-be-signed Evidence data
-<code>PkixEvidence.tbs</code> and <span class="bcp14">MUST</span> be validated with the subject public key of the leaf
+<code>PkixEvidence.tbs</code> and <span class="bcp14">MUST</span> be validated with the subject public key of the end entity
 X.509 certificate contained in the <code>SignerIdentifier.certificate</code>. Verifiers <span class="bcp14">MAY</span> also use
 <code>PkixEvidence.intermediateCertificates</code> to build a certification path to a trust anchor.<a href="#section-6-1" class="pilcrow">¶</a></p>
 <p id="section-6-2">Note that a PkixEvidence <span class="bcp14">MAY</span> contain zero or more SignatureBlocks.
@@ -2474,18 +2484,18 @@ counter-signature of the Evidence after the fact, or an attacker can remove a Si
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-attestation-requests" class="section-name selfRef">Attestation Requests</a>
       </h2>
 <p id="section-7-1">This section is informative in nature and implementers of this specification do not need to adhere to it. The aim of this section is
-to provide a standard interface between a Presenter and an HSM producing PKIX Evidence. The authors hope that this standard interface will
+to provide a standard interface between a Presenter and an HSM producing Evidence. The authors hope that this standard interface will
 yield interoperable tools between offerings from different vendors.<a href="#section-7-1" class="pilcrow">¶</a></p>
 <p id="section-7-2">The interface presented in this section might be too complex for manufacturers of HSMs with limited capabilities such as smartcards
-or personal ID tokens. For devices with limited capabilities, a fixed PKIX Evidence endorsed by the vendor might be installed
+or personal ID tokens. For devices with limited capabilities, a fixed Evidence endorsed by the vendor might be installed
 during manufacturing. Other approaches for constrained HSMs might be to report entities and claims that are fixed or offer limited
 variations.<a href="#section-7-2" class="pilcrow">¶</a></p>
 <p id="section-7-3">On the other hand, an enterprise-grade HSM with the capability to hold a large number of private keys is expected to be capable of generating
-PKIX Evidence catered to the specific constraints imposed by a Verifier and without exposing extraneous information. The aim of the request
-interface is to provide the means to select and report specific information in the PKIX Evidence.<a href="#section-7-3" class="pilcrow">¶</a></p>
-<p id="section-7-4">This section introduces the role of "Presenter" as shown in <a href="#fig-arch" class="auto internal xref">Figure 1</a>. The Presenter is the role that initiates the generation of PKIX
+Evidence catered to the specific constraints imposed by a Verifier and without exposing extraneous information. The aim of the request
+interface is to provide the means to select and report specific information in the generated Evidence.<a href="#section-7-3" class="pilcrow">¶</a></p>
+<p id="section-7-4">This section introduces the role of "Presenter" as shown in <a href="#fig-arch" class="auto internal xref">Figure 1</a>. The Presenter is the role that initiates the generation of
 Evidence. Since HSMs are generally servers (client/server relationship) or peripherals (controller/peripheral relationship), a Presenter is
-required to launch the process of creating the PKIX Evidence and capturing it to forward it to the Verifier.<a href="#section-7-4" class="pilcrow">¶</a></p>
+required to launch the process of creating the Evidence and capturing it to forward it to the Verifier.<a href="#section-7-4" class="pilcrow">¶</a></p>
 <span id="name-architecture"></span><div id="fig-arch">
 <figure id="figure-1">
         <div id="section-7-5.1">
@@ -2549,16 +2559,16 @@ required to launch the process of creating the PKIX Evidence and capturing it to
         </figcaption></figure>
 </div>
 <p id="section-7-6">The process of generating Evidence generally starts at the Verifier with the generation of a nonce. The nonce is used to ensure freshness
-and this quality of the Evidence is guaranteed by the Verifier. Therefore, if a nonce is used, it must be provided to the Presenter by
+of the Evidence and this quality is guaranteed by the Verifier. Therefore, if a nonce is used, it must be provided to the Presenter by
 the Verifier (1).<a href="#section-7-6" class="pilcrow">¶</a></p>
 <p id="section-7-7">An Attestation Request (request) is assembled by the Presenter and submitted to the HSM (2). The Attesting Environment parses the request and
-collects the appropriate measurements from the Target Environment.<a href="#section-7-7" class="pilcrow">¶</a></p>
+collects the appropriate measurements from the Target Environment (3).<a href="#section-7-7" class="pilcrow">¶</a></p>
 <p id="section-7-8">In the previous figure, the HSM is represented as being composed of an Attesting Environment and a Target Environment. This representation is offered
 as a simplified view and implementations are not required to adhere to this separation of concerns.<a href="#section-7-8" class="pilcrow">¶</a></p>
-<p id="section-7-9">The Attesting Environemnt produces Evidence based on the collected information and returns it to the Presenter for distribution (4). Finally, the
+<p id="section-7-9">The Attesting Environment produces Evidence based on the collected information and returns it to the Presenter for distribution (4). Finally, the
 Presenter forwards the Evidence to the Verifier (5).<a href="#section-7-9" class="pilcrow">¶</a></p>
 <p id="section-7-10">The aim of the figure is to depict the position of the Presenter as an intermediate role between the Attester and the Verifier.
-The role of "Presenter" is privileged as it controls the Evidence being generated by the Attester. However, the role is not "trusted" as
+The role of "Presenter" is privileged as it controls the claims included in the Evidence being generated by the Attester. However, the role is not "trusted" as
 the Verifier does not have to take into account the participation of the Presenter as part of the function of appraising the Evidence.<a href="#section-7-10" class="pilcrow">¶</a></p>
 <p id="section-7-11">The attestation request, shown in the figure, consists of a structure <code>TbsPkixEvidence</code> containing one <code>ReportedEntity</code> for each entity expected to
 be included in the Evidence produced by the HSM.<a href="#section-7-11" class="pilcrow">¶</a></p>
@@ -2584,7 +2594,7 @@ implementer to provide those capabilities, as described in <a href="#sec-cons-au
 <a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-requested-claims-with-speci" class="section-name selfRef">Requested Claims with Specified Values</a>
         </h3>
 <p id="section-7.1-1">This section deals with the requested claims specified in this document where a value should be provided by a Presenter. In other words, this
-section defines all requested claims that should set in the structure <code>ReportedClaim</code>. Requested claims not covered in this sub-section
+section defines all requested claims that should set a value in the structure <code>ReportedClaim</code>. Requested claims not covered in this sub-section
 should not have a specified value (left empty).<a href="#section-7.1-1" class="pilcrow">¶</a></p>
 <p id="section-7.1-2">Since this section is non-normative, implementers may deviate from those recommendations.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
 <div id="key-identifiers">
@@ -2592,7 +2602,7 @@ should not have a specified value (left empty).<a href="#section-7.1-1" class="p
           <h4 id="name-key-identifiers">
 <a href="#section-7.1.1" class="section-number selfRef">7.1.1. </a><a href="#name-key-identifiers" class="section-name selfRef">Key Identifiers</a>
           </h4>
-<p id="section-7.1.1-1">A Presenter may choose to select which cryptographic keys are reported as part of the PKIX Evidence. For each selected cryptographic key,
+<p id="section-7.1.1-1">A Presenter may choose to select which cryptographic keys are reported as part of the generated Evidence. For each selected cryptographic key,
 the Presenter includes a requested entity of type <code>id-pkix-evidence-entity-key</code>. Among the requested claims for this entity, the
 Presenter includes one claim with the type <code>id-pkix-evidence-claim-key-identifier</code>. The value of this claim should be
 set to the utf8String that represents the identifier for the specific key.<a href="#section-7.1.1-1" class="pilcrow">¶</a></p>
@@ -2605,7 +2615,7 @@ key associated with the specified identifier.<a href="#section-7.1.1-2" class="p
           <h4 id="name-nonce-2">
 <a href="#section-7.1.2" class="section-number selfRef">7.1.2. </a><a href="#name-nonce-2" class="section-name selfRef">Nonce</a>
           </h4>
-<p id="section-7.1.2-1">A Presenter may choose to include a nonce as part of the attestation request. When producing the PKIX Evidence, the HSM repeats the
+<p id="section-7.1.2-1">A Presenter may choose to include a nonce as part of the attestation request. When producing the Evidence, the HSM repeats the
 nonce that was provided as part of the request.<a href="#section-7.1.2-1" class="pilcrow">¶</a></p>
 <p id="section-7.1.2-2">When providing a nonce, a Presenter includes, in the attestation request, an entity of type <code>id-pkix-evidence-entity-transaction</code>
 with a claim of type <code>id-pkix-evidence-claim-transaction-nonce</code>. This claim is set with the value of the
@@ -2622,7 +2632,7 @@ nonce should be generated by the Verifier so that the freshness of the Evidence 
 <p id="section-7.1.3-1">An implementer might desire to select multiple cryptographic keys based on a shared attribute. A possible approach
 is to include a single request entity of type <code>id-pkix-evidence-entity-key</code> including a claim with a set value. This claim
 would not be related to the key identifier as this is unique to each key. A HSM supporting this scheme could select all the cryptographic
-keys matching the specified claim and report them in the PKIX Evidence.<a href="#section-7.1.3-1" class="pilcrow">¶</a></p>
+keys matching the specified claim and report them in the generated Evidence.<a href="#section-7.1.3-1" class="pilcrow">¶</a></p>
 <p id="section-7.1.3-2">This is a departure from the base request interface, as multiple key entities are reported from a single requested entity.<a href="#section-7.1.3-2" class="pilcrow">¶</a></p>
 <p id="section-7.1.3-3">More elaborate selection schemes can be envisaged where multiple requested claims specifying values would be tested against cryptographic keys.
 Whether these claims are combined in a logical "and" or in a logical "or" would need to be specified by the implementer.<a href="#section-7.1.3-3" class="pilcrow">¶</a></p>
@@ -2637,68 +2647,68 @@ Whether these claims are combined in a logical "and" or in a logical "or" would 
 order to influence the way that the Evidence generation is performed.<a href="#section-7.1.4-1" class="pilcrow">¶</a></p>
 <p id="section-7.1.4-2">In such an approach, a new custom claim for requested entities of type "transaction" is defined. Then, a
 claim of that type is included in the attestation request (as part of the transaction entity) while specifying a value. This value
-is considered by the HSM while generating the PKIX Evidence.<a href="#section-7.1.4-2" class="pilcrow">¶</a></p>
-</section>
-</div>
+is considered by the HSM while generating the Evidence.<a href="#section-7.1.4-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="reporting-of-attestation-keys">
-<section id="section-7.2">
-        <h3 id="name-reporting-of-attestation-ke">
-<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-reporting-of-attestation-ke" class="section-name selfRef">Reporting of Attestation Keys</a>
-        </h3>
-<p id="section-7.2-1">There is a provision for the Attesting Environment to report the Attestation Key(s) used during the generation of the Evidence. To this end,
-the transaction claim "ak-spki" is used.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
-<p id="section-7.2-2">A Presenter invokes this provision by submitting an attestation request with a transaction claim of type "ak-spki" with a
-non-specified value (left empty).<a href="#section-7.2-2" class="pilcrow">¶</a></p>
-<p id="section-7.2-3">In this case, the Attesting Environment adds a transaction claim of type "ak-spki" for each Attestation Key used to sign the Evidence. The
+<section id="section-7.1.5">
+          <h4 id="name-reporting-of-attestation-ke">
+<a href="#section-7.1.5" class="section-number selfRef">7.1.5. </a><a href="#name-reporting-of-attestation-ke" class="section-name selfRef">Reporting of Attestation Keys</a>
+          </h4>
+<p id="section-7.1.5-1">There is a provision for the Attesting Environment to report the attestation key(s) used during the generation of the Evidence. To this end,
+the transaction claim "ak-spki" is used.<a href="#section-7.1.5-1" class="pilcrow">¶</a></p>
+<p id="section-7.1.5-2">A Presenter invokes this provision by submitting an attestation request with a transaction claim of type "ak-spki" with a
+non-specified value (left empty).<a href="#section-7.1.5-2" class="pilcrow">¶</a></p>
+<p id="section-7.1.5-3">In this case, the Attesting Environment adds a transaction claim of type "ak-spki" for each Attestation Key used to sign the Evidence. The
 value of this claim is an octet string (bytes) which is the encoding of the Subject Public Key Information (SPKI) associated
-with the Attestation Key. Details on SPKIs and their encoding can be found in X.509 certificates (<span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>).<a href="#section-7.2-3" class="pilcrow">¶</a></p>
-<p id="section-7.2-4">This reporting effectively binds the signature blocks to the content (see <a href="#sec-detached-sigs" class="auto internal xref">Section 10.3</a>).<a href="#section-7.2-4" class="pilcrow">¶</a></p>
+with the Attestation Key. Details on SPKIs and their encoding can be found in X.509 certificates (<span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>).<a href="#section-7.1.5-3" class="pilcrow">¶</a></p>
+<p id="section-7.1.5-4">This reporting effectively binds the signature blocks to the content (see <a href="#sec-detached-sigs" class="auto internal xref">Section 10.3</a>).<a href="#section-7.1.5-4" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <div id="sec-req-processing">
-<section id="section-7.3">
+<section id="section-7.2">
         <h3 id="name-processing-an-attestation-r">
-<a href="#section-7.3" class="section-number selfRef">7.3. </a><a href="#name-processing-an-attestation-r" class="section-name selfRef">Processing an Attestation Request</a>
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-processing-an-attestation-r" class="section-name selfRef">Processing an Attestation Request</a>
         </h3>
-<p id="section-7.3-1">This sub-section deals with the rules that should be considered when an Attesting Environment processes a request to generate
-Evidence. This section is non-normative and implementers <span class="bcp14">MAY</span> choose to not follow these recommendations.<a href="#section-7.3-1" class="pilcrow">¶</a></p>
-<p id="section-7.3-2">These recommendations apply to any attestation request schemes and are not restricted solely to the request interface proposed
-here.<a href="#section-7.3-2" class="pilcrow">¶</a></p>
-<p id="section-7.3-3">An Attesting Environment <span class="bcp14">SHOULD</span> fail an attestation request if it contains an unrecognized entity type. This is to ensure that all the semantics expected
-by the Presenter are fully understood by the Attesting Environment.<a href="#section-7.3-3" class="pilcrow">¶</a></p>
-<p id="section-7.3-4">An Attesting Environment <span class="bcp14">MUST</span> fail an attestation request if it contains a requested claim with an unrecognized type with a specified a value (not
-empty). This represents a situation where the Presenter is selecting specific information that is not understood by the Attesting Environment.<a href="#section-7.3-4" class="pilcrow">¶</a></p>
-<p id="section-7.3-5">An Attesting Environment <span class="bcp14">SHOULD</span> ignore unrecognized claim types in an attestation request. In this situation, the Attesting Environment <span class="bcp14">SHOULD NOT</span> include
+<p id="section-7.2-1">This sub-section deals with the rules that should be considered when an Attesting Environment processes a request to generate
+Evidence. This section is non-normative and implementers <span class="bcp14">MAY</span> choose to not follow these recommendations.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+<p id="section-7.2-2">These recommendations apply to any attestation request schemes and are not restricted solely to the request interface proposed
+here.<a href="#section-7.2-2" class="pilcrow">¶</a></p>
+<p id="section-7.2-3">An Attesting Environment <span class="bcp14">SHOULD</span> fail an attestation request if it contains an unrecognized entity type. This is to ensure that all the semantics expected
+by the Presenter are fully understood by the Attesting Environment.<a href="#section-7.2-3" class="pilcrow">¶</a></p>
+<p id="section-7.2-4">An Attesting Environment <span class="bcp14">MUST</span> fail an attestation request if it contains a requested claim with an unrecognized type with a specified a value (not
+empty). This represents a situation where the Presenter is selecting specific information that is not understood by the Attesting Environment.<a href="#section-7.2-4" class="pilcrow">¶</a></p>
+<p id="section-7.2-5">An Attesting Environment <span class="bcp14">SHOULD</span> ignore unrecognized claim types in an attestation request. In this situation, the Attesting Environment <span class="bcp14">SHOULD NOT</span> include
 the claim as part of the response. This guidance is to increase the likelihood of interoperability between tools of various
-vendors.<a href="#section-7.3-5" class="pilcrow">¶</a></p>
-<p id="section-7.3-6">An Attesting Environment <span class="bcp14">MUST NOT</span> include entities and claims in the generated Evidence if these entities and claims were
-not specified as part of the request. This is to give control to the Presenter as to what information is disclosed by the Attesting Environment.<a href="#section-7.3-6" class="pilcrow">¶</a></p>
-<p id="section-7.3-7">An Attesting Environment <span class="bcp14">MUST</span> fail an attestation request if the Presenter does not have the appropriate access rights to the entities or claims included
-in the request.<a href="#section-7.3-7" class="pilcrow">¶</a></p>
+vendors.<a href="#section-7.2-5" class="pilcrow">¶</a></p>
+<p id="section-7.2-6">An Attesting Environment <span class="bcp14">MUST NOT</span> include entities and claims in the generated Evidence if these entities and claims were
+not specified as part of the request. This is to give control to the Presenter as to what information is disclosed by the Attesting Environment.<a href="#section-7.2-6" class="pilcrow">¶</a></p>
+<p id="section-7.2-7">An Attesting Environment <span class="bcp14">MUST</span> fail an attestation request if the Presenter does not have the appropriate access rights to the entities or claims included
+in the request.<a href="#section-7.2-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-req-verification">
-<section id="section-7.4">
+<section id="section-7.3">
         <h3 id="name-verification-by-presenter">
-<a href="#section-7.4" class="section-number selfRef">7.4. </a><a href="#name-verification-by-presenter" class="section-name selfRef">Verification by Presenter</a>
+<a href="#section-7.3" class="section-number selfRef">7.3. </a><a href="#name-verification-by-presenter" class="section-name selfRef">Verification by Presenter</a>
         </h3>
-<p id="section-7.4-1">This sub-section deals with the rules that should be considered when a Presenter receives PKIX Evidence from the Attester (the HSM)
-prior to distribution. This section is non-normative and implementers <span class="bcp14">MAY</span> choose to not follow these recommendations.<a href="#section-7.4-1" class="pilcrow">¶</a></p>
-<p id="section-7.4-2">These recommendations apply to any PKIX Evidence and are not restricted solely to Evidence generated from the proposed request interface.<a href="#section-7.4-2" class="pilcrow">¶</a></p>
-<p id="section-7.4-3">A Presenter <span class="bcp14">MUST</span> review the Evidence produced by an Attester for fitness prior to distribution.<a href="#section-7.4-3" class="pilcrow">¶</a></p>
-<p id="section-7.4-4">A Presenter <span class="bcp14">MUST NOT</span> disclose Evidence if it contains information it
+<p id="section-7.3-1">This sub-section deals with the rules that should be considered when a Presenter receives Evidence from the Attester (the HSM)
+prior to distribution. This section is non-normative and implementers <span class="bcp14">MAY</span> choose to not follow these recommendations.<a href="#section-7.3-1" class="pilcrow">¶</a></p>
+<p id="section-7.3-2">These recommendations apply to any Evidence and are not restricted solely to Evidence generated from the proposed request interface.<a href="#section-7.3-2" class="pilcrow">¶</a></p>
+<p id="section-7.3-3">A Presenter <span class="bcp14">MUST</span> review the Evidence produced by an Attester for fitness prior to distribution.<a href="#section-7.3-3" class="pilcrow">¶</a></p>
+<p id="section-7.3-4">A Presenter <span class="bcp14">MUST NOT</span> disclose Evidence if it contains information it
 cannot parse. This restriction applies to entity types and claim types. This is
 to ensure that the information provided by the Attester can be evaluated by the
-Presenter.<a href="#section-7.4-4" class="pilcrow">¶</a></p>
-<p id="section-7.4-5">A Presenter <span class="bcp14">MUST NOT</span> disclose Evidence if it contains entities others
+Presenter.<a href="#section-7.3-4" class="pilcrow">¶</a></p>
+<p id="section-7.3-5">A Presenter <span class="bcp14">MUST NOT</span> disclose Evidence if it contains entities others
 than the ones that were requested of the Attester. This is to ensure that only the
-selected entities are exposed to the Verifier.<a href="#section-7.4-5" class="pilcrow">¶</a></p>
-<p id="section-7.4-6">A Presenter <span class="bcp14">MUST NOT</span> disclose Evidence if it contains an entity with a claim
+selected entities are exposed to the Verifier.<a href="#section-7.3-5" class="pilcrow">¶</a></p>
+<p id="section-7.3-6">A Presenter <span class="bcp14">MUST NOT</span> disclose Evidence if it contains an entity with a claim
 that was not requested of the Attester. This is to ensure that only the selected
-information is disclosed to the Verifier.<a href="#section-7.4-6" class="pilcrow">¶</a></p>
-<p id="section-7.4-7">Further privacy concerns are discussed in <a href="#sec-cons-privacy" class="auto internal xref">Section 10.4</a>.<a href="#section-7.4-7" class="pilcrow">¶</a></p>
+information is disclosed to the Verifier.<a href="#section-7.3-6" class="pilcrow">¶</a></p>
+<p id="section-7.3-7">Further privacy concerns are discussed in <a href="#sec-cons-privacy" class="auto internal xref">Section 10.4</a>.<a href="#section-7.3-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2916,19 +2926,19 @@ END
         <h3 id="name-policies-relating-to-verifi">
 <a href="#section-10.1" class="section-number selfRef">10.1. </a><a href="#name-policies-relating-to-verifi" class="section-name selfRef">Policies relating to Verifier and Relying Party</a>
         </h3>
-<p id="section-10.1-1">The generation of PKIX Evidence by an HSM is to provide sufficient information to
+<p id="section-10.1-1">The generation of Evidence by an HSM is to provide sufficient information to
 a Verifier and, ultimately, a Relying Party to appraise the Target Environment (the HSM) and make
 decisions based on this appraisal.<a href="#section-10.1-1" class="pilcrow">¶</a></p>
 <p id="section-10.1-2">The Appraisal Policy associated with the Verifier influences the generation of the Attestation
 Results. Those results, in turn, are consumed by the Relying Party to make decisions about
 the HSM, which might be based on a set of rules and policies. Therefore, the interpretation of
-PKIX Evidence may greatly influence the outcome of some decisions.<a href="#section-10.1-2" class="pilcrow">¶</a></p>
-<p id="section-10.1-3">A Verifier <span class="bcp14">MAY</span> reject a PKIX Evidence if it lacks the claims required per the Verifier's
+the provided Evidence may greatly influence the outcome of some decisions.<a href="#section-10.1-2" class="pilcrow">¶</a></p>
+<p id="section-10.1-3">A Verifier <span class="bcp14">MAY</span> reject Evidence if it lacks the claims required per the Verifier's
 appraisal policy. For example, if a Relying Party mandates a FIPS-certified device,
 it <span class="bcp14">SHOULD</span> reject Evidence lacking sufficient information to verify the device's FIPS
 certification status.<a href="#section-10.1-3" class="pilcrow">¶</a></p>
 <p id="section-10.1-4">If a Verifier encounters a claim with an unrecognized claim type, it <span class="bcp14">MAY</span> ignore it and
-treat it as extraneous information. By ignoring a claim, the Verifier may accept PKIX Evidence
+treat it as extraneous information. By ignoring a claim, the Verifier may accept Evidence
 that would be deemed malformed to a Verifier with different policies. However, this approach
 fosters a higher likelihood of achieving interoperability.<a href="#section-10.1-4" class="pilcrow">¶</a></p>
 </section>
@@ -2943,13 +2953,13 @@ privileged position within the HSM so that it can collect the required measureme
 hardware registers and the user keys. For many HSM architectures, this will
 place the Attesting Environment inside the "security kernel" and potentially subject to FIPS 140-3
 or Common Criteria validation and change control. For both security and compliance reasons,
-there is incentive for the generation and parsing logic to be simple and easy to implement
+there is an incentive for the generation and parsing logic to be simple and easy to implement
 correctly. Additionally, when the data formats contained in this specification are parsed
-within an HSM boundary -- that would be parsing a request entity, or parsing Evidence
+within an HSM boundary -- that would be parsing Evidence
 produced by a different HSM -- implementers <span class="bcp14">SHOULD</span> opt for simple logic that rejects any
 data that does not match the expected format, instead of attempting to be flexible.<a href="#section-10.2-1" class="pilcrow">¶</a></p>
-<p id="section-10.2-2">In particular, the Attesting Environment <span class="bcp14">SHOULD</span> generate the PKIX Evidence from scratch and
-avoid copying any content from the request. The Attesting Environment <span class="bcp14">MUST</span> generate PKIX Evidence
+<p id="section-10.2-2">In particular, the Attesting Environment <span class="bcp14">SHOULD</span> generate Evidence from scratch and
+avoid copying any content from the request. The Attesting Environment <span class="bcp14">MUST</span> generate Evidence
 only from information and measurements that are directly observable by it.<a href="#section-10.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2982,7 +2992,7 @@ Therefore, the signature blocks can be deemed as "detachable" or "stapled".<a hr
 of the presence or absence of certain signature(s). Consequently, Verifiers <span class="bcp14">MUST NOT</span> make any inferences
 based on a missing signature, as the signature could have been removed in transit.<a href="#section-10.3-6" class="pilcrow">¶</a></p>
 <p id="section-10.3-7">This specification provides the transaction claim "ak-spki" to effectively bind the content with
-the signature blocks that were generated by the Attesting Environment. When this claim is provided, it reports
+the signature blocks that were inserted by the Attesting Environment. When this claim is provided, it reports
 the SPKI of one of the attestation keys used by the Attesting Environment to produce the Evidence. This claim
 is repeated for each of the attestation keys used by the Attesting Environment.<a href="#section-10.3-7" class="pilcrow">¶</a></p>
 </section>
@@ -2999,7 +3009,7 @@ claims of any one of the keys would involve a Presenter that could potentially a
 In such a case, privacy violations could occur if the Presenter was to disclose information that does not relate to the subject key.<a href="#section-10.4-2" class="pilcrow">¶</a></p>
 <p id="section-10.4-3">Implementers <span class="bcp14">SHOULD</span> be careful to avoid over-disclosure of information, for example by authenticating the Presenter as described in <a href="#sec-cons-auth-the-presenter" class="auto internal xref">Section 10.5</a> and only returning results for keys and portions of the Target Environment for which it is authorized.
 In absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request <span class="bcp14">MAY</span> be authenticated by embedding the TbsPkixEvidence of the request inside a PkixEvidence signed with a certificate belonging to the Presenter.<a href="#section-10.4-3" class="pilcrow">¶</a></p>
-<p id="section-10.4-4">Furthermore, enterprise and cloud-services grade HSMs <span class="bcp14">SHOULD</span> support the full set of attestation request functionality described in <a href="#sec-reqs" class="auto internal xref">Section 7</a> so that Presenters can fine-tune the content of a PKIX Evidence such that it is appropriate for the intended Verifier.<a href="#section-10.4-4" class="pilcrow">¶</a></p>
+<p id="section-10.4-4">Furthermore, enterprise and cloud-services grade HSMs <span class="bcp14">SHOULD</span> support the full set of attestation request functionality described in <a href="#sec-reqs" class="auto internal xref">Section 7</a> so that Presenters can fine-tune the content of the generated Evidence such that it is appropriate for the intended Verifier.<a href="#section-10.4-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-cons-auth-the-presenter">
@@ -3012,7 +3022,7 @@ The Presenter is in the position of deciding how much information to disclose to
 <p id="section-10.5-2">For personal cryptographic tokens it might be appropriate for the attestation request interface to be un-authenticated. However, for enterprise and cloud-services grade HSMs the Presenter <span class="bcp14">SHOULD</span> be authenticated using the HSM's native authentication mechanism. The details are HSM-specific and are thus left up to the implementer. However, it is <span class="bcp14">RECOMMENDED</span> to implement an authorization framework similar to the following.<a href="#section-10.5-2" class="pilcrow">¶</a></p>
 <p id="section-10.5-3">A Presenter <span class="bcp14">SHOULD</span> be allowed to request Evidence for any user keys which it is allowed to use.
 For example, a TLS application that is correctly authenticated to the HSM in order to use its TLS keys <span class="bcp14">SHOULD</span> be able to request Evidence related to those same keys without needing to perform any additional authentication or requiring any additional roles or permissions.
-HSMs that wish to allow a Presenter to request Evidence of keys which is not allowed to use, for example for the purposes of displaying HSM status information on an administrative console or UI, <span class="bcp14">SHOULD</span> have a "Attestation Requester" role or permission and <span class="bcp14">SHOULD</span> enforce the HSM's native access controls such that the Presenter can only retrieve Evidence for keys for which it has read access.<a href="#section-10.5-3" class="pilcrow">¶</a></p>
+HSMs that wish to allow a Presenter to request Evidence of keys which is not allowed to use, for example for the purposes of displaying HSM status information on an administrative console or UI, <span class="bcp14">SHOULD</span> have a "Attestation Requester" role or permission and <span class="bcp14">SHOULD</span> enforce the HSM's native access controls such that the Presenter can only retrieve Evidence for keys for which it has visibility.<a href="#section-10.5-3" class="pilcrow">¶</a></p>
 <p id="section-10.5-4">In the absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request <span class="bcp14">MAY</span> be authenticated by embedding the <code>TbsPkixEvidence</code> of the request inside a <code>PkixEvidence</code> signed with a certificate belonging to the Presenter.<a href="#section-10.5-4" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -3024,9 +3034,9 @@ HSMs that wish to allow a Presenter to request Evidence of keys which is not all
 <p id="section-10.6-1">With asymmetric keys within a Public Key Infrastructure (PKI) it is common to require a key holder to prove that they are in control of the private key by using it. This is called "proof-of-possession (PoP)". This specification intentionally does not provide a mechanism for PoP of user keys and relies on the Presenter, Verifier, and Relying Party trusting the Attester to correctly report the cryptographic keys that it is holding.<a href="#section-10.6-1" class="pilcrow">¶</a></p>
 <p id="section-10.6-2">It would be trivial to add a PoP Key claim that uses the attested user key to sign over, for example, the Transaction Entity. However, this approach leads to undesired consequences, as explained
 below.<a href="#section-10.6-2" class="pilcrow">¶</a></p>
-<p id="section-10.6-3">First, a user key intended for TLS, as an example, <span class="bcp14">SHOULD</span> only be used with the TLS protocol. Introducing a signature oracle whereby the TLS application key is used to sign PKIX Evidence could lead to cross-protocol attacks.
+<p id="section-10.6-3">First, a user key intended for TLS, as an example, <span class="bcp14">SHOULD</span> only be used with the TLS protocol. Introducing a signature oracle whereby the TLS application key is used to sign Evidence could lead to cross-protocol attacks.
 In this example, an attacker could submit a "nonce" value which is in fact not random but is crafted in such a way as to appear as a valid message in some other protocol context or exploit some other weakness in the signature algorithm.<a href="#section-10.6-3" class="pilcrow">¶</a></p>
-<p id="section-10.6-4">Second, the Presenter who has connected to the HSM to request PKIX Evidence may have permissions to list the requested application keys but not permission to use them, as in the case where the Presenter is an administrative UI displaying HSM status information to a system's administrator or auditor.<a href="#section-10.6-4" class="pilcrow">¶</a></p>
+<p id="section-10.6-4">Second, the Presenter who has connected to the HSM to request Evidence may have permissions to list the requested application keys but not permission to use them, as in the case where the Presenter is an administrative UI displaying HSM status information to a system's administrator or auditor.<a href="#section-10.6-4" class="pilcrow">¶</a></p>
 <p id="section-10.6-5">Requiring the Attesting Environment to use the reported application keys to generate Evidence could, in some architectures, require the Attesting Environment to resolve complex access control logic and handle complex error conditions, which violates the "simple to implement" design principle outlined in <a href="#sec-cons-simple" class="auto internal xref">Section 10.2</a>. More discussions on authenticating the Presenter can be found in <a href="#sec-cons-auth-the-presenter" class="auto internal xref">Section 10.5</a>.<a href="#section-10.6-5" class="pilcrow">¶</a></p>
 </section>
 </div>
