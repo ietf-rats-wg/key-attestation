@@ -528,14 +528,14 @@ are used. A complete ASN.1 module is provided in {{sec-asn1-mod}}.
 The top-level structures, as ASN.1 fragments, are:
 
 ~~~ asn.1
-PkixEvidence ::= SEQUENCE {
-    tbs                           TbsPkixEvidence,
+Evidence ::= SEQUENCE {
+    tbs                           TbsEvidence,
     signatures                    SEQUENCE SIZE (0..MAX) OF SignatureBlock,
     intermediateCertificates  [0] SEQUENCE OF Certificate OPTIONAL
                                   -- As defined in RFC 5280
 }
 
-TbsPkixEvidence ::= SEQUENCE {
+TbsEvidence ::= SEQUENCE {
     version INTEGER,
     reportedEntities SEQUENCE SIZE (1..MAX) OF ReportedEntity
 }
@@ -555,7 +555,7 @@ SignerIdentifier ::= SEQUENCE {
 }
 ~~~
 
-A `PkixEvidence` message is composed of a protected section known as the To-Be-Signed (TBS) section where the Evidence
+An `Evidence` message is composed of a protected section known as the To-Be-Signed (TBS) section where the Evidence
 reported by the Attesting Environment is assembled. The integrity of the TBS section is ensured with one or multiple cryptographic signatures
 over the content of this section. There is a provision to carry X.509 certificates supporting each signature.
 The SEQUENCE OF `SignatureBlock` allows for both multi-algorithm protection and for counter-signatures
@@ -567,7 +567,7 @@ This design also does not prevent an attacker from removing, adding or re-orderi
 This is discussed as part of the security considerations in {{sec-detached-sigs}}.
 
 The TBS section is composed of a version number, to ensure future extensibility, and a sequence of reported entities.
-For compliance with this specification, `TbsPkixEvidence.version` MUST be `1`.
+For compliance with this specification, `TbsEvidence.version` MUST be `1`.
 This envelope format is not extensible; future specifications which make compatibility-breaking changes MUST increment the version number.
 
 A `SignatureBlock` is included for each signature submitted against the TBS section. The `SignatureBlock` includes
@@ -578,13 +578,13 @@ key identifier (keyId). It is expected that a X.509 certificate will be generall
 to verify the signature and clearly identifies the subject that provided the signature. The SPKI and keyId are allowed
 to support environments where X.509 certificates are not used.
 
-The optional certificate list provided in `PkixEvidence.intermediateCertificates` enables the insertion
+The optional certificate list provided in `Evidence.intermediateCertificates` enables the insertion
 of X.509 certificates to support trusting the signatures found in signature blocks. This information is intended to provide
 the certificates required by the Verifier to validate the endorsement on the certificates included
 with the signatures. `intermediateCertificates` MAY include any or all intermediate CA certificates needed to build paths.
 It is not required to include trust anchors. Order is not significant.
 
-As described in {{sec-info-model}}, the `TbsPkixEvidence` is a collection of entities. Each entity
+As described in {{sec-info-model}}, the `TbsEvidence` is a collection of entities. Each entity
 is associated with a type that defines its class. The entity types are represented by object identifiers
 (OIDs). The following ASN.1 definition defines the structures associated with entities:
 
@@ -594,11 +594,11 @@ ReportedEntity ::= SEQUENCE {
     claims      SEQUENCE SIZE (1..MAX) OF ReportedClaim
 }
 
-id-pkix-evidence                    OBJECT IDENTIFIER ::= { 1 2 3 999 }
-id-pkix-evidence-entity             OBJECT IDENTIFIER ::= { id-pkix-evidence 0 }
-id-pkix-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-evidence-entity 0 }
-id-pkix-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-evidence-entity 1 }
-id-pkix-evidence-entity-key         OBJECT IDENTIFIER ::= { id-pkix-evidence-entity 2 }
+id-evidence                    OBJECT IDENTIFIER ::= { 1 2 3 999 }
+id-evidence-entity             OBJECT IDENTIFIER ::= { id-evidence 0 }
+id-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-evidence-entity 0 }
+id-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-evidence-entity 1 }
+id-evidence-entity-key         OBJECT IDENTIFIER ::= { id-evidence-entity 2 }
 ~~~
 
 In turn, entities are composed of a collection of claims. Each claim is composed of a type and a value.
@@ -634,10 +634,10 @@ The remainder of this section describes the entity types and their associated cl
 
 A platform entity reports information about the device where the Evidence is generated and is
 composed of a collection of claims that are global to the Target Environment.
-It is associated with the type identifier `id-pkix-evidence-entity-platform`.
+It is associated with the type identifier `id-evidence-entity-platform`.
 
 A platform entity, if provided, MUST be included only once within the reported entities. If a
-Verifier encounters multiple entities of type `id-pkix-evidence-entity-platform`, it MUST
+Verifier encounters multiple entities of type `id-evidence-entity-platform`, it MUST
 reject the Evidence as malformed.
 
 The following table lists the claims for a platform entity (platform claims) defined
@@ -646,22 +646,22 @@ the "Reference" column refers to the specification where the semantics
 for the claim value can be found.
 Claims defined in this specification have further details below.
 
-| Claim Type      | Claim Value     | Reference     | Multiple? | OID                                        |
-| ---             | ---             | ---           | ---       | ---                                        |
-| vendor          | utf8String      | {{&SELF}}     | No        | id-pkix-evidence-claim-platform-vendor     |
-| oemid           | bytes           | {{RFC9711}}   | No        | id-pkix-evidence-claim-platform-oemid      |
-| hwmodel         | bytes           | {{RFC9711}}   | No        | id-pkix-evidence-claim-platform-hwmodel    |
-| hwversion       | utf8String      | {{RFC9711}}   | No        | id-pkix-evidence-claim-platform-hwversion  |
-| hwserial        | utf8String      | {{&SELF}}     | No        | id-pkix-evidence-claim-platform-hwserial   |
-| swname          | utf8String      | {{RFC9711}}   | No        | id-pkix-evidence-claim-platform-swname     |
-| swversion       | utf8String      | {{RFC9711}}   | No        | id-pkix-evidence-claim-platform-swversion  |
-| dbgstat         | int             | {{RFC9711}}   | No        | id-pkix-evidence-claim-platform-debugstat  |
-| uptime          | int             | {{RFC9711}}   | No        | id-pkix-evidence-claim-platform-uptime     |
-| bootcount       | int             | {{RFC9711}}   | No        | id-pkix-evidence-claim-platform-bootcount  |
-| fipsboot        | bool            | {{FIPS140-3}} | No        | id-pkix-evidence-claim-platform-fipsboot   |
-| fipsver         | utf8String      | {{FIPS140-3}} | No        | id-pkix-evidence-claim-platform-fipsver    |
-| fipslevel       | int             | {{FIPS140-3}} | No        | id-pkix-evidence-claim-platform-fipslevel  |
-| fipsmodule      | utf8String      | {{FIPS140-3}} | No        | id-pkix-evidence-claim-platform-fipsmodule |
+| Claim Type      | Claim Value     | Reference     | Multiple? | OID                                   |
+| ---             | ---             | ---           | ---       | ---                                   |
+| vendor          | utf8String      | {{&SELF}}     | No        | id-evidence-claim-platform-vendor     |
+| oemid           | bytes           | {{RFC9711}}   | No        | id-evidence-claim-platform-oemid      |
+| hwmodel         | bytes           | {{RFC9711}}   | No        | id-evidence-claim-platform-hwmodel    |
+| hwversion       | utf8String      | {{RFC9711}}   | No        | id-evidence-claim-platform-hwversion  |
+| hwserial        | utf8String      | {{&SELF}}     | No        | id-evidence-claim-platform-hwserial   |
+| swname          | utf8String      | {{RFC9711}}   | No        | id-evidence-claim-platform-swname     |
+| swversion       | utf8String      | {{RFC9711}}   | No        | id-evidence-claim-platform-swversion  |
+| dbgstat         | int             | {{RFC9711}}   | No        | id-evidence-claim-platform-debugstat  |
+| uptime          | int             | {{RFC9711}}   | No        | id-evidence-claim-platform-uptime     |
+| bootcount       | int             | {{RFC9711}}   | No        | id-evidence-claim-platform-bootcount  |
+| fipsboot        | bool            | {{FIPS140-3}} | No        | id-evidence-claim-platform-fipsboot   |
+| fipsver         | utf8String      | {{FIPS140-3}} | No        | id-evidence-claim-platform-fipsver    |
+| fipslevel       | int             | {{FIPS140-3}} | No        | id-evidence-claim-platform-fipslevel  |
+| fipsmodule      | utf8String      | {{FIPS140-3}} | No        | id-evidence-claim-platform-fipsmodule |
 
 Each claim defined in the table above is described in the following sub-sections.
 
@@ -728,7 +728,7 @@ A Relying Party wishing to know the validation status of the device MUST couple 
 
 ## Key Entity
 
-A key entity is associated with the type `id-pkix-evidence-entity-key`. Each instance of a
+A key entity is associated with the type `id-evidence-entity-key`. Each instance of a
 key entity represents a different addressable key found in the Target Environment. There can
 be multiple key entities found in Evidence, but each reported key entity MUST
 describe a different key from the Target Environment. Two key entities may represent the same underlying cryptographic key
@@ -745,16 +745,16 @@ The following table lists the claims for a key entity defined
 within this specification. The "Reference" column refers to the specification where the semantics
 for the claim can be found.
 
-| Claim Type        | Claim Value     | Reference   | Multiple? | OID                                          |
-| ---               | ---             | ---         | ---       | ---                                          |
-| identifier        | utf8String      | {{&SELF}}   | Yes       | id-pkix-evidence-claim-key-identifier        |
-| spki              | bytes           | {{&SELF}}   | No        | id-pkix-evidence-claim-key-spki              |
-| extractable       | bool            | [PKCS11]    | No        | id-pkix-evidence-claim-key-extractable       |
-| sensitive         | bool            | [PKCS11]    | No        | id-pkix-evidence-claim-key-sensitive         |
-| never-extractable | bool            | [PKCS11]    | No        | id-pkix-evidence-claim-key-never-extractable |
-| local             | bool            | [PKCS11]    | No        | id-pkix-evidence-claim-key-local             |
-| expiry            | time            | {{&SELF}}   | No        | id-pkix-evidence-claim-key-expiry            |
-| purpose           | bytes           | {{&SELF}}   | No        | id-pkix-evidence-claim-key-purpose           |
+| Claim Type        | Claim Value     | Reference   | Multiple? | OID                                     |
+| ---               | ---             | ---         | ---       | ---                                     |
+| identifier        | utf8String      | {{&SELF}}   | Yes       | id-evidence-claim-key-identifier        |
+| spki              | bytes           | {{&SELF}}   | No        | id-evidence-claim-key-spki              |
+| extractable       | bool            | [PKCS11]    | No        | id-evidence-claim-key-extractable       |
+| sensitive         | bool            | [PKCS11]    | No        | id-evidence-claim-key-sensitive         |
+| never-extractable | bool            | [PKCS11]    | No        | id-evidence-claim-key-never-extractable |
+| local             | bool            | [PKCS11]    | No        | id-evidence-claim-key-local             |
+| expiry            | time            | {{&SELF}}   | No        | id-evidence-claim-key-expiry            |
+| purpose           | bytes           | {{&SELF}}   | No        | id-evidence-claim-key-purpose           |
 
 An attestation key might be visible to a client of the device and be reported along with other cryptographic keys. Therefore,
 it is acceptable to include a key entity providing claims about an attestation key like any other cryptographic key. An
@@ -808,7 +808,7 @@ The value of this claim is the DER encoding of the following structure:
 
 <CODE STARTS>
 
-PkixEvidenceKeyCapabilities ::= SEQUENCE OF OBJECT IDENTIFIER
+EvidenceKeyCapabilities ::= SEQUENCE OF OBJECT IDENTIFIER
 
 <CODE ENDS>
 
@@ -817,24 +817,24 @@ PkixEvidenceKeyCapabilities ::= SEQUENCE OF OBJECT IDENTIFIER
 The following table describes the key capabilities defined in this specification. The key capabilities offered are based on key
 attributes provided by PKCS#11. Each capability is assigned an object identifier (OID).
 
-| Capability       | PKCS#11            | OID                                            |
-| ---              | ---                | ---                                            |
-| encrypt          | CKA_ENCRYPT        | id-pkix-evidence-key-capability-encrypt        |
-| decrypt          | CKA_DECRYPT        | id-pkix-evidence-key-capability-decrypt        |
-| wrap             | CKA_WRAP           | id-pkix-evidence-key-capability-wrap           |
-| unwrap           | CKA_UNWRAP         | id-pkix-evidence-key-capability-unwrap         |
-| sign             | CKA_SIGN           | id-pkix-evidence-key-capability-sign           |
-| sign-recover     | CKA_SIGN_RECOVER   | id-pkix-evidence-key-capability-sign-recover   |
-| verify           | CKA_VERIFY         | id-pkix-evidence-key-capability-verify         |
-| verify-recover   | CKA_VERIFY_RECOVER | id-pkix-evidence-key-capability-verify-recover |
-| derive           | CKA_DERIVE         | id-pkix-evidence-key-capability-derive         |
+| Capability       | PKCS#11            | OID                                       |
+| ---              | ---                | ---                                       |
+| encrypt          | CKA_ENCRYPT        | id-evidence-key-capability-encrypt        |
+| decrypt          | CKA_DECRYPT        | id-evidence-key-capability-decrypt        |
+| wrap             | CKA_WRAP           | id-evidence-key-capability-wrap           |
+| unwrap           | CKA_UNWRAP         | id-evidence-key-capability-unwrap         |
+| sign             | CKA_SIGN           | id-evidence-key-capability-sign           |
+| sign-recover     | CKA_SIGN_RECOVER   | id-evidence-key-capability-sign-recover   |
+| verify           | CKA_VERIFY         | id-evidence-key-capability-verify         |
+| verify-recover   | CKA_VERIFY_RECOVER | id-evidence-key-capability-verify-recover |
+| derive           | CKA_DERIVE         | id-evidence-key-capability-derive         |
 
 The use of an object identifier to report a capability allows third parties to extend this list to support
 implementations that have other key capabilities.
 
 ## Transaction Entity
 
-A transaction entity is associated with the type `id-pkix-evidence-entity-transaction`. This is
+A transaction entity is associated with the type `id-evidence-entity-transaction`. This is
 a logical entity and does not relate to any state found in the Target Environment. Instead, it
 groups together claims that relate to the request of generating the Evidence.
 
@@ -844,7 +844,7 @@ the freshness of the Evidence. The `nonce` is not related to any element in the 
 and the transaction entity is used to gather those values into claims.
 
 A transaction entity, if provided, MUST be included only once within the reported entities. If a
-Verifier detects multiple entities of type `id-pkix-evidence-entity-transaction`, it MUST
+Verifier detects multiple entities of type `id-evidence-entity-transaction`, it MUST
 reject the Evidence.
 
 The following table lists the claims for a transaction entity defined
@@ -852,11 +852,11 @@ within this specification. The "Reference" column refers to the specification wh
 for the claim value can be found.
 
 
-| Claim Type      | Claim Value     | Reference     | Multiple? | OID                                           |
-| ---             | ---             | ---           | ---       | ---                                           |
-| nonce           | bytes           | {{RFC9711}}   | No        | id-pkix-evidence-claim-transaction-nonce      |
-| timestamp       | time            | {{RFC9711}}   | No        | id-pkix-evidence-claim-transaction-timestamp  |
-| ak-spki         | bytes           | {{&SELF}}     | Yes       | id-pkix-evidence-claim-transaction-ak-spki    |
+| Claim Type      | Claim Value     | Reference     | Multiple? | OID                                      |
+| ---             | ---             | ---           | ---       | ---                                      |
+| nonce           | bytes           | {{RFC9711}}   | No        | id-evidence-claim-transaction-nonce      |
+| timestamp       | time            | {{RFC9711}}   | No        | id-evidence-claim-transaction-timestamp  |
+| ak-spki         | bytes           | {{&SELF}}     | Yes       | id-evidence-claim-transaction-ak-spki    |
 
 ### nonce
 
@@ -894,7 +894,7 @@ See {{sec-req-processing}}, {{sec-req-verification}} and {{sec-cons-verifier}} f
 
 ## Encoding
 
-A PkixEvidence is to be DER encoded {{X.690}}.
+The structure `Evidence` is to be DER encoded {{X.690}}.
 
 If a textual representation is required, then the DER encoding MAY be subsequently encoded into Standard Base64 as defined in {{RFC4648}}.
 
@@ -911,16 +911,16 @@ header label is "EVIDENCE". For example:
 # Signing and Verification Procedures {#sec-verif-proc}
 
 The `SignatureBlock.signatureValue` signs over the DER-encoded to-be-signed Evidence data
-`PkixEvidence.tbs` and MUST be validated with the subject public key of the end entity
+`Evidence.tbs` and MUST be validated with the subject public key of the end entity
 X.509 certificate contained in the `SignerIdentifier.certificate`. Verifiers MAY also use
-`PkixEvidence.intermediateCertificates` to build a certification path to a trust anchor.
+`Evidence.intermediateCertificates` to build a certification path to a trust anchor.
 
-Note that a PkixEvidence MAY contain zero or more SignatureBlocks.
-A PkixEvidence with zero SignatureBlocks is unsigned and unprotected; Verifiers MUST treat it as untrusted and MUST NOT rely on its claims.
+Note that the structure `Evidence` MAY contain zero or more SignatureBlocks.
+A structure `Evidence` with zero SignatureBlocks is unsigned and unprotected; Verifiers MUST treat it as untrusted and MUST NOT rely on its claims.
 
 More than one SignatureBlock MAY be used to convey a number of different semantics.
 For example, the HSM's Attesting Environment might hold multiple Attestation Keys using different cryptographic
-algorithms in order to provide resilience against cryptographic degradation. In this case a Verifier would be expected to validate all SignatureBlocks. Alternatively, the HSM's Attesting Service may hold multiple Attestation Keys (or multiple X.509 certificates for the same key) from multiple operational environments to which it belongs. In this case a Verifier would be expected to only validate the SignatureBlock corresponding to its own environment. Alternatively, multiple SignatureBlocks could be used to convey counter-signatures from external parties, in which case the Verifier will need to be equipped with environment-specific verification logic. Multiple of these cases, and potentially others, could be supported by a single PkixEvidence object.
+algorithms in order to provide resilience against cryptographic degradation. In this case a Verifier would be expected to validate all SignatureBlocks. Alternatively, the HSM's Attesting Service may hold multiple Attestation Keys (or multiple X.509 certificates for the same key) from multiple operational environments to which it belongs. In this case a Verifier would be expected to only validate the SignatureBlock corresponding to its own environment. Alternatively, multiple SignatureBlocks could be used to convey counter-signatures from external parties, in which case the Verifier will need to be equipped with environment-specific verification logic. Multiple of these cases, and potentially others, could be supported by a single Evidence object.
 
 Note that each SignatureBlock is a fully detached signature over the tbs content with no binding between the signed content and the SignatureBlocks meaning that a third-party can add a
 counter-signature of the Evidence after the fact, or an attacker can remove a SignatureBlock without leaving any artifact. See {{sec-detached-sigs}} for further discussion.
@@ -998,7 +998,7 @@ The aim of the figure is to depict the position of the Presenter as an intermedi
 The role of "Presenter" is privileged as it controls the claims included in the Evidence being generated by the Attester. However, the role is not "trusted" as
 the Verifier does not have to take into account the participation of the Presenter as part of the function of appraising the Evidence.
 
-The attestation request, shown in the figure, consists of a structure `TbsPkixEvidence` containing one `ReportedEntity` for each entity expected to
+The attestation request, shown in the figure, consists of a structure `TbsEvidence` containing one `ReportedEntity` for each entity expected to
 be included in the Evidence produced by the HSM.
 
 Each instance of `ReportedEntity` included in the request is referred to as a requested entity. A requested entity contains a number of instances
@@ -1018,8 +1018,8 @@ Some instances of `ReportedEntity`, such as those representing the platform or t
 implicit in nature. Custom entity types might need selection during an attestation request and related documentation should specify how this is
 achieved.
 
-The instance of `TbsPkixEvidence` is unsigned and does not provide any means to maintain integrity when communicated from the Presenter to the HSM.
-These details are left to the implementer. However, it is worth pointing out that the structure offered by `PkixEvidence` could be reused by an
+The instance of `TbsEvidence` is unsigned and does not provide any means to maintain integrity when communicated from the Presenter to the HSM.
+These details are left to the implementer. However, it is worth pointing out that the structure offered by `Evidence` could be reused by an
 implementer to provide those capabilities, as described in {{sec-cons-auth-the-presenter}}.
 
 
@@ -1034,8 +1034,8 @@ Since this section is non-normative, implementers may deviate from those recomme
 ### Key Identifiers
 
 A Presenter may choose to select which cryptographic keys are reported as part of the generated Evidence. For each selected cryptographic key,
-the Presenter includes a requested entity of type `id-pkix-evidence-entity-key`. Among the requested claims for this entity, the
-Presenter includes one claim with the type `id-pkix-evidence-claim-key-identifier`. The value of this claim should be
+the Presenter includes a requested entity of type `id-evidence-entity-key`. Among the requested claims for this entity, the
+Presenter includes one claim with the type `id-evidence-claim-key-identifier`. The value of this claim should be
 set to the utf8String that represents the identifier for the specific key.
 
 An HSM receiving an attestation request which selects a key via this approach SHOULD fail the transaction if it cannot find the cryptographic
@@ -1046,8 +1046,8 @@ key associated with the specified identifier.
 A Presenter may choose to include a nonce as part of the attestation request. When producing the Evidence, the HSM repeats the
 nonce that was provided as part of the request.
 
-When providing a nonce, a Presenter includes, in the attestation request, an entity of type `id-pkix-evidence-entity-transaction`
-with a claim of type `id-pkix-evidence-claim-transaction-nonce`. This claim is set with the value of the
+When providing a nonce, a Presenter includes, in the attestation request, an entity of type `id-evidence-entity-transaction`
+with a claim of type `id-evidence-claim-transaction-nonce`. This claim is set with the value of the
 nonce as "bytes".
 
 It is important to note that the Presenter, as an untrusted participant, should not be generating the value for the nonce. In fact, the
@@ -1056,7 +1056,7 @@ nonce should be generated by the Verifier so that the freshness of the Evidence 
 ### Custom Key Selection
 
 An implementer might desire to select multiple cryptographic keys based on a shared attribute. A possible approach
-is to include a single request entity of type `id-pkix-evidence-entity-key` including a claim with a set value. This claim
+is to include a single request entity of type `id-evidence-entity-key` including a claim with a set value. This claim
 would not be related to the key identifier as this is unique to each key. A HSM supporting this scheme could select all the cryptographic
 keys matching the specified claim and report them in the generated Evidence.
 
@@ -1156,12 +1156,12 @@ Please replace "{{&SELF}}" with the RFC number assigned to this document.
 
 The following OIDs are defined in this document and will require IANA registration under the assigned arc:
 
-* `id-pkix-evidence`
-* `id-pkix-evidence-entity`
-* `id-pkix-evidence-entity-transaction`
-* `id-pkix-evidence-entity-platform`
-* `id-pkix-evidence-entity-key`
-* Claim OIDs referenced in the Platform, Key, and Transaction tables (e.g., `id-pkix-evidence-claim-platform-*`, `id-pkix-evidence-claim-key-*`, `id-pkix-evidence-claim-transaction-*`).
+* `id-evidence`
+* `id-evidence-entity`
+* `id-evidence-entity-transaction`
+* `id-evidence-entity-platform`
+* `id-evidence-entity-key`
+* Claim OIDs referenced in the Platform, Key, and Transaction tables (e.g., `id-evidence-claim-platform-*`, `id-evidence-claim-key-*`, `id-evidence-claim-transaction-*`).
 
 # Security Considerations
 
@@ -1205,7 +1205,7 @@ only from information and measurements that are directly observable by it.
 
 ## Detached Signatures {#sec-detached-sigs}
 
-The construction of the Evidence structure (`PkixEvidence`) includes a collection of signature
+The construction of the Evidence structure includes a collection of signature
 blocks that are not explicitly bound to the content. This approach was influenced by the following
 motivations:
 
@@ -1244,7 +1244,7 @@ claims of any one of the keys would involve a Presenter that could potentially a
 In such a case, privacy violations could occur if the Presenter was to disclose information that does not relate to the subject key.
 
 Implementers SHOULD be careful to avoid over-disclosure of information, for example by authenticating the Presenter as described in {{sec-cons-auth-the-presenter}} and only returning results for keys and portions of the Target Environment for which it is authorized.
-In absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request MAY be authenticated by embedding the TbsPkixEvidence of the request inside a PkixEvidence signed with a certificate belonging to the Presenter.
+In absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request MAY be authenticated by embedding the TbsEvidence of the request inside a Evidence signed with a certificate belonging to the Presenter.
 
 Furthermore, enterprise and cloud-services grade HSMs SHOULD support the full set of attestation request functionality described in {{sec-reqs}} so that Presenters can fine-tune the content of the generated Evidence such that it is appropriate for the intended Verifier.
 
@@ -1260,7 +1260,7 @@ A Presenter SHOULD be allowed to request Evidence for any user keys which it is 
 For example, a TLS application that is correctly authenticated to the HSM in order to use its TLS keys SHOULD be able to request Evidence related to those same keys without needing to perform any additional authentication or requiring any additional roles or permissions.
 HSMs that wish to allow a Presenter to request Evidence of keys which is not allowed to use, for example for the purposes of displaying HSM status information on an administrative console or UI, SHOULD have a "Attestation Requester" role or permission and SHOULD enforce the HSM's native access controls such that the Presenter can only retrieve Evidence for keys for which it has visibility.
 
-In the absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request MAY be authenticated by embedding the `TbsPkixEvidence` of the request inside a `PkixEvidence` signed with a certificate belonging to the Presenter.
+In the absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request MAY be authenticated by embedding the `TbsEvidence` of the request inside a strcture `Evidence` signed with a certificate belonging to the Presenter.
 
 ## Proof-of-Possession of User Keys
 

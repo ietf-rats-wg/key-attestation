@@ -6,14 +6,14 @@ PKIX-Evidence-2025
 DEFINITIONS IMPLICIT TAGS ::=
 BEGIN
 
-PkixEvidence ::= SEQUENCE {
-    tbs                           TbsPkixEvidence,
+Evidence ::= SEQUENCE {
+    tbs                           TbsEvidence,
     signatures                    SEQUENCE SIZE (0..MAX) OF SignatureBlock,
     intermediateCertificates  [0] SEQUENCE OF Certificate OPTIONAL
                                   -- As defined in RFC 5280
 }
 
-TbsPkixEvidence ::= SEQUENCE {
+TbsEvidence ::= SEQUENCE {
     version INTEGER,
     reportedEntities SEQUENCE SIZE (1..MAX) OF ReportedEntity
 }
@@ -52,60 +52,60 @@ SignerIdentifier ::= SEQUENCE {
                             -- As defined in RFC 5280
 }
 
-PkixEvidenceKeyCapabilities ::= SEQUENCE OF OBJECT IDENTIFIER
+EvidenceKeyCapabilities ::= SEQUENCE OF OBJECT IDENTIFIER
 
-id-pkix-evidence OBJECT IDENTIFIER ::= { 1 2 3 999 }
+id-evidence OBJECT IDENTIFIER ::= { 1 2 3 999 }
 
-id-pkix-evidence-entity             OBJECT IDENTIFIER ::= { id-pkix-evidence 0 }
-id-pkix-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-pkix-evidence-entity 0 }
-id-pkix-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-pkix-evidence-entity 1 }
-id-pkix-evidence-entity-key         OBJECT IDENTIFIER ::= { id-pkix-evidence-entity 2 }
+id-evidence-entity             OBJECT IDENTIFIER ::= { id-evidence 0 }
+id-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-evidence-entity 0 }
+id-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-evidence-entity 1 }
+id-evidence-entity-key         OBJECT IDENTIFIER ::= { id-evidence-entity 2 }
 
-id-pkix-evidence-claim    OBJECT IDENTIFIER ::= { id-pkix-evidence 1 }
+id-evidence-claim    OBJECT IDENTIFIER ::= { id-evidence 1 }
 
-id-pkix-evidence-claim-transaction           OBJECT IDENTIFIER ::= { id-pkix-evidence-claim 0 }
-id-pkix-evidence-claim-transaction-nonce     OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-transaction 0 }
-id-pkix-evidence-claim-transaction-timestamp OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-transaction 1 }
-id-pkix-evidence-claim-transaction-ak-spki   OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-transaction 2 }
+id-evidence-claim-transaction           OBJECT IDENTIFIER ::= { id-evidence-claim 0 }
+id-evidence-claim-transaction-nonce     OBJECT IDENTIFIER ::= { id-evidence-claim-transaction 0 }
+id-evidence-claim-transaction-timestamp OBJECT IDENTIFIER ::= { id-evidence-claim-transaction 1 }
+id-evidence-claim-transaction-ak-spki   OBJECT IDENTIFIER ::= { id-evidence-claim-transaction 2 }
 
-id-pkix-evidence-claim-platform            OBJECT IDENTIFIER ::= { id-pkix-evidence-claim 1 }
-id-pkix-evidence-claim-platform-vendor     OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-platform 0 }
-id-pkix-evidence-claim-platform-oemid      OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-platform 1 }
-id-pkix-evidence-claim-platform-hwmodel    OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-platform 2 }
-id-pkix-evidence-claim-platform-hwversion  OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-platform 3 }
-id-pkix-evidence-claim-platform-hwserial   OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-platform 4 }
-id-pkix-evidence-claim-platform-swname     OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-platform 5 }
-id-pkix-evidence-claim-platform-swversion  OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-platform 6 }
-id-pkix-evidence-claim-platform-debugstat  OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-platform 7 }
-id-pkix-evidence-claim-platform-uptime     OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-platform 8 }
-id-pkix-evidence-claim-platform-bootcount  OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-platform 9 }
-id-pkix-evidence-claim-platform-usermods   OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-platform 10 }
-id-pkix-evidence-claim-platform-fipsboot   OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-platform 11 }
-id-pkix-evidence-claim-platform-fipsver    OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-platform 12 }
-id-pkix-evidence-claim-platform-fipslevel  OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-platform 13 }
-id-pkix-evidence-claim-platform-fipsmodule OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-platform 14 }
-
-
-id-pkix-evidence-claim-key                   OBJECT IDENTIFIER ::= { id-pkix-evidence-claim 2 }
-id-pkix-evidence-claim-key-identifier        OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-key 0 }
-id-pkix-evidence-claim-key-spki              OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-key 1 }
-id-pkix-evidence-claim-key-extractable       OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-key 2 }
-id-pkix-evidence-claim-key-sensitive         OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-key 3 }
-id-pkix-evidence-claim-key-never-extractable OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-key 4 }
-id-pkix-evidence-claim-key-local             OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-key 5 }
-id-pkix-evidence-claim-key-expiry            OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-key 6 }
-id-pkix-evidence-claim-key-purpose           OBJECT IDENTIFIER ::= { id-pkix-evidence-claim-key 7 }
+id-evidence-claim-platform            OBJECT IDENTIFIER ::= { id-evidence-claim 1 }
+id-evidence-claim-platform-vendor     OBJECT IDENTIFIER ::= { id-evidence-claim-platform 0 }
+id-evidence-claim-platform-oemid      OBJECT IDENTIFIER ::= { id-evidence-claim-platform 1 }
+id-evidence-claim-platform-hwmodel    OBJECT IDENTIFIER ::= { id-evidence-claim-platform 2 }
+id-evidence-claim-platform-hwversion  OBJECT IDENTIFIER ::= { id-evidence-claim-platform 3 }
+id-evidence-claim-platform-hwserial   OBJECT IDENTIFIER ::= { id-evidence-claim-platform 4 }
+id-evidence-claim-platform-swname     OBJECT IDENTIFIER ::= { id-evidence-claim-platform 5 }
+id-evidence-claim-platform-swversion  OBJECT IDENTIFIER ::= { id-evidence-claim-platform 6 }
+id-evidence-claim-platform-debugstat  OBJECT IDENTIFIER ::= { id-evidence-claim-platform 7 }
+id-evidence-claim-platform-uptime     OBJECT IDENTIFIER ::= { id-evidence-claim-platform 8 }
+id-evidence-claim-platform-bootcount  OBJECT IDENTIFIER ::= { id-evidence-claim-platform 9 }
+id-evidence-claim-platform-usermods   OBJECT IDENTIFIER ::= { id-evidence-claim-platform 10 }
+id-evidence-claim-platform-fipsboot   OBJECT IDENTIFIER ::= { id-evidence-claim-platform 11 }
+id-evidence-claim-platform-fipsver    OBJECT IDENTIFIER ::= { id-evidence-claim-platform 12 }
+id-evidence-claim-platform-fipslevel  OBJECT IDENTIFIER ::= { id-evidence-claim-platform 13 }
+id-evidence-claim-platform-fipsmodule OBJECT IDENTIFIER ::= { id-evidence-claim-platform 14 }
 
 
-id-pkix-evidence-key-capability                  OBJECT IDENTIFIER ::= { id-pkix-evidence 2 }
-id-pkix-evidence-key-capability-encrypt          OBJECT IDENTIFIER ::= { id-pkix-evidence-key-capability 0 }
-id-pkix-evidence-key-capability-decrypt          OBJECT IDENTIFIER ::= { id-pkix-evidence-key-capability 1 }
-id-pkix-evidence-key-capability-wrap             OBJECT IDENTIFIER ::= { id-pkix-evidence-key-capability 2 }
-id-pkix-evidence-key-capability-unwrap           OBJECT IDENTIFIER ::= { id-pkix-evidence-key-capability 3 }
-id-pkix-evidence-key-capability-sign             OBJECT IDENTIFIER ::= { id-pkix-evidence-key-capability 4 }
-id-pkix-evidence-key-capability-sign-recover     OBJECT IDENTIFIER ::= { id-pkix-evidence-key-capability 5 }
-id-pkix-evidence-key-capability-verify           OBJECT IDENTIFIER ::= { id-pkix-evidence-key-capability 6 }
-id-pkix-evidence-key-capability-verify-recover   OBJECT IDENTIFIER ::= { id-pkix-evidence-key-capability 7 }
-id-pkix-evidence-key-capability-derive           OBJECT IDENTIFIER ::= { id-pkix-evidence-key-capability 8 }
+id-evidence-claim-key                   OBJECT IDENTIFIER ::= { id-evidence-claim 2 }
+id-evidence-claim-key-identifier        OBJECT IDENTIFIER ::= { id-evidence-claim-key 0 }
+id-evidence-claim-key-spki              OBJECT IDENTIFIER ::= { id-evidence-claim-key 1 }
+id-evidence-claim-key-extractable       OBJECT IDENTIFIER ::= { id-evidence-claim-key 2 }
+id-evidence-claim-key-sensitive         OBJECT IDENTIFIER ::= { id-evidence-claim-key 3 }
+id-evidence-claim-key-never-extractable OBJECT IDENTIFIER ::= { id-evidence-claim-key 4 }
+id-evidence-claim-key-local             OBJECT IDENTIFIER ::= { id-evidence-claim-key 5 }
+id-evidence-claim-key-expiry            OBJECT IDENTIFIER ::= { id-evidence-claim-key 6 }
+id-evidence-claim-key-purpose           OBJECT IDENTIFIER ::= { id-evidence-claim-key 7 }
+
+
+id-evidence-key-capability                  OBJECT IDENTIFIER ::= { id-evidence 2 }
+id-evidence-key-capability-encrypt          OBJECT IDENTIFIER ::= { id-evidence-key-capability 0 }
+id-evidence-key-capability-decrypt          OBJECT IDENTIFIER ::= { id-evidence-key-capability 1 }
+id-evidence-key-capability-wrap             OBJECT IDENTIFIER ::= { id-evidence-key-capability 2 }
+id-evidence-key-capability-unwrap           OBJECT IDENTIFIER ::= { id-evidence-key-capability 3 }
+id-evidence-key-capability-sign             OBJECT IDENTIFIER ::= { id-evidence-key-capability 4 }
+id-evidence-key-capability-sign-recover     OBJECT IDENTIFIER ::= { id-evidence-key-capability 5 }
+id-evidence-key-capability-verify           OBJECT IDENTIFIER ::= { id-evidence-key-capability 6 }
+id-evidence-key-capability-verify-recover   OBJECT IDENTIFIER ::= { id-evidence-key-capability 7 }
+id-evidence-key-capability-derive           OBJECT IDENTIFIER ::= { id-evidence-key-capability 8 }
 
 END
