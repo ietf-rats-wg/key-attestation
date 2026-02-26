@@ -3,9 +3,9 @@
 
 
 RATS                                                        M. Ounsworth
-Internet-Draft                                                   Entrust
+Internet-Draft                                            Cryptic Forest
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 29 August 2026                                         Crypto4A
+Expires: 30 August 2026                                         Crypto4A
                                                            H. Tschofenig
                                                                    H-BRS
                                                              H. Birkholz
@@ -14,7 +14,7 @@ Expires: 29 August 2026                                         Crypto4A
                                                                         
                                                                 N. Smith
                                                        Intel Corporation
-                                                        25 February 2026
+                                                        26 February 2026
 
 
             Evidence Encoding for Hardware Security Modules
@@ -71,7 +71,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 29 August 2026.
+   This Internet-Draft will expire on 30 August 2026.
 
 Copyright Notice
 
@@ -2435,11 +2435,10 @@ Appendix B.  Acknowledgements
 Authors' Addresses
 
    Mike Ounsworth
-   Entrust Limited
-   2500 Solandt Road - Suite 100
-   Ottawa, Ontario  K2K 3G5
+   Cryptic Forest Software
+   Sioux Lookout
    Canada
-   Email: mike.ounsworth@entrust.com
+   Email: mike@ounsworth.ca
 
 
    Jean-Pierre Fiset
