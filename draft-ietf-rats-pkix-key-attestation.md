@@ -67,7 +67,7 @@ author:
 
   - name: Monty Wiseman
     country: United States of America
-    email: mwiseman@computer.org
+    email: monty.wiseman@oracle.com
 
   - name: Ned Smith
     org: Intel Corporation
