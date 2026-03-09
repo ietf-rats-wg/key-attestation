@@ -5,7 +5,7 @@
 RATS                                                        M. Ounsworth
 Internet-Draft                                            Cryptic Forest
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 30 August 2026                                         Crypto4A
+Expires: 10 September 2026                                      Crypto4A
                                                            H. Tschofenig
                                                                    H-BRS
                                                              H. Birkholz
@@ -14,7 +14,7 @@ Expires: 30 August 2026                                         Crypto4A
                                                                         
                                                                 N. Smith
                                                        Intel Corporation
-                                                        26 February 2026
+                                                            9 March 2026
 
 
             Evidence Encoding for Hardware Security Modules
@@ -71,7 +71,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 August 2026.
+   This Internet-Draft will expire on 10 September 2026.
 
 Copyright Notice
 
@@ -1942,11 +1942,11 @@ Table of Contents
 
    [I-D.jpfiset-lamps-attestationkey-eku]
               Fiset, J., Ounsworth, M., Tschofenig, H., and M. Wiseman,
-              "Extended Key Usage (EKU) for X.509 Certificates
-              associated with Attestation Keys", Work in Progress,
-              Internet-Draft, draft-jpfiset-lamps-attestationkey-eku-01,
-              20 October 2025, <https://datatracker.ietf.org/doc/html/
-              draft-jpfiset-lamps-attestationkey-eku-01>.
+              "X.509 Certificate Extended Key Usage (EKU) for
+              Attestation Keys", Work in Progress, Internet-Draft,
+              draft-jpfiset-lamps-attestationkey-eku-02, 1 March 2026,
+              <https://datatracker.ietf.org/doc/html/draft-jpfiset-
+              lamps-attestationkey-eku-02>.
 
    [PKCS11]   Bong, D., Cox, T., and OASIS PKCS 11 TC, "PKCS #11
               Specification Version 3.1", 11 August 2022,
@@ -2021,9 +2021,9 @@ Table of Contents
               Ounsworth, M., Tschofenig, H., Birkholz, H., Wiseman, M.,
               and N. Smith, "Use of Remote Attestation with
               Certification Signing Requests", Work in Progress,
-              Internet-Draft, draft-ietf-lamps-csr-attestation-22, 11
-              February 2026, <https://datatracker.ietf.org/doc/html/
-              draft-ietf-lamps-csr-attestation-22>.
+              Internet-Draft, draft-ietf-lamps-csr-attestation-23, 1
+              March 2026, <https://datatracker.ietf.org/doc/html/draft-
+              ietf-lamps-csr-attestation-23>.
 
    [I-D.ietf-rats-msg-wrap]
               Birkholz, H., Smith, N., Fossati, T., Tschofenig, H., and
@@ -2462,7 +2462,7 @@ Authors' Addresses
 
    Monty Wiseman
    United States of America
-   Email: mwiseman@computer.org
+   Email: monty.wiseman@oracle.com
 
 
    Ned Smith
