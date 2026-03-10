@@ -46,7 +46,7 @@ SignatureBlock ::= SEQUENCE {
 
 SignerIdentifier ::= SEQUENCE {
    keyId                [0] EXPLICIT OCTET STRING OPTIONAL,
-   subjectKeyIdentifier [1] EXPLICIT SubjectPublicKeyInfo OPTIONAL,
+   subjectPublicKeyInfo [1] EXPLICIT SubjectPublicKeyInfo OPTIONAL,
                             -- As defined in RFC 5280
    certificate          [2] EXPLICIT Certificate OPTIONAL
                             -- As defined in RFC 5280
