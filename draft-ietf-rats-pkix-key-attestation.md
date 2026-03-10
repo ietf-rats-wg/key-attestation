@@ -55,11 +55,14 @@ author:
     code: K1Z 7T2
     email: jp@crypto4a.com
 
-  - name: Hannes Tschofenig
-    org: University of Applied Sciences Bonn-Rhein-Sieg
-    abbrev: H-BRS
+ -
+    fullname: Hannes Tschofenig
+    organization: University of the Bundeswehr Munich
+    abbrev: UniBw M.
+    city: Neubiberg
+    region: Bavaria
     country: Germany
-    email: Hannes.Tschofenig@gmx.net
+    email: "hannes.tschofenig@gmx.net"
 
   - name: Henk Birkholz
     org: Fraunhofer SIT
