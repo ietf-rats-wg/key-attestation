@@ -15,6 +15,10 @@ RFC 5280 types used directly from pyasn1_alt_modules.rfc5280:
   - SubjectPublicKeyInfo
   - Certificate
 """
+from cryptography import x509
+from cryptography.hazmat.primitives.asymmetric import ec
+
+from pathlib import Path
 
 # ---------------------------------------------------------------------------
 # Imports
@@ -23,7 +27,7 @@ RFC 5280 types used directly from pyasn1_alt_modules.rfc5280:
 from pyasn1.type import univ, namedtype, tag, constraint, char, useful
 from pyasn1.codec.der import encoder as der_encoder
 from pyasn1.codec.der import decoder as der_decoder
-from pyasn1.type.tag import Tag, tagClassContext, tagFormatSimple, tagFormatConstructed
+from pyasn1.type.tag import Tag, tagClassContext, tagFormatSimple, tagFormatConstructed, TagSet
 
 # RFC 5280 canonical definitions — no stubs needed
 from pyasn1_alt_modules.rfc5280 import (
@@ -31,6 +35,9 @@ from pyasn1_alt_modules.rfc5280 import (
     SubjectPublicKeyInfo,     # SEQUENCE { algorithm AlgorithmIdentifier, subjectPublicKey BIT STRING }
     Certificate,              # Full X.509 Certificate
 )
+
+import create_ak
+from cryptography.hazmat.primitives import hashes, serialization
 
 # ---------------------------------------------------------------------------
 # OID Registry
@@ -242,7 +249,6 @@ class SignerIdentifier(univ.Sequence):
                 explicitTag=Tag(tagClassContext, tagFormatConstructed, 2))),
     )
 
-
 # ---------------------------------------------------------------------------
 # SignatureBlock
 #
@@ -426,7 +432,6 @@ def encode_certificate(cert: Certificate) -> bytes:
     """DER-encode an rfc5280.Certificate."""
     return der_encoder.encode(cert)
 
-
 def decode_certificate(der_bytes: bytes) -> Certificate:
     """DER-decode raw bytes into an rfc5280.Certificate."""
     obj, remainder = der_decoder.decode(der_bytes, asn1Spec=Certificate())
@@ -436,6 +441,8 @@ def decode_certificate(der_bytes: bytes) -> Certificate:
         )
     return obj
 
+def convert_crypto_cert_to_pyasn1(cert: x509.Certificate) -> Certificate:
+    return decode_certificate( cert.public_bytes(encoding=serialization.Encoding.DER) )
 
 # ---------------------------------------------------------------------------
 # Pretty-print helpers
@@ -559,13 +566,33 @@ def build_example_evidence() -> Evidence:
     alg_id["algorithm"] = univ.ObjectIdentifier((1, 2, 840, 10045, 4, 3, 2))
     # parameters absent for ECDSA per RFC 5480
 
+    # generate AK key and cert chain
+    ak_private_key, ak_cert, int_cert, ca_cert = create_ak.generateCerts()
+
+    ak_public_key_der = ak_private_key.public_key().public_bytes(
+        encoding=serialization.Encoding.DER,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+    ak_public_key_hash = hashes.Hash(hashes.SHA256())
+    ak_public_key_hash.update(ak_public_key_der)
+    ak_public_key_digest = ak_public_key_hash.finalize()
+
     sid = SignerIdentifier()
-    sid["keyId"] = b"\xAA\xBB\xCC\xDD\xEE\xFF"
+    sid["keyId"] = ak_public_key_digest
+    # todo -- get Corey to figure out why this is busted.
+    sid["certificate"] = convert_crypto_cert_to_pyasn1(ak_cert)
 
     sig_block = SignatureBlock()
     sig_block["sid"]                = sid
     sig_block["signatureAlgorithm"] = alg_id
-    sig_block["signatureValue"]     = univ.OctetString(b"\x00" * 64)  # placeholder
+
+    tbs_der = der_encoder.encode(tbs)
+    signature = ak_private_key.sign(
+        tbs_der,
+        ec.ECDSA(hashes.SHA256()),
+    )
+
+    sig_block["signatureValue"] = univ.OctetString(signature)
 
     sigs = SignatureBlockSeq()
     sigs[0] = sig_block
@@ -574,7 +601,7 @@ def build_example_evidence() -> Evidence:
     ev = Evidence()
     ev["tbs"]        = tbs
     ev["signatures"] = sigs
-    # ev["intermediateCertificates"] intentionally absent (OPTIONAL)
+    ev["intermediateCertificates"].append(convert_crypto_cert_to_pyasn1(int_cert))
     return ev
 
 
@@ -609,6 +636,12 @@ if __name__ == "__main__":
     der = encode_evidence(ev)
     print(f"    {len(der)} bytes encoded")
     print(f"    Bytes: {der.hex()}")
+
+    evidence_file = Path("../sampledata/evidence.b64")
+    print("[2a] Saving evidence to "+evidence_file.as_posix())
+
+    with evidence_file.open("w") as f:
+        f.write( der.hex() )
 
     print("\n[3] DER decoding ...")
     ev2 = decode_evidence(der)

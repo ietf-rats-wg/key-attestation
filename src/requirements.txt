@@ -1,1 +1,3 @@
 cryptography
+pyasn1
+pyasn1-alt-modules
