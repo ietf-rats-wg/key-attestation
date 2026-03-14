@@ -162,31 +162,17 @@ This specification also offers a format for requesting a cryptographic module to
 
 # Introduction
 
-This specification defines a format to transmit Evidence from an Attester to a Verifier within a PKIX
-environment. This environment refers to the components generally used to support PKI applications
-such as Certification Authorities and their clients, or more generally that rely upon X.509 certificates.
-As outlined in {{terminology}}, this specification uses a necessary mixture of RATS and PKI terminology
-in order to map concepts between the two domains.
+This document specifies a vendor-neutral Evidence format for remote attestation in PKIX-based environments, with a focus on hardware security modules (HSMs) and cryptographic keys managed by such devices. The format enables an Attester to convey measured platform and key properties to a Verifier and, ultimately, to a Relying Party in a form that integrates with existing X.509-based trust infrastructures.
 
-Within this specification, the concepts found in the Remote ATtestation procedureS Architecture ({{RFC9334}}) are
-mapped to the PKIX environment. There are many other specifications that are based on the RATS Architecture
-which offer formats to carry Evidence. This specification deals with peculiar aspects of the PKIX environment
-which make the existing Evidence formats inappropriate:
+Concretely, this specification defines:
+* an ASN.1/DER `Evidence` envelope containing a to-be-signed section, one or more signature blocks, and optional intermediate certificates;
+* an entity-and-claim data model organized around transaction, platform, and key entities, identified by OIDs;
+* encoding and signature-verification processing rules for PKIX Evidence;
+* an attestation request structure that allows a Presenter to request a scoped subset of entities and claims.
 
-* ASN.1 is the preferred encoding format in this environment. X.509 certificates ({{RFC5280}}) are used
-widely within this environment and the majority of tools are designed to support ASN.1. There are
-many specialized devices (Hardware Security Modules) that are inflexible in adopting other formats because
-of internal constraints or validation difficulties. This specification defines the format in ASN.1 to ease the
-adoption within the community.
+The design is intentionally PKIX-native. ASN.1 and DER are used to align with existing certificate tooling, certification authority workflows, and HSM implementations where non-ASN.1 formats are less common.
 
-* The claims reported within the generated Evidence are generally a small subset of all possible claims about
-the Target Environment. The claims relate to elements such as "platform" and "keys" which are more numerous than
-what a Verifier requires for a specific function. This specification provides the means to moderate the information
-disseminated as part of the generated Evidence.
-
-This specification also aims at providing an extensible framework to encode, as part of the generated Evidence, claims other than
-the one proposed in this document. This allows implementations to introduce new claims and their associated
-semantics to the Evidence produced.
+This document does not define a transport protocol for carrying Evidence, does not define Verifier appraisal policy, and does not standardize device-internal authentication/authorization mechanisms. It defines the data model and cryptographic container so that such mechanisms can be applied consistently across deployments.
 
 
 # Use Cases
@@ -362,7 +348,7 @@ A certain level of complexity arises as multiple elements of the same class can 
 Evidence. In this case, multiple similar claims are reported simultaneously but associated with different elements.
 
 For example, two independent user keys could be reported simultaneously in Evidence. Each key is associated with a
-SPKI (Subject Public Key Identifier). The measured values for the SPKI of the respective keys are different.
+SPKI (SubjectPublicKeyInfo). The measured values for the SPKI of the respective keys are different.
 
 To that end, in this specification, the claims are organized as collections where each claim is the association of
 a claim type with the measured value. The collections, in turn, are organized by entities. An entity represents one
@@ -550,7 +536,7 @@ SignatureBlock ::= SEQUENCE {
 
 SignerIdentifier ::= SEQUENCE {
    keyId                [0] EXPLICIT OCTET STRING OPTIONAL,
-   subjectKeyIdentifier [1] EXPLICIT SubjectPublicKeyInfo OPTIONAL,
+   subjectPublicKeyInfo [1] EXPLICIT SubjectPublicKeyInfo OPTIONAL,
                             -- As defined in RFC 5280
    certificate          [2] EXPLICIT Certificate OPTIONAL
                             -- As defined in RFC 5280
@@ -619,7 +605,8 @@ ClaimValue ::= CHOICE {
    bool        [2] IMPLICIT BOOLEAN,
    time        [3] IMPLICIT GeneralizedTime,
    int         [4] IMPLICIT INTEGER,
-   oid         [5] IMPLICIT OBJECT IDENTIFIER
+   oid         [5] IMPLICIT OBJECT IDENTIFIER,
+   null        [6] IMPLICIT NULL
 }
 ~~~
 
@@ -1246,7 +1233,7 @@ claims of any one of the keys would involve a Presenter that could potentially a
 In such a case, privacy violations could occur if the Presenter was to disclose information that does not relate to the subject key.
 
 Implementers SHOULD be careful to avoid over-disclosure of information, for example by authenticating the Presenter as described in {{sec-cons-auth-the-presenter}} and only returning results for keys and portions of the Target Environment for which it is authorized.
-In absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request MAY be authenticated by embedding the TbsEvidence of the request inside a Evidence signed with a certificate belonging to the Presenter.
+In the absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request authentication approach is described in {{sec-cons-auth-the-presenter}}.
 
 Furthermore, enterprise and cloud-services grade HSMs SHOULD support the full set of attestation request functionality described in {{sec-reqs}} so that Presenters can fine-tune the content of the generated Evidence such that it is appropriate for the intended Verifier.
 
@@ -1262,7 +1249,7 @@ A Presenter SHOULD be allowed to request Evidence for any user keys which it is 
 For example, a TLS application that is correctly authenticated to the HSM in order to use its TLS keys SHOULD be able to request Evidence related to those same keys without needing to perform any additional authentication or requiring any additional roles or permissions.
 HSMs that wish to allow a Presenter to request Evidence of keys which is not allowed to use, for example for the purposes of displaying HSM status information on an administrative console or UI, SHOULD have a "Attestation Requester" role or permission and SHOULD enforce the HSM's native access controls such that the Presenter can only retrieve Evidence for keys for which it has visibility.
 
-In the absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request MAY be authenticated by embedding the `TbsEvidence` of the request inside a strcture `Evidence` signed with a certificate belonging to the Presenter.
+In the absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request MAY be authenticated by embedding the `TbsEvidence` of the request inside an `Evidence` signed with a certificate belonging to the Presenter.
 
 ## Proof-of-Possession of User Keys
 
