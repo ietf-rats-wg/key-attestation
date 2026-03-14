@@ -5,7 +5,7 @@
 RATS                                                        M. Ounsworth
 Internet-Draft                                            Cryptic Forest
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 10 September 2026                                      Crypto4A
+Expires: 15 September 2026                                      Crypto4A
                                                            H. Tschofenig
                                                                    H-BRS
                                                              H. Birkholz
@@ -14,7 +14,7 @@ Expires: 10 September 2026                                      Crypto4A
                                                                         
                                                                 N. Smith
                                                        Intel Corporation
-                                                            9 March 2026
+                                                           14 March 2026
 
 
             Evidence Encoding for Hardware Security Modules
@@ -71,7 +71,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 10 September 2026.
+   This Internet-Draft will expire on 15 September 2026.
 
 Copyright Notice
 
