@@ -335,17 +335,17 @@ def make_claim_value(value) -> ClaimValue:
     if value is None:
         cv["null"] = univ.Null()
     elif isinstance(value, bool):           # bool subclasses int — check first
-        cv["bool"] = univ.Boolean(value)
+        cv["bool"] = value
     elif isinstance(value, bytes):
-        cv["bytes"] = univ.OctetString(value)
+        cv["bytes"] = value
     elif isinstance(value, str):
-        cv["utf8String"] = char.UTF8String(value)
+        cv["utf8String"] = value
     elif isinstance(value, int):
-        cv["int"] = univ.Integer(value)
+        cv["int"] = value
     elif isinstance(value, useful.GeneralizedTime):
         cv["time"] = value
     elif isinstance(value, (tuple, list)):
-        cv["oid"] = univ.ObjectIdentifier(value)
+        cv["oid"] = value
     elif isinstance(value, univ.ObjectIdentifier):
         cv["oid"] = value
     else:
@@ -358,7 +358,7 @@ def make_claim_value_time(generalized_time_str: str) -> ClaimValue:
     Wrap a GeneralizedTime string (e.g. '20250314120000Z') in ClaimValue.time.
     """
     cv = ClaimValue()
-    cv["time"] = useful.GeneralizedTime(generalized_time_str)
+    cv["time"] = generalized_time_str
     return cv
 
 
@@ -560,7 +560,7 @@ def build_example_evidence() -> Evidence:
     # parameters absent for ECDSA per RFC 5480
 
     sid = SignerIdentifier()
-    sid["keyId"] = univ.OctetString(b"\xAA\xBB\xCC\xDD\xEE\xFF")
+    sid["keyId"] = b"\xAA\xBB\xCC\xDD\xEE\xFF"
 
     sig_block = SignatureBlock()
     sig_block["sid"]                = sid
