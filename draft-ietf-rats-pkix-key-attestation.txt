@@ -7,7 +7,7 @@ Internet-Draft                                            Cryptic Forest
 Intended status: Standards Track                             J.-P. Fiset
 Expires: 15 September 2026                                      Crypto4A
                                                            H. Tschofenig
-                                                                   H-BRS
+                                                                UniBw M.
                                                              H. Birkholz
                                                           Fraunhofer SIT
                                                               M. Wiseman
@@ -2450,9 +2450,10 @@ Authors' Addresses
 
 
    Hannes Tschofenig
-   University of Applied Sciences Bonn-Rhein-Sieg
+   University of the Bundeswehr Munich
+   85577 Neubiberg
    Germany
-   Email: Hannes.Tschofenig@gmx.net
+   Email: hannes.tschofenig@gmx.net
 
 
    Henk Birkholz
