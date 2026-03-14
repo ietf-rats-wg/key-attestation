@@ -13,7 +13,6 @@ Expires: 15 September 2026                                      Crypto4A
                                                               M. Wiseman
                                                                         
                                                                 N. Smith
-                                                       Intel Corporation
                                                            14 March 2026
 
 
@@ -2467,6 +2466,5 @@ Authors' Addresses
 
 
    Ned Smith
-   Intel Corporation
-   United States of America
-   Email: ned.smith@intel.com
+   United States
+   Email: ned.smith.ietf@gmail.com
