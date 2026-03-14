@@ -5,24 +5,12 @@ from pathlib import Path
 
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.x509.oid import NameOID
 
 
-def generate_rsa_key(key_size: int = 2048) -> rsa.RSAPrivateKey:
-    return rsa.generate_private_key(public_exponent=65537, key_size=key_size)
-
-
-# def save_private_key_pem(private_key: rsa.RSAPrivateKey, path: Path) -> None:
-#     path.parent.mkdir(parents=True, exist_ok=True)
-#
-#     pem = private_key.private_bytes(
-#         encoding=serialization.Encoding.PEM,
-#         format=serialization.PrivateFormat.PKCS8,
-#         encryption_algorithm=serialization.NoEncryption(),
-#     )
-#
-#     path.write_bytes(pem)
+def generate_ec_key() -> ec.EllipticCurvePrivateKey:
+    return ec.generate_private_key(ec.SECP256R1())
 
 
 def save_cert_pem(cert: x509.Certificate, path: Path) -> None:
@@ -40,8 +28,8 @@ def build_name(common_name: str, ou: str , o: str) -> x509.Name:
     )
 
 
-def create_root_ca(ca_cert_file: Path) -> tuple[rsa.RSAPrivateKey, x509.Certificate]:
-    private_key = generate_rsa_key()
+def create_root_ca(ca_cert_file: Path) -> tuple[ec.EllipticCurvePrivateKey, x509.Certificate]:
+    private_key = generate_ec_key()
     subject = issuer = build_name("RootCA", "pkix-key-attestation", "ietf-rats")
 
     now = datetime.now(timezone.utc)
@@ -59,7 +47,7 @@ def create_root_ca(ca_cert_file: Path) -> tuple[rsa.RSAPrivateKey, x509.Certific
         .add_extension(x509.AuthorityKeyIdentifier.from_issuer_public_key(private_key.public_key()), critical=False)
         .add_extension(
             x509.KeyUsage(
-                digital_signature=False,
+                digital_signature=True,
                 content_commitment=False,
                 key_encipherment=False,
                 data_encipherment=False,
@@ -80,11 +68,11 @@ def create_root_ca(ca_cert_file: Path) -> tuple[rsa.RSAPrivateKey, x509.Certific
 
 
 def create_int_ca(
-        ca_private_key: rsa.RSAPrivateKey,
-        ca_cert: x509.Certificate,
-        int_cert_file: Path
-) -> tuple[rsa.RSAPrivateKey, x509.Certificate]:
-    private_key = generate_rsa_key()
+    ca_private_key: ec.EllipticCurvePrivateKey,
+    ca_cert: x509.Certificate,
+    int_cert_file: Path,
+) -> tuple[ec.EllipticCurvePrivateKey, x509.Certificate]:
+    private_key = generate_ec_key()
     subject = build_name("IntCA", "pkix-key-attestation", "ietf-rats")
 
     now = datetime.now(timezone.utc)
@@ -102,7 +90,7 @@ def create_int_ca(
         .add_extension(x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_private_key.public_key()), critical=False)
         .add_extension(
             x509.KeyUsage(
-                digital_signature=False,
+                digital_signature=True,
                 content_commitment=False,
                 key_encipherment=False,
                 data_encipherment=False,
@@ -121,12 +109,13 @@ def create_int_ca(
 
     return private_key, cert
 
+
 def create_end_entity_cert(
-        ca_private_key: rsa.RSAPrivateKey,
-        ca_cert: x509.Certificate,
-        ak_cert_file: Path
-) -> tuple[rsa.RSAPrivateKey, x509.Certificate]:
-    private_key = generate_rsa_key()
+    ca_private_key: ec.EllipticCurvePrivateKey,
+    ca_cert: x509.Certificate,
+    ak_cert_file: Path,
+) -> tuple[ec.EllipticCurvePrivateKey, x509.Certificate]:
+    private_key = generate_ec_key()
     subject = build_name("test-ak", "pkix-key-attestation", "ietf-rats")
     now = datetime.now(timezone.utc)
 
@@ -162,11 +151,12 @@ def create_end_entity_cert(
 
     return private_key, cert
 
-def generateCerts() -> tuple[rsa.RSAPrivateKey, x509.Certificate, x509.Certificate]:
-    '''
+
+def generateCerts() -> tuple[ec.EllipticCurvePrivateKey, x509.Certificate, x509.Certificate]:
+    """
     Returns the ak.key, ak.crt, and ca.crt.
     Saves the ak.crt and ca.crt to disk in the /sampledata dir
-    '''
+    """
 
     # Note to whoever touches this code -- don't ever save the private keys to disk.
     # It has happened before that test keys associated with reference implementations have made it into production:
@@ -184,6 +174,7 @@ def generateCerts() -> tuple[rsa.RSAPrivateKey, x509.Certificate, x509.Certifica
     ak_private_key, ak_cert = create_end_entity_cert(int_private_key, int_cert, ak_cert_file)
 
     return ak_private_key, ak_cert, ca_cert
+
 
 def main():
     generateCerts()
