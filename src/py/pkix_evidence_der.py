@@ -608,7 +608,7 @@ if __name__ == "__main__":
     print("[2] DER encoding ...")
     der = encode_evidence(ev)
     print(f"    {len(der)} bytes encoded")
-    print(f"    First 64 bytes: {der[:64].hex()}")
+    print(f"    Bytes: {der.hex()}")
 
     print("\n[3] DER decoding ...")
     ev2 = decode_evidence(der)
