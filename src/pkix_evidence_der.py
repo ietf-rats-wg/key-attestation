@@ -15,6 +15,8 @@ RFC 5280 types used directly from pyasn1_alt_modules.rfc5280:
   - SubjectPublicKeyInfo
   - Certificate
 """
+import base64
+
 from cryptography import x509
 from cryptography.hazmat.primitives.asymmetric import ec
 
@@ -27,7 +29,7 @@ from pathlib import Path
 from pyasn1.type import univ, namedtype, tag, constraint, char, useful
 from pyasn1.codec.der import encoder as der_encoder
 from pyasn1.codec.der import decoder as der_decoder
-from pyasn1.type.tag import Tag, tagClassContext, tagFormatSimple, tagFormatConstructed, TagSet
+from pyasn1.type.tag import Tag, tagClassContext, tagFormatSimple, tagFormatConstructed
 
 # RFC 5280 canonical definitions — no stubs needed
 from pyasn1_alt_modules.rfc5280 import (
@@ -106,6 +108,8 @@ OID: dict = {
 
 # Reverse mapping: dotted-string -> human name
 OID_NAMES: dict = {v: k for k, v in OID.items()}
+BASE_DIR = Path(__file__).resolve().parent
+SAMPLEDATA_DIR = BASE_DIR.parent / "sampledata"
 
 
 def mkoid(name: str) -> univ.ObjectIdentifier:
@@ -228,7 +232,7 @@ class SignerIdentifier(univ.Sequence):
     """
     SignerIdentifier ::= SEQUENCE {
        keyId                [0] EXPLICIT OCTET STRING         OPTIONAL,
-       subjectKeyIdentifier [1] EXPLICIT SubjectPublicKeyInfo OPTIONAL,
+       subjectPublicKeyInfo [1] EXPLICIT SubjectPublicKeyInfo OPTIONAL,
        certificate          [2] EXPLICIT Certificate          OPTIONAL
     }
 
@@ -240,7 +244,7 @@ class SignerIdentifier(univ.Sequence):
             univ.OctetString().subtype(
                 explicitTag=Tag(tagClassContext, tagFormatConstructed, 0))),
         namedtype.OptionalNamedType(
-            "subjectKeyIdentifier",
+            "subjectPublicKeyInfo",
             SubjectPublicKeyInfo().subtype(
                 explicitTag=Tag(tagClassContext, tagFormatConstructed, 1))),
         namedtype.OptionalNamedType(
@@ -441,8 +445,23 @@ def decode_certificate(der_bytes: bytes) -> Certificate:
         )
     return obj
 
+
 def convert_crypto_cert_to_pyasn1(cert: x509.Certificate) -> Certificate:
-    return decode_certificate( cert.public_bytes(encoding=serialization.Encoding.DER) )
+    return decode_certificate(cert.public_bytes(encoding=serialization.Encoding.DER))
+
+
+def tagged_component_value(schema_component, value):
+    tagged = schema_component.clone()
+    if isinstance(value, univ.SequenceOf):
+        for idx, component in enumerate(value):
+            tagged.setComponentByPosition(idx, component)
+        return tagged
+
+    for idx in range(len(value)):
+        component = value.getComponentByPosition(idx)
+        if component is not None and component.hasValue():
+            tagged.setComponentByPosition(idx, component)
+    return tagged
 
 # ---------------------------------------------------------------------------
 # Pretty-print helpers
@@ -486,9 +505,9 @@ def pretty_print_evidence(ev: Evidence, indent: int = 0) -> None:
         print(f"{pad}      signatureValue : {sv[:48]}{'...' if len(sv) > 48 else ''}")
         if sid["keyId"].hasValue():
             print(f"{pad}      keyId          : {bytes(sid['keyId']).hex()}")
-        if sid["subjectKeyIdentifier"].hasValue():
+        if sid["subjectPublicKeyInfo"].hasValue():
             spki_alg = _fmt_oid(
-                sid["subjectKeyIdentifier"]["algorithm"]["algorithm"]
+                sid["subjectPublicKeyInfo"]["algorithm"]["algorithm"]
             )
             print(f"{pad}      SPKI algorithm : {spki_alg}")
         if sid["certificate"].hasValue():
@@ -515,14 +534,10 @@ def build_example_evidence() -> Evidence:
     tx_claims[1]["claimType"] = mkoid("id-evidence-claim-transaction-timestamp")
     tx_claims[1]["value"]     = make_claim_value_time("20250314120000Z")
 
-    tx_entity = ReportedEntity()
-    tx_entity["entityType"] = mkoid("id-evidence-entity-transaction")
-    tx_entity["claims"]     = tx_claims
-
     # Platform entity
     plat_claims = ReportedClaimSeq()
     plat_claims[0] = make_claim("id-evidence-claim-platform-vendor",    "Acme Corp")
-    plat_claims[1] = make_claim("id-evidence-claim-platform-hwmodel",   "HSM-9000")
+    plat_claims[1] = make_claim("id-evidence-claim-platform-hwmodel",   b"HSM-9000")
     plat_claims[2] = make_claim("id-evidence-claim-platform-hwversion", "2.1.0")
     plat_claims[3] = make_claim("id-evidence-claim-platform-fipsboot",  True)
     plat_claims[4] = make_claim("id-evidence-claim-platform-fipslevel", 3)
@@ -536,7 +551,7 @@ def build_example_evidence() -> Evidence:
     key_claims = ReportedClaimSeq()
     key_claims[0] = make_claim(
         "id-evidence-claim-key-identifier",
-        b"\x01\x02\x03\x04\x05\x06\x07\x08",
+        "key-001",
     )
     key_claims[1] = make_claim("id-evidence-claim-key-extractable",       False)
     key_claims[2] = make_claim("id-evidence-claim-key-never-extractable", True)
@@ -544,12 +559,25 @@ def build_example_evidence() -> Evidence:
     key_claims[4] = make_claim("id-evidence-claim-key-local",             True)
     key_claims[5] = make_claim(
         "id-evidence-claim-key-purpose",
-        tuple(int(x) for x in OID["id-evidence-key-capability-sign"].split(".")),
+        encode_key_capabilities(build_example_key_capabilities()),
     )
 
     key_entity = ReportedEntity()
     key_entity["entityType"] = mkoid("id-evidence-entity-key")
     key_entity["claims"]     = key_claims
+
+    # generate AK key and cert chain
+    ak_private_key, ak_cert, int_cert, _ca_cert = create_ak.generateCerts()
+
+    ak_public_key_der = ak_private_key.public_key().public_bytes(
+        encoding=serialization.Encoding.DER,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+    tx_claims[2] = make_claim("id-evidence-claim-transaction-ak-spki", ak_public_key_der)
+
+    tx_entity = ReportedEntity()
+    tx_entity["entityType"] = mkoid("id-evidence-entity-transaction")
+    tx_entity["claims"]     = tx_claims
 
     # TbsEvidence
     tbs = TbsEvidence()
@@ -566,21 +594,14 @@ def build_example_evidence() -> Evidence:
     alg_id["algorithm"] = univ.ObjectIdentifier((1, 2, 840, 10045, 4, 3, 2))
     # parameters absent for ECDSA per RFC 5480
 
-    # generate AK key and cert chain
-    ak_private_key, ak_cert, int_cert, ca_cert = create_ak.generateCerts()
-
-    ak_public_key_der = ak_private_key.public_key().public_bytes(
-        encoding=serialization.Encoding.DER,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo,
-    )
-    ak_public_key_hash = hashes.Hash(hashes.SHA256())
-    ak_public_key_hash.update(ak_public_key_der)
-    ak_public_key_digest = ak_public_key_hash.finalize()
-
     sid = SignerIdentifier()
-    sid["keyId"] = ak_public_key_digest
-    # todo -- get Corey to figure out why this is busted.
-    sid["certificate"] = convert_crypto_cert_to_pyasn1(ak_cert)
+    sid["keyId"] = ak_cert.extensions.get_extension_for_class(
+        x509.SubjectKeyIdentifier
+    ).value.digest
+    sid["certificate"] = tagged_component_value(
+        sid["certificate"],
+        convert_crypto_cert_to_pyasn1(ak_cert),
+    )
 
     sig_block = SignatureBlock()
     sig_block["sid"]                = sid
@@ -601,7 +622,12 @@ def build_example_evidence() -> Evidence:
     ev = Evidence()
     ev["tbs"]        = tbs
     ev["signatures"] = sigs
-    ev["intermediateCertificates"].append(convert_crypto_cert_to_pyasn1(int_cert))
+    certs = CertificateSeq()
+    certs[0] = convert_crypto_cert_to_pyasn1(int_cert)
+    ev["intermediateCertificates"] = tagged_component_value(
+        ev["intermediateCertificates"],
+        certs,
+    )
     return ev
 
 
@@ -637,11 +663,12 @@ if __name__ == "__main__":
     print(f"    {len(der)} bytes encoded")
     print(f"    Bytes: {der.hex()}")
 
-    evidence_file = Path("../sampledata/evidence.b64")
+    evidence_file = SAMPLEDATA_DIR / "evidence.b64"
     print("[2a] Saving evidence to "+evidence_file.as_posix())
 
+    evidence_file.parent.mkdir(parents=True, exist_ok=True)
     with evidence_file.open("w") as f:
-        f.write( der.hex() )
+        f.write(base64.b64encode(der).decode("ascii"))
 
     print("\n[3] DER decoding ...")
     ev2 = decode_evidence(der)

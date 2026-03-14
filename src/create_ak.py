@@ -152,7 +152,7 @@ def create_end_entity_cert(
     return private_key, cert
 
 
-def generateCerts() -> tuple[ec.EllipticCurvePrivateKey, x509.Certificate, x509.Cerificate, x509.Certificate]:
+def generateCerts() -> tuple[ec.EllipticCurvePrivateKey, x509.Certificate, x509.Certificate, x509.Certificate]:
     """
     Returns the ak.key, ak.crt, int.ctr, and ca.crt.
     Saves the ak.crt and ca.crt to disk in the /sampledata dir
@@ -164,7 +164,7 @@ def generateCerts() -> tuple[ec.EllipticCurvePrivateKey, x509.Certificate, x509.
     # Therefore, this reference implementation will generate itself fresh CA and AK keys on each run and never save them to disk.
     # (but it will save the certificates so that the sample data can be verified)
 
-    output_dir = Path("../sampledata")
+    output_dir = Path(__file__).resolve().parent.parent / "sampledata"
     ca_cert_file = Path(output_dir, "ca.crt")
     int_cert_file = Path(output_dir, "int.crt")
     ak_cert_file = Path(output_dir, "ak.crt")
