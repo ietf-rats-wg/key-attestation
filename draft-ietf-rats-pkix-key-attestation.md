@@ -56,10 +56,13 @@ author:
     email: jp@crypto4a.com
 
   - name: Hannes Tschofenig
-    org: University of Applied Sciences Bonn-Rhein-Sieg
-    abbrev: H-BRS
+    org: University of the Bundeswehr Munich
+    abbrev: UniBw M.
+    city: Neubiberg
+    region: Bavaria
     country: Germany
-    email: Hannes.Tschofenig@gmx.net
+    code: 85577
+    email: hannes.tschofenig@gmx.net
 
   - name: Henk Birkholz
     org: Fraunhofer SIT
