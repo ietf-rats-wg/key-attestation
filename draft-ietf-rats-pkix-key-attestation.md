@@ -71,11 +71,12 @@ author:
   - name: Monty Wiseman
     country: United States of America
     email: monty.wiseman@oracle.com
-
-  - name: Ned Smith
-    org: Intel Corporation
-    country: United States of America
-    email: ned.smith@intel.com
+  -
+    ins: N. Smith
+    name: Ned Smith
+    org:
+    country: United States
+    email: ned.smith.ietf@gmail.com
 
 normative:
   RFC9334:
