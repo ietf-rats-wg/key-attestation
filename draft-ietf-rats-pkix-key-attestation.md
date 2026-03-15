@@ -1354,7 +1354,7 @@ but the physical HSM AK would change depending on load balancing between HSMs in
 In this example, both the HSM AK and Tenant AK chain to the same root CA certificate above, via different intermediate CAs.
 
 ~~~
-{::include sampledata/evidence3.pp}
+{::include sampledata/evidence3.pem}
 ~~~
 
 Here is a pretty-print of the Evidence object:
