@@ -7,6 +7,7 @@ REPOROOT="$(cd "${SCRIPTDIR}/.." && pwd -P)"
 PYTHON_BIN="${PYTHON_BIN:-${REPOROOT}/src/.venv/bin/python}"
 GO_BIN="${GO_BIN:-go}"
 GOCACHE_DIR="${GOCACHE_DIR:-/tmp/go-build-key-attestation}"
+WORK_DIR="${WORK_DIR:-${REPOROOT}/go-cache}"
 TMPDIR_INTEROP="$(mktemp -d /tmp/pkix-interop-negative.XXXXXX)"
 trap 'rm -rf "${TMPDIR_INTEROP}"' EXIT
 
@@ -27,11 +28,12 @@ echo "[1/4] Checking prerequisites"
 require_cmd "${GO_BIN}"
 [[ -x "${PYTHON_BIN}" ]] || fail "Python virtual environment not found at ${PYTHON_BIN}. Run 'make python-install' first."
 mkdir -p "${GOCACHE_DIR}"
+mkdir -p "${WORK_DIR}"
 
 echo "[2/4] Generating fresh baseline evidence with Python"
 (
 	cd "${REPOROOT}"
-	"${PYTHON_BIN}" src/pkix_evidence_der.py >/tmp/pkix-python-negative-interop.log
+	"${PYTHON_BIN}" src/generate_test_data.py >${WORK_DIR}/pkix-python-negative-interop.log
 )
 [[ -f "${SOURCE_EVIDENCE}" ]] || fail "baseline evidence not generated: ${SOURCE_EVIDENCE}"
 
@@ -41,7 +43,7 @@ import base64
 import sys
 from pathlib import Path
 
-import pkix_evidence_der as mod
+import pkix_evidence as mod
 
 source_path = Path(sys.argv[1])
 bad_sig_path = Path(sys.argv[2])
@@ -73,20 +75,20 @@ echo "[4/4] Expecting Go to reject manipulated evidence"
 if (
 	cd "${REPOROOT}" &&
 	GOCACHE="${GOCACHE_DIR}" "${GO_BIN}" run ./go-src/cmd/pkix-evidence verify -in "${BAD_SIG_EVIDENCE}" -format base64
-) >/tmp/pkix-go-negative-verify.log 2>&1; then
+) >${WORK_DIR}/pkix-go-negative-verify.log 2>&1; then
 	fail "Go verify unexpectedly accepted evidence with a corrupted signature"
 fi
-grep -q "signature\\[0\\]:" /tmp/pkix-go-negative-verify.log || fail "Go verify failure log did not contain a signature result"
-grep -qv "signature\\[0\\]: ok" /tmp/pkix-go-negative-verify.log || fail "Go verify reported success for corrupted signature"
+grep -q "signature\\[0\\]:" ${WORK_DIR}/pkix-go-negative-verify.log || fail "Go verify failure log did not contain a signature result"
+grep -qv "signature\\[0\\]: ok" ${WORK_DIR}/pkix-go-negative-verify.log || fail "Go verify reported success for corrupted signature"
 
 if (
 	cd "${REPOROOT}" &&
 	GOCACHE="${GOCACHE_DIR}" "${GO_BIN}" run ./go-src/cmd/pkix-evidence validate -in "${BAD_CLAIM_EVIDENCE}" -format base64
-) >/tmp/pkix-go-negative-validate.log 2>&1; then
+) >${WORK_DIR}/pkix-go-negative-validate.log 2>&1; then
 	fail "Go validate unexpectedly accepted evidence with an invalid identifier claim type"
 fi
-grep -q "claim identifier must be utf8String" /tmp/pkix-go-negative-validate.log || fail "Go validate failure log did not contain the expected identifier type error"
+grep -q "claim identifier must be utf8String" ${WORK_DIR}/pkix-go-negative-validate.log || fail "Go validate failure log did not contain the expected identifier type error"
 
 echo "Negative interop test passed"
-echo "Negative verify log: /tmp/pkix-go-negative-verify.log"
-echo "Negative validate log: /tmp/pkix-go-negative-validate.log"
+echo "Negative verify log: ${WORK_DIR}/pkix-go-negative-verify.log"
+echo "Negative validate log: ${WORK_DIR}/pkix-go-negative-validate.log"
