@@ -146,9 +146,6 @@ def create_end_entity_cert(
             ),
             critical=True,
         )
-        .add_extension(
-            x509.Ex
-        )
         .add_extension(x509.ExtendedKeyUsage([id_kp_attest_oid]), critical=False)
         .sign(private_key=ca_private_key, algorithm=hashes.SHA256())
     )
