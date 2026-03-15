@@ -108,8 +108,6 @@ OID: dict = {
 
 # Reverse mapping: dotted-string -> human name
 OID_NAMES: dict = {v: k for k, v in OID.items()}
-BASE_DIR = Path(__file__).resolve().parent
-SAMPLEDATA_DIR = BASE_DIR.parent / "sampledata"
 
 
 def mkoid(name: str) -> univ.ObjectIdentifier:

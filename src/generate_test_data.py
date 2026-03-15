@@ -1,5 +1,7 @@
 from pkix_evidence import *
 
+BASE_DIR = Path(__file__).resolve().parent
+SAMPLEDATA_DIR = BASE_DIR.parent / "sampledata"
 
 
 # ---------------------------------------------------------------------------
