@@ -1285,17 +1285,85 @@ Furthermore, the internal system clock of HSMs SHOULD NOT be relied on to enforc
 
 A reference implementation of this specification can be found at https://github.com/ietf-rats-wg/key-attestation
 
-It produces the following sample Evidence:
+It produces the following sample Evidence.
+
+All signatures throughout the samples chain to the following root certificate:
+
+~~~
+{::include sampledata/ca.crt}
+~~~
+
+## Simple Platform Evidence
+
+This example shows a minimal PKIX Evidence object with only transaction and platform entities a single signature where the AK key is identified only by
+its SHA1 hash KeyID. In other words, this Evidence describes only the HSM itself (rather than application keys stored within it), and it assumes
+that the Verifier will be able to look up the AK key by its SHA1 hash.
 
 ~~~
 {::include sampledata/evidence1.pem}
 ~~~
 
-This sample data embeds the AK and Intermediate CA certificate, but a Verifier will require the root CA certificate to verify the signature.
+Here is a pretty-print of the Evidence object:
 
 ~~~
-{::include sampledata/ca.crt}
+{::include sampledata/evidence1.pp}
 ~~~
+
+
+For completeness of the sample, the following AK and Intermediate CA certificates are required for verification:
+
+~~~
+{::include sampledata/ak.crt}
+
+{::include sampledata/int.crt}
+~~~
+
+
+## Key Attestation Evidence
+
+This example shows a PKIX Evidence object that is attesting two different application keys held within the HSM.
+For the purposes of this example, the Platform Entity is kept short.
+This example embeds the AK and Intermediate CA certificates in the Evidence object. It chains to the same root as above.
+
+~~~
+{::include sampledata/evidence2.pem}
+~~~
+
+Here is a pretty-print of the Evidence object:
+
+~~~
+{::include sampledata/evidence2.pp}
+~~~
+
+
+## Multi-Tenant Key Attestation Evidence
+
+To exercise fuller functionality of the PKIX Evidence object, this example shows how a vendor might represent a multi-tenant HSM architecture.
+For the purposes of this example, consider the following hypothetical cloud HSM architecture:
+multiple physical HSMs are clustered such that logical tenants can span across multiple physical HSMs.
+Consider that in such a setup each physical HSM has has its own root hardware AK, as well, each tenant has a logical AK which spans multiple HSMs.
+
+Such a hypothetical architecture is meant to capture the complexities of hosting key management services withith a public cloud.
+
+In such an architecture, a key attestation would carry multiple Platform Attestations, one describing the physical HSM producing the evidence,
+as well as one describing the logical tenant who controls the application key being attested.
+Similarly, the evidence will carry signatures from both the physical HSM and the logical tenant AKs.
+For example, if you made repeated queries to the service to attest the same application key, you would expect the tenant AK to stay consistent,
+but the physical HSM AK would change depending on load balancing between HSMs in the cluster.
+
+In this example, both the HSM AK and Tenant AK chain to the same root CA certificate above, via different intermediate CAs.
+
+~~~
+{::include sampledata/evidence3.pp}
+~~~
+
+Here is a pretty-print of the Evidence object:
+
+~~~
+{::include sampledata/evidence3.pp}
+~~~
+
+
 
 # Acknowledgements
 

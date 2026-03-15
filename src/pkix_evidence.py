@@ -326,22 +326,22 @@ class Evidence(univ.Sequence):
 
 class PkixEvidence:
 
-    entities = ReportedEntitySeq()
+    def __init__(self):
+        # TbsEvidence
+        self.tbs = TbsEvidence()
+        self.tbs["version"] = 1
+        self.tbs["reportedEntities"] = ReportedEntitySeq()
+
+        self.sigs = SignatureBlockSeq()
 
     def add_entity(self, entity: ReportedEntity):
-        self.entities.append(entity)
+        # if there were already any signatures, wipe them before changing the TbsEvidence
+        self.sigs = SignatureBlockSeq()
 
-    def sign_and_encode(self, ak_cert: x509.Certificate, ak_private_key: ec.EllipticCurvePrivateKey, int_cert: x509.Certificate):
+        self.tbs['reportedEntities'].append(entity)
+
+    def sign_and_encode(self, ak_cert: x509.Certificate, ak_private_key: ec.EllipticCurvePrivateKey, int_cert: x509.Certificate, includeCerts: bool = True):
         ''' Signs the evidence and returns the DER-encoded string'''
-
-        # TbsEvidence
-        tbs = TbsEvidence()
-        tbs["version"] = 1
-        # entities = ReportedEntitySeq()
-        # entities[0] = tx_entity
-        # entities[1] = plat_entity
-        # entities[2] = key_entity
-        tbs["reportedEntities"] = self.entities
 
         # SignatureBlock using rfc5280.AlgorithmIdentifier
         # ecdsa-with-SHA256  OID: 1.2.840.10045.4.3.2
@@ -350,39 +350,51 @@ class PkixEvidence:
         # parameters absent for ECDSA per RFC 5480
 
         sid = SignerIdentifier()
-        sid["keyId"] = ak_cert.extensions.get_extension_for_class(
-            x509.SubjectKeyIdentifier
-        ).value.digest
-        sid["certificate"] = tagged_component_value(
-            sid["certificate"],
-            convert_crypto_cert_to_pyasn1(ak_cert),
-        )
+        if includeCerts:
+            sid["certificate"] = tagged_component_value(
+                sid["certificate"],
+                convert_crypto_cert_to_pyasn1(ak_cert),
+            )
+        else:
+            sid["keyId"] = ak_cert.extensions.get_extension_for_class(
+                x509.SubjectKeyIdentifier
+            ).value.digest
 
         sig_block = SignatureBlock()
         sig_block["sid"] = sid
         sig_block["signatureAlgorithm"] = alg_id
 
-        tbs_der = der_encoder.encode(tbs)
+        tbs_der = der_encoder.encode(self.tbs)
         signature = ak_private_key.sign(
             tbs_der,
-            ec.ECDSA(hashes.SHA256()),
+            ec.ECDSA(hashes.SHA1()),
         )
 
         sig_block["signatureValue"] = univ.OctetString(signature)
 
-        sigs = SignatureBlockSeq()
-        sigs[0] = sig_block
+        self.sigs.append(sig_block)
 
+        if includeCerts:
+            return self.encode([int_cert])
+        else:
+            return self.encode()
+
+
+    def encode(self, int_certs: list[x509.Certificate] = []):
         # Evidence
         ev = Evidence()
-        ev["tbs"] = tbs
-        ev["signatures"] = sigs
-        certs = CertificateSeq()
-        certs[0] = convert_crypto_cert_to_pyasn1(int_cert)
-        ev["intermediateCertificates"] = tagged_component_value(
-            ev["intermediateCertificates"],
-            certs,
-        )
+        ev["tbs"] = self.tbs
+        ev["signatures"] = self.sigs
+
+        if len(int_certs) != 0:
+            certs = CertificateSeq()
+            for cert in int_certs:
+                certs.append(convert_crypto_cert_to_pyasn1(cert))
+
+            ev["intermediateCertificates"] = tagged_component_value(
+                ev["intermediateCertificates"],
+                certs,
+            )
 
         return encode_evidence(ev)
 
