@@ -283,6 +283,7 @@ def build_example3(ak_private_key: ec.EllipticCurvePrivateKey,
     # Platform entity
     plat_claims = ReportedClaimSeq()
     plat_claims.append(make_claim("id-evidence-claim-platform-hwmodel",   "HSM-9000"))
+    plat_claims.append(make_claim("id-evidence-claim-platform-hwserial",  "17-a1b2"))
 
     plat_entity = ReportedEntity()
     plat_entity["entityType"] = mkoid("id-evidence-entity-platform")

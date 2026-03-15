@@ -1344,7 +1344,7 @@ multiple physical HSMs are clustered such that logical tenants can span across m
 It could be, for example, that application keys are stored encrypted in a database such that any HSM in the cluster can decrypt and use them.
 Consider that in such a setup each physical HSM has has its own root hardware AK, as well, each tenant has a logical AK.
 
-While this example of a a hypothetical architecture is only illustrative, it is meant to show that the Evidence format
+While this example of a hypothetical architecture is only illustrative, it is meant to show that the Evidence format
 presented in this document is flexible enough to handle
 future needs of complex multi-tenant cloud environments.
 
