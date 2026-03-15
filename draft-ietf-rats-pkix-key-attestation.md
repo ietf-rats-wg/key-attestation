@@ -1338,12 +1338,15 @@ Here is a pretty-print of the Evidence object:
 
 ## Multi-Tenant Key Attestation Evidence
 
-To exercise fuller functionality of the PKIX Evidence object, this example shows how a vendor might represent a multi-tenant HSM architecture.
-For the purposes of this example, consider the following hypothetical cloud HSM architecture:
+To exercise fuller functionality of the PKIX Evidence object, this example shows how a vendor might represent a multi-tenant multi-HSM cloud architecture.
+For the purposes of this example, consider a hypothetical cloud HSM service where
 multiple physical HSMs are clustered such that logical tenants can span across multiple physical HSMs.
-Consider that in such a setup each physical HSM has has its own root hardware AK, as well, each tenant has a logical AK which spans multiple HSMs.
+It could be, for example, that application keys are stored encrypted in a database such that any HSM in the cluster can decrypt and use them.
+Consider that in such a setup each physical HSM has has its own root hardware AK, as well, each tenant has a logical AK.
 
-Such a hypothetical architecture is meant to capture the complexities of hosting key management services withith a public cloud.
+While this example of a a hypothetical architecture is only illustrative, it is meant to show that the Evidence format
+presented in this document is flexible enough to handle
+future needs of complex multi-tenant cloud environments.
 
 In such an architecture, a key attestation would carry multiple Platform Attestations, one describing the physical HSM producing the evidence,
 as well as one describing the logical tenant who controls the application key being attested.

@@ -15,6 +15,8 @@ Evidence:
               -> [utf8String] HSM-9000
     ReportedEntity[2]: id-evidence-entity-platform
       Claim[0]: id-evidence-claim-platform-vendor
+              -> [utf8String] BigCloudCorp Tenant Management System
+      Claim[1]: id-evidence-claim-platform-swname
               -> [utf8String] tenant-001
     ReportedEntity[3]: id-evidence-entity-key
       Claim[0]: id-evidence-claim-key-identifier
@@ -34,10 +36,10 @@ Evidence:
   Signatures (2):
     SignatureBlock[0]:
       algorithm      : 1.2.840.10045.4.3.2
-      signatureValue : 304402203029e525b7523138db34a8029a10be29c57af11d...
+      signatureValue : 30440220217dbd9a66c3de09b2fecd0f978d55b5ee5b9fd6...
       AK Certificate : present
     SignatureBlock[1]:
       algorithm      : 1.2.840.10045.4.3.2
-      signatureValue : 304402202d7fe72f0ef22387e07aa4b434490b7cfa792be3...
+      signatureValue : 3046022100d2002ed204f982ab077e5e380473343c5b9d0e...
       AK Certificate : present
   Intermediate Certificates:  (2)

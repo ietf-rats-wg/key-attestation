@@ -289,7 +289,8 @@ def build_example3(ak_private_key: ec.EllipticCurvePrivateKey,
     ev.add_entity(plat_entity)
 
     plat_claims = ReportedClaimSeq()
-    plat_claims.append(make_claim("id-evidence-claim-platform-vendor",   "tenant-001"))
+    plat_claims.append(make_claim("id-evidence-claim-platform-vendor",   "BigCloudCorp Tenant Management System"))
+    plat_claims.append(make_claim("id-evidence-claim-platform-swname",   "tenant-001"))
 
     plat_entity = ReportedEntity()
     plat_entity["entityType"] = mkoid("id-evidence-entity-platform")
