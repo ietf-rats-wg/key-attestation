@@ -1,12 +1,14 @@
 package evidence
 
 import (
+	"bytes"
 	"crypto"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"encoding/pem"
 	"math/big"
 	"strings"
 	"testing"
@@ -121,6 +123,35 @@ func TestVerifyEvidenceMatchesAKSPKIForKeyIDSigner(t *testing.T) {
 	}
 	if res.AKSPKIMismatch {
 		t.Fatalf("VerifyEvidence() reported ak-spki mismatch for keyId-based signer: %+v", res)
+	}
+}
+
+func TestReadEvidenceAcceptsEvidencePEM(t *testing.T) {
+	der, err := GenerateSample()
+	if err != nil {
+		t.Fatalf("GenerateSample(): %v", err)
+	}
+	pemData, err := FormatEvidence(der, "pem")
+	if err != nil {
+		t.Fatalf("FormatEvidence(): %v", err)
+	}
+	got, err := ReadEvidence(pemData, "auto")
+	if err != nil {
+		t.Fatalf("ReadEvidence(): %v", err)
+	}
+	if !bytes.Equal(got, der) {
+		t.Fatal("ReadEvidence() returned different DER bytes for EVIDENCE PEM input")
+	}
+}
+
+func TestReadEvidenceRejectsUnexpectedPEMType(t *testing.T) {
+	pemData := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: []byte{0x01, 0x02, 0x03}})
+	_, err := ReadEvidence(pemData, "pem")
+	if err == nil {
+		t.Fatal("ReadEvidence() accepted a non-EVIDENCE PEM block")
+	}
+	if !strings.Contains(err.Error(), "unexpected PEM block type") {
+		t.Fatalf("ReadEvidence() returned wrong error: %v", err)
 	}
 }
 
