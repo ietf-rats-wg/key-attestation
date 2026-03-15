@@ -144,6 +144,9 @@ def create_end_entity_cert(
             ),
             critical=True,
         )
+        .add_extension(
+            x509.Ex
+        )
         .sign(private_key=ca_private_key, algorithm=hashes.SHA256())
     )
 
