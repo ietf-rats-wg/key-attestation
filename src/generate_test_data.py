@@ -131,11 +131,81 @@ def build_example1(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
 
     return ev.sign_and_encode(ak_cert, ak_private_key, int_cert)
 
+def build_example2(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Certificate, int_cert: x509.Certificate) -> bytes:
+    """Build a sample Evidence object for testing."""
+    ev = PkixEvidence()
+
+    # Transaction entity
+    tx_claims = ReportedClaimSeq()
+    tx_claims[0] = make_claim(
+        "id-evidence-claim-transaction-nonce",
+        b"\xde\xad\xbe\xef\xca\xfe\xba\xbe",
+    )
+    tx_claims[1] = ReportedClaim()
+    tx_claims[1]["claimType"] = mkoid("id-evidence-claim-transaction-timestamp")
+    tx_claims[1]["value"] = make_claim_value_time("20250314120000Z")
+
+    tx_entity = ReportedEntity()
+    tx_entity["entityType"] = mkoid("id-evidence-entity-transaction")
+    tx_entity["claims"] = tx_claims
+
+    ak_public_key_der = ak_private_key.public_key().public_bytes(
+        encoding=serialization.Encoding.DER,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+    tx_claims[2] = make_claim("id-evidence-claim-transaction-ak-spki", ak_public_key_der)
+
+    tx_entity = ReportedEntity()
+    tx_entity["entityType"] = mkoid("id-evidence-entity-transaction")
+    tx_entity["claims"]     = tx_claims
+
+    ev.add_entity(tx_entity)
+
+
+    # Platform entity
+    plat_claims = ReportedClaimSeq()
+    plat_claims[0] = make_claim("id-evidence-claim-platform-vendor",    "Acme Corp")
+    plat_claims[1] = make_claim("id-evidence-claim-platform-hwmodel",   b"HSM-9000")
+    plat_claims[2] = make_claim("id-evidence-claim-platform-hwversion", "2.1.0")
+    plat_claims[3] = make_claim("id-evidence-claim-platform-fipsboot",  True)
+    plat_claims[4] = make_claim("id-evidence-claim-platform-fipslevel", 3)
+    plat_claims[5] = make_claim("id-evidence-claim-platform-uptime",    86400)
+
+    plat_entity = ReportedEntity()
+    plat_entity["entityType"] = mkoid("id-evidence-entity-platform")
+    plat_entity["claims"]     = plat_claims
+
+    ev.add_entity(plat_entity)
+
+
+    # Key entity
+    key_claims = ReportedClaimSeq()
+    key_claims[0] = make_claim(
+        "id-evidence-claim-key-identifier",
+        "key-001",
+    )
+    key_claims[1] = make_claim("id-evidence-claim-key-extractable",       False)
+    key_claims[2] = make_claim("id-evidence-claim-key-never-extractable", True)
+    key_claims[3] = make_claim("id-evidence-claim-key-sensitive",         True)
+    key_claims[4] = make_claim("id-evidence-claim-key-local",             True)
+    key_claims[5] = make_claim(
+        "id-evidence-claim-key-purpose",
+        encode_key_capabilities(build_example_key_capabilities()),
+    )
+
+    key_entity = ReportedEntity()
+    key_entity["entityType"] = mkoid("id-evidence-entity-key")
+    key_entity["claims"]     = key_claims
+
+    ev.add_entity(key_entity)
+
+
+    return ev.sign_and_encode(ak_cert, ak_private_key, int_cert)
+
 
 if __name__ == "__main__":
     # generate AK key and cert chain
     ak_private_key, ak_cert, int_cert, _ca_cert = create_ak.generateAndSaveCerts()
-
 
     # Build Example 1
     ev_der = build_example1(ak_private_key, ak_cert, int_cert)
@@ -144,3 +214,12 @@ if __name__ == "__main__":
     with evidence_file.open("w") as f:
         print(f"Writing {evidence_file} ...")
         f.write(base64.b64encode(ev_der).decode("ascii"))
+
+    # Build Example 2
+    ev_der = build_example2(ak_private_key, ak_cert, int_cert)
+
+    evidence_file = SAMPLEDATA_DIR / "evidence2.b64"
+    with evidence_file.open("w") as f:
+        print(f"Writing {evidence_file} ...")
+        f.write(base64.b64encode(ev_der).decode("ascii"))
+

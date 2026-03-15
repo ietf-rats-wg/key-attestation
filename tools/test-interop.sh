@@ -10,7 +10,7 @@ OPENSSL_BIN="${OPENSSL_BIN:-openssl}"
 GOCACHE_DIR="${GOCACHE_DIR:-/tmp/go-build-key-attestation}"
 WORK_DIR="${WORK_DIR:-${REPOROOT}/go-cache}"
 
-EVIDENCE_FILE="${REPOROOT}/sampledata/evidence.b64"
+EVIDENCE_FILE="${REPOROOT}/sampledata/evidence1.b64"
 AK_CERT_FILE="${REPOROOT}/sampledata/ak.crt"
 INT_CERT_FILE="${REPOROOT}/sampledata/int.crt"
 CA_CERT_FILE="${REPOROOT}/sampledata/ca.crt"

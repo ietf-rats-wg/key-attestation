@@ -11,7 +11,7 @@ WORK_DIR="${WORK_DIR:-${REPOROOT}/go-cache}"
 TMPDIR_INTEROP="$(mktemp -d /tmp/pkix-interop-negative.XXXXXX)"
 trap 'rm -rf "${TMPDIR_INTEROP}"' EXIT
 
-SOURCE_EVIDENCE="${REPOROOT}/sampledata/evidence.b64"
+SOURCE_EVIDENCE="${REPOROOT}/sampledata/evidence1.b64"
 BAD_SIG_EVIDENCE="${TMPDIR_INTEROP}/evidence-bad-signature.b64"
 BAD_CLAIM_EVIDENCE="${TMPDIR_INTEROP}/evidence-bad-claim.b64"
 
