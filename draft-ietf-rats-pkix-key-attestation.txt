@@ -5,7 +5,7 @@
 RATS                                                        M. Ounsworth
 Internet-Draft                                            Cryptic Forest
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 15 September 2026                                      Crypto4A
+Expires: 16 September 2026                                      Crypto4A
                                                            H. Tschofenig
                                                                 UniBw M.
                                                              H. Birkholz
@@ -13,7 +13,7 @@ Expires: 15 September 2026                                      Crypto4A
                                                               M. Wiseman
                                                                         
                                                                 N. Smith
-                                                           14 March 2026
+                                                           15 March 2026
 
 
             Evidence Encoding for Hardware Security Modules
@@ -70,7 +70,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 15 September 2026.
+   This Internet-Draft will expire on 16 September 2026.
 
 Copyright Notice
 
@@ -2050,366 +2050,42 @@ Appendix A.  Samples
 
    =============== NOTE: '\' line wrapping per RFC 8792 ================
 
-   PkixAttestation:
-    tbs=TbsPkixAttestation:
-     version=2
-     reportedEntities=SequenceOf:
-      ReportedEntity:
-       entityType=1.2.3.999.0.0
-       reportedAttributes=SequenceOf:
-        ReportedAttribute:
-         attributeType=1.2.3.999.1.0.0
-         value=AttributeValue:
-          bytes=0102030405
-
-
-      ReportedEntity:
-       entityType=1.2.3.999.0.1
-       reportedAttributes=SequenceOf:
-        ReportedAttribute:
-         attributeType=1.2.3.999.1.1.1
-         value=AttributeValue:
-          utf8String=HSM-123
-
-        ReportedAttribute:
-         attributeType=1.2.3.999.1.1.2
-         value=AttributeValue:
-          bool=True
-
-        ReportedAttribute:
-         attributeType=1.2.3.999.1.1.3
-         value=AttributeValue:
-          utf8String=Model ABC
-
-        ReportedAttribute:
-         attributeType=1.2.3.999.1.1.4
-         value=AttributeValue:
-          utf8String=3.1.9
-
-
-      ReportedEntity:
-       entityType=1.2.3.999.0.2
-       reportedAttributes=SequenceOf:
-        ReportedAttribute:
-         attributeType=1.2.3.999.1.2.0
-         value=AttributeValue:
-          utf8String=26d765d8-1afd-4dfb-a290-cf867ddecfa1
-
-        ReportedAttribute:
-         attributeType=1.2.3.999.1.2.3
-         value=AttributeValue:
-          bool=False
-
-        ReportedAttribute:
-         attributeType=1.2.3.999.1.2.1
-         value=AttributeValue:
-          bytes=\
-   0x3059301306072a8648ce3d020106082a8648ce3d03010703420004422548f88fb7\
-   82ffb5eca3744452c72a1e558fbd6f73be5e48e93232cc45c5b16c4cd10c4cb8d5b8\
-                        a17139e94882c8992572993425f41419ab7e90a42a494272
-
-
-      ReportedEntity:
-       entityType=1.2.3.999.0.2
-       reportedAttributes=SequenceOf:
-        ReportedAttribute:
-         attributeType=1.2.3.999.1.2.0
-         value=AttributeValue:
-          utf8String=49a96ace-e39a-4fd2-bec1-13165a99621c
-
-        ReportedAttribute:
-         attributeType=1.2.3.999.1.2.3
-         value=AttributeValue:
-          bool=True
-
-        ReportedAttribute:
-         attributeType=1.2.3.999.1.2.1
-         value=AttributeValue:
-          bytes=\
-   0x3059301306072a8648ce3d020106082a8648ce3d03010703420004422548f88fb7\
-   82ffb5eca3744452c72a1e558fbd6f73be5e48e93232cc45c5b16c4cd10c4cb8d5b8\
-                        a17139e94882c8992572993425f41419ab7e90a42a494272
-
-
-      ReportedEntity:
-       entityType=1.2.3.888.0
-       reportedAttributes=SequenceOf:
-        ReportedAttribute:
-         attributeType=1.2.3.888.1
-         value=AttributeValue:
-          utf8String=partition 1
-
-
-
-
-    signatures=SequenceOf:
-     SignatureBlock:
-      certChain=SequenceOf:
-       Certificate:
-        tbsCertificate=TBSCertificate:
-         version=v3
-         serialNumber=510501933685942792810365453374472870755160518925
-         signature=AlgorithmIdentifier:
-          algorithm=1.2.840.113549.1.1.11
-          parameters=0x0500
-
-         issuer=Name:
-          rdnSequence=RDNSequence:
-           RelativeDistinguishedName:
-            AttributeTypeAndValue:
-             type=2.5.4.10
-             value=0x0c0449455446
-           RelativeDistinguishedName:
-            AttributeTypeAndValue:
-             type=2.5.4.11
-             value=0x0c0452415453
-           RelativeDistinguishedName:
-            AttributeTypeAndValue:
-             type=2.5.4.3
-             value=0x0c06414b20525341
-
-
-         validity=Validity:
-          notBefore=Time:
-           utcTime=250117171303Z
-
-          notAfter=Time:
-           generalTime=20520604171303Z
-
-
-         subject=Name:
-          rdnSequence=RDNSequence:
-           RelativeDistinguishedName:
-            AttributeTypeAndValue:
-             type=2.5.4.10
-             value=0x0c0449455446
-           RelativeDistinguishedName:
-            AttributeTypeAndValue:
-             type=2.5.4.11
-             value=0x0c0452415453
-           RelativeDistinguishedName:
-            AttributeTypeAndValue:
-             type=2.5.4.3
-             value=0x0c06414b20525341
-
-
-         subjectPublicKeyInfo=SubjectPublicKeyInfo:
-          algorithm=AlgorithmIdentifier:
-           algorithm=1.2.840.113549.1.1.1
-           parameters=0x0500
-
-          subjectPublicKey=\
-   31795268810366627125468059984427145931784542919710733587190808152893\
-   60654221420809632888307722560713639336279560999760196831203900125133\
-   94283491012035327260476464503011428823183377093983165744076471996900\
-   00689245113739552615279534528145776090813314822312012607567736073057\
-   93682071373309092884909267211093730030075556179780800043813483945804\
-   36738524537229696496092020939452353934949121386913422195643653009653\
-   87743701570507112064401758218314760153081271981340812350365663466513\
-   62085332653425242470699284103365281746135463231612931259782554282056\
-   96678423183426464574470371256093994768443364562065834165394264792211\
-                                  64971369788464727307915820767918489601
-
-         extensions=Extensions:
-          Extension:
-           extnID=2.5.29.14
-           critical=False
-           extnValue=0x04148919595e0ef169f5cbbd47e134fce298cc693091
-          Extension:
-           extnID=2.5.29.35
-           critical=False
-           extnValue=0x301680148919595e0ef169f5cbbd47e134fce298cc693091
-          Extension:
-           extnID=2.5.29.19
-           critical=True
-           extnValue=0x30030101ff
-
-
-        signatureAlgorithm=AlgorithmIdentifier:
-         algorithm=1.2.840.113549.1.1.11
-         parameters=0x0500
-
-        signature=\
-   12977775424631768289542539102653382982431795551146145281750189553757\
-   94098257281326442898298599774059587807702785399451577511675203096385\
-   84696515487658087752698572711677485127950179162848670513028844653157\
-   51010913658016640170608413935780119349866986170148033301955753116984\
-   04127127390775654478023156464686042499902099074552338362298011520044\
-   62601031731035006478387581976102385523490530645254202408261935533953\
-   78873725256584269666918504793674497748455574822238022085054752185687\
-   44080765533772482185333268815846037955490610541772066517564837183282\
-   59395770398747304427903377260041058781683759981231103319933488336293\
-                                                                   25492
-
-      signatureAlgorithm=AlgorithmIdentifier:
-       algorithm=1.2.840.113549.1.1.10
-       parameters=RSASSA_PSS_params:
-        hashAlgorithm=AlgorithmIdentifier:
-         algorithm=2.16.840.1.101.3.4.2.1
-
-        maskGenAlgorithm=AlgorithmIdentifier:
-         algorithm=1.2.840.113549.1.1.8
-
-        saltLength=20
-        trailerField=1
-
-
-      signatureValue=\
-   0xab7fd2b0f854daa4e867fd16955cd3b9910e93b70c7403cfa8077f04193909d14e\
-   c6bed859b67476c84cc2c28842b9a087d5c39e11ca95f6961d272d97297cb6ed3c06\
-   2717696b032f4bf1f0f41ac20ae9706a8a4c17845ae2512950774173737010d6692c\
-   b726d1ab3a022092efcf27f0dd875b62e4df546814186f9e744cc34cf0778c877c57\
-   1d006be094aa683a5f66d6816d22dba104334163020c62d81903c41d353eaba94212\
-   47fc354fd3288a01921d93014100960324c3122feebfffc1007c83e98136e1b1fca1\
-   15835b9e67fa9056f290208fb99e1c8144839a5e13ccb1217dceeecc253fc7785bc8\
-                                  308382e052ffb867b40a0cd593176ed6ddc7b0
-     SignatureBlock:
-      certChain=SequenceOf:
-       Certificate:
-        tbsCertificate=TBSCertificate:
-         version=v3
-         serialNumber=43752118382009037811618748949928339462896457144
-         signature=AlgorithmIdentifier:
-          algorithm=1.2.840.10045.4.3.2
-
-         issuer=Name:
-          rdnSequence=RDNSequence:
-           RelativeDistinguishedName:
-            AttributeTypeAndValue:
-             type=2.5.4.10
-             value=0x0c0449455446
-           RelativeDistinguishedName:
-            AttributeTypeAndValue:
-             type=2.5.4.11
-             value=0x0c0452415453
-           RelativeDistinguishedName:
-            AttributeTypeAndValue:
-             type=2.5.4.3
-             value=0x0c07414b2050323536
-
-
-         validity=Validity:
-          notBefore=Time:
-           utcTime=250117171428Z
-
-          notAfter=Time:
-           generalTime=20520604171428Z
-
-
-         subject=Name:
-          rdnSequence=RDNSequence:
-           RelativeDistinguishedName:
-            AttributeTypeAndValue:
-             type=2.5.4.10
-             value=0x0c0449455446
-           RelativeDistinguishedName:
-            AttributeTypeAndValue:
-             type=2.5.4.11
-             value=0x0c0452415453
-           RelativeDistinguishedName:
-            AttributeTypeAndValue:
-             type=2.5.4.3
-             value=0x0c07414b2050323536
-
-
-         subjectPublicKeyInfo=SubjectPublicKeyInfo:
-          algorithm=AlgorithmIdentifier:
-           algorithm=1.2.840.10045.2.1
-           parameters=0x06082a8648ce3d030107
-
-          subjectPublicKey=\
-   57095560233504924588952816185508037812996307929249104847846164660564\
-   88839712339087758567046283628572504126189755002031148112756265577433\
-                                                     3675293173915140722
-
-         extensions=Extensions:
-          Extension:
-           extnID=2.5.29.14
-           critical=False
-           extnValue=0x04145b70a79817f79ff637d2f7e3dc446c2109d7bbd4
-          Extension:
-           extnID=2.5.29.35
-           critical=False
-           extnValue=0x301680145b70a79817f79ff637d2f7e3dc446c2109d7bbd4
-          Extension:
-           extnID=2.5.29.19
-           critical=True
-           extnValue=0x30030101ff
-
-
-        signatureAlgorithm=AlgorithmIdentifier:
-         algorithm=1.2.840.10045.4.3.2
-
-        signature=\
-   18216751979714603574557504315480141511553297913673112867639918069266\
-   48218048839904015520407896430131032024244860880583649829667093244967\
-                                     82518079519267269438816178719668437
-
-      signatureAlgorithm=AlgorithmIdentifier:
-       algorithm=1.2.840.10045.2.1
-       parameters=0x06082a8648ce3d030107
-
-      signatureValue=\
-   0x3046022100e416af2483667e73345ee297e563cf1639e41ab9bdcd01f98872fddb\
-   101e779d022100d06c6e1054292640eea1873230a399af0936760cbfc8023a8a2874\
-                                                              f9c5fc5ba8
-
-
-
-   DER Base64:
-   MIIIszCCAgsCAQIwggIEMCEGBioDh2cAADAXMBUGByoDh2cBAAAECjAxMDIwMzA0MDUw\
-   VAYGKgOHZwABMEowEgYHKgOHZwEBAQwHSFNNLTEyMzAMBgcqA4dnAQECAQH/\
-   MBQGByoDh2cBAQMMCU1vZGVsIEFCQzAQBgcqA4dnAQEEDAUzLjEuOTCBsgYGKgOHZwAC\
-   MIGnMC8GByoDh2cBAgAMJDI2ZDc2NWQ4LTFhZmQtNGRmYi1hMjkwLWNmODY3ZGRlY2Zh\
-   MTAMBgcqA4dnAQIDAQEAMGYGByoDh2cBAgEEWzBZMBMGByqGSM49AgEGCCqGSM49AwEH\
-   A0IABEIlSPiPt4L/teyjdERSxyoeVY+9b3O+\
-   XkjpMjLMRcWxbEzRDEy41bihcTnpSILImSVymTQl9BQZq36QpCpJQnIwgbIGBioDh2cA\
-   AjCBpzAvBgcqA4dnAQIADCQ0OWE5NmFjZS1lMzlhLTRmZDItYmVjMS0xMzE2NWE5OTYy\
-   MWMwDAYHKgOHZwECAwEB/\
-   zBmBgcqA4dnAQIBBFswWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAARCJUj4j7eC/\
-   7Xso3REUscqHlWPvW9zvl5I6TIyzEXFsWxM0QxMuNW4oXE56UiCyJklcpk0JfQUGat+\
-   kKQqSUJyMB8GBSoDhngAMBYwFAYFKgOGeAEMC3BhcnRpdGlvbiAxMIIGoDCCBHowggNF\
-   MIIDQTCCAimgAwIBAgIUWWuyy9RGarWD+\
-   k6k4ZswYmQ7cQ0wDQYJKoZIhvcNAQELBQAwLzENMAsGA1UECgwESUVURjENMAsGA1UEC\
-   wwEUkFUUzEPMA0GA1UEAwwGQUsgUlNBMCAXDTI1MDExNzE3MTMwM1oYDzIwNTIwNjA0M\
-   TcxMzAzWjAvMQ0wCwYDVQQKDARJRVRGMQ0wCwYDVQQLDARSQVRTMQ8wDQYDVQQDDAZBS\
-   yBSU0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCw+\
-   egZQ6eumJKq3hfKfED4dE/tL4FI5sjqont9ABVI+\
-   1GSqyi1bFBgsRjM0THllIdMbKmJtWwnKW8J+5OgNN8y6Xxv8JmM/\
-   Y5vQt2lis0fqXmG8UTz0VTWdlAXXmhUs6lSADvAaIe4RVrCsZ97L3ZQTryY7JRVcbB4k\
-   hUN3Gp0yg+801SXzoFTTa+UGIRLE66jH51aa5VXu99hnv1OiH8tQrjdi8mH6uG/\
-   icq4XuIeNWMF32wHqIOOPvQcWV3M5D2vxJEj702Ku6k9OQXkAo17qRSEonWW4HtLbtmS\
-   8He1JNPc/n3dVUm+\
-   fM6NoDXPoLP7j55G9zKyqGtGAWXAj1MTAgMBAAGjUzBRMB0GA1UdDgQWBBSJGVleDvFp\
-   9cu9R+E0/OKYzGkwkTAfBgNVHSMEGDAWgBSJGVleDvFp9cu9R+E0/\
-   OKYzGkwkTAPBgNVHRMBAf8EBTADAQH/\
-   MA0GCSqGSIb3DQEBCwUAA4IBAQBmzcTIPYhVNtMdrOb9ee9qYADlTuQl1y1mdrDPcC+\
-   zmwZuwKLJu89hvxmFdDrVNc6QsNKnH0fWtMZxU5UQTrqW2Wf0jLY3bjfJkCmTQahOK8X\
-   D3oQqfXVKCe+MGFUSh71BUXc4FIQzMJ6phG+5qiCqsD9BL/gFXf4ao+BI4SQhVWi6FR+\
-   JOBMxd91DYDyYr6NfddAbzaW7iDoVEWR1pvQAZbycWfv1KIY6ne2yQ0dSedOqIE9Odjq\
-   i2QkW4kD7qXRLYKcMPqe1SPao2xoS2Kz8SIdoLInLu7Cb3QC7n/\
-   oEbiK4JIVD29giMpudJ8gbBLLjwDrCls0yA+ng8n/\
-   wkki0MCsGCSqGSIb3DQEBCjAeoA0wCwYJYIZIAWUDBAIBoQ0wCwYJKoZIhvcNAQEIBII\
-   BAKt/0rD4VNqk6Gf9FpVc07mRDpO3DHQDz6gHfwQZOQnRTsa+\
-   2Fm2dHbITMLCiEK5oIfVw54RypX2lh0nLZcpfLbtPAYnF2lrAy9L8fD0GsIK6XBqikwX\
-   hFriUSlQd0Fzc3AQ1mkstybRqzoCIJLvzyfw3YdbYuTfVGgUGG+\
-   edEzDTPB3jId8Vx0Aa+CUqmg6X2bWgW0i26EEM0FjAgxi2BkDxB01PqupQhJH/\
-   DVP0yiKAZIdkwFBAJYDJMMSL+6//\
-   8EAfIPpgTbhsfyhFYNbnmf6kFbykCCPuZ4cgUSDml4TzLEhfc7uzCU/x3hbyDCDguBS/\
-   7hntAoM1ZMXbtbdx7AwggIeMIIBuzCCAbcwggFdoAMCAQICFAep6a/8hKR/\
-   Xf8D7fMOi6OQH5W4MAoGCCqGSM49BAMCMDAxDTALBgNVBAoMBElFVEYxDTALBgNVBAsM\
-   BFJBVFMxEDAOBgNVBAMMB0FLIFAyNTYwIBcNMjUwMTE3MTcxNDI4WhgPMjA1MjA2MDQx\
-   NzE0MjhaMDAxDTALBgNVBAoMBElFVEYxDTALBgNVBAsMBFJBVFMxEDAOBgNVBAMMB0FL\
-   IFAyNTYwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAARCJUj4j7eC/\
-   7Xso3REUscqHlWPvW9zvl5I6TIyzEXFsWxM0QxMuNW4oXE56UiCyJklcpk0JfQUGat+\
-   kKQqSUJyo1MwUTAdBgNVHQ4EFgQUW3CnmBf3n/\
-   Y30vfj3ERsIQnXu9QwHwYDVR0jBBgwFoAUW3CnmBf3n/\
-   Y30vfj3ERsIQnXu9QwDwYDVR0TAQH/BAUwAwEB/\
-   zAKBggqhkjOPQQDAgNIADBFAiEAkH8Erj/\
-   TLNoEfJIvokEEDVmhH5f7UQHdrrCyQWEhJegCICRsy/1Vqjo3qg/WrHospwcB2PaHYy+\
-   FnH79mznqO7jVMBMGByqGSM49AgEGCCqGSM49AwEHBEgwRgIhAOQWrySDZn5zNF7il+\
-   VjzxY55Bq5vc0B+Yhy/dsQHnedAiEA0GxuEFQpJkDuoYcyMKOZrwk2dgy/yAI6iih0+\
-                                                                 cX8W6g=
+   MIIGHTCCAaICAQEwggGbMIGkBgYqA4dnAAAwgZkwEwYHKgOHZwEAAIAI3q2+78r+\
+   ur4wGgYHKgOHZwEAAYMPMjAyNTAzMTQxMjAwMDBaMGYGByoDh2cBAAKAWzBZMBMGByqG\
+   SM49AgEGCCqGSM49AwEHA0IABHg6nODdpiL5gBboC67pNcAplkMiDkNyRSOm17mxXxyD\
+   ZncTIJmcuxNGJ3KeazgLPvvLSJNwQ97ZBiBFyvnEdaQwcwYGKgOHZwABMGkwFAYHKgOH\
+   ZwEBAIEJQWNtZSBDb3JwMBMGByoDh2cBAQKACEhTTS05MDAwMBAGByoDh2cBAQOBBTIu\
+   MS4wMAwGByoDh2cBAQuCAf8wDAYHKgOHZwEBDYQBAzAOBgcqA4dnAQEIhAMBUYAwfQYG\
+   KgOHZwACMHMwEgYHKgOHZwECAIEHa2V5LTAwMTAMBgcqA4dnAQICggEAMAwGByoDh2cB\
+   AgSCAf8wDAYHKgOHZwECA4IB/zAMBgcqA4dnAQIFggH/\
+   MCUGByoDh2cBAgeAGjAYBgYqA4dnAgQGBioDh2cCBgYGKgOHZwIIMIICgDCCAnwwggIi\
+   oBYEFFSaM6Z7Biar/pGo6p/\
+   S5U9rePTXooICBjCCAgIwggGooAMCAQICFBmTo7UUcTdSv4gLa5oEeW0acMJXMAoGCCq\
+   GSM49BAMCMEMxEjAQBgNVBAoMCWlldGYtcmF0czEdMBsGA1UECwwUcGtpeC1rZXktYXR\
+   0ZXN0YXRpb24xDjAMBgNVBAMMBUludENBMB4XDTI2MDMxNTA0MTM0NloXDTM2MDMxMjA\
+   0MTQ0NlowRTESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHR\
+   lc3RhdGlvbjEQMA4GA1UEAwwHdGVzdC1hazBZMBMGByqGSM49AgEGCCqGSM49AwEHA0I\
+   ABHg6nODdpiL5gBboC67pNcAplkMiDkNyRSOm17mxXxyDZncTIJmcuxNGJ3KeazgLPvv\
+   LSJNwQ97ZBiBFyvnEdaSjeDB2MAwGA1UdEwEB/\
+   wQCMAAwHQYDVR0OBBYEFFSaM6Z7Biar/pGo6p/\
+   S5U9rePTXMB8GA1UdIwQYMBaAFHi4aVcIhFtm6555uP0oMJK7ZIkWMA4GA1UdDwEB/\
+   wQEAwIHgDAWBgNVHSUEDzANBgsrBgEEAYK3XQQBATAKBggqhkjOPQQDAgNIADBFAiBNz\
+   mwHMl5iuJwBJjPeN0WPwV9mVs0/\
+   8znDKnBfwSJUEgIhAJgogpoTPdLWYMQOlLMJZoV60HYOR55wY8ojPW+\
+   mIjGQMAoGCCqGSM49BAMCBEgwRgIhANQuwbgTROf6y2u6gNE/\
+   4AmGV5ULdQEAOC4Fj7Aa1WZZAiEAhanV+9t+\
+   tOePoj9NHg3vI5nDlmDNwuvIfr4Eboco5rOgggHvMIIB6zCCAZKgAwIBAgIUKVUILxsP\
+   jxtsmh9VYf44gM48raQwCgYIKoZIzj0EAwIwRDESMBAGA1UECgwJaWV0Zi1yYXRzMR0w\
+   GwYDVQQLDBRwa2l4LWtleS1hdHRlc3RhdGlvbjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2\
+   MDMxNTA0MTM0NloXDTM2MDMxMjA0MTQ0NlowQzESMBAGA1UECgwJaWV0Zi1yYXRzMR0w\
+   GwYDVQQLDBRwa2l4LWtleS1hdHRlc3RhdGlvbjEOMAwGA1UEAwwFSW50Q0EwWTATBgcq\
+   hkjOPQIBBggqhkjOPQMBBwNCAAQs7QvDt/\
+   IzUt7GbdiJVgOkY9PGwpleWLekUXrTqqcOUkv6tMGS1ifrruTORmnshpLy8l8iywLiO2\
+   Rt0vVQVnD/o2MwYTAPBgNVHRMBAf8EBTADAQH/\
+   MB0GA1UdDgQWBBR4uGlXCIRbZuueebj9KDCSu2SJFjAfBgNVHSMEGDAWgBSgTPSv224z\
+   JiVmQ2SwrigBxnxV3jAOBgNVHQ8BAf8EBAMCAoQwCgYIKoZIzj0EAwIDRwAwRAIgR+\
+   IPx5jkSaC4bWHU1Pnm0fokmyj2kd/tipwQ+\
+                     NZFVhYCIEcaR3hxVJQMEISVpijFxEcwRtDC3I2mJOXNjOGs25zy
 
 Appendix B.  Acknowledgements
 
