@@ -1288,7 +1288,13 @@ A reference implementation of this specification can be found at https://github.
 It produces the following sample Evidence:
 
 ~~~
-{::include-fold sampledata/evidence1.b64}
+{::include sampledata/evidence1.pem}
+~~~
+
+This sample data embeds the AK and Intermediate CA certificate, but a Verifier will require the root CA certificate to verify the signature.
+
+~~~
+{::include sampledata/ca.crt}
 ~~~
 
 # Acknowledgements
