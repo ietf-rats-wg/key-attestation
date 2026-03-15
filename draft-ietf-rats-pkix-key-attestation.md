@@ -1288,7 +1288,7 @@ A reference implementation of this specification can be found at https://github.
 It produces the following sample Evidence:
 
 ~~~
-{::include-fold sampledata/idea3/evidence1.b64}
+{::include-fold sampledata/evidence1.b64}
 ~~~
 
 # Acknowledgements
