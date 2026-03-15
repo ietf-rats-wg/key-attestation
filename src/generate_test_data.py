@@ -50,6 +50,8 @@ def pretty_print_evidence(ev: Evidence, indent: int = 0) -> [str]:
         sid = sig["sid"]
         alg = _fmt_oid(sig["signatureAlgorithm"]["algorithm"])
         sv  = bytes(sig["signatureValue"]).hex()
+        if len(sv) > 24:
+            sv = sv[:24] + '...'
         strs_out.append(f"{pad}    SignatureBlock[{i}]:")
         strs_out.append(f"{pad}      algorithm      : {alg}")
         strs_out.append(f"{pad}      signatureValue : {sv[:48]}{'...' if len(sv) > 48 else ''}")

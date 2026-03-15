@@ -38,6 +38,6 @@ Evidence:
   Signatures (1):
     SignatureBlock[0]:
       algorithm      : 1.2.840.10045.4.3.2
-      signatureValue : 30450220412c614ede9add7892310a8e21a8aeb9cf460a05...
+      signatureValue : 304502206e0427ccaaffda8e...
       AK Certificate : present
   Intermediate Certificates:  (1)
