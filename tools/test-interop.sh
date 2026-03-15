@@ -8,6 +8,7 @@ PYTHON_BIN="${PYTHON_BIN:-${REPOROOT}/src/.venv/bin/python}"
 GO_BIN="${GO_BIN:-go}"
 OPENSSL_BIN="${OPENSSL_BIN:-openssl}"
 GOCACHE_DIR="${GOCACHE_DIR:-/tmp/go-build-key-attestation}"
+WORK_DIR="${WORK_DIR:-${REPOROOT}/go-cache}"
 
 EVIDENCE_FILE="${REPOROOT}/sampledata/evidence.b64"
 AK_CERT_FILE="${REPOROOT}/sampledata/ak.crt"
@@ -34,11 +35,12 @@ require_cmd "${OPENSSL_BIN}"
 [[ -x "${PYTHON_BIN}" ]] || fail "Python virtual environment not found at ${PYTHON_BIN}. Run 'make python-install' first."
 
 mkdir -p "${GOCACHE_DIR}"
+mkdir -p "${WORK_DIR}"
 
 echo "[2/5] Generating fresh sample evidence with Python"
 (
 	cd "${REPOROOT}"
-	"${PYTHON_BIN}" src/pkix_evidence_der.py >/tmp/pkix-python-interop.log
+	"${PYTHON_BIN}" src/generate_test_data.py >${WORK_DIR}/pkix-python-interop.log
 )
 
 require_file "${EVIDENCE_FILE}"
@@ -55,7 +57,7 @@ echo "[3/5] Verifying Python-generated certificate chain"
 echo "[4/5] Running Go decode/validate/verify against Python output"
 (
 	cd "${REPOROOT}"
-	GOCACHE="${GOCACHE_DIR}" "${GO_BIN}" run ./go-src/cmd/pkix-evidence decode -in "${EVIDENCE_FILE}" -format base64 >/tmp/pkix-go-decode.json
+	GOCACHE="${GOCACHE_DIR}" "${GO_BIN}" run ./go-src/cmd/pkix-evidence decode -in "${EVIDENCE_FILE}" -format base64 >${WORK_DIR}/pkix-go-decode.json
 )
 
 VALIDATE_OUTPUT="$(
@@ -77,5 +79,5 @@ CHAIN_OUTPUT="$(
 grep -q "signature\\[0\\]: ok" <<<"${CHAIN_OUTPUT}" || fail "Go chain verification failed: ${CHAIN_OUTPUT}"
 
 echo "[5/5] Interop test passed"
-echo "Python log: /tmp/pkix-python-interop.log"
-echo "Go decode output: /tmp/pkix-go-decode.json"
+echo "Python log: ${WORK_DIR}/pkix-python-interop.log"
+echo "Go decode output: ${WORK_DIR}/pkix-go-decode.json"
