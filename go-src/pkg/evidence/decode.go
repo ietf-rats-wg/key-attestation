@@ -46,7 +46,7 @@ func Parse(data []byte) (*Evidence, error) {
 func ReadEvidence(input []byte, format string) ([]byte, error) {
 	if format == "" || format == "auto" {
 		if pemBlock, _ := pem.Decode(input); pemBlock != nil {
-			return pemBlock.Bytes, nil
+			return decodeEvidencePEMBlock(pemBlock)
 		}
 		trimmed := bytes.TrimSpace(input)
 		if looksBase64(trimmed) {
@@ -64,7 +64,7 @@ func ReadEvidence(input []byte, format string) ([]byte, error) {
 		if block == nil {
 			return nil, errors.New("no PEM block found")
 		}
-		return block.Bytes, nil
+		return decodeEvidencePEMBlock(block)
 	case "base64":
 		trimmed := bytes.TrimSpace(input)
 		decoded, err := base64.StdEncoding.DecodeString(string(trimmed))
@@ -77,6 +77,13 @@ func ReadEvidence(input []byte, format string) ([]byte, error) {
 	default:
 		return nil, fmt.Errorf("unknown format: %s", format)
 	}
+}
+
+func decodeEvidencePEMBlock(block *pem.Block) ([]byte, error) {
+	if block.Type != "EVIDENCE" {
+		return nil, fmt.Errorf("unexpected PEM block type %q, want %q", block.Type, "EVIDENCE")
+	}
+	return block.Bytes, nil
 }
 
 func looksBase64(data []byte) bool {
