@@ -1371,6 +1371,17 @@ whether the storage properties of this key meet the requirements of a given cert
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
             <p id="section-toc.1-1.12.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-samples" class="internal xref">Samples</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.1">
+                <p id="section-toc.1-1.12.2.1.1"><a href="#appendix-A.1" class="auto internal xref">A.1</a>.  <a href="#name-simple-platform-evidence" class="internal xref">Simple Platform Evidence</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.2">
+                <p id="section-toc.1-1.12.2.2.1"><a href="#appendix-A.2" class="auto internal xref">A.2</a>.  <a href="#name-key-attestation-evidence" class="internal xref">Key Attestation Evidence</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.3">
+                <p id="section-toc.1-1.12.2.3.1"><a href="#appendix-A.3" class="auto internal xref">A.3</a>.  <a href="#name-multi-tenant-key-attestatio" class="internal xref">Multi-Tenant Key Attestation Evidence</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
             <p id="section-toc.1-1.13.1"><a href="#appendix-B" class="auto internal xref">Appendix B</a>.  <a href="#name-acknowledgements" class="internal xref">Acknowledgements</a></p>
@@ -3152,61 +3163,325 @@ such as the "nonce" claim of the "transaction" entity, introduced in this specif
 <a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-samples" class="section-name selfRef">Samples</a>
       </h2>
 <p id="appendix-A-1">A reference implementation of this specification can be found at https://github.com/ietf-rats-wg/key-attestation<a href="#appendix-A-1" class="pilcrow">¶</a></p>
-<p id="appendix-A-2">It produces the following sample Evidence:<a href="#appendix-A-2" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-A-3">
-<pre>
------BEGIN EVIDENCE-----
-MIIGHDCCAaICAQEwggGbMIGkBgYqA4dnAAAwgZkwEwYHKgOHZwEAAIAI3q2+78r+ur4w
-GgYHKgOHZwEAAYMPMjAyNTAzMTQxMjAwMDBaMGYGByoDh2cBAAKAWzBZMBMGByqGSM49
-AgEGCCqGSM49AwEHA0IABCEp/+tilK8NtMyyZTXOx6bDblc2pVJ53xjqII7XWZBN1qMz
-gI3Ac6cI7vqNVm84aAKVyG69wHB1RXWlqR0N/CIwcwYGKgOHZwABMGkwFAYHKgOHZwEB
-AIEJQWNtZSBDb3JwMBMGByoDh2cBAQKACEhTTS05MDAwMBAGByoDh2cBAQOBBTIuMS4w
-MAwGByoDh2cBAQuCAf8wDAYHKgOHZwEBDYQBAzAOBgcqA4dnAQEIhAMBUYAwfQYGKgOH
-ZwACMHMwEgYHKgOHZwECAIEHa2V5LTAwMTAMBgcqA4dnAQICggEAMAwGByoDh2cBAgSC
-Af8wDAYHKgOHZwECA4IB/zAMBgcqA4dnAQIFggH/MCUGByoDh2cBAgeAGjAYBgYqA4dn
-AgQGBioDh2cCBgYGKgOHZwIIMIICfjCCAnowggIhoBYEFI1Fd5C7wIznPEae14Y2JvQQ
-tbhIooICBTCCAgEwggGooAMCAQICFFCeay6JyU4vr+w9yZTK2eNr/b1OMAoGCCqGSM49
-BAMCMEMxEjAQBgNVBAoMCWlldGYtcmF0czEdMBsGA1UECwwUcGtpeC1rZXktYXR0ZXN0
-YXRpb24xDjAMBgNVBAMMBUludENBMB4XDTI2MDMxNTA1MzI0MloXDTM2MDMxMjA1MzM0
-MlowRTESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3Rh
-dGlvbjEQMA4GA1UEAwwHdGVzdC1hazBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABCEp
-/+tilK8NtMyyZTXOx6bDblc2pVJ53xjqII7XWZBN1qMzgI3Ac6cI7vqNVm84aAKVyG69
-wHB1RXWlqR0N/CKjeDB2MAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFI1Fd5C7wIznPEae
-14Y2JvQQtbhIMB8GA1UdIwQYMBaAFDnX/DMSTfNb4bJXUbHQ3cIovgg4MA4GA1UdDwEB
-/wQEAwIHgDAWBgNVHSUEDzANBgsrBgEEAYK3XQQBATAKBggqhkjOPQQDAgNHADBEAiAA
-4Q9WT7JlG7hRd59wGSvjqKKy21f33IvoM/HF8Tq27QIgGsMMoy4tl4h3775sPFhroCXI
-RCSnzA5OhAE676kVjyYwCgYIKoZIzj0EAwIERzBFAiAUqA4Gg0gWCEhS5NUqc7JmiWFx
-fu4BTv5xKVoyaH4+XgIhAL5QmGqynjSNMK6iM8tmG0ePEHde6hmZsKsIF2qTHk30oIIB
-8DCCAewwggGSoAMCAQICFHJI78JgjFUQwMvAMZfnriSi004jMAoGCCqGSM49BAMCMEQx
-EjAQBgNVBAoMCWlldGYtcmF0czEdMBsGA1UECwwUcGtpeC1rZXktYXR0ZXN0YXRpb24x
-DzANBgNVBAMMBlJvb3RDQTAeFw0yNjAzMTUwNTMyNDJaFw0zNjAzMTIwNTMzNDJaMEMx
-EjAQBgNVBAoMCWlldGYtcmF0czEdMBsGA1UECwwUcGtpeC1rZXktYXR0ZXN0YXRpb24x
-DjAMBgNVBAMMBUludENBMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE4HdyPCt8er/I
-WTBPQW16n/m4gngjZTk7KbCLmyKfcjxt3hXXhG/GeT5uyfD9Fg/lgkmbNMqneFcw25E9
-PEFbzaNjMGEwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUOdf8MxJN81vhsldRsdDd
-wii+CDgwHwYDVR0jBBgwFoAUyYnlsFj3xlwIpZD3nFBMkhGCXwwwDgYDVR0PAQH/BAQD
-AgKEMAoGCCqGSM49BAMCA0gAMEUCICTD48MLdqS8Y9QkOAIW46ygWrj5gE0s65k46Mqm
-fM7TAiEAmr8e8BvzGAhQ5H0f9s/1M02wJrBWFN+z8Sp1tA5wES0=
------END EVIDENCE-----
-</pre><a href="#appendix-A-3" class="pilcrow">¶</a>
-</div>
-<p id="appendix-A-4">This sample data embeds the AK and Intermediate CA certificate, but a Verifier will require the root CA certificate to verify the signature.<a href="#appendix-A-4" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-A-5">
+<p id="appendix-A-2">It produces the following sample Evidence.<a href="#appendix-A-2" class="pilcrow">¶</a></p>
+<p id="appendix-A-3">All signatures throughout the samples chain to the following root certificate:<a href="#appendix-A-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A-4">
 <pre>
 -----BEGIN CERTIFICATE-----
-MIIB7TCCAZOgAwIBAgIUJ7ZeDJCpIUXONZyTsEf4yJpKuIkwCgYIKoZIzj0EAwIw
+MIIB7DCCAZOgAwIBAgIUItoBbiFggv7ebphKycAfsBFSWsgwCgYIKoZIzj0EAwIw
 RDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3Rh
-dGlvbjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2MDMxNTA1MzI0MloXDTM2MDMxMjA1
-MzM0MlowRDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1h
+dGlvbjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2MDMxNTEwNDc1N1oXDTM2MDMxMjEw
+NDg1N1owRDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1h
 dHRlc3RhdGlvbjEPMA0GA1UEAwwGUm9vdENBMFkwEwYHKoZIzj0CAQYIKoZIzj0D
-AQcDQgAEb1Ro6rb2fpcoSDt9e207EbzKP4zOfqZuHIN4HujPr/98zj+jiq/x51JR
-hyfNfBB84NAg7u4X1KD0xQc+ha99PKNjMGEwDwYDVR0TAQH/BAUwAwEB/zAdBgNV
-HQ4EFgQUyYnlsFj3xlwIpZD3nFBMkhGCXwwwHwYDVR0jBBgwFoAUyYnlsFj3xlwI
-pZD3nFBMkhGCXwwwDgYDVR0PAQH/BAQDAgKEMAoGCCqGSM49BAMCA0gAMEUCIQDq
-i8a/ODW7ZFtT2FAuhhiihgbe/QRkbgHg4ioQNU6MegIgQVvu6zI44i3Jqs3M5BS3
-Ticc+cNRtFZGxcwccgJwQxk=
+AQcDQgAEeb7FqRbbsu3I4OAK7EWQPbg3KMtC027pxg68eYpBAAjUb1f1vtH5IOZ8
+WsSBXknC4vfO1NYDZJbfol5K5mJbg6NjMGEwDwYDVR0TAQH/BAUwAwEB/zAdBgNV
+HQ4EFgQUYYIOnSVEf4JOok6ceUKOofYpWe4wHwYDVR0jBBgwFoAUYYIOnSVEf4JO
+ok6ceUKOofYpWe4wDgYDVR0PAQH/BAQDAgKEMAoGCCqGSM49BAMCA0cAMEQCIBKO
+x4wlPGchUKJ4XUeh8FmG5ZDFxrSn2SHZIjDhH0MjAiB3f+wDjtoYJXMw2qQ35ooD
+MSbS27+Pu1mKVH/iJ1rb4w==
 -----END CERTIFICATE-----
-</pre><a href="#appendix-A-5" class="pilcrow">¶</a>
+</pre><a href="#appendix-A-4" class="pilcrow">¶</a>
+</div>
+<div id="simple-platform-evidence">
+<section id="appendix-A.1">
+        <h3 id="name-simple-platform-evidence">
+<a href="#appendix-A.1" class="section-number selfRef">A.1. </a><a href="#name-simple-platform-evidence" class="section-name selfRef">Simple Platform Evidence</a>
+        </h3>
+<p id="appendix-A.1-1">This example shows a minimal PKIX Evidence object with only transaction and platform entities a single signature where the AK key is identified only by
+its SHA1 hash KeyID. In other words, this Evidence describes only the HSM itself (rather than application keys stored within it), and it assumes
+that the Verifier will be able to look up the AK key by its SHA1 hash.<a href="#appendix-A.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A.1-2">
+<pre>
+-----BEGIN EVIDENCE-----
+MIIBmTCCASMCAQEwggEcMIGkBgYqA4dnAAAwgZkwEwYHKgOHZwEAAIAI3q2+78r+ur4w
+GgYHKgOHZwEAAYMPMjAyNTAzMTQxMjAwMDBaMGYGByoDh2cBAAKAWzBZMBMGByqGSM49
+AgEGCCqGSM49AwEHA0IABPChMrIy2qsBJB5ilxesBs4NJnO+3WHxKDEsfGziKGfyALk1
+XmRHxpTxC5rTm4Q5smAMJyOdRfCaz8YzJH+is8IwcwYGKgOHZwABMGkwFAYHKgOHZwEB
+AIEJQWNtZSBDb3JwMBMGByoDh2cBAQKBCEhTTS05MDAwMBAGByoDh2cBAQOBBTIuMS4w
+MAwGByoDh2cBAQuCAf8wDAYHKgOHZwEBDYQBAzAOBgcqA4dnAQEIhAMBUYAwcDBuMBig
+FgQUvXGU7udrNbU0kyfsiWsAsQQQqFYwCgYIKoZIzj0EAwIERjBEAiATgpEIqhrhMoB8
+TP6WKmrZ/VaCAOHqmQglOj0C5Vv0BAIgMg7FV/c+6U5+GPLuHCIkEppHs5004/TIZcZX
+ATaHM6A=
+-----END EVIDENCE-----
+</pre><a href="#appendix-A.1-2" class="pilcrow">¶</a>
+</div>
+<p id="appendix-A.1-3">Here is a pretty-print of the Evidence object:<a href="#appendix-A.1-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A.1-4">
+<pre>
+Evidence:
+  TbsEvidence:
+    version: 1
+    ReportedEntity[0]: id-evidence-entity-transaction
+      Claim[0]: id-evidence-claim-transaction-nonce
+              -&gt; [bytes] deadbeefcafebabe
+      Claim[1]: id-evidence-claim-transaction-timestamp
+              -&gt; [time] 20250314120000Z
+      Claim[2]: id-evidence-claim-transaction-ak-spki
+              -&gt; [bytes] 3059301306072a8648ce3d02...
+    ReportedEntity[1]: id-evidence-entity-platform
+      Claim[0]: id-evidence-claim-platform-vendor
+              -&gt; [utf8String] Acme Corp
+      Claim[1]: id-evidence-claim-platform-hwmodel
+              -&gt; [utf8String] HSM-9000
+      Claim[2]: id-evidence-claim-platform-hwversion
+              -&gt; [utf8String] 2.1.0
+      Claim[3]: id-evidence-claim-platform-fipsboot
+              -&gt; [bool] True
+      Claim[4]: id-evidence-claim-platform-fipslevel
+              -&gt; [int] 3
+      Claim[5]: id-evidence-claim-platform-uptime
+              -&gt; [int] 86400
+  Signatures (1):
+    SignatureBlock[0]:
+      algorithm      : 1.2.840.10045.4.3.2
+      signatureValue : 3044022013829108aa1ae132807c4cfe962a6ad9fd568200...
+      keyId          : bd7194eee76b35b5349327ec896b00b10410a856
+</pre><a href="#appendix-A.1-4" class="pilcrow">¶</a>
+</div>
+<p id="appendix-A.1-5">For completeness of the sample, the following AK and Intermediate CA certificates are required for verification:<a href="#appendix-A.1-5" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A.1-6">
+<pre>
+-----BEGIN CERTIFICATE-----
+MIICAjCCAaigAwIBAgIUF6gNQNQB1HFMsp3To3R7a4ATLFMwCgYIKoZIzj0EAwIw
+QzESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3Rh
+dGlvbjEOMAwGA1UEAwwFSW50Q0EwHhcNMjYwMzE1MTA0NzU3WhcNMzYwMzEyMTA0
+ODU3WjBFMRIwEAYDVQQKDAlpZXRmLXJhdHMxHTAbBgNVBAsMFHBraXgta2V5LWF0
+dGVzdGF0aW9uMRAwDgYDVQQDDAd0ZXN0LWFrMFkwEwYHKoZIzj0CAQYIKoZIzj0D
+AQcDQgAE8KEysjLaqwEkHmKXF6wGzg0mc77dYfEoMSx8bOIoZ/IAuTVeZEfGlPEL
+mtObhDmyYAwnI51F8JrPxjMkf6KzwqN4MHYwDAYDVR0TAQH/BAIwADAdBgNVHQ4E
+FgQUvXGU7udrNbU0kyfsiWsAsQQQqFYwHwYDVR0jBBgwFoAU72MOUIF1rTZFQ20F
+C1sEWIns71AwDgYDVR0PAQH/BAQDAgeAMBYGA1UdJQQPMA0GCysGAQQBgrddBAEB
+MAoGCCqGSM49BAMCA0gAMEUCIQCCXDtUq4bfOcBA++nXF6fYKHigzboNiQiBH2ht
+C/JPEAIgClrom5f/MXBdkZ5OWi1Oh6asKp3mf/0ZFGRJN+f7wJE=
+-----END CERTIFICATE-----
+
+-----BEGIN CERTIFICATE-----
+MIIB7TCCAZKgAwIBAgIUXb4SjNMSwp3HwFLy4myfAMjtYzEwCgYIKoZIzj0EAwIw
+RDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3Rh
+dGlvbjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2MDMxNTEwNDc1N1oXDTM2MDMxMjEw
+NDg1N1owQzESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1h
+dHRlc3RhdGlvbjEOMAwGA1UEAwwFSW50Q0EwWTATBgcqhkjOPQIBBggqhkjOPQMB
+BwNCAAR5edp+UeJiTrBaEHK2SClKcqEz7QWGbdV/6JMSO00zE8mGsOZK2SjxjpWS
+BSaWpRIpw9vuBVnXbyWCA9cCEmqTo2MwYTAPBgNVHRMBAf8EBTADAQH/MB0GA1Ud
+DgQWBBTvYw5QgXWtNkVDbQULWwRYiezvUDAfBgNVHSMEGDAWgBRhgg6dJUR/gk6i
+Tpx5Qo6h9ilZ7jAOBgNVHQ8BAf8EBAMCAoQwCgYIKoZIzj0EAwIDSQAwRgIhAJnS
+WAp2voL45kwt4ONQVKtxnUzA3tNwbDwlPHk7x3ThAiEA9rGO5j2TCUGhOU/FvUi1
+1nrQ2nWqr0+y+oqVtrEV1Fo=
+-----END CERTIFICATE-----
+</pre><a href="#appendix-A.1-6" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="key-attestation-evidence">
+<section id="appendix-A.2">
+        <h3 id="name-key-attestation-evidence">
+<a href="#appendix-A.2" class="section-number selfRef">A.2. </a><a href="#name-key-attestation-evidence" class="section-name selfRef">Key Attestation Evidence</a>
+        </h3>
+<p id="appendix-A.2-1">This example shows a PKIX Evidence object that is attesting two different application keys held within the HSM.
+For the purposes of this example, the Platform Entity is kept short.
+This example embeds the AK and Intermediate CA certificates in the Evidence object. It chains to the same root as above.<a href="#appendix-A.2-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A.2-2">
+<pre>
+-----BEGIN EVIDENCE-----
+MIIGwjCCAl4CAQEwggJXMIGkBgYqA4dnAAAwgZkwEwYHKgOHZwEAAIAIvu/K/rq+3q0w
+GgYHKgOHZwEAAYMPMjAyNTAzMTQxMjAwMDBaMGYGByoDh2cBAAKAWzBZMBMGByqGSM49
+AgEGCCqGSM49AwEHA0IABPChMrIy2qsBJB5ilxesBs4NJnO+3WHxKDEsfGziKGfyALk1
+XmRHxpTxC5rTm4Q5smAMJyOdRfCaz8YzJH+is8IwHwYGKgOHZwABMBUwEwYHKgOHZwEB
+AoEISFNNLTkwMDAwgeYGBioDh2cAAjCB2zASBgcqA4dnAQIAgQdrZXktMDAxMGYGByoD
+h2cBAgGAWzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABPpbeKQzxnDP+ovR/l+SII6r
+5URss0gHPXbPUKVIN6nGkVNQCev7C2rQDlpTvzF6eyjsUeBQTETSqVqwGXEHqxgwDAYH
+KgOHZwECAoIBADAMBgcqA4dnAQIEggH/MAwGByoDh2cBAgOCAf8wDAYHKgOHZwECBYIB
+/zAlBgcqA4dnAQIHgBowGAYGKgOHZwIEBgYqA4dnAgYGBioDh2cCCDCBowYGKgOHZwAC
+MIGYMBIGByoDh2cBAgCBB2tleS0wMDIwZgYHKgOHZwECAYBbMFkwEwYHKoZIzj0CAQYI
+KoZIzj0DAQcDQgAEGgZdvdZ6C6JZ7h2nRHdFvjM1aK3xl7vav2vGxbQI8UxPFOlQuHiq
+LekAZcfdcfFO1d36GXwVHCzBgRzOh0wx2DAMBgcqA4dnAQICggH/MAwGByoDh2cBAgOC
+AQAwggJnMIICYzCCAgqiggIGMIICAjCCAaigAwIBAgIUF6gNQNQB1HFMsp3To3R7a4AT
+LFMwCgYIKoZIzj0EAwIwQzESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4
+LWtleS1hdHRlc3RhdGlvbjEOMAwGA1UEAwwFSW50Q0EwHhcNMjYwMzE1MTA0NzU3WhcN
+MzYwMzEyMTA0ODU3WjBFMRIwEAYDVQQKDAlpZXRmLXJhdHMxHTAbBgNVBAsMFHBraXgt
+a2V5LWF0dGVzdGF0aW9uMRAwDgYDVQQDDAd0ZXN0LWFrMFkwEwYHKoZIzj0CAQYIKoZI
+zj0DAQcDQgAE8KEysjLaqwEkHmKXF6wGzg0mc77dYfEoMSx8bOIoZ/IAuTVeZEfGlPEL
+mtObhDmyYAwnI51F8JrPxjMkf6KzwqN4MHYwDAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQU
+vXGU7udrNbU0kyfsiWsAsQQQqFYwHwYDVR0jBBgwFoAU72MOUIF1rTZFQ20FC1sEWIns
+71AwDgYDVR0PAQH/BAQDAgeAMBYGA1UdJQQPMA0GCysGAQQBgrddBAEBMAoGCCqGSM49
+BAMCA0gAMEUCIQCCXDtUq4bfOcBA++nXF6fYKHigzboNiQiBH2htC/JPEAIgClrom5f/
+MXBdkZ5OWi1Oh6asKp3mf/0ZFGRJN+f7wJEwCgYIKoZIzj0EAwIERzBFAiEAhiboNOTq
+1we90C8SgWS60GvobiOZBgP9Qxz99LMmvyoCID8J04zYi3tmhHZdd49E4c9osYMhlM23
+g6Bulcgj+D50oIIB8TCCAe0wggGSoAMCAQICFF2+EozTEsKdx8BS8uJsnwDI7WMxMAoG
+CCqGSM49BAMCMEQxEjAQBgNVBAoMCWlldGYtcmF0czEdMBsGA1UECwwUcGtpeC1rZXkt
+YXR0ZXN0YXRpb24xDzANBgNVBAMMBlJvb3RDQTAeFw0yNjAzMTUxMDQ3NTdaFw0zNjAz
+MTIxMDQ4NTdaMEMxEjAQBgNVBAoMCWlldGYtcmF0czEdMBsGA1UECwwUcGtpeC1rZXkt
+YXR0ZXN0YXRpb24xDjAMBgNVBAMMBUludENBMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcD
+QgAEeXnaflHiYk6wWhBytkgpSnKhM+0Fhm3Vf+iTEjtNMxPJhrDmStko8Y6VkgUmlqUS
+KcPb7gVZ128lggPXAhJqk6NjMGEwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQU72MO
+UIF1rTZFQ20FC1sEWIns71AwHwYDVR0jBBgwFoAUYYIOnSVEf4JOok6ceUKOofYpWe4w
+DgYDVR0PAQH/BAQDAgKEMAoGCCqGSM49BAMCA0kAMEYCIQCZ0lgKdr6C+OZMLeDjUFSr
+cZ1MwN7TcGw8JTx5O8d04QIhAPaxjuY9kwlBoTlPxb1ItdZ60Np1qq9PsvqKlbaxFdRa
+-----END EVIDENCE-----
+</pre><a href="#appendix-A.2-2" class="pilcrow">¶</a>
+</div>
+<p id="appendix-A.2-3">Here is a pretty-print of the Evidence object:<a href="#appendix-A.2-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A.2-4">
+<pre>
+Evidence:
+  TbsEvidence:
+    version: 1
+    ReportedEntity[0]: id-evidence-entity-transaction
+      Claim[0]: id-evidence-claim-transaction-nonce
+              -&gt; [bytes] beefcafebabedead
+      Claim[1]: id-evidence-claim-transaction-timestamp
+              -&gt; [time] 20250314120000Z
+      Claim[2]: id-evidence-claim-transaction-ak-spki
+              -&gt; [bytes] 3059301306072a8648ce3d02...
+    ReportedEntity[1]: id-evidence-entity-platform
+      Claim[0]: id-evidence-claim-platform-hwmodel
+              -&gt; [utf8String] HSM-9000
+    ReportedEntity[2]: id-evidence-entity-key
+      Claim[0]: id-evidence-claim-key-identifier
+              -&gt; [utf8String] key-001
+      Claim[1]: id-evidence-claim-key-spki
+              -&gt; [bytes] 3059301306072a8648ce3d02...
+      Claim[2]: id-evidence-claim-key-extractable
+              -&gt; [bool] False
+      Claim[3]: id-evidence-claim-key-never-extractable
+              -&gt; [bool] True
+      Claim[4]: id-evidence-claim-key-sensitive
+              -&gt; [bool] True
+      Claim[5]: id-evidence-claim-key-local
+              -&gt; [bool] True
+      Claim[6]: id-evidence-claim-key-purpose
+              -&gt; [bytes] 301806062a03876702040606...
+    ReportedEntity[3]: id-evidence-entity-key
+      Claim[0]: id-evidence-claim-key-identifier
+              -&gt; [utf8String] key-002
+      Claim[1]: id-evidence-claim-key-spki
+              -&gt; [bytes] 3059301306072a8648ce3d02...
+      Claim[2]: id-evidence-claim-key-extractable
+              -&gt; [bool] True
+      Claim[3]: id-evidence-claim-key-sensitive
+              -&gt; [bool] False
+  Signatures (1):
+    SignatureBlock[0]:
+      algorithm      : 1.2.840.10045.4.3.2
+      signatureValue : 30450221008626e834e4ead707bdd02f128164bad06be86e...
+      AK Certificate : present
+  Intermediate Certificates:  (1)
+</pre><a href="#appendix-A.2-4" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="multi-tenant-key-attestation-evidence">
+<section id="appendix-A.3">
+        <h3 id="name-multi-tenant-key-attestatio">
+<a href="#appendix-A.3" class="section-number selfRef">A.3. </a><a href="#name-multi-tenant-key-attestatio" class="section-name selfRef">Multi-Tenant Key Attestation Evidence</a>
+        </h3>
+<p id="appendix-A.3-1">To exercise fuller functionality of the PKIX Evidence object, this example shows how a vendor might represent a multi-tenant HSM architecture.
+For the purposes of this example, consider the following hypothetical cloud HSM architecture:
+multiple physical HSMs are clustered such that logical tenants can span across multiple physical HSMs.
+Consider that in such a setup each physical HSM has has its own root hardware AK, as well, each tenant has a logical AK which spans multiple HSMs.<a href="#appendix-A.3-1" class="pilcrow">¶</a></p>
+<p id="appendix-A.3-2">Such a hypothetical architecture is meant to capture the complexities of hosting key management services withith a public cloud.<a href="#appendix-A.3-2" class="pilcrow">¶</a></p>
+<p id="appendix-A.3-3">In such an architecture, a key attestation would carry multiple Platform Attestations, one describing the physical HSM producing the evidence,
+as well as one describing the logical tenant who controls the application key being attested.
+Similarly, the evidence will carry signatures from both the physical HSM and the logical tenant AKs.
+For example, if you made repeated queries to the service to attest the same application key, you would expect the tenant AK to stay consistent,
+but the physical HSM AK would change depending on load balancing between HSMs in the cluster.<a href="#appendix-A.3-3" class="pilcrow">¶</a></p>
+<p id="appendix-A.3-4">In this example, both the HSM AK and Tenant AK chain to the same root CA certificate above, via different intermediate CAs.<a href="#appendix-A.3-4" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A.3-5">
+<pre>
+Evidence:
+  TbsEvidence:
+    version: 1
+    ReportedEntity[0]: id-evidence-entity-transaction
+      Claim[0]: id-evidence-claim-transaction-nonce
+              -&gt; [bytes] cafebabedeadbeef
+      Claim[1]: id-evidence-claim-transaction-timestamp
+              -&gt; [time] 20250314120000Z
+      Claim[2]: id-evidence-claim-transaction-ak-spki
+              -&gt; [bytes] 3059301306072a8648ce3d02...
+      Claim[3]: id-evidence-claim-transaction-ak-spki
+              -&gt; [bytes] 3059301306072a8648ce3d02...
+    ReportedEntity[1]: id-evidence-entity-platform
+      Claim[0]: id-evidence-claim-platform-hwmodel
+              -&gt; [utf8String] HSM-9000
+    ReportedEntity[2]: id-evidence-entity-platform
+      Claim[0]: id-evidence-claim-platform-vendor
+              -&gt; [utf8String] tenant-001
+    ReportedEntity[3]: id-evidence-entity-key
+      Claim[0]: id-evidence-claim-key-identifier
+              -&gt; [utf8String] key-001
+      Claim[1]: id-evidence-claim-key-spki
+              -&gt; [bytes] 3059301306072a8648ce3d02...
+      Claim[2]: id-evidence-claim-key-extractable
+              -&gt; [bool] False
+      Claim[3]: id-evidence-claim-key-never-extractable
+              -&gt; [bool] True
+      Claim[4]: id-evidence-claim-key-sensitive
+              -&gt; [bool] True
+      Claim[5]: id-evidence-claim-key-local
+              -&gt; [bool] True
+      Claim[6]: id-evidence-claim-key-purpose
+              -&gt; [bytes] 301806062a03876702040606...
+  Signatures (2):
+    SignatureBlock[0]:
+      algorithm      : 1.2.840.10045.4.3.2
+      signatureValue : 304402203029e525b7523138db34a8029a10be29c57af11d...
+      AK Certificate : present
+    SignatureBlock[1]:
+      algorithm      : 1.2.840.10045.4.3.2
+      signatureValue : 304402202d7fe72f0ef22387e07aa4b434490b7cfa792be3...
+      AK Certificate : present
+  Intermediate Certificates:  (2)
+</pre><a href="#appendix-A.3-5" class="pilcrow">¶</a>
+</div>
+<p id="appendix-A.3-6">Here is a pretty-print of the Evidence object:<a href="#appendix-A.3-6" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="appendix-A.3-7">
+<pre>
+Evidence:
+  TbsEvidence:
+    version: 1
+    ReportedEntity[0]: id-evidence-entity-transaction
+      Claim[0]: id-evidence-claim-transaction-nonce
+              -&gt; [bytes] cafebabedeadbeef
+      Claim[1]: id-evidence-claim-transaction-timestamp
+              -&gt; [time] 20250314120000Z
+      Claim[2]: id-evidence-claim-transaction-ak-spki
+              -&gt; [bytes] 3059301306072a8648ce3d02...
+      Claim[3]: id-evidence-claim-transaction-ak-spki
+              -&gt; [bytes] 3059301306072a8648ce3d02...
+    ReportedEntity[1]: id-evidence-entity-platform
+      Claim[0]: id-evidence-claim-platform-hwmodel
+              -&gt; [utf8String] HSM-9000
+    ReportedEntity[2]: id-evidence-entity-platform
+      Claim[0]: id-evidence-claim-platform-vendor
+              -&gt; [utf8String] tenant-001
+    ReportedEntity[3]: id-evidence-entity-key
+      Claim[0]: id-evidence-claim-key-identifier
+              -&gt; [utf8String] key-001
+      Claim[1]: id-evidence-claim-key-spki
+              -&gt; [bytes] 3059301306072a8648ce3d02...
+      Claim[2]: id-evidence-claim-key-extractable
+              -&gt; [bool] False
+      Claim[3]: id-evidence-claim-key-never-extractable
+              -&gt; [bool] True
+      Claim[4]: id-evidence-claim-key-sensitive
+              -&gt; [bool] True
+      Claim[5]: id-evidence-claim-key-local
+              -&gt; [bool] True
+      Claim[6]: id-evidence-claim-key-purpose
+              -&gt; [bytes] 301806062a03876702040606...
+  Signatures (2):
+    SignatureBlock[0]:
+      algorithm      : 1.2.840.10045.4.3.2
+      signatureValue : 304402203029e525b7523138db34a8029a10be29c57af11d...
+      AK Certificate : present
+    SignatureBlock[1]:
+      algorithm      : 1.2.840.10045.4.3.2
+      signatureValue : 304402202d7fe72f0ef22387e07aa4b434490b7cfa792be3...
+      AK Certificate : present
+  Intermediate Certificates:  (2)
+</pre><a href="#appendix-A.3-7" class="pilcrow">¶</a>
+</div>
+</section>
 </div>
 </section>
 </div>
