@@ -32,7 +32,7 @@ python3 -m venv src/.venv
 From the repository root:
 
 ```bash
-./src/.venv/bin/python src/pkix_evidence_der.py
+./src/.venv/bin/python src/pkix_evidence.py
 ```
 
 This performs the following steps:
@@ -151,5 +151,5 @@ If you activate the environment first, you can also run the script more simply:
 
 ```bash
 source src/.venv/bin/activate
-python src/pkix_evidence_der.py
+python src/pkix_evidence.py
 ```

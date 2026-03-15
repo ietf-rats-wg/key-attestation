@@ -152,7 +152,7 @@ def create_end_entity_cert(
     return private_key, cert
 
 
-def generateCerts() -> tuple[ec.EllipticCurvePrivateKey, x509.Certificate, x509.Certificate, x509.Certificate]:
+def generateAndSaveCerts() -> tuple[ec.EllipticCurvePrivateKey, x509.Certificate, x509.Certificate, x509.Certificate]:
     """
     Returns the ak.key, ak.crt, int.ctr, and ca.crt.
     Saves the ak.crt and ca.crt to disk in the /sampledata dir
@@ -177,7 +177,7 @@ def generateCerts() -> tuple[ec.EllipticCurvePrivateKey, x509.Certificate, x509.
 
 
 def main():
-    generateCerts()
+    generateAndSaveCerts()
 
 
 if __name__ == "__main__":
