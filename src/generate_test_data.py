@@ -1,3 +1,5 @@
+import textwrap
+
 from pkix_evidence import *
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -202,6 +204,20 @@ def build_example2(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
 
     return ev.sign_and_encode(ak_cert, ak_private_key, int_cert)
 
+def write_b64_and_pem(file_basename: Path, data: bytes):
+    # write Base64
+    with open(file_basename.with_suffix('.b64'), "w") as f:
+        f.write(base64.b64encode(data).decode("ascii"))
+
+    # write PEM
+    with open(file_basename.with_suffix('.pem'), "w") as f:
+        f.write("-----BEGIN EVIDENCE-----\n")
+        for line in textwrap.wrap(
+                base64.b64encode(data).decode("ascii"),
+                width=68, replace_whitespace=False,
+                drop_whitespace=False):
+            f.write(line+'\n')
+        f.write("-----END EVIDENCE-----\n")
 
 if __name__ == "__main__":
     # generate AK key and cert chain
@@ -209,17 +225,8 @@ if __name__ == "__main__":
 
     # Build Example 1
     ev_der = build_example1(ak_private_key, ak_cert, int_cert)
-
-    evidence_file = SAMPLEDATA_DIR / "evidence1.b64"
-    with evidence_file.open("w") as f:
-        print(f"Writing {evidence_file} ...")
-        f.write(base64.b64encode(ev_der).decode("ascii"))
+    write_b64_and_pem(SAMPLEDATA_DIR / "evidence1", ev_der)
 
     # Build Example 2
     ev_der = build_example2(ak_private_key, ak_cert, int_cert)
-
-    evidence_file = SAMPLEDATA_DIR / "evidence2.b64"
-    with evidence_file.open("w") as f:
-        print(f"Writing {evidence_file} ...")
-        f.write(base64.b64encode(ev_der).decode("ascii"))
-
+    write_b64_and_pem(SAMPLEDATA_DIR / "evidence2", ev_der)
