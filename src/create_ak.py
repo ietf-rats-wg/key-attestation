@@ -118,6 +118,8 @@ def create_end_entity_cert(
     private_key = generate_ec_key()
     subject = build_name("test-ak", "pkix-key-attestation", "ietf-rats")
     now = datetime.now(timezone.utc)
+    
+    id_kp_attest_oid = x509.ObjectIdentifier("1.3.6.1.4.1.39901.4.1.1")
 
     cert = (
         x509.CertificateBuilder()
@@ -147,6 +149,7 @@ def create_end_entity_cert(
         .add_extension(
             x509.Ex
         )
+        .add_extension(x509.ExtendedKeyUsage([id_kp_attest_oid]), critical=False)
         .sign(private_key=ca_private_key, algorithm=hashes.SHA256())
     )
 
