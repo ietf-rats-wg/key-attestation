@@ -111,7 +111,7 @@ def build_example1(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
     # Platform entity
     plat_claims = ReportedClaimSeq()
     plat_claims[0] = make_claim("id-evidence-claim-platform-vendor",    "Acme Corp")
-    plat_claims[1] = make_claim("id-evidence-claim-platform-hwmodel",   "HSM-9000")
+    plat_claims[1] = make_claim("id-evidence-claim-platform-hwmodel",   "HSM-9000".encode('utf-8'))
     plat_claims[2] = make_claim("id-evidence-claim-platform-hwversion", "2.1.0")
     plat_claims[3] = make_claim("id-evidence-claim-platform-fipsboot",  True)
     plat_claims[4] = make_claim("id-evidence-claim-platform-fipslevel", 3)
@@ -164,7 +164,7 @@ def build_example2(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
 
     # Platform entity
     plat_claims = ReportedClaimSeq()
-    plat_claims.append(make_claim("id-evidence-claim-platform-hwmodel",   "HSM-9000"))
+    plat_claims.append(make_claim("id-evidence-claim-platform-hwmodel",   "HSM-9000".encode('utf-8')))
 
     plat_entity = ReportedEntity()
     plat_entity["entityType"] = mkoid("id-evidence-entity-platform")
@@ -179,7 +179,7 @@ def build_example2(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
     key_claims = ReportedClaimSeq()
     key_claims.append(make_claim(
         "id-evidence-claim-key-identifier",
-        "key-001",
+        "9a25f603-a2c4-4dad-9ee0-a1b4e771f2c3",
     ))
     key_claims.append(make_claim(
         "id-evidence-claim-key-spki",
@@ -194,7 +194,9 @@ def build_example2(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
     key_claims.append(make_claim("id-evidence-claim-key-local",             True))
     key_claims.append(make_claim(
         "id-evidence-claim-key-purpose",
-        encode_key_capabilities(build_example_key_capabilities()),
+        encode_key_capabilities(build_key_capabilities_from_oids([
+            "id-evidence-key-capability-sign"
+            ])),
     ))
 
     key_entity = ReportedEntity()
@@ -210,7 +212,7 @@ def build_example2(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
     key_claims = ReportedClaimSeq()
     key_claims.append(make_claim(
         "id-evidence-claim-key-identifier",
-        "key-002",
+        "85704b99-7097-4bca-93b6-13352f865ace",
     ))
     key_claims.append(make_claim(
         "id-evidence-claim-key-spki",
@@ -282,7 +284,7 @@ def build_example3(ak_private_key: ec.EllipticCurvePrivateKey,
 
     # Platform entity
     plat_claims = ReportedClaimSeq()
-    plat_claims.append(make_claim("id-evidence-claim-platform-hwmodel",   "HSM-9000"))
+    plat_claims.append(make_claim("id-evidence-claim-platform-hwmodel",   "HSM-9000".encode('utf-8')))
     plat_claims.append(make_claim("id-evidence-claim-platform-hwserial",  "17-a1b2"))
 
     plat_entity = ReportedEntity()
@@ -323,7 +325,9 @@ def build_example3(ak_private_key: ec.EllipticCurvePrivateKey,
     key_claims.append(make_claim("id-evidence-claim-key-local",             True))
     key_claims.append(make_claim(
         "id-evidence-claim-key-purpose",
-        encode_key_capabilities(build_example_key_capabilities()),
+        encode_key_capabilities(build_key_capabilities_from_oids([
+            "id-evidence-key-capability-sign"
+            ])),
     ))
 
     key_entity = ReportedEntity()

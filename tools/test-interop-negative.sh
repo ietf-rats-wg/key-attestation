@@ -7,7 +7,7 @@ REPOROOT="$(cd "${SCRIPTDIR}/.." && pwd -P)"
 PYTHON_BIN="${PYTHON_BIN:-${REPOROOT}/src/.venv/bin/python}"
 GO_BIN="${GO_BIN:-go}"
 GOCACHE_DIR="${GOCACHE_DIR:-/tmp/go-build-key-attestation}"
-WORK_DIR="${WORK_DIR:-${REPOROOT}/go-cache}"
+WORK_DIR="${WORK_DIR:-${REPOROOT}/go-work}"
 TMPDIR_INTEROP="$(mktemp -d /tmp/pkix-interop-negative.XXXXXX)"
 trap 'rm -rf "${TMPDIR_INTEROP}"' EXIT
 

@@ -8,7 +8,7 @@ PYTHON_BIN="${PYTHON_BIN:-${REPOROOT}/src/.venv/bin/python}"
 GO_BIN="${GO_BIN:-go}"
 OPENSSL_BIN="${OPENSSL_BIN:-openssl}"
 GOCACHE_DIR="${GOCACHE_DIR:-/tmp/go-build-key-attestation}"
-WORK_DIR="${WORK_DIR:-${REPOROOT}/go-cache}"
+WORK_DIR="${WORK_DIR:-${REPOROOT}/go-work}"
 
 EVIDENCE_FILE="${REPOROOT}/sampledata/evidence1.b64"
 AK_CERT_FILE="${REPOROOT}/sampledata/ak.crt"

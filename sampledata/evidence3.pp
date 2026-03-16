@@ -12,7 +12,7 @@ Evidence:
               -> [bytes] 3059301306072a8648ce3d02...
     ReportedEntity[1]: id-evidence-entity-platform
       Claim[0]: id-evidence-claim-platform-hwmodel
-              -> [utf8String] HSM-9000
+              -> [bytes] 48534d2d39303030
       Claim[1]: id-evidence-claim-platform-hwserial
               -> [utf8String] 17-a1b2
     ReportedEntity[2]: id-evidence-entity-platform
@@ -34,14 +34,14 @@ Evidence:
       Claim[5]: id-evidence-claim-key-local
               -> [bool] True
       Claim[6]: id-evidence-claim-key-purpose
-              -> [bytes] 301806062a03876702040606...
+              -> [bytes] 300806062a0387670204
   Signatures (2):
     SignatureBlock[0]:
       algorithm      : 1.2.840.10045.4.3.2
-      signatureValue : 304402201848fc67aa9eacd6...
+      signatureValue : 3045022100d6fe9e97211470...
       AK Certificate : present
     SignatureBlock[1]:
       algorithm      : 1.2.840.10045.4.3.2
-      signatureValue : 30460221008b88e8ccd08f85...
+      signatureValue : 3044022077540b4bd32fe389...
       AK Certificate : present
   Intermediate Certificates:  (2)

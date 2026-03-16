@@ -21,6 +21,7 @@ from cryptography import x509
 from cryptography.hazmat.primitives.asymmetric import ec
 
 from pathlib import Path
+from typing import List
 
 # ---------------------------------------------------------------------------
 # Imports
@@ -541,16 +542,11 @@ def tagged_component_value(schema_component, value):
             tagged.setComponentByPosition(idx, component)
     return tagged
 
-
-def build_example_key_capabilities() -> EvidenceKeyCapabilities:
-    """Build an EvidenceKeyCapabilities listing sign, verify, and derive."""
+def build_key_capabilities_from_oids(oids:List[str]) -> EvidenceKeyCapabilities:
+    """Build an EvidenceKeyCapabilities based on the provided OIDs. Each OID can be
+    specified using a name (id-evidence-key-capability-sign) or a dotted notation (1.2.3.999.2.4)"""
     caps = EvidenceKeyCapabilities()
-    for i, name in enumerate([
-        "id-evidence-key-capability-sign",
-        "id-evidence-key-capability-verify",
-        "id-evidence-key-capability-derive",
-    ]):
+    for i, name in enumerate(oids):
         caps[i] = mkoid(name)
     return caps
-
 
