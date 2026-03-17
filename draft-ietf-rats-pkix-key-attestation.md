@@ -1343,36 +1343,15 @@ Here is a pretty-print of the Evidence object:
 ~~~
 
 
-## Multi-Tenant Key Attestation Evidence
+## Multi-HSM and Multi-Tenant Key Attestation Evidence
 
-To exercise fuller functionality of the PKIX Evidence object, this example shows how a vendor might represent a multi-tenant multi-HSM cloud architecture.
-For the purposes of this example, consider a hypothetical cloud HSM service where
-multiple physical HSMs are clustered such that logical tenants can span across multiple physical HSMs.
-It could be, for example, that application keys are stored encrypted in a database such that any HSM in the cluster can decrypt and use them.
-Consider that in such a setup each physical HSM has has its own root hardware AK, as well, each tenant has a logical AK.
+Some of the design choices in this Evidence format -- such as extensible Entities and multiple signatures -- are motivated by attempting to 
+future-proof against needing to represent the state of a key in a distributed cloud key management service.
 
-While this example of a hypothetical architecture is only illustrative, it is meant to show that the Evidence format
-presented in this document is flexible enough to handle
-future needs of complex multi-tenant cloud environments.
+TODO:
 
-In such an architecture, a key attestation would carry multiple Platform Attestations, one describing the physical HSM producing the evidence,
-as well as one describing the logical tenant who controls the application key being attested.
-Similarly, the evidence will carry signatures from both the physical HSM and the logical tenant AKs.
-For example, if you made repeated queries to the service to attest the same application key, you would expect the tenant AK to stay consistent,
-but the physical HSM AK would change depending on load balancing between HSMs in the cluster.
-
-In this example, both the HSM AK and Tenant AK chain to the same root CA certificate above, via different intermediate CAs.
-
-~~~
-{::include sampledata/evidence3.pem}
-~~~
-
-Here is a pretty-print of the Evidence object:
-
-~~~
-{::include sampledata/evidence3.pp}
-~~~
-
+* Illustrative example of having multiple signatures on a single Evidence.
+* Illustrative example of how a vendor might represent that the key being attested is part of a logical tenant or access control group that spans multiple HSMs.
 
 
 # Acknowledgements
