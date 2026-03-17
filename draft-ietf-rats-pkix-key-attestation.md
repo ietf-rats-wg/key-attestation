@@ -1150,10 +1150,14 @@ description of "id-mod-pkix-evidence-2025". This should be allocated in the
 
 IANA is asked to define a new arc under "SMI Security for Mechanism Codes" (1.3.6.1.5.5) with the following
 details:
+
 * OID Value: 1.3.6.1.5.5.&lt;evidence&gt;
+
 * Name: evidence
+
 * Description: Evidence Encoding for Hardware Security Modules
-* Reference: this RFC
+
+* Reference: {{&SELF}}
 
 # Security Considerations
 
