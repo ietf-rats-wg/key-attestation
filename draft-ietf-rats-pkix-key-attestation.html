@@ -1379,7 +1379,7 @@ whether the storage properties of this key meet the requirements of a given cert
                 <p id="section-toc.1-1.12.2.2.1"><a href="#appendix-A.2" class="auto internal xref">A.2</a>.  <a href="#name-key-attestation-evidence" class="internal xref">Key Attestation Evidence</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.3">
-                <p id="section-toc.1-1.12.2.3.1"><a href="#appendix-A.3" class="auto internal xref">A.3</a>.  <a href="#name-multi-tenant-key-attestatio" class="internal xref">Multi-Tenant Key Attestation Evidence</a></p>
+                <p id="section-toc.1-1.12.2.3.1"><a href="#appendix-A.3" class="auto internal xref">A.3</a>.  <a href="#name-multi-hsm-and-multi-tenant-" class="internal xref">Multi-HSM and Multi-Tenant Key Attestation Evidence</a></p>
 </li>
             </ul>
 </li>
@@ -3370,140 +3370,22 @@ Evidence:
 </div>
 </section>
 </div>
-<div id="multi-tenant-key-attestation-evidence">
+<div id="multi-hsm-and-multi-tenant-key-attestation-evidence">
 <section id="appendix-A.3">
-        <h3 id="name-multi-tenant-key-attestatio">
-<a href="#appendix-A.3" class="section-number selfRef">A.3. </a><a href="#name-multi-tenant-key-attestatio" class="section-name selfRef">Multi-Tenant Key Attestation Evidence</a>
+        <h3 id="name-multi-hsm-and-multi-tenant-">
+<a href="#appendix-A.3" class="section-number selfRef">A.3. </a><a href="#name-multi-hsm-and-multi-tenant-" class="section-name selfRef">Multi-HSM and Multi-Tenant Key Attestation Evidence</a>
         </h3>
-<p id="appendix-A.3-1">To exercise fuller functionality of the PKIX Evidence object, this example shows how a vendor might represent a multi-tenant multi-HSM cloud architecture.
-For the purposes of this example, consider a hypothetical cloud HSM service where
-multiple physical HSMs are clustered such that logical tenants can span across multiple physical HSMs.
-It could be, for example, that application keys are stored encrypted in a database such that any HSM in the cluster can decrypt and use them.
-Consider that in such a setup each physical HSM has has its own root hardware AK, as well, each tenant has a logical AK.<a href="#appendix-A.3-1" class="pilcrow">¶</a></p>
-<p id="appendix-A.3-2">While this example of a hypothetical architecture is only illustrative, it is meant to show that the Evidence format
-presented in this document is flexible enough to handle
-future needs of complex multi-tenant cloud environments.<a href="#appendix-A.3-2" class="pilcrow">¶</a></p>
-<p id="appendix-A.3-3">In such an architecture, a key attestation would carry multiple Platform Attestations, one describing the physical HSM producing the evidence,
-as well as one describing the logical tenant who controls the application key being attested.
-Similarly, the evidence will carry signatures from both the physical HSM and the logical tenant AKs.
-For example, if you made repeated queries to the service to attest the same application key, you would expect the tenant AK to stay consistent,
-but the physical HSM AK would change depending on load balancing between HSMs in the cluster.<a href="#appendix-A.3-3" class="pilcrow">¶</a></p>
-<p id="appendix-A.3-4">In this example, both the HSM AK and Tenant AK chain to the same root CA certificate above, via different intermediate CAs.<a href="#appendix-A.3-4" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-A.3-5">
-<pre>
------BEGIN EVIDENCE-----
-MIILQjCCAnsCAQEwggJ0MIIBDQYGKgOHZwAAMIIBATATBgcqA4dnAQAAgAjK/rq+3q2+
-7zAaBgcqA4dnAQABgw8yMDI1MDMxNDEyMDAwMFowZgYHKgOHZwEAAoBbMFkwEwYHKoZI
-zj0CAQYIKoZIzj0DAQcDQgAE8TLa0cU7u1dJ55aXWEoQnKkj5hdzfPiW1pM8MVYZiUyH
-AeW9yWKdkV+vGHwzLKQ0g0w4YfTCP7iA6R5iP6+oWTBmBgcqA4dnAQACgFswWTATBgcq
-hkjOPQIBBggqhkjOPQMBBwNCAAQ5bKSNYqZlpcz+FKV+L2f4wNv6sBHMdesLzqHsh31n
-6oL02ZVm/9zeDI9uXwagUnUBljtItOZRzQm6U2SnDauzMDMGBioDh2cAATApMBMGByoD
-h2cBAQKACEhTTS05MDAwMBIGByoDh2cBAQSBBzE3LWExYjIwUwYGKgOHZwABMEkwMAYH
-KgOHZwEBAIElQmlnQ2xvdWRDb3JwIFRlbmFudCBNYW5hZ2VtZW50IFN5c3RlbTAVBgcq
-A4dnAQEFgQp0ZW5hbnQtMDAxMIHWBgYqA4dnAAIwgcswEgYHKgOHZwECAIEHa2V5LTAw
-MTBmBgcqA4dnAQIBgFswWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAThsaGN8vexWFfn
-U/x3u//EY+/TtNds4nGNIalaBXd2kaa/SXnOw5AQXLZnVyXEtPa55Bv/13fMo3//0QYU
-sIUuMAwGByoDh2cBAgKCAQAwDAYHKgOHZwECBIIB/zAMBgcqA4dnAQIDggH/MAwGByoD
-h2cBAgWCAf8wFQYHKgOHZwECB4AKMAgGBioDh2cCBDCCBNcwggJjMIICCqKCAgYwggIC
-MIIBqKADAgECAhQ1C1PUrx8wuZelnyzuE4Wh/T6INDAKBggqhkjOPQQDAjBDMRIwEAYD
-VQQKDAlpZXRmLXJhdHMxHTAbBgNVBAsMFHBraXgta2V5LWF0dGVzdGF0aW9uMQ4wDAYD
-VQQDDAVJbnRDQTAeFw0yNjAzMTYxODI0MzBaFw0zNjAzMTMxODI1MzBaMEUxEjAQBgNV
-BAoMCWlldGYtcmF0czEdMBsGA1UECwwUcGtpeC1rZXktYXR0ZXN0YXRpb24xEDAOBgNV
-BAMMB3Rlc3QtYWswWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAATxMtrRxTu7V0nnlpdY
-ShCcqSPmF3N8+JbWkzwxVhmJTIcB5b3JYp2RX68YfDMspDSDTDhh9MI/uIDpHmI/r6hZ
-o3gwdjAMBgNVHRMBAf8EAjAAMB0GA1UdDgQWBBRhwYhquqy0i6J1EWeA7NT05hgV7jAf
-BgNVHSMEGDAWgBR0sYJZKTIKOPHK/QB0Jw3iZWgfPjAOBgNVHQ8BAf8EBAMCB4AwFgYD
-VR0lBA8wDQYLKwYBBAGCt10EAQEwCgYIKoZIzj0EAwIDSAAwRQIhAIxlsq9hH6/wCyaT
-Gfoa8vLgOXJf4/os/sFT61yS26UYAiAL7dCaDOEE7WW20s+UuITw5lBXCTSNenU6sT25
-uz4blzAKBggqhkjOPQQDAgRHMEUCIQDW/p6XIRRwgl+2/rZUX0tylHSf2ZFvF3ww+HLe
-L/PStgIgdBulqDNrd7l4HMXGdfiWx+FQvneToLfAlGg3hJ4HnSQwggJsMIICFKKCAhAw
-ggIMMIIBsaADAgECAhQuofK4MBZnHkIMe/20sXw9YD6R2zAKBggqhkjOPQQDAjBHMRIw
-EAYDVQQKDAlpZXRmLXJhdHMxHTAbBgNVBAsMFHBraXgta2V5LWF0dGVzdGF0aW9uMRIw
-EAYDVQQDDAlUZW5hbnRzQ0EwHhcNMjYwMzE2MTgyNDMwWhcNMzYwMzEzMTgyNTMwWjBK
-MRIwEAYDVQQKDAlpZXRmLXJhdHMxHTAbBgNVBAsMFHBraXgta2V5LWF0dGVzdGF0aW9u
-MRUwEwYDVQQDDAx0ZW5hbnQwMDEgQUswWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAQ5
-bKSNYqZlpcz+FKV+L2f4wNv6sBHMdesLzqHsh31n6oL02ZVm/9zeDI9uXwagUnUBljtI
-tOZRzQm6U2SnDauzo3gwdjAMBgNVHRMBAf8EAjAAMB0GA1UdDgQWBBTENvhEYmRYq3c+
-icQVu6LU5CQRlzAfBgNVHSMEGDAWgBRr0AEWRMwH5miCk1DDvzMVCCdoaTAOBgNVHQ8B
-Af8EBAMCB4AwFgYDVR0lBA8wDQYLKwYBBAGCt10EAQEwCgYIKoZIzj0EAwIDSQAwRgIh
-AIz1lQEsPg+oC5t3sA21d9/LKiOLXkp9Rkax1I7MvzM0AiEA2cVJZ5q5wUCpW+eL5uQj
-NbiPKwuWY0gTYU0AQOpqxuswCgYIKoZIzj0EAwIERjBEAiB3VAtL0y/jiYI4kAeHkMa8
-EQdgnjE7bPJ4bGVlRFhARwIgFO9DeTYbh6e2X/5WHs/GxkyYHhF9vFEC+GH9tEEaHsag
-ggPkMIIB7TCCAZKgAwIBAgIUZBusKENkkquWekNzoRqWJqu6qHowCgYIKoZIzj0EAwIw
-RDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3RhdGlv
-bjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2MDMxNjE4MjQzMFoXDTM2MDMxMzE4MjUzMFow
-QzESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3RhdGlv
-bjEOMAwGA1UEAwwFSW50Q0EwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAARZ1Q2U/MYA
-nNiD26gCwAsTDJejLICmM1mgPN48PMky8p/9lW5v9UxBoNCLJKHLTI2lD6L7Y47gfEos
-5Ro94Jomo2MwYTAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBR0sYJZKTIKOPHK/QB0
-Jw3iZWgfPjAfBgNVHSMEGDAWgBTryIiAcO15Hm3bx95hV0lFUcNSGDAOBgNVHQ8BAf8E
-BAMCAoQwCgYIKoZIzj0EAwIDSQAwRgIhAOhn0CRE/6Vy2yQ5LNTA/q0hVOWkqlogOYyv
-4Q5/8X0hAiEA4G46LGJaunN9s4U6LBU+NFb0gpZ75WsNx43/r6CNdEMwggHvMIIBlqAD
-AgECAhQJpgFn84lagWRrUDQ8INJpEWnjCzAKBggqhkjOPQQDAjBEMRIwEAYDVQQKDAlp
-ZXRmLXJhdHMxHTAbBgNVBAsMFHBraXgta2V5LWF0dGVzdGF0aW9uMQ8wDQYDVQQDDAZS
-b290Q0EwHhcNMjYwMzE2MTgyNDMwWhcNMzYwMzEzMTgyNTMwWjBHMRIwEAYDVQQKDAlp
-ZXRmLXJhdHMxHTAbBgNVBAsMFHBraXgta2V5LWF0dGVzdGF0aW9uMRIwEAYDVQQDDAlU
-ZW5hbnRzQ0EwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAQUjzw8qhdTHRE5mHm8iF5m
-a3/0WM3wA6Lo0qcHUNj2HzqDEMlWRzSQcpJL5Z/u8Fyjoh0c+nAwmzr/SjWbrzLYo2Mw
-YTAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBRr0AEWRMwH5miCk1DDvzMVCCdoaTAf
-BgNVHSMEGDAWgBTryIiAcO15Hm3bx95hV0lFUcNSGDAOBgNVHQ8BAf8EBAMCAoQwCgYI
-KoZIzj0EAwIDRwAwRAIgXTQaPuvK98bWGzcNdPM/+iudYPECikFhVDylhnXCC5oCIBsf
-Raovhtbar0pOjDlIJ6oQadkAIxRQYL8/UOrnySsg
------END EVIDENCE-----
-</pre><a href="#appendix-A.3-5" class="pilcrow">¶</a>
-</div>
-<p id="appendix-A.3-6">Here is a pretty-print of the Evidence object:<a href="#appendix-A.3-6" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="appendix-A.3-7">
-<pre>
-Evidence:
-  TbsEvidence:
-    version: 1
-    ReportedEntity[0]: id-evidence-entity-transaction
-      Claim[0]: id-evidence-claim-transaction-nonce
-              -&gt; [bytes] cafebabedeadbeef
-      Claim[1]: id-evidence-claim-transaction-timestamp
-              -&gt; [time] 20250314120000Z
-      Claim[2]: id-evidence-claim-transaction-ak-spki
-              -&gt; [bytes] 3059301306072a8648ce3d02...
-      Claim[3]: id-evidence-claim-transaction-ak-spki
-              -&gt; [bytes] 3059301306072a8648ce3d02...
-    ReportedEntity[1]: id-evidence-entity-platform
-      Claim[0]: id-evidence-claim-platform-hwmodel
-              -&gt; [bytes] 48534d2d39303030
-      Claim[1]: id-evidence-claim-platform-hwserial
-              -&gt; [utf8String] 17-a1b2
-    ReportedEntity[2]: id-evidence-entity-platform
-      Claim[0]: id-evidence-claim-platform-vendor
-              -&gt; [utf8String] BigCloudCorp Tenant Management System
-      Claim[1]: id-evidence-claim-platform-swname
-              -&gt; [utf8String] tenant-001
-    ReportedEntity[3]: id-evidence-entity-key
-      Claim[0]: id-evidence-claim-key-identifier
-              -&gt; [utf8String] key-001
-      Claim[1]: id-evidence-claim-key-spki
-              -&gt; [bytes] 3059301306072a8648ce3d02...
-      Claim[2]: id-evidence-claim-key-extractable
-              -&gt; [bool] False
-      Claim[3]: id-evidence-claim-key-never-extractable
-              -&gt; [bool] True
-      Claim[4]: id-evidence-claim-key-sensitive
-              -&gt; [bool] True
-      Claim[5]: id-evidence-claim-key-local
-              -&gt; [bool] True
-      Claim[6]: id-evidence-claim-key-purpose
-              -&gt; [bytes] 300806062a0387670204
-  Signatures (2):
-    SignatureBlock[0]:
-      algorithm      : 1.2.840.10045.4.3.2
-      signatureValue : 3045022100d6fe9e97211470...
-      AK Certificate : present
-    SignatureBlock[1]:
-      algorithm      : 1.2.840.10045.4.3.2
-      signatureValue : 3044022077540b4bd32fe389...
-      AK Certificate : present
-  Intermediate Certificates:  (2)
-</pre><a href="#appendix-A.3-7" class="pilcrow">¶</a>
-</div>
+<p id="appendix-A.3-1">Some of the design choices in this Evidence format -- such as extensible Entities and multiple signatures -- are motivated by attempting to
+future-proof against needing to represent the state of a key in a distributed cloud key management service.<a href="#appendix-A.3-1" class="pilcrow">¶</a></p>
+<p id="appendix-A.3-2">TODO:<a href="#appendix-A.3-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-A.3-3.1">
+            <p id="appendix-A.3-3.1.1">Illustrative example of having multiple signatures on a single Evidence.<a href="#appendix-A.3-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-A.3-3.2">
+            <p id="appendix-A.3-3.2.1">Illustrative example of how a vendor might represent that the key being attested is part of a logical tenant or access control group that spans multiple HSMs.<a href="#appendix-A.3-3.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
 </section>
 </div>
 </section>
