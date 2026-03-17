@@ -1143,14 +1143,17 @@ Further privacy concerns are discussed in {{sec-cons-privacy}}.
 
 Please replace "{{&SELF}}" with the RFC number assigned to this document.
 
-The following OIDs are defined in this document and will require IANA registration under the assigned arc:
+For the ASN.1 module found in Section 8, IANA is requested to assign
+an object identifier for the module identifier (TBDMOD) with a
+description of "id-mod-pkix-evidence-2025". This should be allocated in the
+"SMI Security for PKIX Module Identifier" registry (1.3.6.1.5.5.7.0).
 
-* `id-evidence`
-* `id-evidence-entity`
-* `id-evidence-entity-transaction`
-* `id-evidence-entity-platform`
-* `id-evidence-entity-key`
-* Claim OIDs referenced in the Platform, Key, and Transaction tables (e.g., `id-evidence-claim-platform-*`, `id-evidence-claim-key-*`, `id-evidence-claim-transaction-*`).
+IANA is asked to define a new arc under "SMI Security for Mechanism Codes" (1.3.6.1.5.5) with the following
+details:
+- OID Value: 1.3.6.1.5.5.<evidence>
+- Name: evidence
+- Description: Evidence Encoding for Hardware Security Modules
+- Reference: this RFC
 
 # Security Considerations
 
