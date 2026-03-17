@@ -1696,9 +1696,9 @@ Table of Contents
    (1.3.6.1.5.5.7.0).
 
    IANA is asked to define a new arc under "SMI Security for Mechanism
-   Codes" (1.3.6.1.5.5) with the following details: - OID Value:
-   1.3.6.1.5.5.<evidence> - Name: evidence - Description: Evidence
-   Encoding for Hardware Security Modules - Reference: this RFC
+   Codes" (1.3.6.1.5.5) with the following details: * OID Value:
+   1.3.6.1.5.5.<evidence> * Name: evidence * Description: Evidence
+   Encoding for Hardware Security Modules * Reference: this RFC
 
 10.  Security Considerations
 
