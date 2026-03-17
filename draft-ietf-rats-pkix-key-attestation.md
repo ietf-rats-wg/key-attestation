@@ -1351,7 +1351,7 @@ future-proof against needing to represent the state of a key in a distributed cl
 TODO:
 
 * Illustrative example of having multiple signatures on a single Evidence.
-* Illustrative example of how a vendor might represent that the key being attested is part of a logical tenant or application-layer access control group that spans multiple HSMs.
+* Illustrative example of how a vendor might represent that the key being attested is part of a logical tenant or access control group that spans multiple HSMs.
 
 
 # Acknowledgements
