@@ -120,7 +120,6 @@ normative:
     seriesinfo:
       ITU-T Recommendation: X.690
       ISO/IEC: 8825-1:2021
-  I-D.jpfiset-lamps-attestationkey-eku:
 
 informative:
   RFC2986:
@@ -373,9 +372,20 @@ that the device is genuine and not counterfeit. The trust anchor can also belong
 to the device operator as would be the case when the AK certificate is replaced
 as part of onboarding the device into a new operational environment.
 
-The AK certificate that signs the evidence MUST include the Extended Key
-Usage (EKU) certificate extension, and the EKU certificate extension MUST
-include the `id-kp-attest`, as defined in {{I-D.jpfiset-lamps-attestationkey-eku}}.
+The AK certificate associated with the AK that signs the evidence have the following constraints:
+
+* the certificate MUST include the Extended Key Usage (EKU) certificate extension;
+
+* the EKU certificate extension MUST include the `id-kp-attestationKey`, as defined in this specification; and,
+
+* the `KeyUsage` extension (KU) MUST have the `digitalSignature` bit set.
+
+An EKU that includes only a single KeyPurposeId of `id-kp-attestationKey` SHOULD be marked as `critical`.
+The reasoning here is that the usage of a true attestation key is constrained by the security module it's
+contained by.  Presenting non-attestation data for validation by this AK public key should ALWAYS fail.
+
+An EKU that includes a KeyPurposeId of `id-kp-attestationKey` along with other attestation-related
+KeyPurposeId SHOULD NOT be marked as critical.
 
 Note that the data format specified in {{sec-data-model}} allows for zero, one, or multiple
 'SignatureBlock's, so a single Evidence statement could be un-protected, or could be endorsed by multiple
@@ -901,8 +911,16 @@ header label is "EVIDENCE". For example:
 
 The `SignatureBlock.signatureValue` signs over the DER-encoded to-be-signed Evidence data
 `Evidence.tbs` and MUST be validated with the subject public key of the end entity
-X.509 certificate contained in the `SignerIdentifier.certificate`. Verifiers MAY also use
-`Evidence.intermediateCertificates` to build a certification path to a trust anchor.
+X.509 certificate contained in the `SignerIdentifier.certificate`.
+
+Verifiers MUST ensure, prior to accepting the signature associated with an end-entity certificate, that:
+
+* the certificate contains the `KeyUsage` (KU) extension with the `digitalSignature` bit set; and,
+
+* the certificate contains the `Extended Key Usage` (EKU) extension that includes the `id-kp-attestationKey` usage.
+
+Verifiers MAY also use `Evidence.intermediateCertificates` to build a certification path from the end-entity
+certificate to a trust anchor.
 
 Note that the structure `Evidence` MAY contain zero or more SignatureBlocks.
 A structure `Evidence` with zero SignatureBlocks is unsigned and unprotected; Verifiers MUST treat it as untrusted and MUST NOT rely on its claims.
