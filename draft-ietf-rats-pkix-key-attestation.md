@@ -324,7 +324,7 @@ structure, as appropriate.
 
 Trusted Platform Module (TPM):
 : A tamper-resistant processor generally located on a computer's motherboard used to enhance attestation
-functions for the hosting platform. TPMs are very specialized Hardware Security Modules and generally use
+functions for the hosting platform as defined by the Trusted Computer Group. TPMs are very specialized Hardware Security Modules and generally use
 other protocols (than the one presented in this specification) to transmit Evidence.
 
 User Key:
