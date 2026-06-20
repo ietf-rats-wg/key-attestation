@@ -17,7 +17,7 @@ on:
 jobs:
   build:
     name: "Update Editor's Copy"
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
@@ -27,9 +27,6 @@ jobs:
     - name: "Setup"
       id: setup
       run: date -u "+date=%FT%T" >>"$GITHUB_OUTPUT"
-      
-    - name: Install aasvg
-      run: sudo npm install -g aasvg
 
     - name: "Caching"
       uses: actions/cache@v4
