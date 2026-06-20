@@ -27,6 +27,9 @@ jobs:
     - name: "Setup"
       id: setup
       run: date -u "+date=%FT%T" >>"$GITHUB_OUTPUT"
+      
+    - name: Install aasvg
+      run: sudo npm install -g aasvg
 
     - name: "Caching"
       uses: actions/cache@v4
