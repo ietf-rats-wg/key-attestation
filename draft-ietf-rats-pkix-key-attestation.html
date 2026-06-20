@@ -22,25 +22,26 @@ A more complex scenario would be to submit this Evidence to a Certification Auth
 whether the storage properties of this key meet the requirements of a given certificate profile. 
        This specification also offers a format for requesting a cryptographic module to produce Evidence tailored for expected use. 
     " name="description">
-<meta content="xml2rfc 3.32.0" name="generator">
+<meta content="xml2rfc 3.34.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="RATS" name="keyword">
 <meta content="PKIX" name="keyword">
 <meta content="HSM" name="keyword">
 <meta content="draft-ietf-rats-pkix-key-attestation-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.32.0
-    Python 3.12.12
-    ConfigArgParse 1.7
+  xml2rfc 3.34.0
+    Python 3.14.5
+    ConfigArgParse 1.7.5
     google-i18n-address 3.1.1
     intervaltree 3.2.1
     Jinja2 3.1.6
-    lxml 6.0.2
-    platformdirs 4.9.4
+    lxml 6.1.1
+    natsort 8.4.0
+    platformdirs 4.10.0
     pycountry 24.6.1
     PyYAML 6.0.3
-    requests 2.32.5
-    wcwidth 0.6.0
+    requests 2.33.1
+    wcwidth 0.8.1
 -->
 <link href="draft-ietf-rats-pkix-key-attestation.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -307,16 +308,19 @@ h1, h2, h3, h4, h5, h6 {
   font-size-adjust: 0.5;
   color: var(--title-color);
 }
-h1#title {
-  font-size: 32px;
-  line-height: 40px;
-  clear: both;
-}
-h1#title, h1#rfcnum {
-  margin: 1.5em 0 0.2em;
-}
-h1#rfcnum + h1#title {
-  margin: 0.2em 0;
+h1 {
+  &#title {
+    font-size: 32px;
+    line-height: 40px;
+    clear: both;
+    margin: 1.5em 0 0.2em;
+  }
+  &#rfcnum {
+    margin: 1.5em 0 0.2em;
+    & + h1#title {
+      margin: 0.2em 0;
+    }
+  }
 }
 
 h1, h2, h3 {
@@ -336,10 +340,10 @@ h4, h5, h6 {
 #abstract+p {
   font-size: 18px;
   line-height: 24px;
-}
-#abstract+p code, #abstract+p samp, #abstract+p tt {
-  font-size: 16px;
-  line-height: 0;
+  & code, & samp, & tt {
+    font-size: 16px;
+    line-height: 0;
+  }
 }
 
 p {
@@ -350,59 +354,59 @@ p {
 div {
   margin: 0;
 }
-.alignRight.art-text {
-  background-color: var(--highlight-color);
-  border: 1px solid var(--line-color);
-  border-radius: 3px;
-  padding: 0.5em 1em 0;
-  margin-bottom: 0.5em;
-}
-.alignRight.art-text pre {
-  padding: 0;
-  width: auto;
-}
 .alignRight {
   margin: 1em 0;
-}
-.alignRight > *:first-child {
-  border: none;
-  margin: 0;
-  float: right;
-  clear: both;
-}
-.alignRight > *:nth-child(2) {
-  clear: both;
-  display: block;
-  border: none;
+  &.art-text {
+    background-color: var(--highlight-color);
+    border: 1px solid var(--line-color);
+    border-radius: 3px;
+    padding: 0.5em 1em 0;
+    margin-bottom: 0.5em;
+    & pre {
+      padding: 0;
+      width: auto;
+    }
+  }
+  & > *:first-child {
+    border: none;
+    margin: 0;
+    float: right;
+    clear: both;
+  }
+  & > *:nth-child(2) {
+    clear: both;
+    display: block;
+    border: none;
+  }
 }
 svg {
   display: block;
-}
-/* font-family isn't space-separated, but =~ will have to do */
-svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
-  font-family: var(--font-mono);
-}
-.alignCenter.art-text {
-  background-color: var(--highlight-color);
-  border: 1px solid var(--line-color);
-  border-radius: 3px;
-  padding: 0.5em 1em 0;
-  margin-bottom: 0.5em;
-}
-.alignCenter.art-text pre {
-  padding: 0;
-  width: auto;
+  /* font-family isn't space-separated, but =~ will have to do */
+  &[font-family~="monospace" i], & [font-family~="monospace" i] {
+    font-family: var(--font-mono);
+  }
 }
 .alignCenter {
   margin: 1em 0;
-}
-.alignCenter > *:first-child {
-  border: none;
-  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
-     support flexbox yet.
-  */
-  display: table;
-  margin: 0 auto;
+  &.art-text {
+    background-color: var(--highlight-color);
+    border: 1px solid var(--line-color);
+    border-radius: 3px;
+    padding: 0.5em 1em 0;
+    margin-bottom: 0.5em;
+    & pre {
+      padding: 0;
+      width: auto;
+    }
+  }
+  & > *:first-child {
+    border: none;
+    /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+       support flexbox yet.
+    */
+    display: table;
+    margin: 0 auto;
+  }
 }
 
 /* lists */
@@ -440,26 +444,25 @@ dl {
     --indent: 5ch;
     & > dt {
       min-width: calc(var(--indent) - 2ch);
+      float: none;
     }
-  }
-  &.olPercent > dt {
-    float: none;
   }
 
   dl > dd > & {
     margin-top: 0.5em;
     margin-bottom: 0;
   }
-}
-dl:not(.dlNewline) > dt {
-  float: left;
-  margin-right: 2ch;
-  min-width: 8ch;
-}
-dl > dd {
-  margin-bottom: .8em;
-  margin-left: var(--indent) !important; /* stupid element overrides */
-  min-height: 2ex;
+
+  &:not(.dlNewline) > dt {
+    float: left;
+    margin-right: 2ch;
+    min-width: 8ch;
+  }
+  & > dd {
+    margin-bottom: .8em;
+    margin-left: var(--indent) !important; /* stupid element overrides */
+    min-height: 2ex;
+  }
 }
 :is(dl.compact, .dlCompact) > dd {
   margin-bottom: 0;
@@ -475,20 +478,22 @@ dl > dd {
 }
 
 /* links */
-a, a[href].selfRef:hover {
+a {
   text-decoration: none;
+  &[href] {
+    color: var(--link-color);
+    &:hover { text-decoration: underline; }
+    &.selfRef {
+      color: var(--text-color);
+      &:hover {
+        text-decoration: none;
+        background-color: var(--highlight-color);
+      }
+    }
+  }
 }
-a[href] {
-  color: var(--link-color);
-}
-a[href].selfRef, .iref + a[href].internal {
+.iref + a[href].internal {
   color: var(--text-color);
-}
-a[href]:hover {
-  text-decoration: underline;
-}
-a[href].selfRef:hover {
-  background-color: var(--highlight-color);
 }
 a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
   white-space: nowrap;
@@ -524,9 +529,9 @@ img {
 figure {
   margin: 0.5em 0;
   padding: 0;
-}
-figure blockquote {
-  margin: 0.8em 0.4em 0.4em;
+  & blockquote {
+    margin: 0.8em 0.4em 0.4em;
+  }
 }
 figcaption, caption {
   font-style: italic;
@@ -536,17 +541,19 @@ figcaption, caption {
 }
 @media screen {
   /* Auto-collapse boilerplate. */
-  :is(#status-of-memo, #copyright) p {
-    margin: -2px 0;
-    max-height: 0;
-    transition: max-height 2s ease, margin 0.5s ease 0.5s;
-    overflow: hidden;
-  }
-  :is(#status-of-memo, #copyright):hover p,
-  :is(#status-of-memo, #copyright) h2:target ~ p {
-    margin: 0.5em 0;
-    max-height: 500px;
-    overflow: auto;
+  :is(#status-of-memo, #copyright) {
+    & p {
+      margin: -2px 0;
+      max-height: 0;
+      transition: max-height 2s ease, margin 0.5s ease 0.5s;
+      overflow: hidden;
+    }
+    &:hover p,
+    & h2:target ~ p {
+      margin: 0.5em 0;
+      max-height: 500px;
+      overflow: auto;
+    }
   }
   pre, svg {
     display: inline-block;
@@ -596,25 +603,17 @@ table {
   max-width: 100%;
   margin: 0 0 1em;
   border-collapse: collapse;
-}
-table.right {
-  margin-left: auto;
-}
-table.center {
-  margin-left: auto;
-  margin-right: auto;
-}
-table.left {
-  margin-right: auto;
-}
-table .text-left {
-  text-align: left;
-}
-table .text-center {
-  text-align: center;
-}
-table .text-right {
-  text-align: right;
+  &.right { margin-left: auto; }
+  &.center { margin-left: auto; margin-right: auto; }
+  &.left { margin-right: auto; }
+  & .text-left { text-align: left; }
+  & .text-center { text-align: center; }
+  & .text-right { text-align: right; }
+  & caption {
+    margin: 0;
+    padding: 3px 0 3px 1em;
+  }
+  & p { margin: 0; }
 }
 
 thead, tbody {
@@ -634,13 +633,6 @@ th {
 :is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
   background-color: var(--highlight-color);
 }
-table caption {
-  margin: 0;
-  padding: 3px 0 3px 1em;
-}
-table p {
-  margin: 0;
-}
 
 /* pilcrow */
 a.pilcrow {
@@ -651,18 +643,16 @@ a.pilcrow {
     color: var(--pilcrow-weak);
     &:hover { text-decoration: none; }
   }
-}
-@media not print {
-  :hover > a.pilcrow, a.pilcrow:focus {
-    opacity: 1;
+  @media not print {
+    :hover > &, &:focus {
+      opacity: 1;
+    }
+    &[href]:hover {
+      color: var(--pilcrow-strong);
+      background-color: transparent;
+    }
   }
-  a.pilcrow[href]:hover {
-    color: var(--pilcrow-strong);
-    background-color: transparent;
-  }
-}
-@media print {
-  a.pilcrow {
+  @media print {
     display: none;
   }
 }
@@ -721,9 +711,9 @@ sub, sup {
   font-size: 0.9em;
   font-style: italic;
   margin-top: 2em;
-}
-.docInfo .prepared {
-  float: right;
+  & .prepared {
+    float: right;
+  }
 }
 
 /* table of contents */
@@ -813,23 +803,27 @@ hr.addr {
   max-width: calc(100% - 16px);
 }
 @media (min-width: 500px) {
-  #authors-addresses > section {
-    column-count: 2;
-    column-gap: 20px;
-  }
-  #authors-addresses > section > h2 {
-    column-span: all;
-  }
-  /* hack for break-inside: avoid-column */
-  #authors-addresses address {
-    display: inline-block;
-    break-inside: avoid-column;
+  #authors-addresses {
+    & > section {
+      column-count: 2;
+      column-gap: 20px;
+    }
+    & > section > h2 {
+      column-span: all;
+    }
+    /* hack for break-inside: avoid-column */
+    & address {
+      display: inline-block;
+      break-inside: avoid-column;
+    }
   }
 }
 
 /* Comments */
-.rfcEditorRemove p:first-of-type {
-  font-style: italic;
+.rfcEditorRemove {
+  & p:first-of-type {
+    font-style: italic;
+  }
 }
 .cref {
   background-color: rgba(249, 232, 105, 0.3);
@@ -840,19 +834,21 @@ hr.addr {
 }
 
 @media screen {
-  #toc nav {
-    font-family: var(--font-title);
-    font-weight: 360;
-    & > ul { margin-bottom: 2em; }
-    & ul {
-      margin: 0 0 0 4px;
-      & :is(p, li) {
-        margin: 2px 0;
+  #toc {
+    & nav {
+      font-family: var(--font-title);
+      font-weight: 360;
+      & > ul { margin-bottom: 2em; }
+      & ul {
+        margin: 0 0 0 4px;
+        & :is(p, li) {
+          margin: 2px 0;
+        }
       }
     }
-  }
-  #toc a.toplink {
-    float: right;
+    & a.toplink {
+      float: right;
+    }
   }
 }
 @media not screen {
@@ -873,54 +869,54 @@ hr.addr {
     margin: 0;
     border-bottom: 1px solid #ccc;
     opacity: 0.6;
-  }
-  #toc h2 {
-    margin: 0;
-    padding: 2px 0 2px 6px;
-    padding-right: 1em;
-    font-size: 18px;
-    line-height: 24px;
-    min-width: 190px;
-    text-align: right;
-    background-color: #444;
-    color: white;
-    cursor: pointer;
-    &::before { /* css hamburger */
-      float: right;
-      position: relative;
-      width: 1em;
-      height: 1px;
-      left: -164px;
-      margin: 8px 0 0 0;
-      background: white none repeat scroll 0 0;
-      box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
-      content: "";
+    & h2 {
+      margin: 0;
+      padding: 2px 0 2px 6px;
+      padding-right: 1em;
+      font-size: 18px;
+      line-height: 24px;
+      min-width: 190px;
+      text-align: right;
+      background-color: #444;
+      color: white;
+      cursor: pointer;
+      &::before { /* css hamburger */
+        float: right;
+        position: relative;
+        width: 1em;
+        height: 1px;
+        left: -164px;
+        margin: 8px 0 0 0;
+        background: white none repeat scroll 0 0;
+        box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+        content: "";
+      }
     }
-  }
-  #toc nav {
-    display: none;
-    background-color: var(--background-color);
-    padding: 0.5em 1em 1em;
-    overflow: auto;
-    overscroll-behavior: contain;
-    height: calc(100vh - 48px);
-    border-left: 1px solid #ddd;
-  }
-  #toc.active {
-    opacity: 1;
-    & nav { display: block; }
-  }
-  /* Make the collapsed ToC header render white on gray also when it's a link */
-  #toc h2 a,
-  #toc h2 a:is(:link, :focus, :hover),
-  #toc a.toplink,
-  #toc a.toplink:hover {
-    color: white;
-    background-color: #444;
-    text-decoration: none;
-  }
-  #toc a.toplink {
-    margin: 2px 0.5em 0;
+    & nav {
+      display: none;
+      background-color: var(--background-color);
+      padding: 0.5em 1em 1em;
+      overflow: auto;
+      overscroll-behavior: contain;
+      height: calc(100vh - 48px);
+      border-left: 1px solid #ddd;
+    }
+    &.active {
+      opacity: 1;
+      & nav { display: block; }
+    }
+    /* Make the collapsed ToC header render white on gray also when it's a link */
+    & h2 a,
+    & h2 a:is(:link, :focus, :hover),
+    & a.toplink,
+    & a.toplink:hover {
+      color: white;
+      background-color: #444;
+      text-decoration: none;
+    }
+    & a.toplink {
+      margin: 2px 0.5em 0;
+    }
   }
 }
 
@@ -939,26 +935,26 @@ hr.addr {
     margin: 0;
     padding: 0;
     z-index: 1;
-  }
-  #toc h2 {
-    margin: 0;
-    padding: 0.25em 1em 1em 0;
-  }
-  #toc nav {
-    display: block;
-    height: calc(90vh - 84px);
-    bottom: 0;
-    padding: 0.5em 0 2em;
-    overflow: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
+    & h2 {
+      margin: 0;
+      padding: 0.25em 1em 1em 0;
+    }
+    & nav {
+      display: block;
+      height: calc(90vh - 84px);
+      bottom: 0;
+      padding: 0.5em 0 2em;
+      overflow: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+    }
+    & a.toplink {
+      margin: 8px 0.5em 0;
+    }
   }
   img { /* future proofing */
     max-width: 100%;
     height: auto;
-  }
-  #toc a.toplink {
-    margin: 8px 0.5em 0;
   }
 }
 
@@ -974,12 +970,13 @@ hr.addr {
   #n-copyright-notice {
     border-bottom: none;
   }
-  #toc, #n-introduction {
-    page-break-before: always;
-  }
   #toc {
+    page-break-before: always;
     border-top: none;
     padding-top: 0;
+  }
+  #n-introduction {
+    page-break-before: always;
   }
   figure, pre, .vcard {
     page-break-inside: avoid;
@@ -1041,17 +1038,19 @@ hr.addr {
 }
 
 /* SVG Trick: a prefix match works because only black and white are allowed */
-svg :is([stroke="black"], [stroke^="#000"]) {
-  stroke: var(--text-color);
-}
-svg :is([stroke="white"], [stroke^="#fff"]) {
-  stroke: var(--background-color);
-}
-svg :is([fill="black"], [fill^="#000"], :not([fill])) {
-  fill: var(--text-color);
-}
-svg :is([fill="white"], [fill^="#fff"]) {
-  fill: var(--background-color);
+svg {
+  & :is([stroke="black"], [stroke^="#000"]) {
+    stroke: var(--text-color);
+  }
+  & :is([stroke="white"], [stroke^="#fff"]) {
+    stroke: var(--background-color);
+  }
+  & :is([fill="black"], [fill^="#000"], :not([fill])) {
+    fill: var(--text-color);
+  }
+  & :is([fill="white"], [fill^="#fff"]) {
+    fill: var(--background-color);
+  }
 }
 </style>
 
@@ -1061,11 +1060,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">Evidence Encoding for HSMs</td>
-<td class="right">March 2026</td>
+<td class="right">June 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Ounsworth, et al.</td>
-<td class="center">Expires 18 September 2026</td>
+<td class="center">Expires 22 December 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1078,12 +1077,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-rats-pkix-key-attestation-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-03-17" class="published">17 March 2026</time>
+<time datetime="2026-06-20" class="published">20 June 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-09-18">18 September 2026</time></dd>
+<dd class="expires"><time datetime="2026-12-22">22 December 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1159,7 +1158,7 @@ whether the storage properties of this key meet the requirements of a given cert
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 18 September 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 22 December 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1588,7 +1587,7 @@ structure, as appropriate.<a href="#section-3-7.24.1" class="pilcrow">¶</a></p>
 <dt id="section-3-7.25">Trusted Platform Module (TPM):</dt>
         <dd style="margin-left: 1.5em" id="section-3-7.26">
           <p id="section-3-7.26.1">A tamper-resistant processor generally located on a computer's motherboard used to enhance attestation
-functions for the hosting platform. TPMs are very specialized Hardware Security Modules and generally use
+functions for the hosting platform as defined by the Trusted Computer Group. TPMs are very specialized Hardware Security Modules and generally use
 other protocols (than the one presented in this specification) to transmit Evidence.<a href="#section-3-7.26.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
@@ -1639,12 +1638,26 @@ manufacturing CA belonging to the device vendor which proves
 that the device is genuine and not counterfeit. The trust anchor can also belong
 to the device operator as would be the case when the AK certificate is replaced
 as part of onboarding the device into a new operational environment.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
-<p id="section-3.2-2">The AK certificate that signs the evidence <span class="bcp14">MUST</span> include the Extended Key
-Usage (EKU) certificate extension, and the EKU certificate extension <span class="bcp14">MUST</span>
-include the <code>id-kp-attest</code>, as defined in <span>[<a href="#I-D.jpfiset-lamps-attestationkey-eku" class="cite xref">I-D.jpfiset-lamps-attestationkey-eku</a>]</span>.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
-<p id="section-3.2-3">Note that the data format specified in <a href="#sec-data-model" class="auto internal xref">Section 5</a> allows for zero, one, or multiple
+<p id="section-3.2-2">The AK certificate associated with the AK that signs the evidence have the following constraints:<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.2-3.1">
+            <p id="section-3.2-3.1.1">the certificate <span class="bcp14">MUST</span> include the Extended Key Usage (EKU) certificate extension;<a href="#section-3.2-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.2-3.2">
+            <p id="section-3.2-3.2.1">the EKU certificate extension <span class="bcp14">MUST</span> include the <code>id-kp-attestationKey</code>, as defined in this specification; and,<a href="#section-3.2-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.2-3.3">
+            <p id="section-3.2-3.3.1">the <code>KeyUsage</code> extension (KU) <span class="bcp14">MUST</span> have the <code>digitalSignature</code> bit set.<a href="#section-3.2-3.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.2-4">An EKU that includes only a single KeyPurposeId of <code>id-kp-attestationKey</code> <span class="bcp14">SHOULD</span> be marked as <code>critical</code>.
+The reasoning here is that the usage of a true attestation key is constrained by the security module it's
+contained by.  Presenting non-attestation data for validation by this AK public key should ALWAYS fail.<a href="#section-3.2-4" class="pilcrow">¶</a></p>
+<p id="section-3.2-5">An EKU that includes a KeyPurposeId of <code>id-kp-attestationKey</code> along with other attestation-related
+KeyPurposeId <span class="bcp14">SHOULD NOT</span> be marked as critical.<a href="#section-3.2-5" class="pilcrow">¶</a></p>
+<p id="section-3.2-6">Note that the data format specified in <a href="#sec-data-model" class="auto internal xref">Section 5</a> allows for zero, one, or multiple
 'SignatureBlock's, so a single Evidence statement could be un-protected, or could be endorsed by multiple
-AK chains leading to different trust anchors. See <a href="#sec-verif-proc" class="auto internal xref">Section 6</a> for a discussion of handling multiple SignatureBlocks.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+AK chains leading to different trust anchors. See <a href="#sec-verif-proc" class="auto internal xref">Section 6</a> for a discussion of handling multiple SignatureBlocks.<a href="#section-3.2-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2458,16 +2471,26 @@ header label is "EVIDENCE". For example:<a href="#section-5.5-3" class="pilcrow"
       </h2>
 <p id="section-6-1">The <code>SignatureBlock.signatureValue</code> signs over the DER-encoded to-be-signed Evidence data
 <code>Evidence.tbs</code> and <span class="bcp14">MUST</span> be validated with the subject public key of the end entity
-X.509 certificate contained in the <code>SignerIdentifier.certificate</code>. Verifiers <span class="bcp14">MAY</span> also use
-<code>Evidence.intermediateCertificates</code> to build a certification path to a trust anchor.<a href="#section-6-1" class="pilcrow">¶</a></p>
-<p id="section-6-2">Note that the structure <code>Evidence</code> <span class="bcp14">MAY</span> contain zero or more SignatureBlocks.
-A structure <code>Evidence</code> with zero SignatureBlocks is unsigned and unprotected; Verifiers <span class="bcp14">MUST</span> treat it as untrusted and <span class="bcp14">MUST NOT</span> rely on its claims.<a href="#section-6-2" class="pilcrow">¶</a></p>
-<p id="section-6-3">More than one SignatureBlock <span class="bcp14">MAY</span> be used to convey a number of different semantics.
+X.509 certificate contained in the <code>SignerIdentifier.certificate</code>.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-2">Verifiers <span class="bcp14">MUST</span> ensure, prior to accepting the signature associated with an end-entity certificate, that:<a href="#section-6-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-6-3.1">
+          <p id="section-6-3.1.1">the certificate contains the <code>KeyUsage</code> (KU) extension with the <code>digitalSignature</code> bit set; and,<a href="#section-6-3.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-6-3.2">
+          <p id="section-6-3.2.1">the certificate contains the <code>Extended Key Usage</code> (EKU) extension that includes the <code>id-kp-attestationKey</code> usage.<a href="#section-6-3.2.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-6-4">Verifiers <span class="bcp14">MAY</span> also use <code>Evidence.intermediateCertificates</code> to build a certification path from the end-entity
+certificate to a trust anchor.<a href="#section-6-4" class="pilcrow">¶</a></p>
+<p id="section-6-5">Note that the structure <code>Evidence</code> <span class="bcp14">MAY</span> contain zero or more SignatureBlocks.
+A structure <code>Evidence</code> with zero SignatureBlocks is unsigned and unprotected; Verifiers <span class="bcp14">MUST</span> treat it as untrusted and <span class="bcp14">MUST NOT</span> rely on its claims.<a href="#section-6-5" class="pilcrow">¶</a></p>
+<p id="section-6-6">More than one SignatureBlock <span class="bcp14">MAY</span> be used to convey a number of different semantics.
 For example, the HSM's Attesting Environment might hold multiple Attestation Keys using different cryptographic
-algorithms in order to provide resilience against cryptographic degradation. In this case a Verifier would be expected to validate all SignatureBlocks. Alternatively, the HSM's Attesting Service may hold multiple Attestation Keys (or multiple X.509 certificates for the same key) from multiple operational environments to which it belongs. In this case a Verifier would be expected to only validate the SignatureBlock corresponding to its own environment. Alternatively, multiple SignatureBlocks could be used to convey counter-signatures from external parties, in which case the Verifier will need to be equipped with environment-specific verification logic. Multiple of these cases, and potentially others, could be supported by a single Evidence object.<a href="#section-6-3" class="pilcrow">¶</a></p>
-<p id="section-6-4">Note that each SignatureBlock is a fully detached signature over the tbs content with no binding between the signed content and the SignatureBlocks meaning that a third-party can add a
-counter-signature of the Evidence after the fact, or an attacker can remove a SignatureBlock without leaving any artifact. See <a href="#sec-detached-sigs" class="auto internal xref">Section 10.3</a> for further discussion.<a href="#section-6-4" class="pilcrow">¶</a></p>
-<p id="section-6-5">If any <code>transaction.ak-spki</code> claims are present, the Verifier <span class="bcp14">SHOULD</span> verify that each <code>SignerIdentifier</code>’s SubjectPublicKeyInfo (or the SPKI of its <code>certificate</code>) matches at least one <code>ak-spki</code> value.<a href="#section-6-5" class="pilcrow">¶</a></p>
+algorithms in order to provide resilience against cryptographic degradation. In this case a Verifier would be expected to validate all SignatureBlocks. Alternatively, the HSM's Attesting Service may hold multiple Attestation Keys (or multiple X.509 certificates for the same key) from multiple operational environments to which it belongs. In this case a Verifier would be expected to only validate the SignatureBlock corresponding to its own environment. Alternatively, multiple SignatureBlocks could be used to convey counter-signatures from external parties, in which case the Verifier will need to be equipped with environment-specific verification logic. Multiple of these cases, and potentially others, could be supported by a single Evidence object.<a href="#section-6-6" class="pilcrow">¶</a></p>
+<p id="section-6-7">Note that each SignatureBlock is a fully detached signature over the tbs content with no binding between the signed content and the SignatureBlocks meaning that a third-party can add a
+counter-signature of the Evidence after the fact, or an attacker can remove a SignatureBlock without leaving any artifact. See <a href="#sec-detached-sigs" class="auto internal xref">Section 10.3</a> for further discussion.<a href="#section-6-7" class="pilcrow">¶</a></p>
+<p id="section-6-8">If any <code>transaction.ak-spki</code> claims are present, the Verifier <span class="bcp14">SHOULD</span> verify that each <code>SignerIdentifier</code>’s SubjectPublicKeyInfo (or the SPKI of its <code>certificate</code>) matches at least one <code>ak-spki</code> value.<a href="#section-6-8" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-reqs">
@@ -2714,23 +2737,66 @@ information is disclosed to the Verifier.<a href="#section-7.3-6" class="pilcrow
 <pre>
 &lt;CODE STARTS&gt;
 
-=============== NOTE: '\' line wrapping per RFC 8792 ================
-
 PKIX-Evidence-2025
       { iso(1) identified-organization(3) dod(6) internet(1)
         security(5) mechanisms(5) pkix(7) id-mod(0)
-        id-mod-pkix-evidence-2025(TBDMOD) }
+        id-mod-pkix-evidence-2025(999) }
 
-DEFINITIONS IMPLICIT TAGS ::=
+DEFINITIONS EXPLICIT TAGS ::=
 BEGIN
 
+EXPORTS ALL ;
+
+IMPORTS
+  AlgorithmIdentifier{}, SIGNATURE-ALGORITHM
+    FROM AlgorithmInformation-2009 -- in [RFC5912]
+  { iso(1) identified-organization(3) dod(6) internet(1)
+    security(5)mechanisms(5) pkix(7) id-mod(0)
+    id-mod-algorithmInformation-02(58) }
+
+  Certificate, SubjectPublicKeyInfo
+    FROM PKIX1Explicit-2009 -- in [RFC5912]
+  { iso(1) identified-organization(3) dod(6) internet(1)
+    security(5) mechanisms(5) pkix(7) id-mod(0)
+    id-mod-pkix1-explicit-02(51) }
+;
+
+-- OID Arc
+
+id-kp OBJECT IDENTIFIER ::=
+  { iso(1) identified-organization(3) dod(6) internet(1)
+    security(5) mechanisms(5) pkix(7) kp(3) }
+
+  -- Attestation Key Extended Key Usage --
+
+id-kp-attestationKey OBJECT IDENTIFIER ::= { id-kp 999 }
+
+-- Evidence --
+
 Evidence ::= SEQUENCE {
-    tbs                           TbsEvidence,
-    signatures                    SEQUENCE SIZE (0..MAX) OF \
-                                                      SignatureBlock,
+    tbs  TbsEvidence,
+    signatures  SEQUENCE SIZE (0..MAX) OF SignatureBlock,
     intermediateCertificates  [0] SEQUENCE OF Certificate OPTIONAL
-                                  -- As defined in RFC 5280
+                                  -- As defined in RFC 5912
 }
+SignatureBlock ::= SEQUENCE {
+    sid SignerIdentifier,
+    signatureAlgorithm AlgorithmIdentifier{
+        SIGNATURE-ALGORITHM, {SignatureAlgSet} },
+    signatureValue OCTET STRING
+}
+
+SignerIdentifier ::= SEQUENCE {
+    keyId [0] EXPLICIT OCTET STRING OPTIONAL,
+    subjectPublicKeyInfo [1] EXPLICIT
+        SubjectPublicKeyInfo OPTIONAL,
+        -- As defined in RFC 5912
+    certificate [2] EXPLICIT Certificate OPTIONAL
+      -- As defined in RFC 5912
+} (
+    WITH COMPONENTS { ..., keyId PRESENT}
+    | WITH COMPONENTS { ..., subjectPublicKeyInfo PRESENT }
+    | WITH COMPONENTS { ...,certificate PRESENT } )
 
 TbsEvidence ::= SEQUENCE {
     version INTEGER,
@@ -2742,133 +2808,268 @@ ReportedEntity ::= SEQUENCE {
     claims             SEQUENCE SIZE (1..MAX) OF ReportedClaim
 }
 
+CLAIM ::= CLASS {
+    &amp;id       OBJECT IDENTIFIER UNIQUE,
+    &amp;Type
+} WITH SYNTAX {
+    ID &amp;id
+    WITH TYPE &amp;Type
+}
+
 ReportedClaim ::= SEQUENCE {
-    claimType          OBJECT IDENTIFIER,
-    value              ClaimValue OPTIONAL
+    claimType  CLAIM.&amp;id ({ClaimSet}),
+    value      CLAIM.&amp;Type ({ClaimSet}{@claimType}) OPTIONAL
 }
 
-ClaimValue ::= CHOICE {
-   bytes       [0] OCTET STRING,
-   utf8String  [1] UTF8String,
-   bool        [2] BOOLEAN,
-   time        [3] GeneralizedTime,
-   int         [4] INTEGER,
-   oid         [5] OBJECT IDENTIFIER,
-   null        [6] NULL
+ClaimSet CLAIM ::= {
+      claim-transaction-nonce
+      | claim-transaction-timestamp
+      | claim-transaction-ak-spki
+      | claim-platform-vendor
+      | claim-platform-oemid
+      | claim-platform-hwmodel
+      | claim-platform-hwversion
+      | claim-platform-hwserial
+      | claim-platform-swname
+      | claim-platform-swversion
+      | claim-platform-debugstat
+      | claim-platform-uptime
+      | claim-platform-bootcount
+      | claim-platform-fipsboot
+      | claim-platform-fipsver
+      | claim-platform-fipslevel
+      | claim-platform-fipsmodule
+      | claim-key-identifier
+      | claim-key-spki
+      | claim-key-extractable
+      | claim-key-sensitive
+      | claim-key-never-extractable
+      | claim-key-local
+      | claim-key-expiry
+      | claim-key-purpose
 }
-
-SignatureBlock ::= SEQUENCE {
-   sid                  SignerIdentifier,
-   signatureAlgorithm   AlgorithmIdentifier,
-   signatureValue       OCTET STRING
-}
-
-SignerIdentifier ::= SEQUENCE {
-   keyId                [0] EXPLICIT OCTET STRING OPTIONAL,
-   subjectPublicKeyInfo [1] EXPLICIT SubjectPublicKeyInfo OPTIONAL,
-                            -- As defined in RFC 5280
-   certificate          [2] EXPLICIT Certificate OPTIONAL
-                            -- As defined in RFC 5280
-}
-
-EvidenceKeyCapabilities ::= SEQUENCE OF OBJECT IDENTIFIER
 
 id-evidence OBJECT IDENTIFIER ::= { 1 2 3 999 }
 
-id-evidence-entity             OBJECT IDENTIFIER ::= { id-evidence \
-                                                                  0 }
-id-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-evidence-\
-                                                           entity 0 }
-id-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-evidence-\
-                                                           entity 1 }
-id-evidence-entity-key         OBJECT IDENTIFIER ::= { id-evidence-\
-                                                           entity 2 }
+id-evidence-entity             OBJECT IDENTIFIER ::=
+    { id-evidence 0 }
+id-evidence-entity-transaction OBJECT IDENTIFIER ::=
+    { id-evidence-entity 0 }
+id-evidence-entity-platform    OBJECT IDENTIFIER ::=
+    { id-evidence-entity 1 }
+id-evidence-entity-key         OBJECT IDENTIFIER ::=
+    { id-evidence-entity 2 }
 
-id-evidence-claim    OBJECT IDENTIFIER ::= { id-evidence 1 }
+id-evidence-claim    OBJECT IDENTIFIER ::=
+    { id-evidence 1 }
 
-id-evidence-claim-transaction           OBJECT IDENTIFIER ::= { id-\
-                                                   evidence-claim 0 }
-id-evidence-claim-transaction-nonce     OBJECT IDENTIFIER ::= { id-\
-                                       evidence-claim-transaction 0 }
-id-evidence-claim-transaction-timestamp OBJECT IDENTIFIER ::= { id-\
-                                       evidence-claim-transaction 1 }
-id-evidence-claim-transaction-ak-spki   OBJECT IDENTIFIER ::= { id-\
-                                       evidence-claim-transaction 2 }
+id-evidence-claim-transaction           OBJECT IDENTIFIER ::=
+    { id-evidence-claim 0 }
+id-evidence-claim-transaction-nonce     OBJECT IDENTIFIER ::=
+    { id-evidence-claim-transaction 0 }
+id-evidence-claim-transaction-timestamp OBJECT IDENTIFIER ::=
+    { id-evidence-claim-transaction 1 }
+id-evidence-claim-transaction-ak-spki   OBJECT IDENTIFIER ::=
+    { id-evidence-claim-transaction 2 }
 
-id-evidence-claim-platform            OBJECT IDENTIFIER ::= { id-\
-                                                   evidence-claim 1 }
-id-evidence-claim-platform-vendor     OBJECT IDENTIFIER ::= { id-\
-                                          evidence-claim-platform 0 }
-id-evidence-claim-platform-oemid      OBJECT IDENTIFIER ::= { id-\
-                                          evidence-claim-platform 1 }
-id-evidence-claim-platform-hwmodel    OBJECT IDENTIFIER ::= { id-\
-                                          evidence-claim-platform 2 }
-id-evidence-claim-platform-hwversion  OBJECT IDENTIFIER ::= { id-\
-                                          evidence-claim-platform 3 }
-id-evidence-claim-platform-hwserial   OBJECT IDENTIFIER ::= { id-\
-                                          evidence-claim-platform 4 }
-id-evidence-claim-platform-swname     OBJECT IDENTIFIER ::= { id-\
-                                          evidence-claim-platform 5 }
-id-evidence-claim-platform-swversion  OBJECT IDENTIFIER ::= { id-\
-                                          evidence-claim-platform 6 }
-id-evidence-claim-platform-debugstat  OBJECT IDENTIFIER ::= { id-\
-                                          evidence-claim-platform 7 }
-id-evidence-claim-platform-uptime     OBJECT IDENTIFIER ::= { id-\
-                                          evidence-claim-platform 8 }
-id-evidence-claim-platform-bootcount  OBJECT IDENTIFIER ::= { id-\
-                                          evidence-claim-platform 9 }
-id-evidence-claim-platform-usermods   OBJECT IDENTIFIER ::= { id-\
-                                         evidence-claim-platform 10 }
-id-evidence-claim-platform-fipsboot   OBJECT IDENTIFIER ::= { id-\
-                                         evidence-claim-platform 11 }
-id-evidence-claim-platform-fipsver    OBJECT IDENTIFIER ::= { id-\
-                                         evidence-claim-platform 12 }
-id-evidence-claim-platform-fipslevel  OBJECT IDENTIFIER ::= { id-\
-                                         evidence-claim-platform 13 }
-id-evidence-claim-platform-fipsmodule OBJECT IDENTIFIER ::= { id-\
-                                         evidence-claim-platform 14 }
+id-evidence-claim-platform            OBJECT IDENTIFIER ::=
+    { id-evidence-claim 1 }
+id-evidence-claim-platform-vendor     OBJECT IDENTIFIER ::=
+    { id-evidence-claim-platform 0 }
+id-evidence-claim-platform-oemid      OBJECT IDENTIFIER ::=
+    { id-evidence-claim-platform 1 }
+id-evidence-claim-platform-hwmodel    OBJECT IDENTIFIER ::=
+    { id-evidence-claim-platform 2 }
+id-evidence-claim-platform-hwversion  OBJECT IDENTIFIER ::=
+    { id-evidence-claim-platform 3 }
+id-evidence-claim-platform-hwserial   OBJECT IDENTIFIER ::=
+    { id-evidence-claim-platform 4 }
+id-evidence-claim-platform-swname     OBJECT IDENTIFIER ::=
+    { id-evidence-claim-platform 5 }
+id-evidence-claim-platform-swversion  OBJECT IDENTIFIER ::=
+    { id-evidence-claim-platform 6 }
+id-evidence-claim-platform-debugstat  OBJECT IDENTIFIER ::=
+    { id-evidence-claim-platform 7 }
+id-evidence-claim-platform-uptime     OBJECT IDENTIFIER ::=
+    { id-evidence-claim-platform 8 }
+id-evidence-claim-platform-bootcount  OBJECT IDENTIFIER ::=
+    { id-evidence-claim-platform 9 }
+id-evidence-claim-platform-fipsboot   OBJECT IDENTIFIER ::=
+    { id-evidence-claim-platform 10 }
+id-evidence-claim-platform-fipsver    OBJECT IDENTIFIER ::=
+    { id-evidence-claim-platform 11 }
+id-evidence-claim-platform-fipslevel  OBJECT IDENTIFIER ::=
+    { id-evidence-claim-platform 12 }
+id-evidence-claim-platform-fipsmodule OBJECT IDENTIFIER ::=
+    { id-evidence-claim-platform 13 }
+
+id-evidence-claim-key                   OBJECT IDENTIFIER ::=
+    { id-evidence-claim 2 }
+id-evidence-claim-key-identifier        OBJECT IDENTIFIER ::=
+    { id-evidence-claim-key 0 }
+id-evidence-claim-key-spki              OBJECT IDENTIFIER ::=
+    { id-evidence-claim-key 1 }
+id-evidence-claim-key-extractable       OBJECT IDENTIFIER ::=
+    { id-evidence-claim-key 2 }
+id-evidence-claim-key-sensitive         OBJECT IDENTIFIER ::=
+    { id-evidence-claim-key 3 }
+id-evidence-claim-key-never-extractable OBJECT IDENTIFIER ::=
+    { id-evidence-claim-key 4 }
+id-evidence-claim-key-local             OBJECT IDENTIFIER ::=
+    { id-evidence-claim-key 5 }
+id-evidence-claim-key-expiry            OBJECT IDENTIFIER ::=
+    { id-evidence-claim-key 6 }
+id-evidence-claim-key-purpose           OBJECT IDENTIFIER ::=
+    { id-evidence-claim-key 7 }
+
+id-evidence-key-capability              OBJECT IDENTIFIER ::=
+    { id-evidence 2 }
+id-evidence-key-capability-encrypt      OBJECT IDENTIFIER ::=
+    { id-evidence-key-capability 0 }
+id-evidence-key-capability-decrypt      OBJECT IDENTIFIER ::=
+    { id-evidence-key-capability 1 }
+id-evidence-key-capability-wrap         OBJECT IDENTIFIER ::=
+    { id-evidence-key-capability 2 }
+id-evidence-key-capability-unwrap       OBJECT IDENTIFIER ::=
+    { id-evidence-key-capability 3 }
+id-evidence-key-capability-sign         OBJECT IDENTIFIER ::=
+    { id-evidence-key-capability 4 }
+id-evidence-key-capability-sign-recover OBJECT IDENTIFIER ::=
+    { id-evidence-key-capability 5 }
+id-evidence-key-capability-verify       OBJECT IDENTIFIER ::=
+    { id-evidence-key-capability 6 }
+id-evidence-key-capability-verify-recover OBJECT IDENTIFIER ::=
+    { id-evidence-key-capability 7 }
+id-evidence-key-capability-derive       OBJECT IDENTIFIER ::=
+    { id-evidence-key-capability 8 }
 
 
-id-evidence-claim-key                   OBJECT IDENTIFIER ::= { id-\
-                                                   evidence-claim 2 }
-id-evidence-claim-key-identifier        OBJECT IDENTIFIER ::= { id-\
-                                               evidence-claim-key 0 }
-id-evidence-claim-key-spki              OBJECT IDENTIFIER ::= { id-\
-                                               evidence-claim-key 1 }
-id-evidence-claim-key-extractable       OBJECT IDENTIFIER ::= { id-\
-                                               evidence-claim-key 2 }
-id-evidence-claim-key-sensitive         OBJECT IDENTIFIER ::= { id-\
-                                               evidence-claim-key 3 }
-id-evidence-claim-key-never-extractable OBJECT IDENTIFIER ::= { id-\
-                                               evidence-claim-key 4 }
-id-evidence-claim-key-local             OBJECT IDENTIFIER ::= { id-\
-                                               evidence-claim-key 5 }
-id-evidence-claim-key-expiry            OBJECT IDENTIFIER ::= { id-\
-                                               evidence-claim-key 6 }
-id-evidence-claim-key-purpose           OBJECT IDENTIFIER ::= { id-\
-                                               evidence-claim-key 7 }
+claim-transaction-nonce CLAIM ::= {
+  ID id-evidence-claim-transaction-nonce
+  WITH TYPE OCTET STRING
+}
 
+claim-transaction-timestamp CLAIM ::= {
+  ID id-evidence-claim-transaction-timestamp
+  WITH TYPE GeneralizedTime
+}
 
-id-evidence-key-capability                  OBJECT IDENTIFIER ::= { \
-                                                      id-evidence 2 }
-id-evidence-key-capability-encrypt          OBJECT IDENTIFIER ::= { \
-                                       id-evidence-key-capability 0 }
-id-evidence-key-capability-decrypt          OBJECT IDENTIFIER ::= { \
-                                       id-evidence-key-capability 1 }
-id-evidence-key-capability-wrap             OBJECT IDENTIFIER ::= { \
-                                       id-evidence-key-capability 2 }
-id-evidence-key-capability-unwrap           OBJECT IDENTIFIER ::= { \
-                                       id-evidence-key-capability 3 }
-id-evidence-key-capability-sign             OBJECT IDENTIFIER ::= { \
-                                       id-evidence-key-capability 4 }
-id-evidence-key-capability-sign-recover     OBJECT IDENTIFIER ::= { \
-                                       id-evidence-key-capability 5 }
-id-evidence-key-capability-verify           OBJECT IDENTIFIER ::= { \
-                                       id-evidence-key-capability 6 }
-id-evidence-key-capability-verify-recover   OBJECT IDENTIFIER ::= { \
-                                       id-evidence-key-capability 7 }
-id-evidence-key-capability-derive           OBJECT IDENTIFIER ::= { \
-                                       id-evidence-key-capability 8 }
+claim-transaction-ak-spki CLAIM ::= {
+  ID id-evidence-claim-transaction-ak-spki
+  WITH TYPE OCTET STRING
+}
+
+claim-platform-vendor CLAIM ::= {
+  ID id-evidence-claim-platform-vendor
+  WITH TYPE UTF8String
+}
+
+claim-platform-oemid CLAIM ::= {
+  ID id-evidence-claim-platform-oemid
+  WITH TYPE OCTET STRING
+}
+
+claim-platform-hwmodel CLAIM ::= {
+  ID id-evidence-claim-platform-hwmodel
+  WITH TYPE OCTET STRING
+}
+
+claim-platform-hwversion CLAIM ::= {
+  ID id-evidence-claim-platform-hwversion
+  WITH TYPE UTF8String
+}
+
+claim-platform-hwserial CLAIM ::= {
+  ID id-evidence-claim-platform-hwserial
+  WITH TYPE UTF8String
+}
+
+claim-platform-swname CLAIM ::= {
+  ID id-evidence-claim-platform-swname
+  WITH TYPE UTF8String
+}
+
+claim-platform-swversion CLAIM ::= {
+  ID id-evidence-claim-platform-swversion
+  WITH TYPE UTF8String
+}
+
+claim-platform-debugstat CLAIM ::= {
+  ID id-evidence-claim-platform-debugstat
+  WITH TYPE INTEGER
+}
+
+claim-platform-uptime CLAIM ::= {
+  ID id-evidence-claim-platform-uptime
+  WITH TYPE INTEGER
+}
+
+claim-platform-bootcount CLAIM ::= {
+  ID id-evidence-claim-platform-bootcount
+  WITH TYPE INTEGER
+}
+
+claim-platform-fipsboot CLAIM ::= {
+  ID id-evidence-claim-platform-fipsboot
+  WITH TYPE BOOLEAN
+}
+
+claim-platform-fipsver CLAIM ::= {
+  ID id-evidence-claim-platform-fipsver
+  WITH TYPE UTF8String
+}
+
+claim-platform-fipslevel CLAIM ::= {
+  ID id-evidence-claim-platform-fipslevel
+  WITH TYPE INTEGER
+}
+
+claim-platform-fipsmodule CLAIM ::= {
+  ID id-evidence-claim-platform-fipsmodule
+  WITH TYPE UTF8String
+}
+
+claim-key-identifier CLAIM ::= {
+  ID id-evidence-claim-key-identifier
+  WITH TYPE UTF8String
+}
+
+claim-key-spki CLAIM ::= {
+  ID id-evidence-claim-key-spki
+  WITH TYPE OCTET STRING
+}
+
+claim-key-extractable CLAIM ::= {
+  ID id-evidence-claim-key-extractable
+  WITH TYPE BOOLEAN
+}
+
+claim-key-sensitive CLAIM ::= {
+  ID id-evidence-claim-key-sensitive
+  WITH TYPE BOOLEAN
+}
+
+claim-key-never-extractable CLAIM ::= {
+  ID id-evidence-claim-key-never-extractable
+  WITH TYPE BOOLEAN
+}
+
+claim-key-local CLAIM ::= {
+  ID id-evidence-claim-key-local
+  WITH TYPE BOOLEAN
+}
+
+claim-key-expiry CLAIM ::= {
+  ID id-evidence-claim-key-expiry
+  WITH TYPE GeneralizedTime
+}
+
+claim-key-purpose CLAIM ::= {
+  ID id-evidence-claim-key-purpose
+  WITH TYPE KeyPurposes
+}
+
+KeyPurposes ::= SEQUENCE OF OBJECT IDENTIFIER
 
 END
 
@@ -3062,10 +3263,6 @@ such as the "nonce" claim of the "transaction" entity, introduced in this specif
         <dd>
 <span class="refAuthor">NIST, Information Technology Laboratory</span>, <span class="refTitle">"Security Requirements for Cryptographic Modules"</span>, <span class="seriesInfo">FIPS 140-3</span>, <span>n.d.</span>, <span>&lt;<a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-3.pdf">https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-3.pdf</a>&gt;</span>. </dd>
 <dd class="break"></dd>
-<dt id="I-D.jpfiset-lamps-attestationkey-eku">[I-D.jpfiset-lamps-attestationkey-eku]</dt>
-        <dd>
-<span class="refAuthor">Fiset, J.</span>, <span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, and <span class="refAuthor">M. Wiseman</span>, <span class="refTitle">"X.509 Certificate Extended Key Usage (EKU) for Attestation Keys"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-jpfiset-lamps-attestationkey-eku-02</span>, <time datetime="2026-03-01" class="refDate">1 March 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-jpfiset-lamps-attestationkey-eku-02">https://datatracker.ietf.org/doc/html/draft-jpfiset-lamps-attestationkey-eku-02</a>&gt;</span>. </dd>
-<dd class="break"></dd>
 <dt id="PKCS11">[PKCS11]</dt>
         <dd>
 <span class="refAuthor">Bong, D.</span>, <span class="refAuthor">Cox, T.</span>, and <span class="refAuthor">OASIS PKCS 11 TC</span>, <span class="refTitle">"PKCS #11 Specification Version 3.1"</span>, <time datetime="2022-08-11" class="refDate">11 August 2022</time>, <span>&lt;<a href="https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/pkcs11-spec-v3.1-cs01.html">https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/pkcs11-spec-v3.1-cs01.html</a>&gt;</span>. </dd>
@@ -3094,17 +3291,17 @@ such as the "nonce" claim of the "transaction" entity, introduced in this specif
         <dd>
 <span class="refAuthor">Lundblade, L.</span>, <span class="refAuthor">Mandyam, G.</span>, <span class="refAuthor">O'Donoghue, J.</span>, and <span class="refAuthor">C. Wallace</span>, <span class="refTitle">"The Entity Attestation Token (EAT)"</span>, <span class="seriesInfo">RFC 9711</span>, <span class="seriesInfo">DOI 10.17487/RFC9711</span>, <time datetime="2025-04" class="refDate">April 2025</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9711">https://www.rfc-editor.org/rfc/rfc9711</a>&gt;</span>. </dd>
 <dd class="break"></dd>
-<dt id="X.690">[X.690]</dt>
-        <dd>
-<span class="refAuthor">ITU-T</span>, <span class="refTitle">"Information technology -- ASN.1 encoding rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"</span>, <span class="seriesInfo">ITU-T Recommendation X.690</span>, <span class="seriesInfo">ISO/IEC 8825-1:2021</span>, <time datetime="2021-02" class="refDate">February 2021</time>, <span>&lt;<a href="https://www.itu.int/rec/T-REC-X.690">https://www.itu.int/rec/T-REC-X.690</a>&gt;</span>. </dd>
-<dd class="break"></dd>
 <dt id="X680">[X680]</dt>
         <dd>
 <span class="refAuthor">ITU-T</span>, <span class="refTitle">"Information technology — ASN.1: Specification of basic notation"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.itu.int/rec/T-REC-X.680">https://www.itu.int/rec/T-REC-X.680</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="X690">[X690]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">ITU-T</span>, <span class="refTitle">"Information technology — ASN.1 encoding rules: BER, CER, DER"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.itu.int/rec/T-REC-X.690">https://www.itu.int/rec/T-REC-X.690</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="X.690">[X.690]</dt>
+      <dd>
+<span class="refAuthor">ITU-T</span>, <span class="refTitle">"Information technology -- ASN.1 encoding rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"</span>, <span class="seriesInfo">ITU-T Recommendation X.690</span>, <span class="seriesInfo">ISO/IEC 8825-1:2021</span>, <time datetime="2021-02" class="refDate">February 2021</time>, <span>&lt;<a href="https://www.itu.int/rec/T-REC-X.690">https://www.itu.int/rec/T-REC-X.690</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
@@ -3129,7 +3326,7 @@ such as the "nonce" claim of the "transaction" entity, introduced in this specif
 <dd class="break"></dd>
 <dt id="I-D.ietf-lamps-csr-attestation">[I-D.ietf-lamps-csr-attestation]</dt>
         <dd>
-<span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Wiseman, M.</span>, and <span class="refAuthor">N. Smith</span>, <span class="refTitle">"Use of Remote Attestation with Certification Signing Requests"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-lamps-csr-attestation-23</span>, <time datetime="2026-03-01" class="refDate">1 March 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-23">https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-23</a>&gt;</span>. </dd>
+<span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Wiseman, M.</span>, and <span class="refAuthor">N. Smith</span>, <span class="refTitle">"Use of Remote Attestation with Certification Signing Requests"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-lamps-csr-attestation-28</span>, <time datetime="2026-06-16" class="refDate">16 June 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-28">https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-28</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-rats-msg-wrap">[I-D.ietf-rats-msg-wrap]</dt>
         <dd>

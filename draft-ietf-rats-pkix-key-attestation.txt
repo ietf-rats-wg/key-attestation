@@ -5,7 +5,7 @@
 RATS                                                        M. Ounsworth
 Internet-Draft                                            Cryptic Forest
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 18 September 2026                                      Crypto4A
+Expires: 22 December 2026                                       Crypto4A
                                                            H. Tschofenig
                                                                 UniBw M.
                                                              H. Birkholz
@@ -13,7 +13,7 @@ Expires: 18 September 2026                                      Crypto4A
                                                               M. Wiseman
                                                                         
                                                                 N. Smith
-                                                           17 March 2026
+                                                            20 June 2026
 
 
             Evidence Encoding for Hardware Security Modules
@@ -70,7 +70,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 18 September 2026.
+   This Internet-Draft will expire on 22 December 2026.
 
 Copyright Notice
 
@@ -364,9 +364,10 @@ Table of Contents
    Trusted Platform Module (TPM):
       A tamper-resistant processor generally located on a computer's
       motherboard used to enhance attestation functions for the hosting
-      platform.  TPMs are very specialized Hardware Security Modules and
-      generally use other protocols (than the one presented in this
-      specification) to transmit Evidence.
+      platform as defined by the Trusted Computer Group.  TPMs are very
+      specialized Hardware Security Modules and generally use other
+      protocols (than the one presented in this specification) to
+      transmit Evidence.
 
    User Key:
       A user key consists of a key hosted by an HSM (the platform) and
@@ -426,10 +427,27 @@ Table of Contents
    case when the AK certificate is replaced as part of onboarding the
    device into a new operational environment.
 
-   The AK certificate that signs the evidence MUST include the Extended
-   Key Usage (EKU) certificate extension, and the EKU certificate
-   extension MUST include the id-kp-attest, as defined in
-   [I-D.jpfiset-lamps-attestationkey-eku].
+   The AK certificate associated with the AK that signs the evidence
+   have the following constraints:
+
+   *  the certificate MUST include the Extended Key Usage (EKU)
+      certificate extension;
+
+   *  the EKU certificate extension MUST include the id-kp-
+      attestationKey, as defined in this specification; and,
+
+   *  the KeyUsage extension (KU) MUST have the digitalSignature bit
+      set.
+
+   An EKU that includes only a single KeyPurposeId of id-kp-
+   attestationKey SHOULD be marked as critical.  The reasoning here is
+   that the usage of a true attestation key is constrained by the
+   security module it's contained by.  Presenting non-attestation data
+   for validation by this AK public key should ALWAYS fail.
+
+   An EKU that includes a KeyPurposeId of id-kp-attestationKey along
+   with other attestation-related KeyPurposeId SHOULD NOT be marked as
+   critical.
 
    Note that the data format specified in Section 5 allows for zero,
    one, or multiple 'SignatureBlock's, so a single Evidence statement
@@ -1199,9 +1217,19 @@ Table of Contents
    The SignatureBlock.signatureValue signs over the DER-encoded to-be-
    signed Evidence data Evidence.tbs and MUST be validated with the
    subject public key of the end entity X.509 certificate contained in
-   the SignerIdentifier.certificate.  Verifiers MAY also use
-   Evidence.intermediateCertificates to build a certification path to a
-   trust anchor.
+   the SignerIdentifier.certificate.
+
+   Verifiers MUST ensure, prior to accepting the signature associated
+   with an end-entity certificate, that:
+
+   *  the certificate contains the KeyUsage (KU) extension with the
+      digitalSignature bit set; and,
+
+   *  the certificate contains the Extended Key Usage (EKU) extension
+      that includes the id-kp-attestationKey usage.
+
+   Verifiers MAY also use Evidence.intermediateCertificates to build a
+   certification path from the end-entity certificate to a trust anchor.
 
    Note that the structure Evidence MAY contain zero or more
    SignatureBlocks.  A structure Evidence with zero SignatureBlocks is
@@ -1524,23 +1552,66 @@ Table of Contents
 
    <CODE STARTS>
 
-   =============== NOTE: '\' line wrapping per RFC 8792 ================
-
    PKIX-Evidence-2025
          { iso(1) identified-organization(3) dod(6) internet(1)
            security(5) mechanisms(5) pkix(7) id-mod(0)
-           id-mod-pkix-evidence-2025(TBDMOD) }
+           id-mod-pkix-evidence-2025(999) }
 
-   DEFINITIONS IMPLICIT TAGS ::=
+   DEFINITIONS EXPLICIT TAGS ::=
    BEGIN
 
+   EXPORTS ALL ;
+
+   IMPORTS
+     AlgorithmIdentifier{}, SIGNATURE-ALGORITHM
+       FROM AlgorithmInformation-2009 -- in [RFC5912]
+     { iso(1) identified-organization(3) dod(6) internet(1)
+       security(5)mechanisms(5) pkix(7) id-mod(0)
+       id-mod-algorithmInformation-02(58) }
+
+     Certificate, SubjectPublicKeyInfo
+       FROM PKIX1Explicit-2009 -- in [RFC5912]
+     { iso(1) identified-organization(3) dod(6) internet(1)
+       security(5) mechanisms(5) pkix(7) id-mod(0)
+       id-mod-pkix1-explicit-02(51) }
+   ;
+
+   -- OID Arc
+
+   id-kp OBJECT IDENTIFIER ::=
+     { iso(1) identified-organization(3) dod(6) internet(1)
+       security(5) mechanisms(5) pkix(7) kp(3) }
+
+     -- Attestation Key Extended Key Usage --
+
+   id-kp-attestationKey OBJECT IDENTIFIER ::= { id-kp 999 }
+
+   -- Evidence --
+
    Evidence ::= SEQUENCE {
-       tbs                           TbsEvidence,
-       signatures                    SEQUENCE SIZE (0..MAX) OF \
-                                                         SignatureBlock,
+       tbs  TbsEvidence,
+       signatures  SEQUENCE SIZE (0..MAX) OF SignatureBlock,
        intermediateCertificates  [0] SEQUENCE OF Certificate OPTIONAL
-                                     -- As defined in RFC 5280
+                                     -- As defined in RFC 5912
    }
+   SignatureBlock ::= SEQUENCE {
+       sid SignerIdentifier,
+       signatureAlgorithm AlgorithmIdentifier{
+           SIGNATURE-ALGORITHM, {SignatureAlgSet} },
+       signatureValue OCTET STRING
+   }
+
+   SignerIdentifier ::= SEQUENCE {
+       keyId [0] EXPLICIT OCTET STRING OPTIONAL,
+       subjectPublicKeyInfo [1] EXPLICIT
+           SubjectPublicKeyInfo OPTIONAL,
+           -- As defined in RFC 5912
+       certificate [2] EXPLICIT Certificate OPTIONAL
+         -- As defined in RFC 5912
+   } (
+       WITH COMPONENTS { ..., keyId PRESENT}
+       | WITH COMPONENTS { ..., subjectPublicKeyInfo PRESENT }
+       | WITH COMPONENTS { ...,certificate PRESENT } )
 
    TbsEvidence ::= SEQUENCE {
        version INTEGER,
@@ -1552,133 +1623,268 @@ Table of Contents
        claims             SEQUENCE SIZE (1..MAX) OF ReportedClaim
    }
 
+   CLAIM ::= CLASS {
+       &id       OBJECT IDENTIFIER UNIQUE,
+       &Type
+   } WITH SYNTAX {
+       ID &id
+       WITH TYPE &Type
+   }
+
    ReportedClaim ::= SEQUENCE {
-       claimType          OBJECT IDENTIFIER,
-       value              ClaimValue OPTIONAL
+       claimType  CLAIM.&id ({ClaimSet}),
+       value      CLAIM.&Type ({ClaimSet}{@claimType}) OPTIONAL
    }
 
-   ClaimValue ::= CHOICE {
-      bytes       [0] OCTET STRING,
-      utf8String  [1] UTF8String,
-      bool        [2] BOOLEAN,
-      time        [3] GeneralizedTime,
-      int         [4] INTEGER,
-      oid         [5] OBJECT IDENTIFIER,
-      null        [6] NULL
+   ClaimSet CLAIM ::= {
+         claim-transaction-nonce
+         | claim-transaction-timestamp
+         | claim-transaction-ak-spki
+         | claim-platform-vendor
+         | claim-platform-oemid
+         | claim-platform-hwmodel
+         | claim-platform-hwversion
+         | claim-platform-hwserial
+         | claim-platform-swname
+         | claim-platform-swversion
+         | claim-platform-debugstat
+         | claim-platform-uptime
+         | claim-platform-bootcount
+         | claim-platform-fipsboot
+         | claim-platform-fipsver
+         | claim-platform-fipslevel
+         | claim-platform-fipsmodule
+         | claim-key-identifier
+         | claim-key-spki
+         | claim-key-extractable
+         | claim-key-sensitive
+         | claim-key-never-extractable
+         | claim-key-local
+         | claim-key-expiry
+         | claim-key-purpose
    }
-
-   SignatureBlock ::= SEQUENCE {
-      sid                  SignerIdentifier,
-      signatureAlgorithm   AlgorithmIdentifier,
-      signatureValue       OCTET STRING
-   }
-
-   SignerIdentifier ::= SEQUENCE {
-      keyId                [0] EXPLICIT OCTET STRING OPTIONAL,
-      subjectPublicKeyInfo [1] EXPLICIT SubjectPublicKeyInfo OPTIONAL,
-                               -- As defined in RFC 5280
-      certificate          [2] EXPLICIT Certificate OPTIONAL
-                               -- As defined in RFC 5280
-   }
-
-   EvidenceKeyCapabilities ::= SEQUENCE OF OBJECT IDENTIFIER
 
    id-evidence OBJECT IDENTIFIER ::= { 1 2 3 999 }
 
-   id-evidence-entity             OBJECT IDENTIFIER ::= { id-evidence \
-                                                                     0 }
-   id-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-evidence-\
-                                                              entity 0 }
-   id-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-evidence-\
-                                                              entity 1 }
-   id-evidence-entity-key         OBJECT IDENTIFIER ::= { id-evidence-\
-                                                              entity 2 }
+   id-evidence-entity             OBJECT IDENTIFIER ::=
+       { id-evidence 0 }
+   id-evidence-entity-transaction OBJECT IDENTIFIER ::=
+       { id-evidence-entity 0 }
+   id-evidence-entity-platform    OBJECT IDENTIFIER ::=
+       { id-evidence-entity 1 }
+   id-evidence-entity-key         OBJECT IDENTIFIER ::=
+       { id-evidence-entity 2 }
 
-   id-evidence-claim    OBJECT IDENTIFIER ::= { id-evidence 1 }
+   id-evidence-claim    OBJECT IDENTIFIER ::=
+       { id-evidence 1 }
 
-   id-evidence-claim-transaction           OBJECT IDENTIFIER ::= { id-\
-                                                      evidence-claim 0 }
-   id-evidence-claim-transaction-nonce     OBJECT IDENTIFIER ::= { id-\
-                                          evidence-claim-transaction 0 }
-   id-evidence-claim-transaction-timestamp OBJECT IDENTIFIER ::= { id-\
-                                          evidence-claim-transaction 1 }
-   id-evidence-claim-transaction-ak-spki   OBJECT IDENTIFIER ::= { id-\
-                                          evidence-claim-transaction 2 }
+   id-evidence-claim-transaction           OBJECT IDENTIFIER ::=
+       { id-evidence-claim 0 }
+   id-evidence-claim-transaction-nonce     OBJECT IDENTIFIER ::=
+       { id-evidence-claim-transaction 0 }
+   id-evidence-claim-transaction-timestamp OBJECT IDENTIFIER ::=
+       { id-evidence-claim-transaction 1 }
+   id-evidence-claim-transaction-ak-spki   OBJECT IDENTIFIER ::=
+       { id-evidence-claim-transaction 2 }
 
-   id-evidence-claim-platform            OBJECT IDENTIFIER ::= { id-\
-                                                      evidence-claim 1 }
-   id-evidence-claim-platform-vendor     OBJECT IDENTIFIER ::= { id-\
-                                             evidence-claim-platform 0 }
-   id-evidence-claim-platform-oemid      OBJECT IDENTIFIER ::= { id-\
-                                             evidence-claim-platform 1 }
-   id-evidence-claim-platform-hwmodel    OBJECT IDENTIFIER ::= { id-\
-                                             evidence-claim-platform 2 }
-   id-evidence-claim-platform-hwversion  OBJECT IDENTIFIER ::= { id-\
-                                             evidence-claim-platform 3 }
-   id-evidence-claim-platform-hwserial   OBJECT IDENTIFIER ::= { id-\
-                                             evidence-claim-platform 4 }
-   id-evidence-claim-platform-swname     OBJECT IDENTIFIER ::= { id-\
-                                             evidence-claim-platform 5 }
-   id-evidence-claim-platform-swversion  OBJECT IDENTIFIER ::= { id-\
-                                             evidence-claim-platform 6 }
-   id-evidence-claim-platform-debugstat  OBJECT IDENTIFIER ::= { id-\
-                                             evidence-claim-platform 7 }
-   id-evidence-claim-platform-uptime     OBJECT IDENTIFIER ::= { id-\
-                                             evidence-claim-platform 8 }
-   id-evidence-claim-platform-bootcount  OBJECT IDENTIFIER ::= { id-\
-                                             evidence-claim-platform 9 }
-   id-evidence-claim-platform-usermods   OBJECT IDENTIFIER ::= { id-\
-                                            evidence-claim-platform 10 }
-   id-evidence-claim-platform-fipsboot   OBJECT IDENTIFIER ::= { id-\
-                                            evidence-claim-platform 11 }
-   id-evidence-claim-platform-fipsver    OBJECT IDENTIFIER ::= { id-\
-                                            evidence-claim-platform 12 }
-   id-evidence-claim-platform-fipslevel  OBJECT IDENTIFIER ::= { id-\
-                                            evidence-claim-platform 13 }
-   id-evidence-claim-platform-fipsmodule OBJECT IDENTIFIER ::= { id-\
-                                            evidence-claim-platform 14 }
+   id-evidence-claim-platform            OBJECT IDENTIFIER ::=
+       { id-evidence-claim 1 }
+   id-evidence-claim-platform-vendor     OBJECT IDENTIFIER ::=
+       { id-evidence-claim-platform 0 }
+   id-evidence-claim-platform-oemid      OBJECT IDENTIFIER ::=
+       { id-evidence-claim-platform 1 }
+   id-evidence-claim-platform-hwmodel    OBJECT IDENTIFIER ::=
+       { id-evidence-claim-platform 2 }
+   id-evidence-claim-platform-hwversion  OBJECT IDENTIFIER ::=
+       { id-evidence-claim-platform 3 }
+   id-evidence-claim-platform-hwserial   OBJECT IDENTIFIER ::=
+       { id-evidence-claim-platform 4 }
+   id-evidence-claim-platform-swname     OBJECT IDENTIFIER ::=
+       { id-evidence-claim-platform 5 }
+   id-evidence-claim-platform-swversion  OBJECT IDENTIFIER ::=
+       { id-evidence-claim-platform 6 }
+   id-evidence-claim-platform-debugstat  OBJECT IDENTIFIER ::=
+       { id-evidence-claim-platform 7 }
+   id-evidence-claim-platform-uptime     OBJECT IDENTIFIER ::=
+       { id-evidence-claim-platform 8 }
+   id-evidence-claim-platform-bootcount  OBJECT IDENTIFIER ::=
+       { id-evidence-claim-platform 9 }
+   id-evidence-claim-platform-fipsboot   OBJECT IDENTIFIER ::=
+       { id-evidence-claim-platform 10 }
+   id-evidence-claim-platform-fipsver    OBJECT IDENTIFIER ::=
+       { id-evidence-claim-platform 11 }
+   id-evidence-claim-platform-fipslevel  OBJECT IDENTIFIER ::=
+       { id-evidence-claim-platform 12 }
+   id-evidence-claim-platform-fipsmodule OBJECT IDENTIFIER ::=
+       { id-evidence-claim-platform 13 }
+
+   id-evidence-claim-key                   OBJECT IDENTIFIER ::=
+       { id-evidence-claim 2 }
+   id-evidence-claim-key-identifier        OBJECT IDENTIFIER ::=
+       { id-evidence-claim-key 0 }
+   id-evidence-claim-key-spki              OBJECT IDENTIFIER ::=
+       { id-evidence-claim-key 1 }
+   id-evidence-claim-key-extractable       OBJECT IDENTIFIER ::=
+       { id-evidence-claim-key 2 }
+   id-evidence-claim-key-sensitive         OBJECT IDENTIFIER ::=
+       { id-evidence-claim-key 3 }
+   id-evidence-claim-key-never-extractable OBJECT IDENTIFIER ::=
+       { id-evidence-claim-key 4 }
+   id-evidence-claim-key-local             OBJECT IDENTIFIER ::=
+       { id-evidence-claim-key 5 }
+   id-evidence-claim-key-expiry            OBJECT IDENTIFIER ::=
+       { id-evidence-claim-key 6 }
+   id-evidence-claim-key-purpose           OBJECT IDENTIFIER ::=
+       { id-evidence-claim-key 7 }
+
+   id-evidence-key-capability              OBJECT IDENTIFIER ::=
+       { id-evidence 2 }
+   id-evidence-key-capability-encrypt      OBJECT IDENTIFIER ::=
+       { id-evidence-key-capability 0 }
+   id-evidence-key-capability-decrypt      OBJECT IDENTIFIER ::=
+       { id-evidence-key-capability 1 }
+   id-evidence-key-capability-wrap         OBJECT IDENTIFIER ::=
+       { id-evidence-key-capability 2 }
+   id-evidence-key-capability-unwrap       OBJECT IDENTIFIER ::=
+       { id-evidence-key-capability 3 }
+   id-evidence-key-capability-sign         OBJECT IDENTIFIER ::=
+       { id-evidence-key-capability 4 }
+   id-evidence-key-capability-sign-recover OBJECT IDENTIFIER ::=
+       { id-evidence-key-capability 5 }
+   id-evidence-key-capability-verify       OBJECT IDENTIFIER ::=
+       { id-evidence-key-capability 6 }
+   id-evidence-key-capability-verify-recover OBJECT IDENTIFIER ::=
+       { id-evidence-key-capability 7 }
+   id-evidence-key-capability-derive       OBJECT IDENTIFIER ::=
+       { id-evidence-key-capability 8 }
 
 
-   id-evidence-claim-key                   OBJECT IDENTIFIER ::= { id-\
-                                                      evidence-claim 2 }
-   id-evidence-claim-key-identifier        OBJECT IDENTIFIER ::= { id-\
-                                                  evidence-claim-key 0 }
-   id-evidence-claim-key-spki              OBJECT IDENTIFIER ::= { id-\
-                                                  evidence-claim-key 1 }
-   id-evidence-claim-key-extractable       OBJECT IDENTIFIER ::= { id-\
-                                                  evidence-claim-key 2 }
-   id-evidence-claim-key-sensitive         OBJECT IDENTIFIER ::= { id-\
-                                                  evidence-claim-key 3 }
-   id-evidence-claim-key-never-extractable OBJECT IDENTIFIER ::= { id-\
-                                                  evidence-claim-key 4 }
-   id-evidence-claim-key-local             OBJECT IDENTIFIER ::= { id-\
-                                                  evidence-claim-key 5 }
-   id-evidence-claim-key-expiry            OBJECT IDENTIFIER ::= { id-\
-                                                  evidence-claim-key 6 }
-   id-evidence-claim-key-purpose           OBJECT IDENTIFIER ::= { id-\
-                                                  evidence-claim-key 7 }
+   claim-transaction-nonce CLAIM ::= {
+     ID id-evidence-claim-transaction-nonce
+     WITH TYPE OCTET STRING
+   }
 
+   claim-transaction-timestamp CLAIM ::= {
+     ID id-evidence-claim-transaction-timestamp
+     WITH TYPE GeneralizedTime
+   }
 
-   id-evidence-key-capability                  OBJECT IDENTIFIER ::= { \
-                                                         id-evidence 2 }
-   id-evidence-key-capability-encrypt          OBJECT IDENTIFIER ::= { \
-                                          id-evidence-key-capability 0 }
-   id-evidence-key-capability-decrypt          OBJECT IDENTIFIER ::= { \
-                                          id-evidence-key-capability 1 }
-   id-evidence-key-capability-wrap             OBJECT IDENTIFIER ::= { \
-                                          id-evidence-key-capability 2 }
-   id-evidence-key-capability-unwrap           OBJECT IDENTIFIER ::= { \
-                                          id-evidence-key-capability 3 }
-   id-evidence-key-capability-sign             OBJECT IDENTIFIER ::= { \
-                                          id-evidence-key-capability 4 }
-   id-evidence-key-capability-sign-recover     OBJECT IDENTIFIER ::= { \
-                                          id-evidence-key-capability 5 }
-   id-evidence-key-capability-verify           OBJECT IDENTIFIER ::= { \
-                                          id-evidence-key-capability 6 }
-   id-evidence-key-capability-verify-recover   OBJECT IDENTIFIER ::= { \
-                                          id-evidence-key-capability 7 }
-   id-evidence-key-capability-derive           OBJECT IDENTIFIER ::= { \
-                                          id-evidence-key-capability 8 }
+   claim-transaction-ak-spki CLAIM ::= {
+     ID id-evidence-claim-transaction-ak-spki
+     WITH TYPE OCTET STRING
+   }
+
+   claim-platform-vendor CLAIM ::= {
+     ID id-evidence-claim-platform-vendor
+     WITH TYPE UTF8String
+   }
+
+   claim-platform-oemid CLAIM ::= {
+     ID id-evidence-claim-platform-oemid
+     WITH TYPE OCTET STRING
+   }
+
+   claim-platform-hwmodel CLAIM ::= {
+     ID id-evidence-claim-platform-hwmodel
+     WITH TYPE OCTET STRING
+   }
+
+   claim-platform-hwversion CLAIM ::= {
+     ID id-evidence-claim-platform-hwversion
+     WITH TYPE UTF8String
+   }
+
+   claim-platform-hwserial CLAIM ::= {
+     ID id-evidence-claim-platform-hwserial
+     WITH TYPE UTF8String
+   }
+
+   claim-platform-swname CLAIM ::= {
+     ID id-evidence-claim-platform-swname
+     WITH TYPE UTF8String
+   }
+
+   claim-platform-swversion CLAIM ::= {
+     ID id-evidence-claim-platform-swversion
+     WITH TYPE UTF8String
+   }
+
+   claim-platform-debugstat CLAIM ::= {
+     ID id-evidence-claim-platform-debugstat
+     WITH TYPE INTEGER
+   }
+
+   claim-platform-uptime CLAIM ::= {
+     ID id-evidence-claim-platform-uptime
+     WITH TYPE INTEGER
+   }
+
+   claim-platform-bootcount CLAIM ::= {
+     ID id-evidence-claim-platform-bootcount
+     WITH TYPE INTEGER
+   }
+
+   claim-platform-fipsboot CLAIM ::= {
+     ID id-evidence-claim-platform-fipsboot
+     WITH TYPE BOOLEAN
+   }
+
+   claim-platform-fipsver CLAIM ::= {
+     ID id-evidence-claim-platform-fipsver
+     WITH TYPE UTF8String
+   }
+
+   claim-platform-fipslevel CLAIM ::= {
+     ID id-evidence-claim-platform-fipslevel
+     WITH TYPE INTEGER
+   }
+
+   claim-platform-fipsmodule CLAIM ::= {
+     ID id-evidence-claim-platform-fipsmodule
+     WITH TYPE UTF8String
+   }
+
+   claim-key-identifier CLAIM ::= {
+     ID id-evidence-claim-key-identifier
+     WITH TYPE UTF8String
+   }
+
+   claim-key-spki CLAIM ::= {
+     ID id-evidence-claim-key-spki
+     WITH TYPE OCTET STRING
+   }
+
+   claim-key-extractable CLAIM ::= {
+     ID id-evidence-claim-key-extractable
+     WITH TYPE BOOLEAN
+   }
+
+   claim-key-sensitive CLAIM ::= {
+     ID id-evidence-claim-key-sensitive
+     WITH TYPE BOOLEAN
+   }
+
+   claim-key-never-extractable CLAIM ::= {
+     ID id-evidence-claim-key-never-extractable
+     WITH TYPE BOOLEAN
+   }
+
+   claim-key-local CLAIM ::= {
+     ID id-evidence-claim-key-local
+     WITH TYPE BOOLEAN
+   }
+
+   claim-key-expiry CLAIM ::= {
+     ID id-evidence-claim-key-expiry
+     WITH TYPE GeneralizedTime
+   }
+
+   claim-key-purpose CLAIM ::= {
+     ID id-evidence-claim-key-purpose
+     WITH TYPE KeyPurposes
+   }
+
+   KeyPurposes ::= SEQUENCE OF OBJECT IDENTIFIER
 
    END
 
@@ -1933,14 +2139,6 @@ Table of Contents
               <https://nvlpubs.nist.gov/nistpubs/FIPS/
               NIST.FIPS.140-3.pdf>.
 
-   [I-D.jpfiset-lamps-attestationkey-eku]
-              Fiset, J., Ounsworth, M., Tschofenig, H., and M. Wiseman,
-              "X.509 Certificate Extended Key Usage (EKU) for
-              Attestation Keys", Work in Progress, Internet-Draft,
-              draft-jpfiset-lamps-attestationkey-eku-02, 1 March 2026,
-              <https://datatracker.ietf.org/doc/html/draft-jpfiset-
-              lamps-attestationkey-eku-02>.
-
    [PKCS11]   Bong, D., Cox, T., and OASIS PKCS 11 TC, "PKCS #11
               Specification Version 3.1", 11 August 2022,
               <https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/
@@ -1975,12 +2173,6 @@ Table of Contents
               DOI 10.17487/RFC9711, April 2025,
               <https://www.rfc-editor.org/rfc/rfc9711>.
 
-   [X.690]    ITU-T, "Information technology -- ASN.1 encoding rules:
-              Specification of Basic Encoding Rules (BER), Canonical
-              Encoding Rules (CER) and Distinguished Encoding Rules
-              (DER)", ITU-T Recommendation X.690, ISO/IEC 8825-1:2021,
-              February 2021, <https://www.itu.int/rec/T-REC-X.690>.
-
    [X680]     ITU-T, "Information technology — ASN.1: Specification of
               basic notation", n.d.,
               <https://www.itu.int/rec/T-REC-X.680>.
@@ -1988,6 +2180,12 @@ Table of Contents
    [X690]     ITU-T, "Information technology — ASN.1 encoding rules:
               BER, CER, DER", n.d.,
               <https://www.itu.int/rec/T-REC-X.690>.
+
+   [X.690]    ITU-T, "Information technology -- ASN.1 encoding rules:
+              Specification of Basic Encoding Rules (BER), Canonical
+              Encoding Rules (CER) and Distinguished Encoding Rules
+              (DER)", ITU-T Recommendation X.690, ISO/IEC 8825-1:2021,
+              February 2021, <https://www.itu.int/rec/T-REC-X.690>.
 
 11.2.  Informative References
 
@@ -2014,9 +2212,9 @@ Table of Contents
               Ounsworth, M., Tschofenig, H., Birkholz, H., Wiseman, M.,
               and N. Smith, "Use of Remote Attestation with
               Certification Signing Requests", Work in Progress,
-              Internet-Draft, draft-ietf-lamps-csr-attestation-23, 1
-              March 2026, <https://datatracker.ietf.org/doc/html/draft-
-              ietf-lamps-csr-attestation-23>.
+              Internet-Draft, draft-ietf-lamps-csr-attestation-28, 16
+              June 2026, <https://datatracker.ietf.org/doc/html/draft-
+              ietf-lamps-csr-attestation-28>.
 
    [I-D.ietf-rats-msg-wrap]
               Birkholz, H., Smith, N., Fossati, T., Tschofenig, H., and
