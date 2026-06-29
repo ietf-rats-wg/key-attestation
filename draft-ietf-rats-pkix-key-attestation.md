@@ -527,29 +527,33 @@ The top-level structures, as ASN.1 fragments, are:
 
 ~~~ asn.1
 Evidence ::= SEQUENCE {
-    tbs                           TbsEvidence,
-    signatures                    SEQUENCE SIZE (0..MAX) OF SignatureBlock,
+    tbs  TbsEvidence,
+    signatures  SEQUENCE SIZE (0..MAX) OF SignatureBlock,
     intermediateCertificates  [0] SEQUENCE OF Certificate OPTIONAL
-                                  -- As defined in RFC 5280
+                                  -- As defined in RFC 5912
 }
+SignatureBlock ::= SEQUENCE {
+    sid SignerIdentifier,
+    signatureAlgorithm AlgorithmIdentifier{
+        SIGNATURE-ALGORITHM, {SignatureAlgSet} },
+    signatureValue OCTET STRING
+}
+
+SignerIdentifier ::= SEQUENCE {
+    keyId [0] EXPLICIT OCTET STRING OPTIONAL,
+    subjectPublicKeyInfo [1] EXPLICIT
+        SubjectPublicKeyInfo OPTIONAL,
+        -- As defined in RFC 5912
+    certificate [2] EXPLICIT Certificate OPTIONAL
+      -- As defined in RFC 5912
+} (
+    WITH COMPONENTS { ..., keyId PRESENT}
+    | WITH COMPONENTS { ..., subjectPublicKeyInfo PRESENT }
+    | WITH COMPONENTS { ...,certificate PRESENT } )
 
 TbsEvidence ::= SEQUENCE {
     version INTEGER,
     reportedEntities SEQUENCE SIZE (1..MAX) OF ReportedEntity
-}
-
-SignatureBlock ::= SEQUENCE {
-   sid                  SignerIdentifier,
-   signatureAlgorithm   AlgorithmIdentifier,
-   signatureValue       OCTET STRING
-}
-
-SignerIdentifier ::= SEQUENCE {
-   keyId                [0] EXPLICIT OCTET STRING OPTIONAL,
-   subjectPublicKeyInfo [1] EXPLICIT SubjectPublicKeyInfo OPTIONAL,
-                            -- As defined in RFC 5280
-   certificate          [2] EXPLICIT Certificate OPTIONAL
-                            -- As defined in RFC 5280
 }
 ~~~
 
@@ -592,15 +596,18 @@ is associated with a type that defines its class. The entity types are represent
 
 ~~~ asn.1
 ReportedEntity ::= SEQUENCE {
-    entityType  OBJECT IDENTIFIER,
-    claims      SEQUENCE SIZE (1..MAX) OF ReportedClaim
+    entityType         OBJECT IDENTIFIER,
+    claims             SEQUENCE SIZE (1..MAX) OF ReportedClaim
 }
 
-id-evidence                    OBJECT IDENTIFIER ::= { 1 2 3 999 }
-id-evidence-entity             OBJECT IDENTIFIER ::= { id-evidence 0 }
-id-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-evidence-entity 0 }
-id-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-evidence-entity 1 }
-id-evidence-entity-key         OBJECT IDENTIFIER ::= { id-evidence-entity 2 }
+id-evidence-entity             OBJECT IDENTIFIER ::=
+    { id-evidence 0 }
+id-evidence-entity-transaction OBJECT IDENTIFIER ::=
+    { id-evidence-entity 0 }
+id-evidence-entity-platform    OBJECT IDENTIFIER ::=
+    { id-evidence-entity 1 }
+id-evidence-entity-key         OBJECT IDENTIFIER ::=
+    { id-evidence-entity 2 }
 ~~~
 
 In turn, entities are composed of a collection of claims. Each claim is composed of a type and a value.
@@ -608,19 +615,17 @@ The claim types are represented by object identifiers (OIDs). The
 following ASN.1 definition defines the structures associated with claims:
 
 ~~~ asn.1
-ReportedClaim ::= SEQUENCE {
-    claimType      OBJECT IDENTIFIER,
-    value          ClaimValue OPTIONAL
+CLAIM ::= CLASS {
+    &id       OBJECT IDENTIFIER UNIQUE,
+    &Type
+} WITH SYNTAX {
+    ID &id
+    WITH TYPE &Type
 }
 
-ClaimValue ::= CHOICE {
-   bytes       [0] IMPLICIT OCTET STRING,
-   utf8String  [1] IMPLICIT UTF8String,
-   bool        [2] IMPLICIT BOOLEAN,
-   time        [3] IMPLICIT GeneralizedTime,
-   int         [4] IMPLICIT INTEGER,
-   oid         [5] IMPLICIT OBJECT IDENTIFIER,
-   null        [6] IMPLICIT NULL
+ReportedClaim ::= SEQUENCE {
+    claimType  CLAIM.&id ({ClaimSet}),
+    value      CLAIM.&Type ({ClaimSet}{@claimType}) OPTIONAL
 }
 ~~~
 
@@ -629,6 +634,19 @@ to define claim types grouped with their respective entity type.
 
 The type of a claim value is dictated by the claim type. When a claim type is defined, the
 definition must include the type of the value, its semantic and interpretation.
+
+The following ASN.1 fragment illustrates how a claim is associated with a type, in this case the
+OID `id-evidence-claim-transaction-nonce` and the expected data format (OCTET STRING).
+
+~~~ asn.1
+id-evidence-claim-transaction-nonce     OBJECT IDENTIFIER ::=
+    { id-evidence-claim-transaction 0 }
+
+claim-transaction-nonce CLAIM ::= {
+  ID id-evidence-claim-transaction-nonce
+  WITH TYPE OCTET STRING
+}
+~~~
 
 The remainder of this section describes the entity types and their associated claims.
 
@@ -649,22 +667,22 @@ the "Reference" column refers to the specification where the semantics
 for the claim value can be found.
 Claims defined in this specification have further details below.
 
-| Claim Type      | Claim Value     | Reference     | Multiple? | OID                                   |
-| ---             | ---             | ---           | ---       | ---                                   |
-| vendor          | utf8String      | {{&SELF}}     | No        | id-evidence-claim-platform-vendor     |
-| oemid           | bytes           | {{RFC9711}}   | No        | id-evidence-claim-platform-oemid      |
-| hwmodel         | bytes           | {{RFC9711}}   | No        | id-evidence-claim-platform-hwmodel    |
-| hwversion       | utf8String      | {{RFC9711}}   | No        | id-evidence-claim-platform-hwversion  |
-| hwserial        | utf8String      | {{&SELF}}     | No        | id-evidence-claim-platform-hwserial   |
-| swname          | utf8String      | {{RFC9711}}   | No        | id-evidence-claim-platform-swname     |
-| swversion       | utf8String      | {{RFC9711}}   | No        | id-evidence-claim-platform-swversion  |
-| dbgstat         | int             | {{RFC9711}}   | No        | id-evidence-claim-platform-debugstat  |
-| uptime          | int             | {{RFC9711}}   | No        | id-evidence-claim-platform-uptime     |
-| bootcount       | int             | {{RFC9711}}   | No        | id-evidence-claim-platform-bootcount  |
-| fipsboot        | bool            | {{FIPS140-3}} | No        | id-evidence-claim-platform-fipsboot   |
-| fipsver         | utf8String      | {{FIPS140-3}} | No        | id-evidence-claim-platform-fipsver    |
-| fipslevel       | int             | {{FIPS140-3}} | No        | id-evidence-claim-platform-fipslevel  |
-| fipsmodule      | utf8String      | {{FIPS140-3}} | No        | id-evidence-claim-platform-fipsmodule |
+| Claim Type      | Reference     | Multiple? | OID                                   |
+| ---             | ---           | ---       | ---                                   |
+| vendor          | {{&SELF}}     | No        | id-evidence-claim-platform-vendor     |
+| oemid           | {{RFC9711}}   | No        | id-evidence-claim-platform-oemid      |
+| hwmodel         | {{RFC9711}}   | No        | id-evidence-claim-platform-hwmodel    |
+| hwversion       | {{RFC9711}}   | No        | id-evidence-claim-platform-hwversion  |
+| hwserial        | {{&SELF}}     | No        | id-evidence-claim-platform-hwserial   |
+| swname          | {{RFC9711}}   | No        | id-evidence-claim-platform-swname     |
+| swversion       | {{RFC9711}}   | No        | id-evidence-claim-platform-swversion  |
+| dbgstat         | {{RFC9711}}   | No        | id-evidence-claim-platform-debugstat  |
+| uptime          | {{RFC9711}}   | No        | id-evidence-claim-platform-uptime     |
+| bootcount       | {{RFC9711}}   | No        | id-evidence-claim-platform-bootcount  |
+| fipsboot        | {{FIPS140-3}} | No        | id-evidence-claim-platform-fipsboot   |
+| fipsver         | {{FIPS140-3}} | No        | id-evidence-claim-platform-fipsver    |
+| fipslevel       | {{FIPS140-3}} | No        | id-evidence-claim-platform-fipslevel  |
+| fipsmodule      | {{FIPS140-3}} | No        | id-evidence-claim-platform-fipsmodule |
 
 Each claim defined in the table above is described in the following sub-sections.
 
@@ -748,16 +766,16 @@ The following table lists the claims for a key entity defined
 within this specification. The "Reference" column refers to the specification where the semantics
 for the claim can be found.
 
-| Claim Type        | Claim Value     | Reference   | Multiple? | OID                                     |
-| ---               | ---             | ---         | ---       | ---                                     |
-| identifier        | utf8String      | {{&SELF}}   | Yes       | id-evidence-claim-key-identifier        |
-| spki              | bytes           | {{&SELF}}   | No        | id-evidence-claim-key-spki              |
-| extractable       | bool            | [PKCS11]    | No        | id-evidence-claim-key-extractable       |
-| sensitive         | bool            | [PKCS11]    | No        | id-evidence-claim-key-sensitive         |
-| never-extractable | bool            | [PKCS11]    | No        | id-evidence-claim-key-never-extractable |
-| local             | bool            | [PKCS11]    | No        | id-evidence-claim-key-local             |
-| expiry            | time            | {{&SELF}}   | No        | id-evidence-claim-key-expiry            |
-| purpose           | bytes           | {{&SELF}}   | No        | id-evidence-claim-key-purpose           |
+| Claim Type        | Reference   | Multiple? | OID                                     |
+| ---               | ---         | ---       | ---                                     |
+| identifier        | {{&SELF}}   | Yes       | id-evidence-claim-key-identifier        |
+| spki              | {{&SELF}}   | No        | id-evidence-claim-key-spki              |
+| extractable       | [PKCS11]    | No        | id-evidence-claim-key-extractable       |
+| sensitive         | [PKCS11]    | No        | id-evidence-claim-key-sensitive         |
+| never-extractable | [PKCS11]    | No        | id-evidence-claim-key-never-extractable |
+| local             | [PKCS11]    | No        | id-evidence-claim-key-local             |
+| expiry            | {{&SELF}}   | No        | id-evidence-claim-key-expiry            |
+| purpose           | {{&SELF}}   | No        | id-evidence-claim-key-purpose           |
 
 An attestation key might be visible to a client of the device and be reported along with other cryptographic keys. Therefore,
 it is acceptable to include a key entity providing claims about an attestation key like any other cryptographic key. An
@@ -855,11 +873,11 @@ within this specification. The "Reference" column refers to the specification wh
 for the claim value can be found.
 
 
-| Claim Type      | Claim Value     | Reference     | Multiple? | OID                                      |
-| ---             | ---             | ---           | ---       | ---                                      |
-| nonce           | bytes           | {{RFC9711}}   | No        | id-evidence-claim-transaction-nonce      |
-| timestamp       | time            | {{RFC9711}}   | No        | id-evidence-claim-transaction-timestamp  |
-| ak-spki         | bytes           | {{&SELF}}     | Yes       | id-evidence-claim-transaction-ak-spki    |
+| Claim Type      | Reference     | Multiple? | OID                                      |
+| ---             | ---           | ---       | ---                                      |
+| nonce           | {{RFC9711}}   | No        | id-evidence-claim-transaction-nonce      |
+| timestamp       | {{RFC9711}}   | No        | id-evidence-claim-transaction-timestamp  |
+| ak-spki         | {{&SELF}}     | Yes       | id-evidence-claim-transaction-ak-spki    |
 
 ### nonce
 
