@@ -576,6 +576,10 @@ key identifier (keyId). It is expected that a X.509 certificate will be generall
 to verify the signature and clearly identifies the subject that provided the signature. The SPKI and keyId are allowed
 to support environments where X.509 certificates are not used.
 
+The field `SignerIdentifier.keyId` is not constrained to specific details. It is an identifier that is shared between the attester and
+the verifier to establish which public key should be used during the verification of a signature block. The fields `SignerIdentifier.subjectPublicKeyInfo`
+and `SignerIdentifier.certificate` are encouraged as these fields have specific syntax and semantics.
+
 The optional certificate list provided in `Evidence.intermediateCertificates` enables the insertion
 of X.509 certificates to support trusting the signatures found in signature blocks. This information is intended to provide
 the certificates required by the Verifier to validate the endorsement on the certificates included
