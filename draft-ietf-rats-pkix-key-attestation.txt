@@ -5,7 +5,7 @@
 RATS                                                        M. Ounsworth
 Internet-Draft                                            Cryptic Forest
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 22 December 2026                                       Crypto4A
+Expires: 31 December 2026                                       Crypto4A
                                                            H. Tschofenig
                                                                 UniBw M.
                                                              H. Birkholz
@@ -13,7 +13,7 @@ Expires: 22 December 2026                                       Crypto4A
                                                               M. Wiseman
                                                                         
                                                                 N. Smith
-                                                            20 June 2026
+                                                            29 June 2026
 
 
             Evidence Encoding for Hardware Security Modules
@@ -70,7 +70,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 22 December 2026.
+   This Internet-Draft will expire on 31 December 2026.
 
 Copyright Notice
 
