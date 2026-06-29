@@ -1847,15 +1847,18 @@ The signer identifier includes a combination of X.509 certificate, SubjectPublic
 key identifier (keyId). It is expected that a X.509 certificate will be generally used, as it provides the public key needed
 to verify the signature and clearly identifies the subject that provided the signature. The SPKI and keyId are allowed
 to support environments where X.509 certificates are not used.<a href="#section-5-7" class="pilcrow">¶</a></p>
-<p id="section-5-8">The optional certificate list provided in <code>Evidence.intermediateCertificates</code> enables the insertion
+<p id="section-5-8">The field <code>SignerIdentifier.keyId</code> is not constrained to specific details. It is an identifier that is shared between the attester and
+the verifier to establish which public key should be used during the verification of a signature block. The fields <code>SignerIdentifier.subjectPublicKeyInfo</code>
+and <code>SignerIdentifier.certificate</code> are encouraged as these fields have specific syntax and semantics.<a href="#section-5-8" class="pilcrow">¶</a></p>
+<p id="section-5-9">The optional certificate list provided in <code>Evidence.intermediateCertificates</code> enables the insertion
 of X.509 certificates to support trusting the signatures found in signature blocks. This information is intended to provide
 the certificates required by the Verifier to validate the endorsement on the certificates included
 with the signatures. <code>intermediateCertificates</code> <span class="bcp14">MAY</span> include any or all intermediate CA certificates needed to build paths.
-It is not required to include trust anchors. Order is not significant.<a href="#section-5-8" class="pilcrow">¶</a></p>
-<p id="section-5-9">As described in <a href="#sec-info-model" class="auto internal xref">Section 4</a>, the <code>TbsEvidence</code> is a collection of entities. Each entity
+It is not required to include trust anchors. Order is not significant.<a href="#section-5-9" class="pilcrow">¶</a></p>
+<p id="section-5-10">As described in <a href="#sec-info-model" class="auto internal xref">Section 4</a>, the <code>TbsEvidence</code> is a collection of entities. Each entity
 is associated with a type that defines its class. The entity types are represented by object identifiers
-(OIDs). The following ASN.1 definition defines the structures associated with entities:<a href="#section-5-9" class="pilcrow">¶</a></p>
-<div class="lang-asn.1 sourcecode" id="section-5-10">
+(OIDs). The following ASN.1 definition defines the structures associated with entities:<a href="#section-5-10" class="pilcrow">¶</a></p>
+<div class="lang-asn.1 sourcecode" id="section-5-11">
 <pre>
 ReportedEntity ::= SEQUENCE {
     entityType  OBJECT IDENTIFIER,
@@ -1867,12 +1870,12 @@ id-evidence-entity             OBJECT IDENTIFIER ::= { id-evidence 0 }
 id-evidence-entity-transaction OBJECT IDENTIFIER ::= { id-evidence-entity 0 }
 id-evidence-entity-platform    OBJECT IDENTIFIER ::= { id-evidence-entity 1 }
 id-evidence-entity-key         OBJECT IDENTIFIER ::= { id-evidence-entity 2 }
-</pre><a href="#section-5-10" class="pilcrow">¶</a>
+</pre><a href="#section-5-11" class="pilcrow">¶</a>
 </div>
-<p id="section-5-11">In turn, entities are composed of a collection of claims. Each claim is composed of a type and a value.
+<p id="section-5-12">In turn, entities are composed of a collection of claims. Each claim is composed of a type and a value.
 The claim types are represented by object identifiers (OIDs). The
-following ASN.1 definition defines the structures associated with claims:<a href="#section-5-11" class="pilcrow">¶</a></p>
-<div class="lang-asn.1 sourcecode" id="section-5-12">
+following ASN.1 definition defines the structures associated with claims:<a href="#section-5-12" class="pilcrow">¶</a></p>
+<div class="lang-asn.1 sourcecode" id="section-5-13">
 <pre>
 ReportedClaim ::= SEQUENCE {
     claimType      OBJECT IDENTIFIER,
@@ -1888,13 +1891,13 @@ ClaimValue ::= CHOICE {
    oid         [5] IMPLICIT OBJECT IDENTIFIER,
    null        [6] IMPLICIT NULL
 }
-</pre><a href="#section-5-12" class="pilcrow">¶</a>
+</pre><a href="#section-5-13" class="pilcrow">¶</a>
 </div>
-<p id="section-5-13">Each claim type <span class="bcp14">SHOULD</span> be associated with a single entity type. Therefore, it is encouraged
-to define claim types grouped with their respective entity type.<a href="#section-5-13" class="pilcrow">¶</a></p>
-<p id="section-5-14">The type of a claim value is dictated by the claim type. When a claim type is defined, the
-definition must include the type of the value, its semantic and interpretation.<a href="#section-5-14" class="pilcrow">¶</a></p>
-<p id="section-5-15">The remainder of this section describes the entity types and their associated claims.<a href="#section-5-15" class="pilcrow">¶</a></p>
+<p id="section-5-14">Each claim type <span class="bcp14">SHOULD</span> be associated with a single entity type. Therefore, it is encouraged
+to define claim types grouped with their respective entity type.<a href="#section-5-14" class="pilcrow">¶</a></p>
+<p id="section-5-15">The type of a claim value is dictated by the claim type. When a claim type is defined, the
+definition must include the type of the value, its semantic and interpretation.<a href="#section-5-15" class="pilcrow">¶</a></p>
+<p id="section-5-16">The remainder of this section describes the entity types and their associated claims.<a href="#section-5-16" class="pilcrow">¶</a></p>
 <div id="platform-entity">
 <section id="section-5.1">
         <h3 id="name-platform-entity">
