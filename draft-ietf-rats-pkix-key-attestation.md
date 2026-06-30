@@ -820,23 +820,24 @@ Note that security considerations should be taken relating to HSMs and their int
 
 ### purpose
 
-Reports the key capabilities associated with the subject key. Since multiple capabilities can be associated with a single key,
-the value of this claim is a list of capabilities, each reported as an object identifier (OID).
+Reports the key purposes, also referred to as key capabilities, associated with the subject key. Since multiple purposes can be associated with a single key,
+the value of this claim is a list of purposes, each reported as an object identifier (OID).
 
 The value of this claim is the DER encoding of the following structure:
 
 ~~~ asn.1
 
-<CODE STARTS>
+claim-key-purpose CLAIM ::= {
+  ID id-evidence-claim-key-purpose
+  WITH TYPE KeyPurposes
+}
 
-EvidenceKeyCapabilities ::= SEQUENCE OF OBJECT IDENTIFIER
-
-<CODE ENDS>
+KeyPurposes ::= SEQUENCE OF OBJECT IDENTIFIER
 
 ~~~
 
-The following table describes the key capabilities defined in this specification. The key capabilities offered are based on key
-attributes provided by PKCS#11. Each capability is assigned an object identifier (OID).
+The following table describes the key purposes defined in this specification. The key purposes offered are based on key
+attributes provided by PKCS#11. Each purpose is assigned an object identifier (OID).
 
 | Capability       | PKCS#11            | OID                                       |
 | ---              | ---                | ---                                       |
@@ -850,8 +851,8 @@ attributes provided by PKCS#11. Each capability is assigned an object identifier
 | verify-recover   | CKA_VERIFY_RECOVER | id-evidence-key-capability-verify-recover |
 | derive           | CKA_DERIVE         | id-evidence-key-capability-derive         |
 
-The use of an object identifier to report a capability allows third parties to extend this list to support
-implementations that have other key capabilities.
+The use of an object identifier to report a purpose allows third parties to extend this list to support
+implementations that have other key purposes.
 
 ## Transaction Entity
 
