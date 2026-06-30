@@ -1201,7 +1201,7 @@ an object identifier for the module identifier (TBDMOD) with a
 description of "id-mod-pkix-evidence-2025". This should be allocated in the
 "SMI Security for PKIX Module Identifier" registry (1.3.6.1.5.5.7.0).
 
-Fo the ASN.1 module found in section 8, IANA is requested to assign an 
+Fo the ASN.1 module found in section 8, IANA is requested to assign an
 object identifier for the extended key usage `id-kp-attestationKey`.
 This identifier should be allocated under the PKIX KP arc (1.3.6.1.5.5.7.3)
 with the description "Extended Key Usage (EKU) for signing Evidence".
