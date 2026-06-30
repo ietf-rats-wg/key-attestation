@@ -161,17 +161,21 @@ This specification also offers a format for requesting a cryptographic module to
 
 # Introduction
 
-This document specifies a vendor-neutral Evidence format for remote attestation in PKIX-based environments, with a focus on hardware security modules (HSMs) and cryptographic keys managed by such devices. The format enables an Attester to convey measured platform and key properties to a Verifier and, ultimately, to a Relying Party in a form that integrates with existing X.509-based trust infrastructures.
+This document specifies a vendor-neutral Evidence format for remote attestation in PKIX-based environments, with a focus on hardware security modules (HSMs)
+and cryptographic keys managed by such devices. The format enables an Attester to convey measured platform and key properties to a Verifier and, ultimately,
+to a Relying Party in a form that integrates with existing X.509-based trust infrastructures.
 
 Concretely, this specification defines:
 * an ASN.1/DER `Evidence` envelope containing a to-be-signed section, one or more signature blocks, and optional intermediate certificates;
-* an entity-and-claim data model organized around transaction, platform, and key entities, identified by OIDs;
+* an element-and-claim data model organized around transaction, platform, and key elements, identified by OIDs;
 * encoding and signature-verification processing rules for PKIX Evidence;
-* an attestation request structure that allows a Presenter to request a scoped subset of entities and claims.
+* an attestation request structure that allows a Presenter to request a scoped subset of elements and claims.
 
 The design is intentionally PKIX-native. ASN.1 and DER are used to align with existing certificate tooling, certification authority workflows, and HSM implementations where non-ASN.1 formats are less common.
 
-This document does not define a transport protocol for carrying Evidence, does not define Verifier appraisal policy, and does not standardize device-internal authentication/authorization mechanisms. It defines the data model and cryptographic container so that such mechanisms can be applied consistently across deployments.
+This document does not define a transport protocol for carrying Evidence, does not define Verifier appraisal policy, and
+does not standardize device-internal authentication/authorization mechanisms. It defines the data model and cryptographic container
+so that such mechanisms can be applied consistently across deployments.
 
 
 # Use Cases
@@ -198,10 +202,10 @@ It could also be required to provide information about any system-level keys req
 secure cluster communication. In this scenario, the Verifier and Relying Party will typically be other HSMs in the cluster
 deciding whether or not to admit the new HSM.
 
-A related scenario is when performing a key export-import across HSMs.
-If the key is being imported with certain properties, for example an environment running in FIPS mode at
+A related scenario is when performing a key migration across HSMs.
+If the key is being migrated is associated with certain properties, for example an environment running in FIPS mode at
 FIPS Level 3, and the key is set to certain protection properties such as Non-Exportable and Dual-Control,
-then the HSM might wish to verify that the key was previously stored under the same properties.
+then the HSM might wish to verify that the key was previously stored under the same conditions.
 This specification provides an Evidence format with sufficient details to support this type of
 implementation across HSM vendors.
 
@@ -224,7 +228,7 @@ to certain jurisdiction policies (such as FIPS mode) and the constraints applied
 
 For relatively simple HSM devices, storage properties such as "extractable" may always be false for all keys
 since the devices are not capable of key export and so the Evidence could be essentially a hard-coded template asserting these
-immutable attributes. However, more complex HSM devices require a more complex Evidence format that encompasses the
+immutable attributes. However, more complex HSM devices require a more elaborate Evidence format that encompasses the
 mutability of these attributes.
 
 Also, a client requesting a key attestation might wish to scope-down the content of the produced Evidence as
@@ -296,14 +300,14 @@ particularly refers to the RATS Architecture as introduced in {{RFC9334}}.
 
 PKIX:
 : Public Key Infrastructure based on X.509 certificates. Refers to the framework of technology, policies and
-procedures used to manage and distribute digital certificate based on {{RFC5280}} and related specifications.
+procedures used to manage and distribute digital certificates based on {{RFC5280}} and related specifications.
 
 Platform:
 : The module or device that embodies the Attester. In this specification, it is interchangeable with
 "Attester" or "HSM".
 
 Platform Attestation:
-: Evidence containing claims pertaining to measured values associated with the platform itself. In general, the claims include
+: Process of producing evidence containing claims pertaining to measured values associated with the platform itself. In general, the claims include
 enough information about the platform to allow a Relying Party to make judicious decisions about the
 platform, such as those carried out during audit reviews.
 
@@ -315,7 +319,7 @@ is responsible of selecting the claims that are part of the generated Evidence.
 
 Trust Anchor:
 : As defined in {{RFC6024}} and {{RFC9019}}, a Trust Anchor
-"represents an authoritative entity via a public key and
+"represents an authoritative element via a public key and
 associated data. The public key is used to verify digital
 signatures, and the associated data is used to constrain the types
 of information for which the trust anchor is authoritative." The
@@ -330,7 +334,7 @@ other protocols (than the one presented in this specification) to transmit Evide
 User Key:
 : A user key consists of a key hosted by an HSM (the platform) and intended to be used by a client
 of the HSM. Other terms used for a user key are "application key", "client key" or "operational key".
-The access and operations on a user key is controlled by the HSM.
+The access and operations on a user key are controlled by the HSM.
 
 ## Claims and measurements in generated Evidence
 
@@ -350,14 +354,14 @@ For example, two independent user keys could be reported simultaneously in Evide
 SPKI (SubjectPublicKeyInfo). The measured values for the SPKI of the respective keys are different.
 
 To that end, in this specification, the claims are organized as collections where each claim is the association of
-a claim type with the measured value. The collections, in turn, are organized by entities. An entity represents one
-of the elements that is observed in the Target Environment.
+a claim type with the measured value. The collections, in turn, are organized by "elements". An element represents a
+logical portion of the Target Environment that is observed by the Attesting Environment.
 
-Thus, an entity is associated with a collection of claims. Each claim is the association of a claim type
+Thus, an element is associated with a collection of claims. Each claim is the association of a claim type
 with a measured value.
 
-The grouping of claims into entities facilitates the comprehension of a large addressable space into
-elements recognizable by the user. More importantly, it curtails the produced Evidence to portions of the
+The grouping of claims into elements facilitates the comprehension of a large addressable space into
+portions recognizable by the user. More importantly, it curtails the produced Evidence to portions of the
 Target Environment that relate to the needs of the Verifier. See {{sec-cons-privacy}}.
 
 
@@ -396,124 +400,123 @@ AK chains leading to different trust anchors. See {{sec-verif-proc}} for a discu
 
 The Evidence format is composed of two main sections:
 
-* An Evidence section which describes the list of reported entities.
+* An Evidence description which describes the list of reported elements.
 
 * A signature section where one or more digital signatures are offered to prove the origin of the
-  Evidence and maintain its integrity.
+  Evidence description and maintain its integrity.
 
 The details of the signature section is left to the data model. The remainder of this section
-deals with the way the information is organized to form the claims.
+deals with the way the information is organized to form the Evidence description.
 
-The claims are associated with entities to help with the organization and comprehension
-of the information. Entities are elements observed in the Target Environment by the Attesting
-Environment. Each entity, in turn, is associated with a collection of claims that describes the attributes
+The Evidence description is associated with elements to help with the organization and comprehension
+of the information. Elements are portions of the Target Environment observed by the Attesting
+Environment. Each element, in turn, is associated with a collection of claims that describes the attributes
 of the element.
 
-Therefore, the Claim description section is a set of entities and each entity is composed
+Therefore, the Evidence description is composed of a set of elements and each element is composed
 of a claim set.
 
-## Entity
+## Element
 
-An entity is a logical construct that refers to a portion of the Target Environment's state. It is
+An element is a logical construct that refers to a portion of the Target Environment's state. It is
 addressable via an identifier such as a UUID or a handle (as expressed in [PKCS11]). In general, an
-entity refers to a component recognized by users of the HSM, such as a key or the platform itself.
+element refers to a component recognized by users of the HSM, such as a user key or the platform itself.
 
-An entity is composed of a type, the entity type, and a collection of claims. The entity type
-describes the class of the entity while the collection of claims defines its state.
+An element is composed of a type, the element type, and a collection of claims. The element type
+describes the class of the element while the collection of claims defines its state.
 
-An entity MUST be reported at most once in a claim description. The claim description can
-have multiple entities of the same type (for example reporting multiple keys), but each
-entity MUST relate to different portions of the Target Environment.
+An element MUST be reported at most once in an Evidence description. The Evidence description can
+have multiple elements of the same type (for example reporting multiple keys), but each
+element MUST relate to different portions of the Target Environment.
 
-It is possible for two entities to be quite similar such as in a situation where a key is imported
-twice in a HSM. In this case, the two related entities could be associated similar claims. However, they
-are treated as different entities as they are reporting different portions of the Target Environment.
+It is possible for two elements to be quite similar such as in a situation where a key is imported
+twice in a HSM. In this case, the two related elements could be associated with similar claims. However, they
+are treated as different elements as they are reporting different portions of the Target Environment.
 
-The number of entities reported in a claim description, and their respective type, is
+The number of elements reported in an Evidence description, and their respective type, is
 left to the implementer. For a simple device where there is only one key, the list of
-reported entities could be fixed. For larger and more complex devices, the list of
-reported entities should be tailored to what is demanded by the Presenter.
+reported elements could be fixed. For larger and more complex devices, the list of
+reported elements should be tailored to what is demanded by the Presenter.
 
-In particular, note that the `nonce` claim contained with the Transaction entity is optional,
+In particular, note that the `nonce` claim contained with the Transaction element is optional,
 and therefore it is possible that an extremely simple device that holds one static key
 could have its Evidence generated at manufacturing time and injected
 statically into the device instead of
 being generated on-demand. This model would essentially
 off-board the Attesting Environment to be part of the manufacturing infrastructure. In the RATS
-Architecture, this configuration would refer to the the information provided by the HSM as an Endorsement
-provided by the manufacturer as opposed to Evidence generated by the Attesting Environment.
+Architecture, this configuration would refer to the the information provided this way as an Endorsement
+provided by the manufacturer as opposed to Evidence generated by the HSM.
 
 
-## Entity Type
+## Element Type
 
-An entity is defined by its type. This specification defines three entity types:
+An element is defined by its type. This specification defines three element types:
 
-* Platform : This entity holds claims that describes the state of the platform (or device)
-  itself. Entities of this type hold claims that are global
+* Platform : This element holds claims that describes the state of the platform (or device)
+  itself. Elements of this type hold claims that are global
   in nature within the Target Environment.
 
-* Key : The entities of this type represent a cryptographic key protected within the
+* Key : The elements of this type represent a cryptographic key protected within the
   Target Environment and hold claims that describes that specific key.
 
-* Transaction : This entity is logical in nature since it is associated with claims
-  that does not describe anything found in the Target Environment. Instead, these claims
+* Transaction : This element is abstract in nature since it is associated with claims
+  that do not describe portions of the Target Environment. Instead, these claims
   relate to the current request for Evidence such as a `nonce` to support freshness.
 
-Although this document defines a short list of entity types, this list is extensible
-to allow implementers to report on entities found in their implementation and not
-covered by this specification. By using an Object Identifiers (OID) for specifying entity types
+Although this document defines a short list of element types, this list is extensible
+to allow implementers to report on elements found in their implementation and not
+covered by this specification. By using an Object Identifiers (OID) for specifying element types
 and claim types, this format is inherently extensible;
-implementers of this specification MAY define new custom or proprietary entity types and
-place them alongside the standardized entities, or define new claim types
-and place them inside standardized entities.
+implementers of this specification MAY define new custom or proprietary element types and
+place them alongside the standardized elements, or define new claim types
+and place them inside standardized elements.
 
 Verifiers SHOULD ignore and skip over
-unrecognized entity or claim types and continue processing normally.
+unrecognized element or claim types and continue processing normally.
 In other words, if a given Evidence would have been acceptable without the
-unrecognized entities or claims, then it SHOULD still be acceptable with them.
-
+unrecognized elements or claims, then it SHOULD still be acceptable with them.
 
 
 ## Claim Type
 
-Each claim found in an entity is composed of the claim type and a value.
-Each claim describes a portion of the state of the associated entity. For example,
-a platform entity could have a claim which indicates the firmware version currently running.
-Another example is a key entity with a claim that reports whether the key is extractable
+Each claim found in an element is composed of a claim type and a value.
+Each claim describes a portion of the state from the associated element. For example,
+a platform element could have a claim which indicates the firmware version currently running.
+Another example is a key element with a claim that reports whether the key is extractable
 or not.
 
 A value provided by a claim is to be interpreted within the context
-of its entity and in relation to the claim type.
+of its element and in relation to the claim type.
 
-It is RECOMMENDED that a claim type be defined for a specific entity type, to reduce
+It is RECOMMENDED that a claim type be defined for a specific element type, to reduce
 confusion when it comes to interpretation of the value. In other words, a claim type SHOULD
-NOT be used by multiple entity types. For example, if a concept of "revision" is applicable to a platform
-and a key, the claim for one entity type (platform revision) should have a different identifier
-than the one for the other entity type (key revision).
+NOT be used by multiple element types. For example, if a concept of "revision" is applicable to a platform
+and a key, the claim for one element type (platform revision) should have a different identifier
+from the one for the other element type (key revision).
 
-The nature of the value (boolean, integer, string, bytes) is dependent on the claim type.
+The nature of the value (boolean, integer, string, bytes) and its format are dependent on the claim type.
 
 This specification defines a limited set of claim types. However, the list is extensible
 through the IANA registration process or private OID allocation, enabling implementers to
 report additional claims not covered by this specification.
 
-The number of claims reported within an entity, and their respective type, is
-left to the implementer. For a simple device, the reported list of claims for an entity
+The number of claims reported within an element, and their respective type, is
+left to the implementer. For a simple device, the reported list of claims for an element
 might be fixed. However, for larger and more complex devices, the list of reported claims
 should be tailored to what is demanded by the Presenter.
 
-Claims of a particular type MAY be repeated within an entity while others MUST NOT. For example, for a
-platform entity, there can only be one "firmware version" claim. Therefore, the associated claim
+Claims of a particular type MAY be repeated within an element while others MUST NOT. For example, for a
+platform element, there can only be one "firmware version" claim. Therefore, the associated claim
 MUST NOT be repeated as it may lead to confusion. However, a claim relating to
 a "ak-spki" MAY be repeated, each claim describing a different attesting key.
 Therefore, the definition of a claim specifies whether or not multiple copies of that
-claim are allowed within an entity claim set.
+claim are allowed within an element's claim set.
 
-If a Verifier detects, within a single entity, multiple copies of a claim type that should not
+If a Verifier detects, within a single element, multiple copies of a claim type that should not
 be repeated, it MUST reject the Evidence as malformed. Since a Verifier is encouraged to ignore
 unrecognized claim types, it is possible that a potential rejection is missed.
 
-If a Verifier encounters, within the context of an entity, a repeated claim for a type where
+If a Verifier encounters, within the context of an element, a repeated claim for a type where
 it is allowed, it MUST treat each one as an independent claim and MUST NOT
 consider later ones to overwrite the previous one.
 
@@ -532,6 +535,7 @@ Evidence ::= SEQUENCE {
     intermediateCertificates  [0] SEQUENCE OF Certificate OPTIONAL
                                   -- As defined in RFC 5912
 }
+
 SignatureBlock ::= SEQUENCE {
     sid SignerIdentifier,
     signatureAlgorithm AlgorithmIdentifier{
@@ -553,12 +557,13 @@ SignerIdentifier ::= SEQUENCE {
 
 TbsEvidence ::= SEQUENCE {
     version INTEGER,
-    reportedEntities SEQUENCE SIZE (1..MAX) OF ReportedEntity
+    reportedElements SEQUENCE SIZE (1..MAX) OF ReportedElement
 }
 ~~~
 
-An `Evidence` message is composed of a protected section known as the To-Be-Signed (TBS) section where the Evidence
-reported by the Attesting Environment is assembled. The integrity of the TBS section is ensured with one or multiple cryptographic signatures
+An `Evidence` message is composed of a protected section known as the To-Be-Signed (TBS) section.
+The `TbsEvidence` corresponds to the "Evidence Description" referred to in {{#sec-info-model}}.
+The integrity of the TBS section is ensured with one or multiple cryptographic signatures
 over the content of this section. There is a provision to carry X.509 certificates supporting each signature.
 The SEQUENCE OF `SignatureBlock` allows for both multi-algorithm protection and for counter-signatures
 of the Evidence.
@@ -568,7 +573,7 @@ potentially by making use of the certificates that accompany each signature.
 This design also does not prevent an attacker from removing, adding or re-ordering signatures without leaving trace.
 This is discussed as part of the security considerations in {{sec-detached-sigs}}.
 
-The TBS section is composed of a version number, to ensure future extensibility, and a sequence of reported entities.
+The TBS section is composed of a version number, to ensure future extensibility, and a sequence of reported elements.
 For compliance with this specification, `TbsEvidence.version` MUST be `1`.
 This envelope format is not extensible; future specifications which make compatibility-breaking changes MUST increment the version number.
 
@@ -580,8 +585,8 @@ key identifier (keyId). It is expected that a X.509 certificate will be generall
 to verify the signature and clearly identifies the subject that provided the signature. The SPKI and keyId are allowed
 to support environments where X.509 certificates are not used.
 
-The field `SignerIdentifier.keyId` is not constrained to specific details. It is an identifier that is shared between the attester and
-the verifier to establish which public key should be used during the verification of a signature block. The fields `SignerIdentifier.subjectPublicKeyInfo`
+The field `SignerIdentifier.keyId` is not constrained to specific details. It is an identifier that is shared between the Attester and
+the Verifier to establish which public key should be used during the verification of a signature block. The fields `SignerIdentifier.subjectPublicKeyInfo`
 and `SignerIdentifier.certificate` are encouraged as these fields have specific syntax and semantics.
 
 The optional certificate list provided in `Evidence.intermediateCertificates` enables the insertion
@@ -590,29 +595,29 @@ the certificates required by the Verifier to validate the endorsement on the cer
 with the signatures. `intermediateCertificates` MAY include any or all intermediate CA certificates needed to build paths.
 It is not required to include trust anchors. Order is not significant.
 
-As described in {{sec-info-model}}, the `TbsEvidence` is a collection of entities. Each entity
-is associated with a type that defines its class. The entity types are represented by object identifiers
-(OIDs). The following ASN.1 definition defines the structures associated with entities:
+As described in {{sec-info-model}}, the `TbsEvidence` is a collection of elements. Each element
+is associated with a type that defines its class. The element types are represented by object identifiers
+(OIDs). The following ASN.1 fragment defines the structures associated with elements:
 
 ~~~ asn.1
-ReportedEntity ::= SEQUENCE {
-    entityType         OBJECT IDENTIFIER,
+ReportedElement ::= SEQUENCE {
+    elementType         OBJECT IDENTIFIER,
     claims             SEQUENCE SIZE (1..MAX) OF ReportedClaim
 }
 
-id-evidence-entity             OBJECT IDENTIFIER ::=
+id-evidence-element             OBJECT IDENTIFIER ::=
     { id-evidence 0 }
-id-evidence-entity-transaction OBJECT IDENTIFIER ::=
-    { id-evidence-entity 0 }
-id-evidence-entity-platform    OBJECT IDENTIFIER ::=
-    { id-evidence-entity 1 }
-id-evidence-entity-key         OBJECT IDENTIFIER ::=
-    { id-evidence-entity 2 }
+id-evidence-element-transaction OBJECT IDENTIFIER ::=
+    { id-evidence-element 0 }
+id-evidence-element-platform    OBJECT IDENTIFIER ::=
+    { id-evidence-element 1 }
+id-evidence-element-key         OBJECT IDENTIFIER ::=
+    { id-evidence-element 2 }
 ~~~
 
-In turn, entities are composed of a collection of claims. Each claim is composed of a type and a value.
+In turn, elements are composed of a collection of claims. Each claim is composed of a type and a value.
 The claim types are represented by object identifiers (OIDs). The
-following ASN.1 definition defines the structures associated with claims:
+following ASN.1 fragment defines the structures associated with claims:
 
 ~~~ asn.1
 CLAIM ::= CLASS {
@@ -629,10 +634,10 @@ ReportedClaim ::= SEQUENCE {
 }
 ~~~
 
-Each claim type SHOULD be associated with a single entity type. Therefore, it is encouraged
-to define claim types grouped with their respective entity type.
+Each claim type SHOULD be associated with a single element type. Therefore, it is encouraged
+to define claim types grouped with their respective element type.
 
-The type of a claim value is dictated by the claim type. When a claim type is defined, the
+The nature of a claim value is dictated by the claim type. When a claim type is defined, the
 definition must include the type of the value, its semantic and interpretation.
 
 The following ASN.1 fragment illustrates how a claim is associated with a type, in this case the
@@ -648,24 +653,23 @@ claim-transaction-nonce CLAIM ::= {
 }
 ~~~
 
-The remainder of this section describes the entity types and their associated claims.
+The remainder of this section describes the element types and their associated claims.
 
 
-## Platform Entity
+## Platform Element
 
-A platform entity reports information about the device where the Evidence is generated and is
+A platform element reports information about the device where the Evidence is generated and is
 composed of a collection of claims that are global to the Target Environment.
-It is associated with the type identifier `id-evidence-entity-platform`.
+It is associated with the type identifier `id-evidence-element-platform`.
 
-A platform entity, if provided, MUST be included only once within the reported entities. If a
-Verifier encounters multiple entities of type `id-evidence-entity-platform`, it MUST
+A platform element, if provided, MUST be included only once within the generated Evidence. If a
+Verifier encounters multiple elements of type `id-evidence-element-platform`, it MUST
 reject the Evidence as malformed.
 
-The following table lists the claims for a platform entity (platform claims) defined
+The following table lists the claims for a platform element (platform claims) defined
 within this specification. In cases where the claim is borrowed from another specification,
 the "Reference" column refers to the specification where the semantics
 for the claim value can be found.
-Claims defined in this specification have further details below.
 
 | Claim Type      | Reference     | Multiple? | OID                                   |
 | ---             | ---           | ---       | ---                                   |
@@ -728,7 +732,10 @@ on the case or on an applied sticker.
 
 ### fipsboot, fipsver, fipslevel and fipsmodule
 
-FIPS 140-3 CMVP validation places stringent requirements on the mode of operation of the device and the cryptography offered by the module, including only enabling FIPS-approved algorithms, certain requirements on entropy sources, and extensive start-up self-tests. FIPS 140-3 offers compliance levels 1 through 4 with increasingly strict requirements. Many HSMs include a configuration setting that allows the device to be taken out of FIPS mode and thus enable additional functionality or performance, and some offer configuration settings to change between compliance levels.
+FIPS 140-3 CMVP validation places stringent requirements on the mode of operation of the device and the cryptography offered by the module,
+including only enabling FIPS-approved algorithms, certain requirements on entropy sources, and extensive start-up self-tests.
+FIPS 140-3 offers compliance levels 1 through 4 with increasingly strict requirements. Many HSMs include a configuration setting that allows
+the device to be taken out of FIPS mode and thus enable additional functionality or performance, and some offer configuration settings to change between compliance levels.
 
 The boolean claim `fipsboot` indicates whether the device is currently operating in FIPS mode. When the claim value is "true", the HSM is running in compliance with the
 FIPS 140 restrictions. Among other restrictions, it means that only FIPS-approved algorithms are available. If the value of this claim is "false", then the HSM is not
@@ -743,26 +750,27 @@ be sufficient to find the associated records in the CMVP database.
 
 The FIPS status information found in Evidence indicates only the mode of operation of the device and is not authoritative of its validation status.
 This information is available on the NIST CMVP website or by contacting the device vendor.
-As an example, some devices may have the option to enable FIPS mode in configuration even if the vendor has not submitted this model for validation. As another example, a device may be running in a mode consistent with FIPS Level 3 but the device was only validated and certified to Level 2.
+As an example, some devices may have the option to enable FIPS mode in configuration even if the vendor has not submitted this model for validation. As another example,
+a device may be running in a mode consistent with FIPS Level 3 but the device was only validated and certified to Level 2.
 A Relying Party wishing to know the validation status of the device MUST couple the device state information contained in the Evidence with a valid FIPS CMVP certificate for the device.
 
 
-## Key Entity
+## Key Element
 
-A key entity is associated with the type `id-evidence-entity-key`. Each instance of a
-key entity represents a different addressable key found in the Target Environment. There can
-be multiple key entities found in Evidence, but each reported key entity MUST
-describe a different key from the Target Environment. Two key entities may represent the same underlying cryptographic key
+A key element is associated with the type `id-evidence-element-key`. Each instance of a
+key element represents a different addressable key found in the Target Environment. There can
+be multiple key elements found in Evidence, but each reported key element MUST
+describe a different key observed from the Target Environment. Two key elements may represent the same underlying cryptographic key
 (keys with the exact same value) but they must be different portions of the Target Environment.
 
-A key entity is composed of a collection of claims relating to the cryptographic key. At
-minimum, a key entity MUST report the claim "identifier" to uniquely identify this cryptographic
+A key element is composed of a collection of claims relating to the cryptographic key. At
+minimum, a key element MUST report the claim "identifier" to uniquely identify this cryptographic
 key from any others found in the same Target Environment.
 
-A Verifier that detects Evidence with multiple key entities referring to the
+A Verifier that detects Evidence with multiple key elements referring to the
 same addressable key MUST reject the Evidence.
 
-The following table lists the claims for a key entity defined
+The following table lists the claims for a key element defined
 within this specification. The "Reference" column refers to the specification where the semantics
 for the claim can be found.
 
@@ -778,7 +786,7 @@ for the claim can be found.
 | purpose           | {{&SELF}}   | No        | id-evidence-claim-key-purpose           |
 
 An attestation key might be visible to a client of the device and be reported along with other cryptographic keys. Therefore,
-it is acceptable to include a key entity providing claims about an attestation key like any other cryptographic key. An
+it is acceptable to include a key element providing claims about an attestation key like any other cryptographic key. An
 implementation MAY reject the generation of Evidence if it relates to an attestation key.
 
 ### identifier
@@ -854,22 +862,22 @@ attributes provided by PKCS#11. Each purpose is assigned an object identifier (O
 The use of an object identifier to report a purpose allows third parties to extend this list to support
 implementations that have other key purposes.
 
-## Transaction Entity
+## Transaction Element
 
-A transaction entity is associated with the type `id-evidence-entity-transaction`. This is
-a logical entity and does not relate to any state found in the Target Environment. Instead, it
+A transaction element is associated with the type `id-evidence-element-transaction`. This is
+an abstract element and does not relate to any state found in the Target Environment. Instead, it
 groups together claims that relate to the request of generating the Evidence.
 
 For example, it is possible to include a `nonce` as part of the request to produce Evidence. This
 `nonce` is repeated as part of the Evidence to support
-the freshness of the Evidence. The `nonce` is not related to any element in the Target Environment
-and the transaction entity is used to gather those values into claims.
+the freshness of the Evidence. The `nonce` is not related to any portion of the Target Environment
+and the transaction element is used to gather those values into claims.
 
-A transaction entity, if provided, MUST be included only once within the reported entities. If a
-Verifier detects multiple entities of type `id-evidence-entity-transaction`, it MUST
+A transaction element, if provided, MUST be included only once within the reported elements. If a
+Verifier detects multiple elements of type `id-evidence-element-transaction`, it MUST
 reject the Evidence.
 
-The following table lists the claims for a transaction entity defined
+The following table lists the claims for a transaction element defined
 within this specification. The "Reference" column refers to the specification where the semantics
 for the claim value can be found.
 
@@ -882,7 +890,8 @@ for the claim value can be found.
 
 ### nonce
 
-The claim `nonce` is used to provide "freshness" quality as to the generated Evidence. A Presenter requesting Evidence MAY provide a nonce value as part of the request. This nonce value, if specified, SHOULD be repeated in the generated Evidence as a claim within the transaction entity.
+The claim `nonce` is used to provide "freshness" quality as to the generated Evidence. A Presenter requesting Evidence MAY provide a nonce
+value as part of the request. This nonce value, if specified, SHOULD be repeated in the generated Evidence as a claim within the transaction element.
 
 This claim is similar to the "eat_nonce" as defined in {{RFC9711}}. According to that specification, this claim may be specified multiple times with
 different values. However, within the scope of this specification, the "nonce" value can be specified only once within a transaction.
@@ -905,11 +914,11 @@ of this binding is discussed in {{sec-detached-sigs}}.
 This claim can be reported multiple times. Each included claim MUST refer to a different attestation key. In other words, this claim
 should be repeated only if multiple attestation keys are used to sign the Evidence.
 
-## Additional Entity and Claim Types {#sec-additional-claim-types}
+## Additional Element and Claim Types {#sec-additional-claim-types}
 
-It is expected that HSM vendors will register additional Entity and Claim types by assigning OIDs from their own proprietary OID arcs to hold data describing additional proprietary key properties.
+It is expected that HSM vendors will register additional Element and Claim types by assigning OIDs from their own proprietary OID arcs to hold data describing additional proprietary key properties.
 
-When new entity and claim types are used, documentation similar to the one produced in this specification SHOULD be distributed to
+When new element and claim types are used, documentation similar to the one produced in this specification SHOULD be distributed to
 explain the semantics of the claims and the frequency that values can be provided.
 
 See {{sec-req-processing}}, {{sec-req-verification}} and {{sec-cons-verifier}} for handling of unrecognized custom types.
@@ -950,10 +959,14 @@ A structure `Evidence` with zero SignatureBlocks is unsigned and unprotected; Ve
 
 More than one SignatureBlock MAY be used to convey a number of different semantics.
 For example, the HSM's Attesting Environment might hold multiple Attestation Keys using different cryptographic
-algorithms in order to provide resilience against cryptographic degradation. In this case a Verifier would be expected to validate all SignatureBlocks. Alternatively, the HSM's Attesting Service may hold multiple Attestation Keys (or multiple X.509 certificates for the same key) from multiple operational environments to which it belongs. In this case a Verifier would be expected to only validate the SignatureBlock corresponding to its own environment. Alternatively, multiple SignatureBlocks could be used to convey counter-signatures from external parties, in which case the Verifier will need to be equipped with environment-specific verification logic. Multiple of these cases, and potentially others, could be supported by a single Evidence object.
+algorithms in order to provide resilience against cryptographic degradation in a hybrid fashion. In this case a Verifier would be expected to validate
+all SignatureBlocks. Alternatively, the HSM's Attesting Service may hold multiple Attestation Keys (or multiple X.509 certificates for the same key) from
+multiple operational environments to which it belongs. In this case a Verifier would be expected to only validate the SignatureBlock corresponding to its
+own environment. Alternatively, multiple SignatureBlocks could be used to convey counter-signatures from external parties, in which case the Verifier
+needs to be equipped with environment-specific verification logic. Multiple of these cases, and potentially others, could be supported by a single Evidence object.
 
 Note that each SignatureBlock is a fully detached signature over the tbs content with no binding between the signed content and the SignatureBlocks meaning that a third-party can add a
-counter-signature of the Evidence after the fact, or an attacker can remove a SignatureBlock without leaving any artifact. See {{sec-detached-sigs}} for further discussion.
+counter-signature of the Evidence after the fact, or an attacker can remove a SignatureBlock without leaving any trace. See {{sec-detached-sigs}} for further discussion.
 
 If any `transaction.ak-spki` claims are present, the Verifier SHOULD verify that each `SignerIdentifier`’s SubjectPublicKeyInfo (or the SPKI of its `certificate`) matches at least one `ak-spki` value.
 
@@ -966,7 +979,7 @@ yield interoperable tools between offerings from different vendors.
 
 The interface presented in this section might be too complex for manufacturers of HSMs with limited capabilities such as smartcards
 or personal ID tokens. For devices with limited capabilities, a fixed Evidence endorsed by the vendor might be installed
-during manufacturing. Other approaches for constrained HSMs might be to report entities and claims that are fixed or offer limited
+during manufacturing. Other approaches for constrained HSMs might be to report elements and claims that are fixed or offer limited
 variations.
 
 On the other hand, an enterprise-grade HSM with the capability to hold a large number of private keys is expected to be capable of generating
@@ -984,7 +997,7 @@ required to launch the process of creating the Evidence and capturing it to forw
 |      +------------------+   |
 |      | Target           |   |
 |      | Environment      |   |
-|      | (Entities &      |   |
+|      | (Elements &      |   |
 |      |  values)         |   |
 |      +-------+----------+   |
 |              |              |
@@ -1028,11 +1041,11 @@ The aim of the figure is to depict the position of the Presenter as an intermedi
 The role of "Presenter" is privileged as it controls the claims included in the Evidence being generated by the Attester. However, the role is not "trusted" as
 the Verifier does not have to take into account the participation of the Presenter as part of the function of appraising the Evidence.
 
-The attestation request, shown in the figure, consists of a structure `TbsEvidence` containing one `ReportedEntity` for each entity expected to
+The attestation request, shown in the figure, consists of a structure `TbsEvidence` containing one `ReportedElement` for each element expected to
 be included in the Evidence produced by the HSM.
 
-Each instance of `ReportedEntity` included in the request is referred to as a requested entity. A requested entity contains a number of instances
-of `ReportedClaim` known as requested claims. The collection of requested entities and requested claims represent the information desired
+Each instance of `ReportedElement` included in the request is referred to as a requested element. A requested element contains a number of instances
+of `ReportedClaim` known as requested claims. The collection of requested elements and requested claims represent the information desired
 by the Presenter.
 
 In most cases the value of a requested claim should be left unspecified by the Presenter. In the process of generating
@@ -1041,11 +1054,11 @@ of creating a request, the Presenter does not specify the value of the requested
 the structure `ReportedClaim` specifies the element `value` as optional.
 
 On the other hand, there are circumstances where the value of a requested claim should be provided by the Presenter. For example, when a particular
-cryptographic key is to be included in the Evidence, the request must include a key entity with one of the "identifier" claim set to the value
+cryptographic key is to be included in the Evidence, the request must include a key element with one of the "identifier" claim set to the value
 corresponding to the desired key.
 
-Some instances of `ReportedEntity`, such as those representing the platform or the transaction, do not need identifiers as the associated elements are
-implicit in nature. Custom entity types might need selection during an attestation request and related documentation should specify how this is
+Some instances of `ReportedElement`, such as those representing the platform or the transaction, do not need identifiers as the associated elements are
+implicit in nature. Custom element types might need selection during an attestation request and related documentation should specify how this is
 achieved.
 
 The instance of `TbsEvidence` is unsigned and does not provide any means to maintain integrity when communicated from the Presenter to the HSM.
@@ -1064,7 +1077,7 @@ Since this section is non-normative, implementers may deviate from those recomme
 ### Key Identifiers
 
 A Presenter may choose to select which cryptographic keys are reported as part of the generated Evidence. For each selected cryptographic key,
-the Presenter includes a requested entity of type `id-evidence-entity-key`. Among the requested claims for this entity, the
+the Presenter includes a requested element of type `id-evidence-element-key`. Among the requested claims for this element, the
 Presenter includes one claim with the type `id-evidence-claim-key-identifier`. The value of this claim should be
 set to the utf8String that represents the identifier for the specific key.
 
@@ -1076,33 +1089,12 @@ key associated with the specified identifier.
 A Presenter may choose to include a nonce as part of the attestation request. When producing the Evidence, the HSM repeats the
 nonce that was provided as part of the request.
 
-When providing a nonce, a Presenter includes, in the attestation request, an entity of type `id-evidence-entity-transaction`
+When providing a nonce, a Presenter includes, in the attestation request, an element of type `id-evidence-element-transaction`
 with a claim of type `id-evidence-claim-transaction-nonce`. This claim is set with the value of the
-nonce as "bytes".
+nonce as an octet string.
 
 It is important to note that the Presenter, as an untrusted participant, should not be generating the value for the nonce. In fact, the
 nonce should be generated by the Verifier so that the freshness of the Evidence can be trusted by the Verifier.
-
-### Custom Key Selection
-
-An implementer might desire to select multiple cryptographic keys based on a shared attribute. A possible approach
-is to include a single request entity of type `id-evidence-entity-key` including a claim with a set value. This claim
-would not be related to the key identifier as this is unique to each key. A HSM supporting this scheme could select all the cryptographic
-keys matching the specified claim and report them in the generated Evidence.
-
-This is a departure from the base request interface, as multiple key entities are reported from a single requested entity.
-
-More elaborate selection schemes can be envisaged where multiple requested claims specifying values would be tested against cryptographic keys.
-Whether these claims are combined in a logical "and" or in a logical "or" would need to be specified by the implementer.
-
-### Custom Transaction Entity Claims
-
-The extensibility offered by the proposed request interface allows an implementer to add custom claims to the transaction entity in
-order to influence the way that the Evidence generation is performed.
-
-In such an approach, a new custom claim for requested entities of type "transaction" is defined. Then, a
-claim of that type is included in the attestation request (as part of the transaction entity) while specifying a value. This value
-is considered by the HSM while generating the Evidence.
 
 ### Reporting of Attestation Keys
 
@@ -1113,10 +1105,31 @@ A Presenter invokes this provision by submitting an attestation request with a t
 non-specified value (left empty).
 
 In this case, the Attesting Environment adds a transaction claim of type "ak-spki" for each Attestation Key used to sign the Evidence. The
-value of this claim is an octet string (bytes) which is the encoding of the Subject Public Key Information (SPKI) associated
+value of this claim is an octet string which is the encoding of the Subject Public Key Information (SPKI) associated
 with the Attestation Key. Details on SPKIs and their encoding can be found in X.509 certificates ({{RFC5280}}).
 
 This reporting effectively binds the signature blocks to the content (see {{sec-detached-sigs}}).
+
+### Custom Key Selection
+
+An implementer might desire to select multiple cryptographic keys based on a shared attribute. A possible approach
+is to include a single request element of type `id-evidence-element-key` including a claim with a set value. This claim
+would not be related to the key identifier as this is unique to each key. A HSM supporting this scheme could select all the cryptographic
+keys matching the specified claim and report them in the generated Evidence.
+
+This is a departure from the base request interface, as multiple key elements are reported from a single requested element.
+
+More elaborate selection schemes can be envisaged where multiple requested claims specifying values would be tested against cryptographic keys.
+Whether these claims are combined in a logical "and" or in a logical "or" would need to be specified by the implementer.
+
+### Custom Transaction Element Claims
+
+The extensibility offered by the proposed request interface allows an implementer to add custom claims to the transaction element in
+order to influence the way that the Evidence generation is performed.
+
+In such an approach, a new custom claim for requested elements of type "transaction" is defined. Then, a
+claim of that type is included in the attestation request (as part of the transaction element) while specifying a value. This value
+is considered by the HSM to select elements and claims during the generation of the Evidence.
 
 ## Processing an Attestation Request {#sec-req-processing}
 
@@ -1126,20 +1139,19 @@ Evidence. This section is non-normative and implementers MAY choose to not follo
 These recommendations apply to any attestation request schemes and are not restricted solely to the request interface proposed
 here.
 
-An Attesting Environment SHOULD fail an attestation request if it contains an unrecognized entity type. This is to ensure that all the semantics expected
+An Attesting Environment SHOULD fail an attestation request if it contains an unrecognized element type. This is to ensure that all the semantics expected
 by the Presenter are fully understood by the Attesting Environment.
 
 An Attesting Environment MUST fail an attestation request if it contains a requested claim with an unrecognized type with a specified a value (not
 empty). This represents a situation where the Presenter is selecting specific information that is not understood by the Attesting Environment.
 
 An Attesting Environment SHOULD ignore unrecognized claim types in an attestation request. In this situation, the Attesting Environment SHOULD NOT include
-the claim as part of the response. This guidance is to increase the likelihood of interoperability between tools of various
-vendors.
+the claim as part of the response. This guidance is to increase the likelihood of interoperability between tools of different vendors.
 
-An Attesting Environment MUST NOT include entities and claims in the generated Evidence if these entities and claims were
+An Attesting Environment MUST NOT include elements and claims in the generated Evidence if these elements and claims were
 not specified as part of the request. This is to give control to the Presenter as to what information is disclosed by the Attesting Environment.
 
-An Attesting Environment MUST fail an attestation request if the Presenter does not have the appropriate access rights to the entities or claims included
+An Attesting Environment MUST fail an attestation request if the Presenter does not have the appropriate access rights to the elements or claims included
 in the request.
 
 
@@ -1153,15 +1165,15 @@ These recommendations apply to any Evidence and are not restricted solely to Evi
 A Presenter MUST review the Evidence produced by an Attester for fitness prior to distribution.
 
 A Presenter MUST NOT disclose Evidence if it contains information it
-cannot parse. This restriction applies to entity types and claim types. This is
+cannot parse. This restriction applies to element types and claim types. This is
 to ensure that the information provided by the Attester can be evaluated by the
 Presenter.
 
-A Presenter MUST NOT disclose Evidence if it contains entities others
+A Presenter MUST NOT disclose Evidence if it contains elements others
 than the ones that were requested of the Attester. This is to ensure that only the
-selected entities are exposed to the Verifier.
-
-A Presenter MUST NOT disclose Evidence if it contains an entity with a claim
+selected elements are exposed to the Verifier.
+M
+A Presenter MUST NOT disclose Evidence if it contains an element with a claim
 that was not requested of the Attester. This is to ensure that only the selected
 information is disclosed to the Verifier.
 
@@ -1188,6 +1200,11 @@ For the ASN.1 module found in Section 8, IANA is requested to assign
 an object identifier for the module identifier (TBDMOD) with a
 description of "id-mod-pkix-evidence-2025". This should be allocated in the
 "SMI Security for PKIX Module Identifier" registry (1.3.6.1.5.5.7.0).
+
+Fo the ASN.1 module found in section 8, IANA is requested to assign an 
+object identifier for the extended key usage `id-kp-attestationKey`.
+This identifier should be allocated under the PKIX KP arc (1.3.6.1.5.5.7.3)
+with the description "Extended Key Usage (EKU) for signing Evidence".
 
 IANA is asked to define a new arc under "SMI Security for Mechanism Codes" (1.3.6.1.5.5) with the following
 details:
@@ -1264,7 +1281,7 @@ Manipulation of the Evidence after it was generated can lead to undesired outcom
 
 Therefore, Verifiers MUST be designed to accept Evidence based on their appraisal policies, regardless
 of the presence or absence of certain signature(s). Consequently, Verifiers MUST NOT make any inferences
-based on a missing signature, as the signature could have been removed in transit.
+based on the presence of a signature, as the signature could have been added or removed in transit.
 
 This specification provides the transaction claim "ak-spki" to effectively bind the content with
 the signature blocks that were inserted by the Attesting Environment. When this claim is provided, it reports
@@ -1273,17 +1290,19 @@ is repeated for each of the attestation keys used by the Attesting Environment.
 
 ## Privacy {#sec-cons-privacy}
 
-Some HSMs have the capacity of supporting cryptographic keys controlled by separate entities referred to as "tenants", and when the HSM is used in that mode
+Some HSMs have the capacity of supporting cryptographic keys controlled by separate elements referred to as "tenants", and when the HSM is used in that mode
 it is referred to as a multi-tenant configuration.
 
 For example, an enterprise-grade HSM in a large multi-tenant cloud service could host TLS keys fronting multiple un-related web domains. Providing Evidence for
 claims of any one of the keys would involve a Presenter that could potentially access any of the hosted keys.
 In such a case, privacy violations could occur if the Presenter was to disclose information that does not relate to the subject key.
 
-Implementers SHOULD be careful to avoid over-disclosure of information, for example by authenticating the Presenter as described in {{sec-cons-auth-the-presenter}} and only returning results for keys and portions of the Target Environment for which it is authorized.
+Implementers SHOULD be careful to avoid over-disclosure of information, for example by authenticating the Presenter as described in {{sec-cons-auth-the-presenter}} and
+only returning results for keys and portions of the Target Environment for which it is authorized.
 In the absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request authentication approach is described in {{sec-cons-auth-the-presenter}}.
 
-Furthermore, enterprise and cloud-services grade HSMs SHOULD support the full set of attestation request functionality described in {{sec-reqs}} so that Presenters can fine-tune the content of the generated Evidence such that it is appropriate for the intended Verifier.
+Furthermore, enterprise and cloud-services grade HSMs SHOULD support the full set of attestation request functionality described in {{sec-reqs}} so that
+Presenters can fine-tune the content of the generated Evidence such that it is appropriate for the intended Verifier.
 
 
 ## Authenticating and Authorizing the Presenter {#sec-cons-auth-the-presenter}
@@ -1291,27 +1310,37 @@ Furthermore, enterprise and cloud-services grade HSMs SHOULD support the full se
 The Presenter represents a privileged role within the architecture of this specification as it gets to learn about the existence of user keys and their protection properties, as well as details of the platform.
 The Presenter is in the position of deciding how much information to disclose to the Verifier, and to request a suitably redacted Evidence from the HSM.
 
-For personal cryptographic tokens it might be appropriate for the attestation request interface to be un-authenticated. However, for enterprise and cloud-services grade HSMs the Presenter SHOULD be authenticated using the HSM's native authentication mechanism. The details are HSM-specific and are thus left up to the implementer. However, it is RECOMMENDED to implement an authorization framework similar to the following.
+For personal cryptographic tokens it might be appropriate for the attestation request interface to be un-authenticated. However, for enterprise and cloud-services
+grade HSMs the Presenter SHOULD be authenticated using the HSM's native authentication mechanism. The details are HSM-specific and are thus left up to the implementer. However,
+it is RECOMMENDED to implement an authorization framework similar to the following.
 
 A Presenter SHOULD be allowed to request Evidence for any user keys which it is allowed to use.
-For example, a TLS application that is correctly authenticated to the HSM in order to use its TLS keys SHOULD be able to request Evidence related to those same keys without needing to perform any additional authentication or requiring any additional roles or permissions.
-HSMs that wish to allow a Presenter to request Evidence of keys which is not allowed to use, for example for the purposes of displaying HSM status information on an administrative console or UI, SHOULD have a "Attestation Requester" role or permission and SHOULD enforce the HSM's native access controls such that the Presenter can only retrieve Evidence for keys for which it has visibility.
+For example, a TLS application that is correctly authenticated to the HSM in order to use its TLS keys SHOULD be able to request Evidence related to those same keys without needing
+to perform any additional authentication or requiring any additional roles or permissions.
+HSMs that wish to allow a Presenter to request Evidence of keys which is not allowed to use, for example for the purposes of displaying HSM status information on an administrative
+console or UI, SHOULD have a "Attestation Requester" role or permission and SHOULD enforce the HSM's native access controls such that the Presenter can only retrieve Evidence for keys for which it has visibility.
 
-In the absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request MAY be authenticated by embedding the `TbsEvidence` of the request inside an `Evidence` signed with a certificate belonging to the Presenter.
+In the absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request MAY be authenticated by embedding the `TbsEvidence`
+of the request inside an `Evidence` signed with a certificate belonging to the Presenter.
 
 ## Proof-of-Possession of User Keys
 
-With asymmetric keys within a Public Key Infrastructure (PKI) it is common to require a key holder to prove that they are in control of the private key by using it. This is called "proof-of-possession (PoP)". This specification intentionally does not provide a mechanism for PoP of user keys and relies on the Presenter, Verifier, and Relying Party trusting the Attester to correctly report the cryptographic keys that it is holding.
+With asymmetric keys within a Public Key Infrastructure (PKI) it is common to require a key holder to prove that they are in control of the private key by using it. This is
+called "proof-of-possession (PoP)". This specification intentionally does not provide a mechanism for PoP of user keys and relies on the Presenter, Verifier, and Relying Party
+trusting the Attester to correctly report the cryptographic keys that it is holding.
 
-It would be trivial to add a PoP Key claim that uses the attested user key to sign over, for example, the Transaction Entity. However, this approach leads to undesired consequences, as explained
+It would be trivial to add a PoP Key claim that uses the attested user key to sign over, for example, the Transaction Element. However, this approach leads to undesired consequences, as explained
 below.
 
 First, a user key intended for TLS, as an example, SHOULD only be used with the TLS protocol. Introducing a signature oracle whereby the TLS application key is used to sign Evidence could lead to cross-protocol attacks.
 In this example, an attacker could submit a "nonce" value which is in fact not random but is crafted in such a way as to appear as a valid message in some other protocol context or exploit some other weakness in the signature algorithm.
 
-Second, the Presenter who has connected to the HSM to request Evidence may have permissions to list the requested application keys but not permission to use them, as in the case where the Presenter is an administrative UI displaying HSM status information to a system's administrator or auditor.
+Second, the Presenter who has connected to the HSM to request Evidence may have permissions to list the requested application keys but not permission to use them,
+as in the case where the Presenter is an administrative UI displaying HSM status information to a system's administrator or auditor.
 
-Requiring the Attesting Environment to use the reported application keys to generate Evidence could, in some architectures, require the Attesting Environment to resolve complex access control logic and handle complex error conditions, which violates the "simple to implement" design principle outlined in {{sec-cons-simple}}. More discussions on authenticating the Presenter can be found in {{sec-cons-auth-the-presenter}}.
+Requiring the Attesting Environment to use the reported application keys to generate Evidence could, in some architectures, require the Attesting Environment to
+resolve complex access control logic and handle complex error conditions, which violates the "simple to implement" design principle outlined in {{sec-cons-simple}}.
+More discussions on authenticating the Presenter can be found in {{sec-cons-auth-the-presenter}}.
 
 ## Timestamps and HSMs {#sec-cons-hsm-timestamps}
 
@@ -1324,7 +1353,7 @@ and booted up infrequently in a network without a reliable time management servi
 When a timestamp generated from a HSM is evaluated, the expected behavior of the system clock SHOULD be considered.
 
 More specifically, the timestamp SHOULD NOT be relied on for establishing the freshness of the Evidence generated by a HSM. Instead, Verifiers SHOULD rely on other provisions
-such as the "nonce" claim of the "transaction" entity, introduced in this specification.
+such as the "nonce" claim of the "transaction" element, introduced in this specification.
 
 Furthermore, the internal system clock of HSMs SHOULD NOT be relied on to enforce expiration policies.
 --- back
@@ -1343,7 +1372,7 @@ All signatures throughout the samples chain to the following root certificate:
 
 ## Simple Platform Evidence
 
-This example shows a minimal PKIX Evidence object with only transaction and platform entities a single signature where the AK key is identified only by
+This example shows a minimal PKIX Evidence object with only transaction and platform elements a single signature where the AK key is identified only by
 its SHA1 hash KeyID. In other words, this Evidence describes only the HSM itself (rather than application keys stored within it), and it assumes
 that the Verifier will be able to look up the AK key by its SHA1 hash.
 
@@ -1370,7 +1399,7 @@ For completeness of the sample, the following AK and Intermediate CA certificate
 ## Key Attestation Evidence
 
 This example shows a PKIX Evidence object that is attesting two different application keys held within the HSM.
-For the purposes of this example, the Platform Entity is kept short.
+For the purposes of this example, the Platform Element is kept short.
 This example embeds the AK and Intermediate CA certificates in the Evidence object. It chains to the same root as above.
 
 ~~~
@@ -1386,7 +1415,7 @@ Here is a pretty-print of the Evidence object:
 
 ## Multi-HSM and Multi-Tenant Key Attestation Evidence
 
-Some of the design choices in this Evidence format -- such as extensible Entities and multiple signatures -- are motivated by attempting to
+Some of the design choices in this Evidence format -- such as extensible Elements and multiple signatures -- are motivated by attempting to
 future-proof against needing to represent the state of a key in a distributed cloud key management service.
 
 TODO:

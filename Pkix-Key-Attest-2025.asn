@@ -61,11 +61,11 @@ SignerIdentifier ::= SEQUENCE {
 
 TbsEvidence ::= SEQUENCE {
     version INTEGER,
-    reportedEntities SEQUENCE SIZE (1..MAX) OF ReportedEntity
+    reportedElements SEQUENCE SIZE (1..MAX) OF ReportedElement
 }
 
-ReportedEntity ::= SEQUENCE {
-    entityType         OBJECT IDENTIFIER,
+ReportedElement ::= SEQUENCE {
+    elementType         OBJECT IDENTIFIER,
     claims             SEQUENCE SIZE (1..MAX) OF ReportedClaim
 }
 
@@ -112,14 +112,14 @@ ClaimSet CLAIM ::= {
 
 id-evidence OBJECT IDENTIFIER ::= { 1 2 3 999 }
 
-id-evidence-entity             OBJECT IDENTIFIER ::=
+id-evidence-element             OBJECT IDENTIFIER ::=
     { id-evidence 0 }
-id-evidence-entity-transaction OBJECT IDENTIFIER ::=
-    { id-evidence-entity 0 }
-id-evidence-entity-platform    OBJECT IDENTIFIER ::=
-    { id-evidence-entity 1 }
-id-evidence-entity-key         OBJECT IDENTIFIER ::=
-    { id-evidence-entity 2 }
+id-evidence-element-transaction OBJECT IDENTIFIER ::=
+    { id-evidence-element 0 }
+id-evidence-element-platform    OBJECT IDENTIFIER ::=
+    { id-evidence-element 1 }
+id-evidence-element-key         OBJECT IDENTIFIER ::=
+    { id-evidence-element 2 }
 
 id-evidence-claim    OBJECT IDENTIFIER ::=
     { id-evidence 1 }
