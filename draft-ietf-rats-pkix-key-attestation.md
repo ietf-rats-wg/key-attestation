@@ -562,7 +562,7 @@ TbsEvidence ::= SEQUENCE {
 ~~~
 
 An `Evidence` message is composed of a protected section known as the To-Be-Signed (TBS) section.
-The `TbsEvidence` corresponds to the "Evidence Description" referred to in {{#sec-info-model}}.
+The `TbsEvidence` corresponds to the "Evidence Description" referred to in {{sec-info-model}}.
 The integrity of the TBS section is ensured with one or multiple cryptographic signatures
 over the content of this section. There is a provision to carry X.509 certificates supporting each signature.
 The SEQUENCE OF `SignatureBlock` allows for both multi-algorithm protection and for counter-signatures
