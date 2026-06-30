@@ -39,13 +39,6 @@ venue:
   latest: "https://ietf-rats-wg.github.io/key-attestation/draft-ietf-rats-pkix-key-attestation.html"
 
 author:
-  - name: Mike Ounsworth
-    org: Cryptic Forest Software
-    abbrev: Cryptic Forest
-    city: Sioux Lookout
-    country: Canada
-    email: mike@ounsworth.ca
-
   - name: Jean-Pierre Fiset
     org: Crypto4A Inc.
     abbrev: Crypto4A
@@ -54,6 +47,13 @@ author:
     country: Canada
     code: K1Z 7T2
     email: jp@crypto4a.com
+
+  - name: Mike Ounsworth
+    org: Cryptic Forest Software
+    abbrev: Cryptic Forest
+    city: Sioux Lookout
+    country: Canada
+    email: mike@ounsworth.ca
 
   - name: Hannes Tschofenig
     org: University of the Bundeswehr Munich
