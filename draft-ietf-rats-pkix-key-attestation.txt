@@ -5,7 +5,7 @@
 RATS                                                        M. Ounsworth
 Internet-Draft                                            Cryptic Forest
 Intended status: Standards Track                             J.-P. Fiset
-Expires: 31 December 2026                                       Crypto4A
+Expires: 1 January 2027                                         Crypto4A
                                                            H. Tschofenig
                                                                 UniBw M.
                                                              H. Birkholz
@@ -13,7 +13,7 @@ Expires: 31 December 2026                                       Crypto4A
                                                               M. Wiseman
                                                                         
                                                                 N. Smith
-                                                            29 June 2026
+                                                            30 June 2026
 
 
             Evidence Encoding for Hardware Security Modules
@@ -70,7 +70,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 31 December 2026.
+   This Internet-Draft will expire on 1 January 2027.
 
 Copyright Notice
 
@@ -1036,24 +1036,25 @@ Table of Contents
 
 5.2.5.  purpose
 
-   Reports the key capabilities associated with the subject key.  Since
-   multiple capabilities can be associated with a single key, the value
-   of this claim is a list of capabilities, each reported as an object
-   identifier (OID).
+   Reports the key purposes, also referred to as key capabilities,
+   associated with the subject key.  Since multiple purposes can be
+   associated with a single key, the value of this claim is a list of
+   purposes, each reported as an object identifier (OID).
 
    The value of this claim is the DER encoding of the following
    structure:
 
-   <CODE STARTS>
+   claim-key-purpose CLAIM ::= {
+     ID id-evidence-claim-key-purpose
+     WITH TYPE KeyPurposes
+   }
 
-   EvidenceKeyCapabilities ::= SEQUENCE OF OBJECT IDENTIFIER
+   KeyPurposes ::= SEQUENCE OF OBJECT IDENTIFIER
 
-   <CODE ENDS>
-
-   The following table describes the key capabilities defined in this
-   specification.  The key capabilities offered are based on key
-   attributes provided by PKCS#11.  Each capability is assigned an
-   object identifier (OID).
+   The following table describes the key purposes defined in this
+   specification.  The key purposes offered are based on key attributes
+   provided by PKCS#11.  Each purpose is assigned an object identifier
+   (OID).
 
       +============+====================+===========================+
       | Capability | PKCS#11            | OID                       |
@@ -1088,9 +1089,9 @@ Table of Contents
 
                                   Table 3
 
-   The use of an object identifier to report a capability allows third
+   The use of an object identifier to report a purpose allows third
    parties to extend this list to support implementations that have
-   other key capabilities.
+   other key purposes.
 
 5.3.  Transaction Entity
 
