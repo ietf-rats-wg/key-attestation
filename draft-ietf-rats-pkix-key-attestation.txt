@@ -2,10 +2,10 @@
 
 
 
-RATS                                                        M. Ounsworth
-Internet-Draft                                            Cryptic Forest
-Intended status: Standards Track                             J.-P. Fiset
-Expires: 1 January 2027                                         Crypto4A
+RATS                                                         J.-P. Fiset
+Internet-Draft                                                  Crypto4A
+Intended status: Standards Track                            M. Ounsworth
+Expires: 1 January 2027                                   Cryptic Forest
                                                            H. Tschofenig
                                                                 UniBw M.
                                                              H. Birkholz
@@ -2465,19 +2465,19 @@ Appendix B.  Acknowledgements
 
 Authors' Addresses
 
-   Mike Ounsworth
-   Cryptic Forest Software
-   Sioux Lookout
-   Canada
-   Email: mike@ounsworth.ca
-
-
    Jean-Pierre Fiset
    Crypto4A Inc.
    1550A Laperriere Ave
    Ottawa, Ontario  K1Z 7T2
    Canada
    Email: jp@crypto4a.com
+
+
+   Mike Ounsworth
+   Cryptic Forest Software
+   Sioux Lookout
+   Canada
+   Email: mike@ounsworth.ca
 
 
    Hannes Tschofenig
