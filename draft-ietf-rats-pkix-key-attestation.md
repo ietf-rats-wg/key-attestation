@@ -419,7 +419,7 @@ of a claim set.
 ## Element
 
 An element is a logical construct that refers to a portion of the Target Environment's state. It is
-addressable via an identifier such as a UUID or a handle (as expressed in [PKCS11]). In general, an
+addressable via an identifier such as a UUID or a handle (as expressed in {{PKCS11}}). In general, an
 element refers to a component recognized by users of the HSM, such as a user key or the platform itself.
 
 An element is composed of a type, the element type, and a collection of claims. The element type
@@ -585,9 +585,7 @@ key identifier (keyId). It is expected that a X.509 certificate will be generall
 to verify the signature and clearly identifies the subject that provided the signature. The SPKI and keyId are allowed
 to support environments where X.509 certificates are not used.
 
-The field `SignerIdentifier.keyId` is not constrained to specific details. It is an identifier that is shared between the Attester and
-the Verifier to establish which public key should be used during the verification of a signature block. The fields `SignerIdentifier.subjectPublicKeyInfo`
-and `SignerIdentifier.certificate` are encouraged as these fields have specific syntax and semantics.
+The field `SignerIdentifier.keyId` is not constrained to specific details. It is an identifier that is shared between the Attester and the Verifier to establish which public key should be used during the verification of a signature block. The fields `SignerIdentifier.subjectPublicKeyInfo` and `SignerIdentifier.certificate` are encouraged as these fields have specific syntax and semantics. When `SignerIdentifier.keyId` is used without a certificate or SPKI, the Verifier MUST obtain the corresponding public key by some implementation-specific or out-of-band mechanism before it can validate the signature.
 
 The optional certificate list provided in `Evidence.intermediateCertificates` enables the insertion
 of X.509 certificates to support trusting the signatures found in signature blocks. This information is intended to provide
@@ -632,7 +630,16 @@ ReportedClaim ::= SEQUENCE {
     claimType  CLAIM.&id ({ClaimSet}),
     value      CLAIM.&Type ({ClaimSet}{@claimType}) OPTIONAL
 }
+
+ClaimSet CLAIM ::= {
+    -- claim definitions from this specification,
+    ...
+}
 ~~~
+
+The `ClaimSet` object set in the complete ASN.1 module is extensible. This allows future or proprietary claim types to be encoded without changing the `ReportedClaim` syntax. A Verifier that does not recognize a claim type SHOULD ignore that claim as described in {{sec-info-model}}, unless local policy requires rejection.
+
+For generated Evidence, `value` MUST be present for every claim whose semantics are defined by this specification unless that claim type explicitly allows omission. In attestation requests, the value MAY be omitted when the value is to be supplied by the Attesting Environment.
 
 Each claim type SHOULD be associated with a single element type. Therefore, it is encouraged
 to define claim types grouped with their respective element type.
@@ -778,10 +785,10 @@ for the claim can be found.
 | ---               | ---         | ---       | ---                                     |
 | identifier        | {{&SELF}}   | Yes       | id-evidence-claim-key-identifier        |
 | spki              | {{&SELF}}   | No        | id-evidence-claim-key-spki              |
-| extractable       | [PKCS11]    | No        | id-evidence-claim-key-extractable       |
-| sensitive         | [PKCS11]    | No        | id-evidence-claim-key-sensitive         |
-| never-extractable | [PKCS11]    | No        | id-evidence-claim-key-never-extractable |
-| local             | [PKCS11]    | No        | id-evidence-claim-key-local             |
+| extractable       | {{PKCS11}}    | No        | id-evidence-claim-key-extractable       |
+| sensitive         | {{PKCS11}}    | No        | id-evidence-claim-key-sensitive         |
+| never-extractable | {{PKCS11}}    | No        | id-evidence-claim-key-never-extractable |
+| local             | {{PKCS11}}    | No        | id-evidence-claim-key-local             |
 | expiry            | {{&SELF}}   | No        | id-evidence-claim-key-expiry            |
 | purpose           | {{&SELF}}   | No        | id-evidence-claim-key-purpose           |
 
@@ -804,9 +811,9 @@ key.
 
 ### extractable, sensitive, never-extractable, local
 
-These claims are defined as key attributes in [PKCS11] and reused in this specification for interoperability. Small
+These claims are defined as key attributes in {{PKCS11}} and reused in this specification for interoperability. Small
 descriptions are offered for each to ease the reading of this specification. In case of confusion between the
-description offered here and the one in [PKCS11], the definition offered in the latter shall prevail.
+description offered here and the one in {{PKCS11}}, the definition offered in the latter shall prevail.
 
 The claim "extractable" indicates that the key can be exported from the HSM. Corresponds directly to the attribute CKA_EXTRACTABLE
 found in PKCS#11.
@@ -942,8 +949,9 @@ header label is "EVIDENCE". For example:
 # Signing and Verification Procedures {#sec-verif-proc}
 
 The `SignatureBlock.signatureValue` signs over the DER-encoded to-be-signed Evidence data
-`Evidence.tbs` and MUST be validated with the subject public key of the end entity
-X.509 certificate contained in the `SignerIdentifier.certificate`.
+`Evidence.tbs`.
+
+If `SignerIdentifier.certificate` is present, the signature MUST be validated with the subject public key of that end-entity X.509 certificate. If `SignerIdentifier.subjectPublicKeyInfo` is present, the signature MUST be validated with that public key. If `SignerIdentifier.keyId` is present, the Verifier MUST obtain the corresponding public key by some implementation-specific or out-of-band mechanism; if no such key can be obtained, the SignatureBlock MUST be treated as unverifiable and the Evidence MUST be rejected. The certificate-based mode remains the preferred form in PKIX deployments because it provides both the public key and an X.509 identity.
 
 Verifiers MUST ensure, prior to accepting the signature associated with an end-entity certificate, that:
 
@@ -968,7 +976,7 @@ needs to be equipped with environment-specific verification logic. Multiple of t
 Note that each SignatureBlock is a fully detached signature over the tbs content with no binding between the signed content and the SignatureBlocks meaning that a third-party can add a
 counter-signature of the Evidence after the fact, or an attacker can remove a SignatureBlock without leaving any trace. See {{sec-detached-sigs}} for further discussion.
 
-If any `transaction.ak-spki` claims are present, the Verifier SHOULD verify that each `SignerIdentifier`’s SubjectPublicKeyInfo (or the SPKI of its `certificate`) matches at least one `ak-spki` value.
+If any `transaction.ak-spki` claims are present, the Verifier SHOULD verify that each `SignerIdentifier`’s SubjectPublicKeyInfo (or the SPKI of its `certificate`) matches at least one `ak-spki` value. Each such claim is authoritative only when it is backed by a successfully verified SignatureBlock using the corresponding attestation key. An `ak-spki` claim that is not matched by a valid signature block MUST NOT by itself be treated as proof that the corresponding key was used to sign the Evidence.
 
 
 # Attestation Requests {#sec-reqs}
@@ -1081,7 +1089,7 @@ the Presenter includes a requested element of type `id-evidence-element-key`. Am
 Presenter includes one claim with the type `id-evidence-claim-key-identifier`. The value of this claim should be
 set to the utf8String that represents the identifier for the specific key.
 
-An HSM receiving an attestation request which selects a key via this approach SHOULD fail the transaction if it cannot find the cryptographic
+An HSM receiving an attestation request which selects a key via this approach is expected to fail the transaction if it cannot find the cryptographic
 key associated with the specified identifier.
 
 ### Nonce
@@ -1133,47 +1141,44 @@ is considered by the HSM to select elements and claims during the generation of 
 
 ## Processing an Attestation Request {#sec-req-processing}
 
-This sub-section deals with the rules that should be considered when an Attesting Environment processes a request to generate
-Evidence. This section is non-normative and implementers MAY choose to not follow these recommendations.
+This sub-section describes the considerations that are relevant when an Attesting Environment processes a request to generate
+Evidence. This section is non-normative and implementers may choose not to follow these recommendations.
 
-These recommendations apply to any attestation request schemes and are not restricted solely to the request interface proposed
+These recommendations apply to any attestation request scheme and are not restricted solely to the request interface proposed
 here.
 
-An Attesting Environment SHOULD fail an attestation request if it contains an unrecognized element type. This is to ensure that all the semantics expected
+An Attesting Environment is expected to fail an attestation request if it contains an unrecognized element type. This is to ensure that all the semantics expected
 by the Presenter are fully understood by the Attesting Environment.
 
-An Attesting Environment MUST fail an attestation request if it contains a requested claim with an unrecognized type with a specified a value (not
-empty). This represents a situation where the Presenter is selecting specific information that is not understood by the Attesting Environment.
+An Attesting Environment is expected to fail an attestation request if it contains a requested claim with an unrecognized type and a specified value (that is, a value that is not empty). This represents a situation where the Presenter is selecting specific information that is not understood by the Attesting Environment.
 
-An Attesting Environment SHOULD ignore unrecognized claim types in an attestation request. In this situation, the Attesting Environment SHOULD NOT include
-the claim as part of the response. This guidance is to increase the likelihood of interoperability between tools of different vendors.
+An Attesting Environment is encouraged to ignore unrecognized claim types in an attestation request. In this situation, the Attesting Environment is expected not to include
+the claim as part of the response. This guidance is intended to increase the likelihood of interoperability between tools of different vendors.
 
-An Attesting Environment MUST NOT include elements and claims in the generated Evidence if these elements and claims were
-not specified as part of the request. This is to give control to the Presenter as to what information is disclosed by the Attesting Environment.
+An Attesting Environment is expected to include only elements and claims in the generated Evidence if these elements and claims were
+specified as part of the request. This is to give control to the Presenter as to what information is disclosed by the Attesting Environment.
 
-An Attesting Environment MUST fail an attestation request if the Presenter does not have the appropriate access rights to the elements or claims included
+An Attesting Environment is expected to fail an attestation request if the Presenter does not have the appropriate access rights to the elements or claims included
 in the request.
-
 
 ## Verification by Presenter {#sec-req-verification}
 
-This sub-section deals with the rules that should be considered when a Presenter receives Evidence from the Attester (the HSM)
-prior to distribution. This section is non-normative and implementers MAY choose to not follow these recommendations.
+This sub-section describes the considerations that are relevant when a Presenter receives Evidence from the Attester (the HSM)
+prior to distribution. This section is non-normative and implementers may choose not to follow these recommendations.
 
 These recommendations apply to any Evidence and are not restricted solely to Evidence generated from the proposed request interface.
 
-A Presenter MUST review the Evidence produced by an Attester for fitness prior to distribution.
+A Presenter is expected to review the Evidence produced by an Attester for fitness prior to distribution.
 
-A Presenter MUST NOT disclose Evidence if it contains information it
+A Presenter is expected not to disclose Evidence if it contains information it
 cannot parse. This restriction applies to element types and claim types. This is
 to ensure that the information provided by the Attester can be evaluated by the
 Presenter.
 
-A Presenter MUST NOT disclose Evidence if it contains elements others
-than the ones that were requested of the Attester. This is to ensure that only the
+A Presenter is expected not to disclose Evidence if it contains elements other than the ones that were requested of the Attester. This is to ensure that only the
 selected elements are exposed to the Verifier.
-M
-A Presenter MUST NOT disclose Evidence if it contains an element with a claim
+
+A Presenter is expected not to disclose Evidence if it contains an element with a claim
 that was not requested of the Attester. This is to ensure that only the selected
 information is disclosed to the Verifier.
 
@@ -1435,4 +1440,3 @@ input taken from discussions on the RATS mailing list.
 We would like to thank Jeff Andersen for the review comments.
 
 We would like to thank Dave Thaler for his guidance.
-
