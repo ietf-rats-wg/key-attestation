@@ -34,6 +34,10 @@ id-kp-attestationKey OBJECT IDENTIFIER ::= { id-kp 999 }
 
 -- Evidence --
 
+SignatureAlgSet SIGNATURE-ALGORITHM ::= {
+    ...
+}
+
 Evidence ::= SEQUENCE {
     tbs  TbsEvidence,
     signatures  SEQUENCE SIZE (0..MAX) OF SignatureBlock,
@@ -107,7 +111,8 @@ ClaimSet CLAIM ::= {
       | claim-key-never-extractable
       | claim-key-local
       | claim-key-expiry
-      | claim-key-purpose
+      | claim-key-purpose,
+      ...
 }
 
 id-evidence OBJECT IDENTIFIER ::= { 1 2 3 999 }
