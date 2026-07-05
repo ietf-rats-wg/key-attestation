@@ -2790,20 +2790,17 @@ id-kp-attestationKey OBJECT IDENTIFIER ::= { id-kp TBDMOD2 }
 
 -- Evidence --
 
-SignatureAlgSet SIGNATURE-ALGORITHM ::= {
-    ...
-}
-
 Evidence ::= SEQUENCE {
     tbs  TbsEvidence,
     signatures  SEQUENCE SIZE (0..MAX) OF SignatureBlock,
     intermediateCertificates  [0] SEQUENCE OF Certificate OPTIONAL
                                   -- As defined in RFC 5912
 }
+
 SignatureBlock ::= SEQUENCE {
     sid SignerIdentifier,
-    signatureAlgorithm AlgorithmIdentifier{
-        SIGNATURE-ALGORITHM, {SignatureAlgSet} },
+    signatureAlgorithm AlgorithmIdentifier
+        { SIGNATURE-ALGORITHM, { ... } },
     signatureValue OCTET STRING
 }
 
