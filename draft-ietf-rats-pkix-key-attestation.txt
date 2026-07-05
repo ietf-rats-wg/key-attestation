@@ -145,7 +145,6 @@ Table of Contents
    Appendix A.  Samples
      A.1.  Simple Platform Evidence
      A.2.  Key Attestation Evidence
-     A.3.  Multi-HSM and Multi-Tenant Key Attestation Evidence
    Appendix B.  Acknowledgements
    Authors' Addresses
 
@@ -2485,22 +2484,6 @@ A.2.  Key Attestation Evidence
          signatureValue : 30450220109323230dea72cf...
          AK Certificate : present
      Intermediate Certificates:  (1)
-
-A.3.  Multi-HSM and Multi-Tenant Key Attestation Evidence
-
-   Some of the design choices in this Evidence format -- such as
-   extensible Elements and multiple signatures -- are motivated by
-   attempting to future-proof against needing to represent the state of
-   a key in a distributed cloud key management service.
-
-   TODO:
-
-   *  Illustrative example of having multiple signatures on a single
-      Evidence.
-
-   *  Illustrative example of how a vendor might represent that the key
-      being attested is part of a logical tenant or access control group
-      that spans multiple HSMs.
 
 Appendix B.  Acknowledgements
 
