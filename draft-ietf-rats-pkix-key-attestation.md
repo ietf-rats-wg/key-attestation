@@ -1206,19 +1206,19 @@ Further privacy concerns are discussed in {{sec-cons-privacy}}.
 Please replace "{{&SELF}}" with the RFC number assigned to this document.
 
 For the ASN.1 module found in Section 8, IANA is requested to assign
-an object identifier for the module identifier (TBDMOD) with a
+an object identifier for the module identifier (TBDMOD1) with a
 description of "id-mod-pkix-evidence-2025". This should be allocated in the
 "SMI Security for PKIX Module Identifier" registry (1.3.6.1.5.5.7.0).
 
-Fo the ASN.1 module found in section 8, IANA is requested to assign an
-object identifier for the extended key usage `id-kp-attestationKey`.
+For the ASN.1 module found in section 8, IANA is requested to assign an
+object identifier for the extended key usage `id-kp-attestationKey` (TBDMOD2).
 This identifier should be allocated under the PKIX KP arc (1.3.6.1.5.5.7.3)
 with the description "Extended Key Usage (EKU) for signing Evidence".
 
 IANA is asked to define a new arc under "SMI Security for Mechanism Codes" (1.3.6.1.5.5) with the following
 details:
 
-* OID Value: 1.3.6.1.5.5.&lt;evidence&gt;
+* OID Value: 1.3.6.1.5.5.TBDMOD3
 
 * Name: evidence
 

@@ -1,7 +1,7 @@
 PKIX-Evidence-2025
       { iso(1) identified-organization(3) dod(6) internet(1)
         security(5) mechanisms(5) pkix(7) id-mod(0)
-        id-mod-pkix-evidence-2025(999) }
+        id-mod-pkix-evidence-2025(TBDMOD1) }
 
 DEFINITIONS EXPLICIT TAGS ::=
 BEGIN
@@ -30,7 +30,7 @@ id-kp OBJECT IDENTIFIER ::=
 
   -- Attestation Key Extended Key Usage --
 
-id-kp-attestationKey OBJECT IDENTIFIER ::= { id-kp 999 }
+id-kp-attestationKey OBJECT IDENTIFIER ::= { id-kp TBDMOD2 }
 
 -- Evidence --
 
@@ -115,7 +115,9 @@ ClaimSet CLAIM ::= {
       ...
 }
 
-id-evidence OBJECT IDENTIFIER ::= { 1 2 3 999 }
+id-evidence OBJECT IDENTIFIER ::= { 
+     iso(1) identified-organization(3) dod(6)
+     internet(1) security(5) mechanisms(5) TBDMOD3 }
 
 id-evidence-element             OBJECT IDENTIFIER ::=
     { id-evidence 0 }
