@@ -166,9 +166,13 @@ and cryptographic keys managed by such devices. The format enables an Attester t
 to a Relying Party in a form that integrates with existing X.509-based trust infrastructures.
 
 Concretely, this specification defines:
+
 * an ASN.1/DER `Evidence` envelope containing a to-be-signed section, one or more signature blocks, and optional intermediate certificates;
+  
 * an element-and-claim data model organized around transaction, platform, and key elements, identified by OIDs;
+  
 * encoding and signature-verification processing rules for PKIX Evidence;
+  
 * an attestation request structure that allows a Presenter to request a scoped subset of elements and claims.
 
 The design is intentionally PKIX-native. ASN.1 and DER are used to align with existing certificate tooling, certification authority workflows, and HSM implementations where non-ASN.1 formats are less common.
