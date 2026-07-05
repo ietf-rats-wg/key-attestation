@@ -1867,9 +1867,7 @@ The signer identifier includes a combination of X.509 certificate, SubjectPublic
 key identifier (keyId). It is expected that a X.509 certificate will be generally used, as it provides the public key needed
 to verify the signature and clearly identifies the subject that provided the signature. The SPKI and keyId are allowed
 to support environments where X.509 certificates are not used.<a href="#section-5-7" class="pilcrow">¶</a></p>
-<p id="section-5-8">The field <code>SignerIdentifier.keyId</code> is not constrained to specific details. It is an identifier that is shared between the Attester and
-the Verifier to establish which public key should be used during the verification of a signature block. The fields <code>SignerIdentifier.subjectPublicKeyInfo</code>
-and <code>SignerIdentifier.certificate</code> are encouraged as these fields have specific syntax and semantics.<a href="#section-5-8" class="pilcrow">¶</a></p>
+<p id="section-5-8">The field <code>SignerIdentifier.keyId</code> is not constrained to specific details. It is an identifier that is shared between the Attester and the Verifier to establish which public key should be used during the verification of a signature block. The fields <code>SignerIdentifier.subjectPublicKeyInfo</code> and <code>SignerIdentifier.certificate</code> are encouraged as these fields have specific syntax and semantics. When <code>SignerIdentifier.keyId</code> is used without a certificate or SPKI, the Verifier <span class="bcp14">MUST</span> obtain the corresponding public key by some implementation-specific or out-of-band mechanism before it can validate the signature.<a href="#section-5-8" class="pilcrow">¶</a></p>
 <p id="section-5-9">The optional certificate list provided in <code>Evidence.intermediateCertificates</code> enables the insertion
 of X.509 certificates to support trusting the signatures found in signature blocks. This information is intended to provide
 the certificates required by the Verifier to validate the endorsement on the certificates included
@@ -1912,15 +1910,22 @@ ReportedClaim ::= SEQUENCE {
     claimType  CLAIM.&amp;id ({ClaimSet}),
     value      CLAIM.&amp;Type ({ClaimSet}{@claimType}) OPTIONAL
 }
+
+ClaimSet CLAIM ::= {
+    -- claim definitions from this specification,
+    ...
+}
 </pre><a href="#section-5-13" class="pilcrow">¶</a>
 </div>
-<p id="section-5-14">Each claim type <span class="bcp14">SHOULD</span> be associated with a single element type. Therefore, it is encouraged
-to define claim types grouped with their respective element type.<a href="#section-5-14" class="pilcrow">¶</a></p>
-<p id="section-5-15">The nature of a claim value is dictated by the claim type. When a claim type is defined, the
-definition must include the type of the value, its semantic and interpretation.<a href="#section-5-15" class="pilcrow">¶</a></p>
-<p id="section-5-16">The following ASN.1 fragment illustrates how a claim is associated with a type, in this case the
-OID <code>id-evidence-claim-transaction-nonce</code> and the expected data format (OCTET STRING).<a href="#section-5-16" class="pilcrow">¶</a></p>
-<div class="lang-asn.1 sourcecode" id="section-5-17">
+<p id="section-5-14">The <code>ClaimSet</code> object set in the complete ASN.1 module is extensible. This allows future or proprietary claim types to be encoded without changing the <code>ReportedClaim</code> syntax. A Verifier that does not recognize a claim type <span class="bcp14">SHOULD</span> ignore that claim as described in <a href="#sec-info-model" class="auto internal xref">Section 4</a>, unless local policy requires rejection.<a href="#section-5-14" class="pilcrow">¶</a></p>
+<p id="section-5-15">For generated Evidence, <code>value</code> <span class="bcp14">MUST</span> be present for every claim whose semantics are defined by this specification unless that claim type explicitly allows omission. In attestation requests, the value <span class="bcp14">MAY</span> be omitted when the value is to be supplied by the Attesting Environment.<a href="#section-5-15" class="pilcrow">¶</a></p>
+<p id="section-5-16">Each claim type <span class="bcp14">SHOULD</span> be associated with a single element type. Therefore, it is encouraged
+to define claim types grouped with their respective element type.<a href="#section-5-16" class="pilcrow">¶</a></p>
+<p id="section-5-17">The nature of a claim value is dictated by the claim type. When a claim type is defined, the
+definition must include the type of the value, its semantic and interpretation.<a href="#section-5-17" class="pilcrow">¶</a></p>
+<p id="section-5-18">The following ASN.1 fragment illustrates how a claim is associated with a type, in this case the
+OID <code>id-evidence-claim-transaction-nonce</code> and the expected data format (OCTET STRING).<a href="#section-5-18" class="pilcrow">¶</a></p>
+<div class="lang-asn.1 sourcecode" id="section-5-19">
 <pre>
 id-evidence-claim-transaction-nonce     OBJECT IDENTIFIER ::=
     { id-evidence-claim-transaction 0 }
@@ -1929,9 +1934,9 @@ claim-transaction-nonce CLAIM ::= {
   ID id-evidence-claim-transaction-nonce
   WITH TYPE OCTET STRING
 }
-</pre><a href="#section-5-17" class="pilcrow">¶</a>
+</pre><a href="#section-5-19" class="pilcrow">¶</a>
 </div>
-<p id="section-5-18">The remainder of this section describes the element types and their associated claims.<a href="#section-5-18" class="pilcrow">¶</a></p>
+<p id="section-5-20">The remainder of this section describes the element types and their associated claims.<a href="#section-5-20" class="pilcrow">¶</a></p>
 <div id="platform-element">
 <section id="section-5.1">
         <h3 id="name-platform-element">
@@ -2484,31 +2489,31 @@ header label is "EVIDENCE". For example:<a href="#section-5.5-3" class="pilcrow"
 <a href="#section-6" class="section-number selfRef">6. </a><a href="#name-signing-and-verification-pr" class="section-name selfRef">Signing and Verification Procedures</a>
       </h2>
 <p id="section-6-1">The <code>SignatureBlock.signatureValue</code> signs over the DER-encoded to-be-signed Evidence data
-<code>Evidence.tbs</code> and <span class="bcp14">MUST</span> be validated with the subject public key of the end entity
-X.509 certificate contained in the <code>SignerIdentifier.certificate</code>.<a href="#section-6-1" class="pilcrow">¶</a></p>
-<p id="section-6-2">Verifiers <span class="bcp14">MUST</span> ensure, prior to accepting the signature associated with an end-entity certificate, that:<a href="#section-6-2" class="pilcrow">¶</a></p>
+<code>Evidence.tbs</code>.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-2">If <code>SignerIdentifier.certificate</code> is present, the signature <span class="bcp14">MUST</span> be validated with the subject public key of that end-entity X.509 certificate. If <code>SignerIdentifier.subjectPublicKeyInfo</code> is present, the signature <span class="bcp14">MUST</span> be validated with that public key. If <code>SignerIdentifier.keyId</code> is present, the Verifier <span class="bcp14">MUST</span> obtain the corresponding public key by some implementation-specific or out-of-band mechanism; if no such key can be obtained, the SignatureBlock <span class="bcp14">MUST</span> be treated as unverifiable and the Evidence <span class="bcp14">MUST</span> be rejected. The certificate-based mode remains the preferred form in PKIX deployments because it provides both the public key and an X.509 identity.<a href="#section-6-2" class="pilcrow">¶</a></p>
+<p id="section-6-3">Verifiers <span class="bcp14">MUST</span> ensure, prior to accepting the signature associated with an end-entity certificate, that:<a href="#section-6-3" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-6-3.1">
-          <p id="section-6-3.1.1">the certificate contains the <code>KeyUsage</code> (KU) extension with the <code>digitalSignature</code> bit set; and,<a href="#section-6-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-6-4.1">
+          <p id="section-6-4.1.1">the certificate contains the <code>KeyUsage</code> (KU) extension with the <code>digitalSignature</code> bit set; and,<a href="#section-6-4.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-6-3.2">
-          <p id="section-6-3.2.1">the certificate contains the <code>Extended Key Usage</code> (EKU) extension that includes the <code>id-kp-attestationKey</code> usage.<a href="#section-6-3.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-6-4.2">
+          <p id="section-6-4.2.1">the certificate contains the <code>Extended Key Usage</code> (EKU) extension that includes the <code>id-kp-attestationKey</code> usage.<a href="#section-6-4.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-6-4">Verifiers <span class="bcp14">MAY</span> also use <code>Evidence.intermediateCertificates</code> to build a certification path from the end-entity
-certificate to a trust anchor.<a href="#section-6-4" class="pilcrow">¶</a></p>
-<p id="section-6-5">Note that the structure <code>Evidence</code> <span class="bcp14">MAY</span> contain zero or more SignatureBlocks.
-A structure <code>Evidence</code> with zero SignatureBlocks is unsigned and unprotected; Verifiers <span class="bcp14">MUST</span> treat it as untrusted and <span class="bcp14">MUST NOT</span> rely on its claims.<a href="#section-6-5" class="pilcrow">¶</a></p>
-<p id="section-6-6">More than one SignatureBlock <span class="bcp14">MAY</span> be used to convey a number of different semantics.
+<p id="section-6-5">Verifiers <span class="bcp14">MAY</span> also use <code>Evidence.intermediateCertificates</code> to build a certification path from the end-entity
+certificate to a trust anchor.<a href="#section-6-5" class="pilcrow">¶</a></p>
+<p id="section-6-6">Note that the structure <code>Evidence</code> <span class="bcp14">MAY</span> contain zero or more SignatureBlocks.
+A structure <code>Evidence</code> with zero SignatureBlocks is unsigned and unprotected; Verifiers <span class="bcp14">MUST</span> treat it as untrusted and <span class="bcp14">MUST NOT</span> rely on its claims.<a href="#section-6-6" class="pilcrow">¶</a></p>
+<p id="section-6-7">More than one SignatureBlock <span class="bcp14">MAY</span> be used to convey a number of different semantics.
 For example, the HSM's Attesting Environment might hold multiple Attestation Keys using different cryptographic
 algorithms in order to provide resilience against cryptographic degradation in a hybrid fashion. In this case a Verifier would be expected to validate
 all SignatureBlocks. Alternatively, the HSM's Attesting Service may hold multiple Attestation Keys (or multiple X.509 certificates for the same key) from
 multiple operational environments to which it belongs. In this case a Verifier would be expected to only validate the SignatureBlock corresponding to its
 own environment. Alternatively, multiple SignatureBlocks could be used to convey counter-signatures from external parties, in which case the Verifier
-needs to be equipped with environment-specific verification logic. Multiple of these cases, and potentially others, could be supported by a single Evidence object.<a href="#section-6-6" class="pilcrow">¶</a></p>
-<p id="section-6-7">Note that each SignatureBlock is a fully detached signature over the tbs content with no binding between the signed content and the SignatureBlocks meaning that a third-party can add a
-counter-signature of the Evidence after the fact, or an attacker can remove a SignatureBlock without leaving any trace. See <a href="#sec-detached-sigs" class="auto internal xref">Section 10.3</a> for further discussion.<a href="#section-6-7" class="pilcrow">¶</a></p>
-<p id="section-6-8">If any <code>transaction.ak-spki</code> claims are present, the Verifier <span class="bcp14">SHOULD</span> verify that each <code>SignerIdentifier</code>’s SubjectPublicKeyInfo (or the SPKI of its <code>certificate</code>) matches at least one <code>ak-spki</code> value.<a href="#section-6-8" class="pilcrow">¶</a></p>
+needs to be equipped with environment-specific verification logic. Multiple of these cases, and potentially others, could be supported by a single Evidence object.<a href="#section-6-7" class="pilcrow">¶</a></p>
+<p id="section-6-8">Note that each SignatureBlock is a fully detached signature over the tbs content with no binding between the signed content and the SignatureBlocks meaning that a third-party can add a
+counter-signature of the Evidence after the fact, or an attacker can remove a SignatureBlock without leaving any trace. See <a href="#sec-detached-sigs" class="auto internal xref">Section 10.3</a> for further discussion.<a href="#section-6-8" class="pilcrow">¶</a></p>
+<p id="section-6-9">If any <code>transaction.ak-spki</code> claims are present, the Verifier <span class="bcp14">SHOULD</span> verify that each <code>SignerIdentifier</code>’s SubjectPublicKeyInfo (or the SPKI of its <code>certificate</code>) matches at least one <code>ak-spki</code> value. Each such claim is authoritative only when it is backed by a successfully verified SignatureBlock using the corresponding attestation key. An <code>ak-spki</code> claim that is not matched by a valid signature block <span class="bcp14">MUST NOT</span> by itself be treated as proof that the corresponding key was used to sign the Evidence.<a href="#section-6-9" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-reqs">
@@ -2639,7 +2644,7 @@ should not have a specified value (left empty).<a href="#section-7.1-1" class="p
 the Presenter includes a requested element of type <code>id-evidence-element-key</code>. Among the requested claims for this element, the
 Presenter includes one claim with the type <code>id-evidence-claim-key-identifier</code>. The value of this claim should be
 set to the utf8String that represents the identifier for the specific key.<a href="#section-7.1.1-1" class="pilcrow">¶</a></p>
-<p id="section-7.1.1-2">An HSM receiving an attestation request which selects a key via this approach <span class="bcp14">SHOULD</span> fail the transaction if it cannot find the cryptographic
+<p id="section-7.1.1-2">An HSM receiving an attestation request which selects a key via this approach is expected to fail the transaction if it cannot find the cryptographic
 key associated with the specified identifier.<a href="#section-7.1.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2705,19 +2710,18 @@ is considered by the HSM to select elements and claims during the generation of 
         <h3 id="name-processing-an-attestation-r">
 <a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-processing-an-attestation-r" class="section-name selfRef">Processing an Attestation Request</a>
         </h3>
-<p id="section-7.2-1">This sub-section deals with the rules that should be considered when an Attesting Environment processes a request to generate
-Evidence. This section is non-normative and implementers <span class="bcp14">MAY</span> choose to not follow these recommendations.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
-<p id="section-7.2-2">These recommendations apply to any attestation request schemes and are not restricted solely to the request interface proposed
+<p id="section-7.2-1">This sub-section describes the considerations that are relevant when an Attesting Environment processes a request to generate
+Evidence. This section is non-normative and implementers may choose not to follow these recommendations.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+<p id="section-7.2-2">These recommendations apply to any attestation request scheme and are not restricted solely to the request interface proposed
 here.<a href="#section-7.2-2" class="pilcrow">¶</a></p>
-<p id="section-7.2-3">An Attesting Environment <span class="bcp14">SHOULD</span> fail an attestation request if it contains an unrecognized element type. This is to ensure that all the semantics expected
+<p id="section-7.2-3">An Attesting Environment is expected to fail an attestation request if it contains an unrecognized element type. This is to ensure that all the semantics expected
 by the Presenter are fully understood by the Attesting Environment.<a href="#section-7.2-3" class="pilcrow">¶</a></p>
-<p id="section-7.2-4">An Attesting Environment <span class="bcp14">MUST</span> fail an attestation request if it contains a requested claim with an unrecognized type with a specified a value (not
-empty). This represents a situation where the Presenter is selecting specific information that is not understood by the Attesting Environment.<a href="#section-7.2-4" class="pilcrow">¶</a></p>
-<p id="section-7.2-5">An Attesting Environment <span class="bcp14">SHOULD</span> ignore unrecognized claim types in an attestation request. In this situation, the Attesting Environment <span class="bcp14">SHOULD NOT</span> include
-the claim as part of the response. This guidance is to increase the likelihood of interoperability between tools of different vendors.<a href="#section-7.2-5" class="pilcrow">¶</a></p>
-<p id="section-7.2-6">An Attesting Environment <span class="bcp14">MUST NOT</span> include elements and claims in the generated Evidence if these elements and claims were
-not specified as part of the request. This is to give control to the Presenter as to what information is disclosed by the Attesting Environment.<a href="#section-7.2-6" class="pilcrow">¶</a></p>
-<p id="section-7.2-7">An Attesting Environment <span class="bcp14">MUST</span> fail an attestation request if the Presenter does not have the appropriate access rights to the elements or claims included
+<p id="section-7.2-4">An Attesting Environment is expected to fail an attestation request if it contains a requested claim with an unrecognized type and a specified value (that is, a value that is not empty). This represents a situation where the Presenter is selecting specific information that is not understood by the Attesting Environment.<a href="#section-7.2-4" class="pilcrow">¶</a></p>
+<p id="section-7.2-5">An Attesting Environment is encouraged to ignore unrecognized claim types in an attestation request. In this situation, the Attesting Environment is expected not to include
+the claim as part of the response. This guidance is intended to increase the likelihood of interoperability between tools of different vendors.<a href="#section-7.2-5" class="pilcrow">¶</a></p>
+<p id="section-7.2-6">An Attesting Environment is expected to include only elements and claims in the generated Evidence if these elements and claims were
+specified as part of the request. This is to give control to the Presenter as to what information is disclosed by the Attesting Environment.<a href="#section-7.2-6" class="pilcrow">¶</a></p>
+<p id="section-7.2-7">An Attesting Environment is expected to fail an attestation request if the Presenter does not have the appropriate access rights to the elements or claims included
 in the request.<a href="#section-7.2-7" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2726,22 +2730,20 @@ in the request.<a href="#section-7.2-7" class="pilcrow">¶</a></p>
         <h3 id="name-verification-by-presenter">
 <a href="#section-7.3" class="section-number selfRef">7.3. </a><a href="#name-verification-by-presenter" class="section-name selfRef">Verification by Presenter</a>
         </h3>
-<p id="section-7.3-1">This sub-section deals with the rules that should be considered when a Presenter receives Evidence from the Attester (the HSM)
-prior to distribution. This section is non-normative and implementers <span class="bcp14">MAY</span> choose to not follow these recommendations.<a href="#section-7.3-1" class="pilcrow">¶</a></p>
+<p id="section-7.3-1">This sub-section describes the considerations that are relevant when a Presenter receives Evidence from the Attester (the HSM)
+prior to distribution. This section is non-normative and implementers may choose not to follow these recommendations.<a href="#section-7.3-1" class="pilcrow">¶</a></p>
 <p id="section-7.3-2">These recommendations apply to any Evidence and are not restricted solely to Evidence generated from the proposed request interface.<a href="#section-7.3-2" class="pilcrow">¶</a></p>
-<p id="section-7.3-3">A Presenter <span class="bcp14">MUST</span> review the Evidence produced by an Attester for fitness prior to distribution.<a href="#section-7.3-3" class="pilcrow">¶</a></p>
-<p id="section-7.3-4">A Presenter <span class="bcp14">MUST NOT</span> disclose Evidence if it contains information it
+<p id="section-7.3-3">A Presenter is expected to review the Evidence produced by an Attester for fitness prior to distribution.<a href="#section-7.3-3" class="pilcrow">¶</a></p>
+<p id="section-7.3-4">A Presenter is expected not to disclose Evidence if it contains information it
 cannot parse. This restriction applies to element types and claim types. This is
 to ensure that the information provided by the Attester can be evaluated by the
 Presenter.<a href="#section-7.3-4" class="pilcrow">¶</a></p>
-<p id="section-7.3-5">A Presenter <span class="bcp14">MUST NOT</span> disclose Evidence if it contains elements others
-than the ones that were requested of the Attester. This is to ensure that only the
-selected elements are exposed to the Verifier.
-M
-A Presenter <span class="bcp14">MUST NOT</span> disclose Evidence if it contains an element with a claim
+<p id="section-7.3-5">A Presenter is expected not to disclose Evidence if it contains elements other than the ones that were requested of the Attester. This is to ensure that only the
+selected elements are exposed to the Verifier.<a href="#section-7.3-5" class="pilcrow">¶</a></p>
+<p id="section-7.3-6">A Presenter is expected not to disclose Evidence if it contains an element with a claim
 that was not requested of the Attester. This is to ensure that only the selected
-information is disclosed to the Verifier.<a href="#section-7.3-5" class="pilcrow">¶</a></p>
-<p id="section-7.3-6">Further privacy concerns are discussed in <a href="#sec-cons-privacy" class="auto internal xref">Section 10.4</a>.<a href="#section-7.3-6" class="pilcrow">¶</a></p>
+information is disclosed to the Verifier.<a href="#section-7.3-6" class="pilcrow">¶</a></p>
+<p id="section-7.3-7">Further privacy concerns are discussed in <a href="#sec-cons-privacy" class="auto internal xref">Section 10.4</a>.<a href="#section-7.3-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2790,6 +2792,10 @@ id-kp OBJECT IDENTIFIER ::=
 id-kp-attestationKey OBJECT IDENTIFIER ::= { id-kp 999 }
 
 -- Evidence --
+
+SignatureAlgSet SIGNATURE-ALGORITHM ::= {
+    ...
+}
 
 Evidence ::= SEQUENCE {
     tbs  TbsEvidence,
@@ -2864,7 +2870,8 @@ ClaimSet CLAIM ::= {
       | claim-key-never-extractable
       | claim-key-local
       | claim-key-expiry
-      | claim-key-purpose
+      | claim-key-purpose,
+      ...
 }
 
 id-evidence OBJECT IDENTIFIER ::= { 1 2 3 999 }

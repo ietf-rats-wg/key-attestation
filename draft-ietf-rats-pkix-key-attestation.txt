@@ -692,7 +692,10 @@ Table of Contents
    verification of a signature block.  The fields
    SignerIdentifier.subjectPublicKeyInfo and
    SignerIdentifier.certificate are encouraged as these fields have
-   specific syntax and semantics.
+   specific syntax and semantics.  When SignerIdentifier.keyId is used
+   without a certificate or SPKI, the Verifier MUST obtain the
+   corresponding public key by some implementation-specific or out-of-
+   band mechanism before it can validate the signature.
 
    The optional certificate list provided in
    Evidence.intermediateCertificates enables the insertion of X.509
@@ -741,6 +744,23 @@ Table of Contents
        claimType  CLAIM.&id ({ClaimSet}),
        value      CLAIM.&Type ({ClaimSet}{@claimType}) OPTIONAL
    }
+
+   ClaimSet CLAIM ::= {
+       -- claim definitions from this specification,
+       ...
+   }
+
+   The ClaimSet object set in the complete ASN.1 module is extensible.
+   This allows future or proprietary claim types to be encoded without
+   changing the ReportedClaim syntax.  A Verifier that does not
+   recognize a claim type SHOULD ignore that claim as described in
+   Section 4, unless local policy requires rejection.
+
+   For generated Evidence, value MUST be present for every claim whose
+   semantics are defined by this specification unless that claim type
+   explicitly allows omission.  In attestation requests, the value MAY
+   be omitted when the value is to be supplied by the Attesting
+   Environment.
 
    Each claim type SHOULD be associated with a single element type.
    Therefore, it is encouraged to define claim types grouped with their
@@ -1209,9 +1229,19 @@ Table of Contents
 6.  Signing and Verification Procedures
 
    The SignatureBlock.signatureValue signs over the DER-encoded to-be-
-   signed Evidence data Evidence.tbs and MUST be validated with the
-   subject public key of the end entity X.509 certificate contained in
-   the SignerIdentifier.certificate.
+   signed Evidence data Evidence.tbs.
+
+   If SignerIdentifier.certificate is present, the signature MUST be
+   validated with the subject public key of that end-entity X.509
+   certificate.  If SignerIdentifier.subjectPublicKeyInfo is present,
+   the signature MUST be validated with that public key.  If
+   SignerIdentifier.keyId is present, the Verifier MUST obtain the
+   corresponding public key by some implementation-specific or out-of-
+   band mechanism; if no such key can be obtained, the SignatureBlock
+   MUST be treated as unverifiable and the Evidence MUST be rejected.
+   The certificate-based mode remains the preferred form in PKIX
+   deployments because it provides both the public key and an X.509
+   identity.
 
    Verifiers MUST ensure, prior to accepting the signature associated
    with an end-entity certificate, that:
@@ -1255,7 +1285,12 @@ Table of Contents
 
    If any transaction.ak-spki claims are present, the Verifier SHOULD
    verify that each SignerIdentifier’s SubjectPublicKeyInfo (or the SPKI
-   of its certificate) matches at least one ak-spki value.
+   of its certificate) matches at least one ak-spki value.  Each such
+   claim is authoritative only when it is backed by a successfully
+   verified SignatureBlock using the corresponding attestation key.  An
+   ak-spki claim that is not matched by a valid signature block MUST NOT
+   by itself be treated as proof that the corresponding key was used to
+   sign the Evidence.
 
 7.  Attestation Requests
 
@@ -1408,7 +1443,7 @@ Table of Contents
    utf8String that represents the identifier for the specific key.
 
    An HSM receiving an attestation request which selects a key via this
-   approach SHOULD fail the transaction if it cannot find the
+   approach is expected to fail the transaction if it cannot find the
    cryptographic key associated with the specified identifier.
 
 7.1.2.  Nonce
@@ -1481,64 +1516,68 @@ Table of Contents
 
 7.2.  Processing an Attestation Request
 
-   This sub-section deals with the rules that should be considered when
+   This sub-section describes the considerations that are relevant when
    an Attesting Environment processes a request to generate Evidence.
-   This section is non-normative and implementers MAY choose to not
+   This section is non-normative and implementers may choose not to
    follow these recommendations.
 
-   These recommendations apply to any attestation request schemes and
-   are not restricted solely to the request interface proposed here.
+   These recommendations apply to any attestation request scheme and are
+   not restricted solely to the request interface proposed here.
 
-   An Attesting Environment SHOULD fail an attestation request if it
-   contains an unrecognized element type.  This is to ensure that all
-   the semantics expected by the Presenter are fully understood by the
-   Attesting Environment.
+   An Attesting Environment is expected to fail an attestation request
+   if it contains an unrecognized element type.  This is to ensure that
+   all the semantics expected by the Presenter are fully understood by
+   the Attesting Environment.
 
-   An Attesting Environment MUST fail an attestation request if it
-   contains a requested claim with an unrecognized type with a specified
-   a value (not empty).  This represents a situation where the Presenter
-   is selecting specific information that is not understood by the
-   Attesting Environment.
+   An Attesting Environment is expected to fail an attestation request
+   if it contains a requested claim with an unrecognized type and a
+   specified value (that is, a value that is not empty).  This
+   represents a situation where the Presenter is selecting specific
+   information that is not understood by the Attesting Environment.
 
-   An Attesting Environment SHOULD ignore unrecognized claim types in an
-   attestation request.  In this situation, the Attesting Environment
-   SHOULD NOT include the claim as part of the response.  This guidance
-   is to increase the likelihood of interoperability between tools of
-   different vendors.
+   An Attesting Environment is encouraged to ignore unrecognized claim
+   types in an attestation request.  In this situation, the Attesting
+   Environment is expected not to include the claim as part of the
+   response.  This guidance is intended to increase the likelihood of
+   interoperability between tools of different vendors.
 
-   An Attesting Environment MUST NOT include elements and claims in the
-   generated Evidence if these elements and claims were not specified as
-   part of the request.  This is to give control to the Presenter as to
-   what information is disclosed by the Attesting Environment.
+   An Attesting Environment is expected to include only elements and
+   claims in the generated Evidence if these elements and claims were
+   specified as part of the request.  This is to give control to the
+   Presenter as to what information is disclosed by the Attesting
+   Environment.
 
-   An Attesting Environment MUST fail an attestation request if the
-   Presenter does not have the appropriate access rights to the elements
-   or claims included in the request.
+   An Attesting Environment is expected to fail an attestation request
+   if the Presenter does not have the appropriate access rights to the
+   elements or claims included in the request.
 
 7.3.  Verification by Presenter
 
-   This sub-section deals with the rules that should be considered when
+   This sub-section describes the considerations that are relevant when
    a Presenter receives Evidence from the Attester (the HSM) prior to
-   distribution.  This section is non-normative and implementers MAY
-   choose to not follow these recommendations.
+   distribution.  This section is non-normative and implementers may
+   choose not to follow these recommendations.
 
    These recommendations apply to any Evidence and are not restricted
    solely to Evidence generated from the proposed request interface.
 
-   A Presenter MUST review the Evidence produced by an Attester for
-   fitness prior to distribution.
+   A Presenter is expected to review the Evidence produced by an
+   Attester for fitness prior to distribution.
 
-   A Presenter MUST NOT disclose Evidence if it contains information it
-   cannot parse.  This restriction applies to element types and claim
-   types.  This is to ensure that the information provided by the
-   Attester can be evaluated by the Presenter.
+   A Presenter is expected not to disclose Evidence if it contains
+   information it cannot parse.  This restriction applies to element
+   types and claim types.  This is to ensure that the information
+   provided by the Attester can be evaluated by the Presenter.
 
-   A Presenter MUST NOT disclose Evidence if it contains elements others
-   than the ones that were requested of the Attester.  This is to ensure
-   that only the selected elements are exposed to the Verifier.  M A
-   Presenter MUST NOT disclose Evidence if it contains an element with a
-   claim that was not requested of the Attester.  This is to ensure that
-   only the selected information is disclosed to the Verifier.
+   A Presenter is expected not to disclose Evidence if it contains
+   elements other than the ones that were requested of the Attester.
+   This is to ensure that only the selected elements are exposed to the
+   Verifier.
+
+   A Presenter is expected not to disclose Evidence if it contains an
+   element with a claim that was not requested of the Attester.  This is
+   to ensure that only the selected information is disclosed to the
+   Verifier.
 
    Further privacy concerns are discussed in Section 10.4.
 
@@ -1581,6 +1620,10 @@ Table of Contents
    id-kp-attestationKey OBJECT IDENTIFIER ::= { id-kp 999 }
 
    -- Evidence --
+
+   SignatureAlgSet SIGNATURE-ALGORITHM ::= {
+       ...
+   }
 
    Evidence ::= SEQUENCE {
        tbs  TbsEvidence,
@@ -1655,7 +1698,8 @@ Table of Contents
          | claim-key-never-extractable
          | claim-key-local
          | claim-key-expiry
-         | claim-key-purpose
+         | claim-key-purpose,
+         ...
    }
 
    id-evidence OBJECT IDENTIFIER ::= { 1 2 3 999 }
