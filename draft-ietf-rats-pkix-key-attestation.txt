@@ -90,7 +90,7 @@ Table of Contents
 
    1.  Introduction
    2.  Use Cases
-     2.1.  Remote audit of a Hardware Security Module (HSM)
+     2.1.  Continuous Assurance
      2.2.  Key import and HSM clustering
      2.3.  Attesting subject of a certificate issuance
    3.  Conventions and Terminology
@@ -189,7 +189,7 @@ Table of Contents
    This section covers use cases that motivated the development of this
    specification.
 
-2.1.  Remote audit of a Hardware Security Module (HSM)
+2.1.  Continuous Assurance
 
    There are situations where it is necessary to verify the current
    running state of an HSM as part of operational or auditing
@@ -204,7 +204,7 @@ Table of Contents
 2.2.  Key import and HSM clustering
 
    Consider that an HSM is being added to a logical HSM cluster.  Part
-   of the onboarding process could involve the newly-added HSM providing
+   of the onboarding process involves the newly-added HSM providing
    Evidence of its running state, for example that it is a genuine
    device from the same manufacturer as the existing clustered HSMs,
    firmware patch level, FIPS mode, etc.  It could also be required to
