@@ -5,7 +5,7 @@
 RATS                                                         J.-P. Fiset
 Internet-Draft                                                  Crypto4A
 Intended status: Standards Track                            M. Ounsworth
-Expires: 1 January 2027                                   Cryptic Forest
+Expires: 6 January 2027                                   Cryptic Forest
                                                            H. Tschofenig
                                                                 UniBw M.
                                                              H. Birkholz
@@ -13,7 +13,7 @@ Expires: 1 January 2027                                   Cryptic Forest
                                                               M. Wiseman
                                                                         
                                                                 N. Smith
-                                                            30 June 2026
+                                                             5 July 2026
 
 
             Evidence Encoding for Hardware Security Modules
@@ -70,7 +70,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 1 January 2027.
+   This Internet-Draft will expire on 6 January 2027.
 
 Copyright Notice
 
@@ -159,14 +159,20 @@ Table of Contents
    in a form that integrates with existing X.509-based trust
    infrastructures.
 
-   Concretely, this specification defines: * an ASN.1/DER Evidence
-   envelope containing a to-be-signed section, one or more signature
-   blocks, and optional intermediate certificates; * an element-and-
-   claim data model organized around transaction, platform, and key
-   elements, identified by OIDs; * encoding and signature-verification
-   processing rules for PKIX Evidence; * an attestation request
-   structure that allows a Presenter to request a scoped subset of
-   elements and claims.
+   Concretely, this specification defines:
+
+   *  an ASN.1/DER Evidence envelope containing a to-be-signed section,
+      one or more signature blocks, and optional intermediate
+      certificates;
+
+   *  an element-and-claim data model organized around transaction,
+      platform, and key elements, identified by OIDs;
+
+   *  encoding and signature-verification processing rules for PKIX
+      Evidence;
+
+   *  an attestation request structure that allows a Presenter to
+      request a scoped subset of elements and claims.
 
    The design is intentionally PKIX-native.  ASN.1 and DER are used to
    align with existing certificate tooling, certification authority
