@@ -14,11 +14,11 @@ Evidence ::= SEQUENCE {
  
 TbsEvidence ::= SEQUENCE {
     version          INTEGER,
-    reportedEntities SEQUENCE OF ReportedEntity
+    reportedElements SEQUENCE OF ReportedElement
 }
  
-ReportedEntity ::= SEQUENCE {
-    entityType  OBJECT IDENTIFIER,
+ReportedElement ::= SEQUENCE {
+    elementType  OBJECT IDENTIFIER,
     claims      SEQUENCE OF ReportedClaim
 }
  
@@ -40,6 +40,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Optional
 from generalized_time_validator import validate_generalized_time
+from evidence_oid_registry import oid_name, CLAIM_EXPECTED_TAGS, KNOWN_ELEMENT_OIDS, KNOWN_CLAIM_OIDS, evidence_make_oid
  
 # ---------------------------------------------------------------------------
 # Dependency imports with friendly error messages
@@ -63,90 +64,7 @@ except ImportError:
     HAS_CRYPTO = False
     print("WARNING: 'cryptography' package not found.  Signature verification disabled.\n"
           "         Install with:  pip install cryptography")
- 
-# ---------------------------------------------------------------------------
-# OID Registry
-# ---------------------------------------------------------------------------
-OID_NAMES: dict[str, str] = {
-    # Entity types
-    "1.2.3.999.0.0": "transaction",
-    "1.2.3.999.0.1": "platform",
-    "1.2.3.999.0.2": "key",
-    # Transaction claims
-    "1.2.3.999.1.0.0": "transaction-nonce",
-    "1.2.3.999.1.0.1": "transaction-timestamp",
-    "1.2.3.999.1.0.2": "transaction-ak-spki",
-    # Platform claims
-    "1.2.3.999.1.1.0":  "platform-vendor",
-    "1.2.3.999.1.1.1":  "platform-oemid",
-    "1.2.3.999.1.1.2":  "platform-hwmodel",
-    "1.2.3.999.1.1.3":  "platform-hwversion",
-    "1.2.3.999.1.1.4":  "platform-hwserial",
-    "1.2.3.999.1.1.5":  "platform-swname",
-    "1.2.3.999.1.1.6":  "platform-swversion",
-    "1.2.3.999.1.1.7":  "platform-debugstat",
-    "1.2.3.999.1.1.8":  "platform-uptime",
-    "1.2.3.999.1.1.9":  "platform-bootcount",
-    "1.2.3.999.1.1.10": "platform-fipsboot",
-    "1.2.3.999.1.1.11": "platform-fipsver",
-    "1.2.3.999.1.1.12": "platform-fipslevel",
-    "1.2.3.999.1.1.13": "platform-fipsmodule",
-    # Key claims
-    "1.2.3.999.1.2.0": "key-identifier",
-    "1.2.3.999.1.2.1": "key-spki",
-    "1.2.3.999.1.2.2": "key-extractable",
-    "1.2.3.999.1.2.3": "key-sensitive",
-    "1.2.3.999.1.2.4": "key-never-extractable",
-    "1.2.3.999.1.2.5": "key-local",
-    "1.2.3.999.1.2.6": "key-expiry",
-    "1.2.3.999.1.2.7": "key-purpose",
-    # Key capabilities
-    "1.2.3.999.2.0": "capability-encrypt",
-    "1.2.3.999.2.1": "capability-decrypt",
-    "1.2.3.999.2.2": "capability-wrap",
-    "1.2.3.999.2.3": "capability-unwrap",
-    "1.2.3.999.2.4": "capability-sign",
-    "1.2.3.999.2.5": "capability-sign-recover",
-    "1.2.3.999.2.6": "capability-verify",
-    "1.2.3.999.2.7": "capability-verify-recover",
-    "1.2.3.999.2.8": "capability-derive",
-    # Extended Key Usage
-    "1.3.6.1.5.5.7.3.999": "id-kp-attestationKey",
-}
- 
-# Claim OID → expected ASN.1 universal tag number
-CLAIM_EXPECTED_TAGS: dict[str, int] = {
-    "1.2.3.999.1.0.0": 4,   # OCTET STRING   (nonce)
-    "1.2.3.999.1.0.1": 24,  # GeneralizedTime (timestamp)
-    "1.2.3.999.1.0.2": 4,   # OCTET STRING   (ak-spki)
-    "1.2.3.999.1.1.0": 12,  # UTF8String     (vendor)
-    "1.2.3.999.1.1.1": 4,   # OCTET STRING   (oemid)
-    "1.2.3.999.1.1.2": 4,   # OCTET STRING   (hwmodel)
-    "1.2.3.999.1.1.3": 12,  # UTF8String     (hwversion)
-    "1.2.3.999.1.1.4": 12,  # UTF8String     (hwserial)
-    "1.2.3.999.1.1.5": 12,  # UTF8String     (swname)
-    "1.2.3.999.1.1.6": 12,  # UTF8String     (swversion)
-    "1.2.3.999.1.1.7": 2,   # INTEGER        (debugstat)
-    "1.2.3.999.1.1.8": 2,   # INTEGER        (uptime)
-    "1.2.3.999.1.1.9": 2,   # INTEGER        (bootcount)
-    "1.2.3.999.1.1.10": 1,  # BOOLEAN        (fipsboot)
-    "1.2.3.999.1.1.11": 12, # UTF8String     (fipsver)
-    "1.2.3.999.1.1.12": 2,  # INTEGER        (fipslevel)
-    "1.2.3.999.1.1.13": 12, # UTF8String     (fipsmodule)
-    "1.2.3.999.1.2.0": 12,  # UTF8String     (key-identifier)
-    "1.2.3.999.1.2.1": 4,   # OCTET STRING   (key-spki)
-    "1.2.3.999.1.2.2": 1,   # BOOLEAN        (key-extractable)
-    "1.2.3.999.1.2.3": 1,   # BOOLEAN        (key-sensitive)
-    "1.2.3.999.1.2.4": 1,   # BOOLEAN        (key-never-extractable)
-    "1.2.3.999.1.2.5": 1,   # BOOLEAN        (key-local)
-    "1.2.3.999.1.2.6": 24,  # GeneralizedTime (key-expiry)
-    "1.2.3.999.1.2.7": 16,  # SEQUENCE       (key-purpose / KeyPurposes)
-}
- 
-def oid_name(oid_str: str) -> str:
-    return OID_NAMES.get(oid_str, oid_str)
- 
- 
+
 # ---------------------------------------------------------------------------
 # ASN.1 Schema Definitions (pyasn1)
 # ---------------------------------------------------------------------------
@@ -161,20 +79,20 @@ class ReportedClaimSeq(univ.SequenceOf):
     componentType = ReportedClaim()
     subtypeSpec = constraint.ValueSizeConstraint(1, float("inf"))
  
-class ReportedEntity(univ.Sequence):
+class ReportedElement(univ.Sequence):
     componentType = namedtype.NamedTypes(
-        namedtype.NamedType("entityType", univ.ObjectIdentifier()),
+        namedtype.NamedType("elementType", univ.ObjectIdentifier()),
         namedtype.NamedType("claims", ReportedClaimSeq()),
     )
  
-class ReportedEntitySeq(univ.SequenceOf):
-    componentType = ReportedEntity()
+class ReportedElementSeq(univ.SequenceOf):
+    componentType = ReportedElement()
     subtypeSpec = constraint.ValueSizeConstraint(1, float("inf"))
  
 class TbsEvidence(univ.Sequence):
     componentType = namedtype.NamedTypes(
         namedtype.NamedType("version", univ.Integer()),
-        namedtype.NamedType("reportedEntities", ReportedEntitySeq()),
+        namedtype.NamedType("reportedElements", ReportedElementSeq()),
     )
  
 class SignerIdentifier(univ.Sequence):
@@ -228,9 +146,9 @@ class ParsedClaim:
  
  
 @dataclass
-class ParsedEntity:
-    entity_type_oid: str
-    entity_type_name: str
+class ParsedElement:
+    element_type_oid: str
+    element_type_name: str
     claims: list[ParsedClaim] = field(default_factory=list)
  
  
@@ -247,7 +165,7 @@ class ParsedSigner:
 @dataclass
 class ParsedEvidence:
     version: int
-    entities: list[ParsedEntity] = field(default_factory=list)
+    elements: list[ParsedElement] = field(default_factory=list)
     signers: list[ParsedSigner] = field(default_factory=list)
     intermediate_certs_der: list[bytes] = field(default_factory=list)
     tbs_der: bytes = field(default_factory=bytes)   # DER of TbsEvidence for sig verification
@@ -320,24 +238,24 @@ def parse_evidence(der_bytes: bytes) -> ParsedEvidence:
         tbs_der=der_encoder.encode(tbs_asn1),
     )
  
-    # Entities + Claims
-    for entity in tbs_asn1["reportedEntities"]:
-        et_oid = str(entity["entityType"])
-        parsed_entity = ParsedEntity(
-            entity_type_oid=et_oid,
-            entity_type_name=oid_name(et_oid),
+    # Elements + Claims
+    for element in tbs_asn1["reportedElements"]:
+        et_oid = str(element["elementType"])
+        parsed_element = ParsedElement(
+            element_type_oid=et_oid,
+            element_type_name=oid_name(et_oid),
         )
-        for claim in entity["claims"]:
+        for claim in element["claims"]:
             c_oid = str(claim["claimType"])
             raw_val = claim["value"]
             tag_num, decoded = (None, None) if raw_val is None else _decode_claim_value(c_oid, raw_val)
-            parsed_entity.claims.append(ParsedClaim(
+            parsed_element.claims.append(ParsedClaim(
                 oid=c_oid,
                 name=oid_name(c_oid),
                 raw_tag=tag_num,
                 value=decoded,
             ))
-        result.entities.append(parsed_entity)
+        result.elements.append(parsed_element)
  
     # Signatures
     for sig_block in asn1_obj["signatures"]:
@@ -384,14 +302,7 @@ class ValidationResult:
     errors: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     sig_results: list[str] = field(default_factory=list)
- 
- 
-KNOWN_ENTITY_OIDS = {
-    "1.2.3.999.0.0", "1.2.3.999.0.1", "1.2.3.999.0.2"
-}
-KNOWN_CLAIM_OIDS = set(CLAIM_EXPECTED_TAGS.keys())
- 
- 
+
 def validate_evidence(ev: ParsedEvidence) -> ValidationResult:
     vr = ValidationResult(ok=True)
  
@@ -399,18 +310,18 @@ def validate_evidence(ev: ParsedEvidence) -> ValidationResult:
     if ev.version != 1:
         vr.warnings.append(f"Unexpected version {ev.version} (expected 1)")
  
-    # --- Entities ---
-    if not ev.entities:
-        vr.errors.append("TbsEvidence must have at least one ReportedEntity")
+    # --- Elements ---
+    if not ev.elements:
+        vr.errors.append("TbsEvidence must have at least one ReportedElement")
  
-    for i, entity in enumerate(ev.entities):
-        prefix = f"Entity[{i}] ({entity.entity_type_name})"
-        if entity.entity_type_oid not in KNOWN_ENTITY_OIDS:
-            vr.warnings.append(f"{prefix}: unknown entity type OID {entity.entity_type_oid}")
-        if not entity.claims:
+    for i, element in enumerate(ev.elements):
+        prefix = f"Element[{i}] ({element.element_type_name})"
+        if element.element_type_oid not in KNOWN_ELEMENT_OIDS:
+            vr.warnings.append(f"{prefix}: unknown element type OID {element.element_type_oid}")
+        if not element.claims:
             vr.errors.append(f"{prefix}: must have at least one ReportedClaim")
  
-        for j, claim in enumerate(entity.claims):
+        for j, claim in enumerate(element.claims):
             cp = f"{prefix} Claim[{j}] ({claim.name})"
             if claim.oid not in KNOWN_CLAIM_OIDS:
                 vr.warnings.append(f"{cp}: unknown claim OID {claim.oid}")
@@ -532,9 +443,9 @@ def print_evidence(ev: ParsedEvidence) -> None:
           f"{hashlib.sha256(ev.tbs_der).hexdigest()[:16]}…")
     print()
  
-    for i, entity in enumerate(ev.entities):
-        print(f"  Entity [{i}]: {entity.entity_type_name}  ({entity.entity_type_oid})")
-        for claim in entity.claims:
+    for i, element in enumerate(ev.elements):
+        print(f"  Element [{i}]: {element.element_type_name}  ({element.element_type_oid})")
+        for claim in element.claims:
             tag_str = f"[tag={claim.raw_tag}]" if claim.raw_tag is not None else ""
             print(f"    • {claim.name:<35s} {tag_str:<10s} = {_fmt_value(claim.value)}")
         print()
@@ -578,9 +489,6 @@ def print_validation(vr: ValidationResult) -> None:
 # Builder helpers (for testing / generating sample data)
 # ---------------------------------------------------------------------------
  
-def _oid(dotted: str) -> univ.ObjectIdentifier:
-    return univ.ObjectIdentifier(tuple(int(x) for x in dotted.split(".")))
- 
 def _encode_utf8(s: str) -> bytes:
     v = char.UTF8String(s)
     return der_encoder.encode(v)
@@ -614,55 +522,55 @@ def build_sample_evidence_der(
  
     def make_claim(oid_str: str, value_der: bytes) -> ReportedClaim:
         c = ReportedClaim()
-        c["claimType"] = _oid(oid_str)
+        c["claimType"] = evidence_make_oid(oid_str)
         c["value"] = univ.Any(hexValue=value_der.hex())
         return c
  
-    # ---- Transaction entity ----
-    tx_entity = ReportedEntity()
-    tx_entity["entityType"] = _oid("1.2.3.999.0.0")
+    # ---- Transaction element ----
+    tx_element = ReportedElement()
+    tx_element["elementType"] = evidence_make_oid("transaction")
     tx_claims = ReportedClaimSeq()
-    tx_claims[0] = make_claim("1.2.3.999.1.0.0", _encode_octet(nonce))
-    tx_claims[1] = make_claim("1.2.3.999.1.0.1",
+    tx_claims[0] = make_claim("transaction-nonce", _encode_octet(nonce))
+    tx_claims[1] = make_claim("transaction-timestamp",
                                _encode_generalizedtime(datetime.now(timezone.utc)))
-    tx_entity["claims"] = tx_claims
+    tx_element["claims"] = tx_claims
  
-    # ---- Platform entity ----
-    pl_entity = ReportedEntity()
-    pl_entity["entityType"] = _oid("1.2.3.999.0.1")
+    # ---- Platform element ----
+    pl_element = ReportedElement()
+    pl_element["elementType"] = evidence_make_oid("platform")
     pl_claims = ReportedClaimSeq()
-    pl_claims[0] = make_claim("1.2.3.999.1.1.0", _encode_utf8(vendor))
-    pl_claims[1] = make_claim("1.2.3.999.1.1.2", _encode_octet(hw_model))
-    pl_claims[2] = make_claim("1.2.3.999.1.1.4", _encode_utf8(hw_serial))
-    pl_claims[3] = make_claim("1.2.3.999.1.1.5", _encode_utf8(sw_name))
-    pl_claims[4] = make_claim("1.2.3.999.1.1.6", _encode_utf8(sw_version))
-    pl_claims[5] = make_claim("1.2.3.999.1.1.10", _encode_bool(False))  # fipsboot
-    pl_entity["claims"] = pl_claims
+    pl_claims[0] = make_claim("platform-vendor", _encode_utf8(vendor))
+    pl_claims[1] = make_claim("platform-hwmodel", _encode_octet(hw_model))
+    pl_claims[2] = make_claim("platform-hwserial", _encode_utf8(hw_serial))
+    pl_claims[3] = make_claim("platform-swname", _encode_utf8(sw_name))
+    pl_claims[4] = make_claim("platform-swversion", _encode_utf8(sw_version))
+    pl_claims[5] = make_claim("platform-fipsboot", _encode_bool(False))  # fipsboot
+    pl_element["claims"] = pl_claims
  
-    # ---- Key entity ----
-    key_entity = ReportedEntity()
-    key_entity["entityType"] = _oid("1.2.3.999.0.2")
+    # ---- Key element ----
+    key_element = ReportedElement()
+    key_element["elementType"] = evidence_make_oid("key")
     key_claims = ReportedClaimSeq()
-    key_claims[0] = make_claim("1.2.3.999.1.2.0", _encode_utf8(key_identifier))
-    key_claims[1] = make_claim("1.2.3.999.1.2.2", _encode_bool(key_extractable))
-    key_claims[2] = make_claim("1.2.3.999.1.2.3", _encode_bool(key_sensitive))
-    key_claims[3] = make_claim("1.2.3.999.1.2.4", _encode_bool(True))  # never-extractable
-    key_claims[4] = make_claim("1.2.3.999.1.2.5", _encode_bool(True))  # local
+    key_claims[0] = make_claim("key-identifier", _encode_utf8(key_identifier))
+    key_claims[1] = make_claim("key-extractable", _encode_bool(key_extractable))
+    key_claims[2] = make_claim("key-sensitive", _encode_bool(key_sensitive))
+    key_claims[3] = make_claim("key-never-extractable", _encode_bool(True))  # never-extractable
+    key_claims[4] = make_claim("key-local", _encode_bool(True))  # local
     # Key purpose: sign + verify
     kp_seq = univ.SequenceOf(componentType=univ.ObjectIdentifier())
-    kp_seq[0] = _oid("1.2.3.999.2.4")  # sign
-    kp_seq[1] = _oid("1.2.3.999.2.6")  # verify
-    key_claims[5] = make_claim("1.2.3.999.1.2.7", der_encoder.encode(kp_seq))
-    key_entity["claims"] = key_claims
+    kp_seq[0] = evidence_make_oid("capability-sign")  # sign
+    kp_seq[1] = evidence_make_oid("capability-verify")  # verify
+    key_claims[5] = make_claim("key-purpose", der_encoder.encode(kp_seq))
+    key_element["claims"] = key_claims
  
     # ---- TbsEvidence ----
     tbs = TbsEvidence()
     tbs["version"] = 1
-    entities = ReportedEntitySeq()
-    entities[0] = tx_entity
-    entities[1] = pl_entity
-    entities[2] = key_entity
-    tbs["reportedEntities"] = entities
+    elements = ReportedElementSeq()
+    elements[0] = tx_element
+    elements[1] = pl_element
+    elements[2] = key_element
+    tbs["reportedElements"] = elements
  
     # ---- Evidence (no signatures for sample) ----
     ev = Evidence()
