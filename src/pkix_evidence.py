@@ -46,66 +46,24 @@ from cryptography.hazmat.primitives import hashes, serialization
 
 
 # ---------------------------------------------------------------------------
-# ClaimValue  ::= CHOICE { ... }
+# CLAIM ::= CLASS {
+#     &id       OBJECT IDENTIFIER UNIQUE,
+#     &Type
+# } WITH SYNTAX {
+#     ID &id
+#     WITH TYPE &Type
+# }
 #
-# The schema declares IMPLICIT TAGS globally, so each context tag
-# replaces (implicitly overrides) the inner type's universal tag.
-# BOOLEAN and NULL keep primitive encoding; constructed types keep
-# their natural format.
-# ---------------------------------------------------------------------------
-
-class ClaimValue(univ.Choice):
-    """
-    ClaimValue ::= CHOICE {
-       bytes       [0] OCTET STRING,
-       utf8String  [1] UTF8String,
-       bool        [2] BOOLEAN,
-       time        [3] GeneralizedTime,
-       int         [4] INTEGER,
-       oid         [5] OBJECT IDENTIFIER,
-       null        [6] NULL
-    }
-    """
-    componentType = namedtype.NamedTypes(
-        namedtype.NamedType(
-            "bytes",
-            univ.OctetString().subtype(
-                implicitTag=Tag(tagClassContext, tagFormatSimple, 0))),
-        namedtype.NamedType(
-            "utf8String",
-            char.UTF8String().subtype(
-                implicitTag=Tag(tagClassContext, tagFormatSimple, 1))),
-        namedtype.NamedType(
-            "bool",
-            univ.Boolean().subtype(
-                implicitTag=Tag(tagClassContext, tagFormatSimple, 2))),
-        namedtype.NamedType(
-            "time",
-            useful.GeneralizedTime().subtype(
-                implicitTag=Tag(tagClassContext, tagFormatSimple, 3))),
-        namedtype.NamedType(
-            "int",
-            univ.Integer().subtype(
-                implicitTag=Tag(tagClassContext, tagFormatSimple, 4))),
-        namedtype.NamedType(
-            "oid",
-            univ.ObjectIdentifier().subtype(
-                implicitTag=Tag(tagClassContext, tagFormatSimple, 5))),
-        namedtype.NamedType(
-            "null",
-            univ.Null().subtype(
-                implicitTag=Tag(tagClassContext, tagFormatSimple, 6))),
-    )
-
-
-# ---------------------------------------------------------------------------
-# ReportedClaim  ::= SEQUENCE { claimType OID, value ClaimValue OPTIONAL }
+# ReportedClaim ::= SEQUENCE {
+#     claimType  CLAIM.&id ({ClaimSet}),
+#     value      CLAIM.&Type ({ClaimSet}{@claimType}) OPTIONAL
+# }
 # ---------------------------------------------------------------------------
 
 class ReportedClaim(univ.Sequence):
     componentType = namedtype.NamedTypes(
         namedtype.NamedType("claimType", univ.ObjectIdentifier()),
-        namedtype.OptionalNamedType("value", ClaimValue()),
+        namedtype.OptionalNamedType("value", univ.Any()),
     )
 
 
@@ -115,31 +73,36 @@ class ReportedClaimSeq(univ.SequenceOf):
 
 
 # ---------------------------------------------------------------------------
-# ReportedEntity  ::= SEQUENCE { entityType OID, claims SEQUENCE OF ... }
+# ReportedElement ::= SEQUENCE {
+#     elementType         OBJECT IDENTIFIER,
+#     claims             SEQUENCE SIZE (1..MAX) OF ReportedClaim
+# }
 # ---------------------------------------------------------------------------
 
-class ReportedEntity(univ.Sequence):
+class ReportedElement(univ.Sequence):
     componentType = namedtype.NamedTypes(
-        namedtype.NamedType("entityType", univ.ObjectIdentifier()),
+        namedtype.NamedType("elementType", univ.ObjectIdentifier()),
         namedtype.NamedType("claims", ReportedClaimSeq()),
     )
 
 
-class ReportedEntitySeq(univ.SequenceOf):
-    componentType = ReportedEntity()
+class ReportedElementSeq(univ.SequenceOf):
+    componentType = ReportedElement()
     subtypeSpec = constraint.ValueSizeConstraint(1, float("inf"))
 
 
 # ---------------------------------------------------------------------------
-# TbsEvidence  ::= SEQUENCE { version INTEGER, reportedEntities ... }
+# TbsEvidence ::= SEQUENCE {
+#     version INTEGER,
+#     reportedElements SEQUENCE SIZE (1..MAX) OF ReportedElement
+# }
 # ---------------------------------------------------------------------------
 
 class TbsEvidence(univ.Sequence):
     componentType = namedtype.NamedTypes(
         namedtype.NamedType("version", univ.Integer()),
-        namedtype.NamedType("reportedEntities", ReportedEntitySeq()),
+        namedtype.NamedType("reportedElements", ReportedElementSeq()),
     )
-
 
 # ---------------------------------------------------------------------------
 # SignerIdentifier
@@ -253,15 +216,15 @@ class PkixEvidence:
         # TbsEvidence
         self.tbs = TbsEvidence()
         self.tbs["version"] = 1
-        self.tbs["reportedEntities"] = ReportedEntitySeq()
+        self.tbs["reportedElements"] = ReportedElementSeq()
 
         self.sigs = SignatureBlockSeq()
 
-    def add_entity(self, entity: ReportedEntity):
+    def add_element(self, element: ReportedElement):
         # if there were already any signatures, wipe them before changing the TbsEvidence
         self.sigs = SignatureBlockSeq()
 
-        self.tbs['reportedEntities'].append(entity)
+        self.tbs['reportedElements'].append(element)
 
     def sign_and_encode(self, ak_cert: x509.Certificate, ak_private_key: ec.EllipticCurvePrivateKey, int_cert: x509.Certificate, includeCerts: bool = True):
         ''' Signs the evidence and returns the DER-encoded string'''
@@ -326,53 +289,6 @@ class PkixEvidence:
 # Helper: build a ClaimValue from a native Python value
 # ---------------------------------------------------------------------------
 
-def make_claim_value(value) -> ClaimValue:
-    """
-    Wrap a Python value in the correct ClaimValue CHOICE alternative.
-
-    Python type  ->  ClaimValue alternative
-    -----------     ----------------------
-    bytes        ->  bytes       [0]
-    str          ->  utf8String  [1]
-    bool         ->  bool        [2]   (must be checked before int)
-    int          ->  int         [4]
-    None         ->  null        [6]
-    tuple/list   ->  oid         [5]   e.g. (1, 2, 840, 10045, 4, 3, 2)
-    univ.ObjectIdentifier -> oid [5]
-
-    For GeneralizedTime use make_claim_value_time() instead.
-    """
-    cv = ClaimValue()
-    if value is None:
-        cv["null"] = univ.Null()
-    elif isinstance(value, bool):           # bool subclasses int — check first
-        cv["bool"] = value
-    elif isinstance(value, bytes):
-        cv["bytes"] = value
-    elif isinstance(value, str):
-        cv["utf8String"] = value
-    elif isinstance(value, int):
-        cv["int"] = value
-    elif isinstance(value, useful.GeneralizedTime):
-        cv["time"] = value
-    elif isinstance(value, (tuple, list)):
-        cv["oid"] = value
-    elif isinstance(value, univ.ObjectIdentifier):
-        cv["oid"] = value
-    else:
-        raise TypeError(f"Cannot map Python type {type(value)!r} to ClaimValue")
-    return cv
-
-
-def make_claim_value_time(generalized_time_str: str) -> ClaimValue:
-    """
-    Wrap a GeneralizedTime string (e.g. '20250314120000Z') in ClaimValue.time.
-    """
-    cv = ClaimValue()
-    cv["time"] = generalized_time_str
-    return cv
-
-
 def make_claim(claim_type_name: str, value=None) -> ReportedClaim:
     """
     Build a ReportedClaim.
@@ -389,9 +305,74 @@ def make_claim(claim_type_name: str, value=None) -> ReportedClaim:
     rc = ReportedClaim()
     rc["claimType"] = evidence_make_oid(claim_type_name)
     if value is not None:
-        rc["value"] = make_claim_value(value)
+        match claim_type_name:
+            case "id-evidence-claim-transaction-nonce"\
+                 | "id-evidence-claim-transaction-ak-spki"\
+                 | "id-evidence-claim-platform-oemid"\
+                 | "id-evidence-claim-platform-hwmodel"\
+                 | "id-evidence-claim-platform-oemid"\
+                 | "id-evidence-claim-platform-hwmodel"\
+                 | "id-evidence-claim-key-spki":
+                # OCTET STRING
+                if isinstance(value, bytes):
+                    rc["value"] = univ.OctetString(value)
+                else:
+                    raise Exception(f"Claim '{claim_type_name}' expects a value of type 'bytes'")
+            case "id-evidence-claim-platform-vendor"\
+                 | "id-evidence-claim-platform-hwversion"\
+                 | "id-evidence-claim-platform-hwserial"\
+                 | "id-evidence-claim-platform-swname"\
+                 | "id-evidence-claim-platform-swversion"\
+                 | "id-evidence-claim-platform-fipsver"\
+                 | "id-evidence-claim-platform-fipsmodule"\
+                 | "id-evidence-claim-key-identifier":
+                # UTF8String
+                if isinstance(value, str):
+                    rc["value"] = char.UTF8String(value)
+                else:
+                    raise Exception(f"Claim '{claim_type_name}' expects a value of type 'str'")
+            case "id-evidence-claim-platform-debugstat"\
+                 | "id-evidence-claim-platform-uptime"\
+                 | "id-evidence-claim-platform-bootcount"\
+                 | "id-evidence-claim-platform-fipslevel":
+                # INTEGER
+                if isinstance(value, int):
+                    rc["value"] = univ.Integer(value)
+                else:
+                    raise Exception(f"Claim '{claim_type_name}' expects a value of type 'int'")
+            case "id-evidence-claim-platform-fipsboot"\
+                 | "id-evidence-claim-key-extractable"\
+                 | "id-evidence-claim-key-sensitive"\
+                 | "id-evidence-claim-key-never-extractable"\
+                 | "id-evidence-claim-key-local":
+                # BOOLEAN
+                if isinstance(value, bool):
+                    rc["value"] = univ.Boolean(value)   
+                else:
+                    raise Exception(f"Claim '{claim_type_name}' expects a value of type 'bool'")
+            case "id-evidence-claim-transaction-timestamp"\
+                 | "id-evidence-claim-key-expiry":
+                # GeneralizedTime
+                if isinstance(value, useful.GeneralizedTime):
+                    rc["value"] = value
+                elif isinstance(value, str):
+                    rc["value"] = useful.GeneralizedTime(value)
+                else:
+                    raise Exception(f"Claim '{claim_type_name}' expects a value of type 'str' or 'useful.GeneralizedTime'")
+            case "id-evidence-claim-key-purpose":
+                # List of OIDs
+                if isinstance(value, (tuple, list)):
+                    caps = EvidenceKeyCapabilities()
+                    for i, name in enumerate(value):
+                        caps[i] = evidence_make_oid(name)
+                    rc["value"] = caps
+                else:
+                    raise Exception(f"Claim '{claim_type_name}' expects a value of type 'List[str]'")
+            case _:
+                raise Exception(f"Do not know of to make a claim based on type '{claim_type_name}'")
     return rc
 
+    # EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-key-purpose"):           16,  # SEQUENCE        (key-purpose / KeyPurposes)
 
 # ---------------------------------------------------------------------------
 # DER encode / decode — public API

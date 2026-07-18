@@ -1,47 +1,47 @@
 Evidence:
   TbsEvidence:
     version: 1
-    ReportedEntity[0]: id-evidence-entity-transaction
+    ReportedElement[0]: id-evidence-element-transaction
       Claim[0]: id-evidence-claim-transaction-nonce
-              -> [bytes] cafebabedeadbeef
+              -> [OCTET STRING] cafebabedeadbeef
       Claim[1]: id-evidence-claim-transaction-timestamp
-              -> [time] 20250314120000Z
+              -> [GeneralizedTime] 20250314120000Z
       Claim[2]: id-evidence-claim-transaction-ak-spki
-              -> [bytes] 3059301306072a8648ce3d02...
+              -> [OCTET STRING] 3059301306072a8648ce3d02...
       Claim[3]: id-evidence-claim-transaction-ak-spki
-              -> [bytes] 3059301306072a8648ce3d02...
-    ReportedEntity[1]: id-evidence-entity-platform
+              -> [OCTET STRING] 3059301306072a8648ce3d02...
+    ReportedElement[1]: id-evidence-element-platform
       Claim[0]: id-evidence-claim-platform-hwmodel
-              -> [bytes] 48534d2d39303030
+              -> [OCTET STRING] 48534d2d39303030
       Claim[1]: id-evidence-claim-platform-hwserial
-              -> [utf8String] 17-a1b2
-    ReportedEntity[2]: id-evidence-entity-platform
+              -> [UTF8String] 17-a1b2
+    ReportedElement[2]: id-evidence-element-platform
       Claim[0]: id-evidence-claim-platform-vendor
-              -> [utf8String] BigCloudCorp Tenant Management System
+              -> [UTF8String] BigCloudCorp Tenant Mana...
       Claim[1]: id-evidence-claim-platform-swname
-              -> [utf8String] tenant-001
-    ReportedEntity[3]: id-evidence-entity-key
+              -> [UTF8String] tenant-001
+    ReportedElement[3]: id-evidence-element-key
       Claim[0]: id-evidence-claim-key-identifier
-              -> [utf8String] key-001
+              -> [UTF8String] key-001
       Claim[1]: id-evidence-claim-key-spki
-              -> [bytes] 3059301306072a8648ce3d02...
+              -> [OCTET STRING] 3059301306072a8648ce3d02...
       Claim[2]: id-evidence-claim-key-extractable
-              -> [bool] False
+              -> [BOOLEAN] False
       Claim[3]: id-evidence-claim-key-never-extractable
-              -> [bool] True
+              -> [BOOLEAN] True
       Claim[4]: id-evidence-claim-key-sensitive
-              -> [bool] True
+              -> [BOOLEAN] True
       Claim[5]: id-evidence-claim-key-local
-              -> [bool] True
+              -> [BOOLEAN] True
       Claim[6]: id-evidence-claim-key-purpose
-              -> [bytes] 300806062a0387670204
+              -> [KeyPurposes] id-evidence-key-capability-sign
   Signatures (2):
     SignatureBlock[0]:
       algorithm      : 1.2.840.10045.4.3.2
-      signatureValue : 3045022100d6fe9e97211470...
+      signatureValue : 30450221008c6736683aea85...
       AK Certificate : present
     SignatureBlock[1]:
       algorithm      : 1.2.840.10045.4.3.2
-      signatureValue : 3044022077540b4bd32fe389...
+      signatureValue : 304502200f7e7e4d6b255900...
       AK Certificate : present
   Intermediate Certificates:  (2)

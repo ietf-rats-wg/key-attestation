@@ -15,6 +15,39 @@ def _fmt_oid(o: univ.ObjectIdentifier) -> str:
     dotted = ".".join(str(arc) for arc in o)
     return OID_NAMES.get(dotted, dotted)
 
+def _decode_claim_value(raw_any: univ.Any) -> tuple[int | None, Any]:
+    """Decode the raw ANY value of a claim.  Returns (universal_tag, python_value)."""
+    raw_bytes = bytes(raw_any)
+    if not raw_bytes:
+        return None, None
+    tag_byte = raw_bytes[0]
+    utag = tag_byte & 0x1F  # universal tag number (ignoring class/constructed bits)
+
+    try:
+        if utag == 12:  # UTF8String
+            asn1_val, _ = der_decoder.decode(raw_bytes, asn1Spec=char.UTF8String())
+            return utag, str(asn1_val)
+        elif utag == 4:  # OCTET STRING
+            asn1_val, _ = der_decoder.decode(raw_bytes, asn1Spec=univ.OctetString())
+            return utag, bytes(asn1_val)
+        elif utag == 2:  # INTEGER
+            asn1_val, _ = der_decoder.decode(raw_bytes, asn1Spec=univ.Integer())
+            return utag, int(asn1_val)
+        elif utag == 1:  # BOOLEAN
+            asn1_val, _ = der_decoder.decode(raw_bytes, asn1Spec=univ.Boolean())
+            return utag, bool(asn1_val)
+        elif utag == 24:  # GeneralizedTime
+            asn1_val, _ = der_decoder.decode(raw_bytes, asn1Spec=useful.GeneralizedTime())
+            return utag, str(asn1_val)
+        elif utag == 16:  # SEQUENCE (KeyPurposes = SEQUENCE OF OID)
+            asn1_val, _ = der_decoder.decode(
+                raw_bytes,
+                asn1Spec=univ.SequenceOf(componentType=univ.ObjectIdentifier()))
+            return utag, [oid_name(str(o)) for o in asn1_val]
+        else:
+            return utag, raw_bytes.hex()
+    except Exception:
+        return utag, raw_bytes.hex()
 
 def pretty_print_evidence(ev: Evidence, indent: int = 0) -> [str]:
     """Recursively print an Evidence structure to stdout."""
@@ -27,19 +60,38 @@ def pretty_print_evidence(ev: Evidence, indent: int = 0) -> [str]:
     strs_out.append(f"{pad}  TbsEvidence:")
     strs_out.append(f"{pad}    version: {int(tbs['version'])}")
 
-    for i, entity in enumerate(tbs["reportedEntities"]):
-        strs_out.append(f"{pad}    ReportedEntity[{i}]: {_fmt_oid(entity['entityType'])}")
-        for j, claim in enumerate(entity["claims"]):
+    for i, element in enumerate(tbs["reportedElements"]):
+        strs_out.append(f"{pad}    ReportedElement[{i}]: {_fmt_oid(element['elementType'])}")
+        for j, claim in enumerate(element["claims"]):
             ct = _fmt_oid(claim["claimType"])
             cv = claim["value"]
             if cv.hasValue():
-                chosen = cv.getName()
-                if chosen == "bytes":
-                    val = bytes(cv["bytes"]).hex()
+                tag_num, decoded = _decode_claim_value(cv)
+                chosen = "unknown"
+                if 4 == tag_num:
+                    chosen = "OCTET STRING"
+                    val = decoded.hex()
                     if len(val) > 24:
                         val = val[:24] + '...'
+                elif 1 == tag_num:
+                    chosen = "BOOLEAN"
+                    val = decoded
+                elif 2 == tag_num:
+                    chosen = "INTEGER"
+                    val = decoded
+                elif 12 == tag_num:
+                    chosen = "UTF8String"
+                    val = decoded
+                    if len(val) > 24:
+                        val = val[:24] + '...'
+                elif 24 == tag_num:
+                    chosen = "GeneralizedTime"
+                    val = decoded
+                elif 16 == tag_num and "id-evidence-claim-key-purpose" == ct:
+                    chosen = "KeyPurposes"
+                    val = ",".join(decoded)
                 else:
-                    val    = cv.getComponent()
+                    val = str(decoded)
                 strs_out.append(f"{pad}      Claim[{j}]: {ct}")
                 strs_out.append(f"{pad}              -> [{chosen}] {val}")
             else:
@@ -81,19 +133,15 @@ def build_example1(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
     """
     ev = PkixEvidence()
 
-    # Transaction entity
+    # Transaction element
     tx_claims = ReportedClaimSeq()
     tx_claims[0] = make_claim(
         "id-evidence-claim-transaction-nonce",
         b"\xde\xad\xbe\xef\xca\xfe\xba\xbe",
     )
-    tx_claims[1] = ReportedClaim()
-    tx_claims[1]["claimType"] = evidence_make_oid("id-evidence-claim-transaction-timestamp")
-    tx_claims[1]["value"] = make_claim_value_time("20250314120000Z")
-
-    tx_entity = ReportedEntity()
-    tx_entity["entityType"] = evidence_make_oid("id-evidence-element-transaction")
-    tx_entity["claims"] = tx_claims
+    tx_claims[1] = make_claim(
+        "id-evidence-claim-transaction-timestamp",
+        "20250314120000Z")
 
     ak_public_key_der = ak_private_key.public_key().public_bytes(
         encoding=serialization.Encoding.DER,
@@ -101,14 +149,14 @@ def build_example1(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
     )
     tx_claims[2] = make_claim("id-evidence-claim-transaction-ak-spki", ak_public_key_der)
 
-    tx_entity = ReportedEntity()
-    tx_entity["entityType"] = evidence_make_oid("id-evidence-element-transaction")
-    tx_entity["claims"]     = tx_claims
+    tx_element = ReportedElement()
+    tx_element["elementType"] = evidence_make_oid("id-evidence-element-transaction")
+    tx_element["claims"] = tx_claims
 
-    ev.add_entity(tx_entity)
+    ev.add_element(tx_element)
 
 
-    # Platform entity
+    # Platform element
     plat_claims = ReportedClaimSeq()
     plat_claims[0] = make_claim("id-evidence-claim-platform-vendor",    "Acme Corp")
     plat_claims[1] = make_claim("id-evidence-claim-platform-hwmodel",   "HSM-9000".encode('utf-8'))
@@ -117,11 +165,11 @@ def build_example1(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
     plat_claims[4] = make_claim("id-evidence-claim-platform-fipslevel", 3)
     plat_claims[5] = make_claim("id-evidence-claim-platform-uptime",    86400)
 
-    plat_entity = ReportedEntity()
-    plat_entity["entityType"] = evidence_make_oid("id-evidence-element-platform")
-    plat_entity["claims"]     = plat_claims
+    plat_element = ReportedElement()
+    plat_element["elementType"] = evidence_make_oid("id-evidence-element-platform")
+    plat_element["claims"]     = plat_claims
 
-    ev.add_entity(plat_entity)
+    ev.add_element(plat_element)
 
     return ev.sign_and_encode(ak_cert, ak_private_key, int_cert, includeCerts=False)
 
@@ -135,19 +183,19 @@ def build_example2(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
     """
     ev = PkixEvidence()
 
-    # Transaction entity
+    # Transaction element
     tx_claims = ReportedClaimSeq()
     tx_claims[0] = make_claim(
         "id-evidence-claim-transaction-nonce",
         b"\xbe\xef\xca\xfe\xba\xbe\xde\xad",
     )
-    tx_claims[1] = ReportedClaim()
-    tx_claims[1]["claimType"] = evidence_make_oid("id-evidence-claim-transaction-timestamp")
-    tx_claims[1]["value"] = make_claim_value_time("20250314120000Z")
+    tx_claims[1] = make_claim(
+        "id-evidence-claim-transaction-timestamp",
+        "20250314120000Z")
 
-    tx_entity = ReportedEntity()
-    tx_entity["entityType"] = evidence_make_oid("id-evidence-element-transaction")
-    tx_entity["claims"] = tx_claims
+    tx_element = ReportedElement()
+    tx_element["elementType"] = evidence_make_oid("id-evidence-element-transaction")
+    tx_element["claims"] = tx_claims
 
     ak_public_key_der = ak_private_key.public_key().public_bytes(
         encoding=serialization.Encoding.DER,
@@ -155,25 +203,25 @@ def build_example2(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
     )
     tx_claims[2] = make_claim("id-evidence-claim-transaction-ak-spki", ak_public_key_der)
 
-    tx_entity = ReportedEntity()
-    tx_entity["entityType"] = evidence_make_oid("id-evidence-element-transaction")
-    tx_entity["claims"]     = tx_claims
+    tx_element = ReportedElement()
+    tx_element["elementType"] = evidence_make_oid("id-evidence-element-transaction")
+    tx_element["claims"]     = tx_claims
 
-    ev.add_entity(tx_entity)
+    ev.add_element(tx_element)
 
 
-    # Platform entity
+    # Platform element
     plat_claims = ReportedClaimSeq()
     plat_claims.append(make_claim("id-evidence-claim-platform-hwmodel",   "HSM-9000".encode('utf-8')))
 
-    plat_entity = ReportedEntity()
-    plat_entity["entityType"] = evidence_make_oid("id-evidence-element-platform")
-    plat_entity["claims"]     = plat_claims
+    plat_element = ReportedElement()
+    plat_element["elementType"] = evidence_make_oid("id-evidence-element-platform")
+    plat_element["claims"]     = plat_claims
 
-    ev.add_entity(plat_entity)
+    ev.add_element(plat_element)
 
 
-    # Key entity 1
+    # Key element 1
     private_key = create_ak.generate_ec_key()
 
     key_claims = ReportedClaimSeq()
@@ -194,19 +242,19 @@ def build_example2(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
     key_claims.append(make_claim("id-evidence-claim-key-local",             True))
     key_claims.append(make_claim(
         "id-evidence-claim-key-purpose",
-        encode_key_capabilities(build_key_capabilities_from_oids([
+        [
             "id-evidence-key-capability-sign"
-            ])),
+        ],
     ))
 
-    key_entity = ReportedEntity()
-    key_entity["entityType"] = evidence_make_oid("id-evidence-element-key")
-    key_entity["claims"]     = key_claims
+    key_element = ReportedElement()
+    key_element["elementType"] = evidence_make_oid("id-evidence-element-key")
+    key_element["claims"]     = key_claims
 
-    ev.add_entity(key_entity)
+    ev.add_element(key_element)
 
 
-    # Key entity 2
+    # Key element 2
     private_key = create_ak.generate_ec_key()
 
     key_claims = ReportedClaimSeq()
@@ -224,11 +272,11 @@ def build_example2(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
     key_claims.append(make_claim("id-evidence-claim-key-extractable",       True))
     key_claims.append(make_claim("id-evidence-claim-key-sensitive",         False))
 
-    key_entity = ReportedEntity()
-    key_entity["entityType"] = evidence_make_oid("id-evidence-element-key")
-    key_entity["claims"]     = key_claims
+    key_element = ReportedElement()
+    key_element["elementType"] = evidence_make_oid("id-evidence-element-key")
+    key_element["claims"]     = key_claims
 
-    ev.add_entity(key_entity)
+    ev.add_element(key_element)
 
     return ev.sign_and_encode(ak_cert, ak_private_key, int_cert)
 
@@ -249,19 +297,17 @@ def build_example3(ak_private_key: ec.EllipticCurvePrivateKey,
 
     ev = PkixEvidence()
 
-    # Transaction entity
+    # Transaction element
     tx_claims = ReportedClaimSeq()
     tx_claims[0] = make_claim(
         "id-evidence-claim-transaction-nonce",
         b"\xca\xfe\xba\xbe\xde\xad\xbe\xef",
     )
-    tx_claims[1] = ReportedClaim()
-    tx_claims[1]["claimType"] = evidence_make_oid("id-evidence-claim-transaction-timestamp")
-    tx_claims[1]["value"] = make_claim_value_time("20250314120000Z")
+    tx_claims[1] = make_claim("id-evidence-claim-transaction-timestamp","20250314120000Z")
 
-    tx_entity = ReportedEntity()
-    tx_entity["entityType"] = evidence_make_oid("id-evidence-element-transaction")
-    tx_entity["claims"] = tx_claims
+    tx_element = ReportedElement()
+    tx_element["elementType"] = evidence_make_oid("id-evidence-element-transaction")
+    tx_element["claims"] = tx_claims
 
     ak_public_key_der = ak_private_key.public_key().public_bytes(
         encoding=serialization.Encoding.DER,
@@ -275,36 +321,36 @@ def build_example3(ak_private_key: ec.EllipticCurvePrivateKey,
     )
     tx_claims[3] = make_claim("id-evidence-claim-transaction-ak-spki", tenant_ak_public_key_der)
 
-    tx_entity = ReportedEntity()
-    tx_entity["entityType"] = evidence_make_oid("id-evidence-element-transaction")
-    tx_entity["claims"]     = tx_claims
+    tx_element = ReportedElement()
+    tx_element["elementType"] = evidence_make_oid("id-evidence-element-transaction")
+    tx_element["claims"]     = tx_claims
 
-    ev.add_entity(tx_entity)
+    ev.add_element(tx_element)
 
 
-    # Platform entity
+    # Platform element
     plat_claims = ReportedClaimSeq()
     plat_claims.append(make_claim("id-evidence-claim-platform-hwmodel",   "HSM-9000".encode('utf-8')))
     plat_claims.append(make_claim("id-evidence-claim-platform-hwserial",  "17-a1b2"))
 
-    plat_entity = ReportedEntity()
-    plat_entity["entityType"] = evidence_make_oid("id-evidence-element-platform")
-    plat_entity["claims"]     = plat_claims
+    plat_element = ReportedElement()
+    plat_element["elementType"] = evidence_make_oid("id-evidence-element-platform")
+    plat_element["claims"]     = plat_claims
 
-    ev.add_entity(plat_entity)
+    ev.add_element(plat_element)
 
     plat_claims = ReportedClaimSeq()
     plat_claims.append(make_claim("id-evidence-claim-platform-vendor",   "BigCloudCorp Tenant Management System"))
     plat_claims.append(make_claim("id-evidence-claim-platform-swname",   "tenant-001"))
 
-    plat_entity = ReportedEntity()
-    plat_entity["entityType"] = evidence_make_oid("id-evidence-element-platform")
-    plat_entity["claims"]     = plat_claims
+    plat_element = ReportedElement()
+    plat_element["elementType"] = evidence_make_oid("id-evidence-element-platform")
+    plat_element["claims"]     = plat_claims
 
-    ev.add_entity(plat_entity)
+    ev.add_element(plat_element)
 
 
-    # Key entity
+    # Key element
     private_key = create_ak.generate_ec_key()
 
     key_claims = ReportedClaimSeq()
@@ -325,16 +371,16 @@ def build_example3(ak_private_key: ec.EllipticCurvePrivateKey,
     key_claims.append(make_claim("id-evidence-claim-key-local",             True))
     key_claims.append(make_claim(
         "id-evidence-claim-key-purpose",
-        encode_key_capabilities(build_key_capabilities_from_oids([
+        [
             "id-evidence-key-capability-sign"
-            ])),
+        ],
     ))
 
-    key_entity = ReportedEntity()
-    key_entity["entityType"] = evidence_make_oid("id-evidence-element-key")
-    key_entity["claims"]     = key_claims
+    key_element = ReportedElement()
+    key_element["elementType"] = evidence_make_oid("id-evidence-element-key")
+    key_element["claims"]     = key_claims
 
-    ev.add_entity(key_entity)
+    ev.add_element(key_element)
 
     ev.sign_and_encode(ak_cert, ak_private_key, int_cert)
     ev.sign_and_encode(tenant_ak_cert, tenant_ak_private_key, tenant_int_cert)

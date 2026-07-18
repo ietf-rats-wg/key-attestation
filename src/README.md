@@ -32,7 +32,7 @@ python3 -m venv src/.venv
 From the repository root:
 
 ```bash
-./src/.venv/bin/python src/pkix_evidence.py
+./src/.venv/bin/python src/generate_test_data.py
 ```
 
 This performs the following steps:
