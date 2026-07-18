@@ -88,11 +88,11 @@ def build_example1(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
         b"\xde\xad\xbe\xef\xca\xfe\xba\xbe",
     )
     tx_claims[1] = ReportedClaim()
-    tx_claims[1]["claimType"] = mkoid("id-evidence-claim-transaction-timestamp")
+    tx_claims[1]["claimType"] = evidence_make_oid("id-evidence-claim-transaction-timestamp")
     tx_claims[1]["value"] = make_claim_value_time("20250314120000Z")
 
     tx_entity = ReportedEntity()
-    tx_entity["entityType"] = mkoid("id-evidence-entity-transaction")
+    tx_entity["entityType"] = evidence_make_oid("id-evidence-element-transaction")
     tx_entity["claims"] = tx_claims
 
     ak_public_key_der = ak_private_key.public_key().public_bytes(
@@ -102,7 +102,7 @@ def build_example1(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
     tx_claims[2] = make_claim("id-evidence-claim-transaction-ak-spki", ak_public_key_der)
 
     tx_entity = ReportedEntity()
-    tx_entity["entityType"] = mkoid("id-evidence-entity-transaction")
+    tx_entity["entityType"] = evidence_make_oid("id-evidence-element-transaction")
     tx_entity["claims"]     = tx_claims
 
     ev.add_entity(tx_entity)
@@ -118,7 +118,7 @@ def build_example1(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
     plat_claims[5] = make_claim("id-evidence-claim-platform-uptime",    86400)
 
     plat_entity = ReportedEntity()
-    plat_entity["entityType"] = mkoid("id-evidence-entity-platform")
+    plat_entity["entityType"] = evidence_make_oid("id-evidence-element-platform")
     plat_entity["claims"]     = plat_claims
 
     ev.add_entity(plat_entity)
@@ -142,11 +142,11 @@ def build_example2(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
         b"\xbe\xef\xca\xfe\xba\xbe\xde\xad",
     )
     tx_claims[1] = ReportedClaim()
-    tx_claims[1]["claimType"] = mkoid("id-evidence-claim-transaction-timestamp")
+    tx_claims[1]["claimType"] = evidence_make_oid("id-evidence-claim-transaction-timestamp")
     tx_claims[1]["value"] = make_claim_value_time("20250314120000Z")
 
     tx_entity = ReportedEntity()
-    tx_entity["entityType"] = mkoid("id-evidence-entity-transaction")
+    tx_entity["entityType"] = evidence_make_oid("id-evidence-element-transaction")
     tx_entity["claims"] = tx_claims
 
     ak_public_key_der = ak_private_key.public_key().public_bytes(
@@ -156,7 +156,7 @@ def build_example2(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
     tx_claims[2] = make_claim("id-evidence-claim-transaction-ak-spki", ak_public_key_der)
 
     tx_entity = ReportedEntity()
-    tx_entity["entityType"] = mkoid("id-evidence-entity-transaction")
+    tx_entity["entityType"] = evidence_make_oid("id-evidence-element-transaction")
     tx_entity["claims"]     = tx_claims
 
     ev.add_entity(tx_entity)
@@ -167,7 +167,7 @@ def build_example2(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
     plat_claims.append(make_claim("id-evidence-claim-platform-hwmodel",   "HSM-9000".encode('utf-8')))
 
     plat_entity = ReportedEntity()
-    plat_entity["entityType"] = mkoid("id-evidence-entity-platform")
+    plat_entity["entityType"] = evidence_make_oid("id-evidence-element-platform")
     plat_entity["claims"]     = plat_claims
 
     ev.add_entity(plat_entity)
@@ -200,7 +200,7 @@ def build_example2(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
     ))
 
     key_entity = ReportedEntity()
-    key_entity["entityType"] = mkoid("id-evidence-entity-key")
+    key_entity["entityType"] = evidence_make_oid("id-evidence-element-key")
     key_entity["claims"]     = key_claims
 
     ev.add_entity(key_entity)
@@ -225,7 +225,7 @@ def build_example2(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
     key_claims.append(make_claim("id-evidence-claim-key-sensitive",         False))
 
     key_entity = ReportedEntity()
-    key_entity["entityType"] = mkoid("id-evidence-entity-key")
+    key_entity["entityType"] = evidence_make_oid("id-evidence-element-key")
     key_entity["claims"]     = key_claims
 
     ev.add_entity(key_entity)
@@ -256,11 +256,11 @@ def build_example3(ak_private_key: ec.EllipticCurvePrivateKey,
         b"\xca\xfe\xba\xbe\xde\xad\xbe\xef",
     )
     tx_claims[1] = ReportedClaim()
-    tx_claims[1]["claimType"] = mkoid("id-evidence-claim-transaction-timestamp")
+    tx_claims[1]["claimType"] = evidence_make_oid("id-evidence-claim-transaction-timestamp")
     tx_claims[1]["value"] = make_claim_value_time("20250314120000Z")
 
     tx_entity = ReportedEntity()
-    tx_entity["entityType"] = mkoid("id-evidence-entity-transaction")
+    tx_entity["entityType"] = evidence_make_oid("id-evidence-element-transaction")
     tx_entity["claims"] = tx_claims
 
     ak_public_key_der = ak_private_key.public_key().public_bytes(
@@ -276,7 +276,7 @@ def build_example3(ak_private_key: ec.EllipticCurvePrivateKey,
     tx_claims[3] = make_claim("id-evidence-claim-transaction-ak-spki", tenant_ak_public_key_der)
 
     tx_entity = ReportedEntity()
-    tx_entity["entityType"] = mkoid("id-evidence-entity-transaction")
+    tx_entity["entityType"] = evidence_make_oid("id-evidence-element-transaction")
     tx_entity["claims"]     = tx_claims
 
     ev.add_entity(tx_entity)
@@ -288,7 +288,7 @@ def build_example3(ak_private_key: ec.EllipticCurvePrivateKey,
     plat_claims.append(make_claim("id-evidence-claim-platform-hwserial",  "17-a1b2"))
 
     plat_entity = ReportedEntity()
-    plat_entity["entityType"] = mkoid("id-evidence-entity-platform")
+    plat_entity["entityType"] = evidence_make_oid("id-evidence-element-platform")
     plat_entity["claims"]     = plat_claims
 
     ev.add_entity(plat_entity)
@@ -298,7 +298,7 @@ def build_example3(ak_private_key: ec.EllipticCurvePrivateKey,
     plat_claims.append(make_claim("id-evidence-claim-platform-swname",   "tenant-001"))
 
     plat_entity = ReportedEntity()
-    plat_entity["entityType"] = mkoid("id-evidence-entity-platform")
+    plat_entity["entityType"] = evidence_make_oid("id-evidence-element-platform")
     plat_entity["claims"]     = plat_claims
 
     ev.add_entity(plat_entity)
@@ -331,7 +331,7 @@ def build_example3(ak_private_key: ec.EllipticCurvePrivateKey,
     ))
 
     key_entity = ReportedEntity()
-    key_entity["entityType"] = mkoid("id-evidence-entity-key")
+    key_entity["entityType"] = evidence_make_oid("id-evidence-element-key")
     key_entity["claims"]     = key_claims
 
     ev.add_entity(key_entity)

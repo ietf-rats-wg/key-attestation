@@ -16,6 +16,7 @@ RFC 5280 types used directly from pyasn1_alt_modules.rfc5280:
   - Certificate
 """
 import base64
+from evidence_oid_registry import oid_name, OID_NAMES, CLAIM_EXPECTED_TAGS, KNOWN_ELEMENT_OIDS, KNOWN_CLAIM_OIDS, evidence_make_oid
 
 from cryptography import x509
 from cryptography.hazmat.primitives.asymmetric import ec
@@ -42,85 +43,6 @@ from pyasn1_alt_modules.rfc5280 import (
 import create_ak
 from cryptography.hazmat.primitives import hashes, serialization
 
-# ---------------------------------------------------------------------------
-# OID Registry
-# ---------------------------------------------------------------------------
-
-OID: dict = {
-    # Root
-    "id-evidence":                               "1.2.3.999",
-
-    # Entity types
-    "id-evidence-entity":                        "1.2.3.999.0",
-    "id-evidence-entity-transaction":            "1.2.3.999.0.0",
-    "id-evidence-entity-platform":               "1.2.3.999.0.1",
-    "id-evidence-entity-key":                    "1.2.3.999.0.2",
-
-    # Claim root
-    "id-evidence-claim":                         "1.2.3.999.1",
-
-    # Transaction claims
-    "id-evidence-claim-transaction":             "1.2.3.999.1.0",
-    "id-evidence-claim-transaction-nonce":       "1.2.3.999.1.0.0",
-    "id-evidence-claim-transaction-timestamp":   "1.2.3.999.1.0.1",
-    "id-evidence-claim-transaction-ak-spki":     "1.2.3.999.1.0.2",
-
-    # Platform claims
-    "id-evidence-claim-platform":                "1.2.3.999.1.1",
-    "id-evidence-claim-platform-vendor":         "1.2.3.999.1.1.0",
-    "id-evidence-claim-platform-oemid":          "1.2.3.999.1.1.1",
-    "id-evidence-claim-platform-hwmodel":        "1.2.3.999.1.1.2",
-    "id-evidence-claim-platform-hwversion":      "1.2.3.999.1.1.3",
-    "id-evidence-claim-platform-hwserial":       "1.2.3.999.1.1.4",
-    "id-evidence-claim-platform-swname":         "1.2.3.999.1.1.5",
-    "id-evidence-claim-platform-swversion":      "1.2.3.999.1.1.6",
-    "id-evidence-claim-platform-debugstat":      "1.2.3.999.1.1.7",
-    "id-evidence-claim-platform-uptime":         "1.2.3.999.1.1.8",
-    "id-evidence-claim-platform-bootcount":      "1.2.3.999.1.1.9",
-    "id-evidence-claim-platform-usermods":       "1.2.3.999.1.1.10",
-    "id-evidence-claim-platform-fipsboot":       "1.2.3.999.1.1.11",
-    "id-evidence-claim-platform-fipsver":        "1.2.3.999.1.1.12",
-    "id-evidence-claim-platform-fipslevel":      "1.2.3.999.1.1.13",
-    "id-evidence-claim-platform-fipsmodule":     "1.2.3.999.1.1.14",
-
-    # Key claims
-    "id-evidence-claim-key":                     "1.2.3.999.1.2",
-    "id-evidence-claim-key-identifier":          "1.2.3.999.1.2.0",
-    "id-evidence-claim-key-spki":                "1.2.3.999.1.2.1",
-    "id-evidence-claim-key-extractable":         "1.2.3.999.1.2.2",
-    "id-evidence-claim-key-sensitive":           "1.2.3.999.1.2.3",
-    "id-evidence-claim-key-never-extractable":   "1.2.3.999.1.2.4",
-    "id-evidence-claim-key-local":               "1.2.3.999.1.2.5",
-    "id-evidence-claim-key-expiry":              "1.2.3.999.1.2.6",
-    "id-evidence-claim-key-purpose":             "1.2.3.999.1.2.7",
-
-    # Key capabilities
-    "id-evidence-key-capability":                "1.2.3.999.2",
-    "id-evidence-key-capability-encrypt":        "1.2.3.999.2.0",
-    "id-evidence-key-capability-decrypt":        "1.2.3.999.2.1",
-    "id-evidence-key-capability-wrap":           "1.2.3.999.2.2",
-    "id-evidence-key-capability-unwrap":         "1.2.3.999.2.3",
-    "id-evidence-key-capability-sign":           "1.2.3.999.2.4",
-    "id-evidence-key-capability-sign-recover":   "1.2.3.999.2.5",
-    "id-evidence-key-capability-verify":         "1.2.3.999.2.6",
-    "id-evidence-key-capability-verify-recover": "1.2.3.999.2.7",
-    "id-evidence-key-capability-derive":         "1.2.3.999.2.8",
-}
-
-# Reverse mapping: dotted-string -> human name
-OID_NAMES: dict = {v: k for k, v in OID.items()}
-
-
-def mkoid(name: str) -> univ.ObjectIdentifier:
-    """
-    Return a pyasn1 ObjectIdentifier.
-
-    Accepts either a registered name from the OID dict
-    (e.g. "id-evidence-claim-key-sign") or a raw dotted
-    string (e.g. "1.2.840.10045.4.3.2").
-    """
-    dotted = OID.get(name, name)
-    return univ.ObjectIdentifier([int(x) for x in dotted.split(".")])
 
 
 # ---------------------------------------------------------------------------
@@ -465,7 +387,7 @@ def make_claim(claim_type_name: str, value=None) -> ReportedClaim:
         optional ClaimValue field entirely.
     """
     rc = ReportedClaim()
-    rc["claimType"] = mkoid(claim_type_name)
+    rc["claimType"] = evidence_make_oid(claim_type_name)
     if value is not None:
         rc["value"] = make_claim_value(value)
     return rc
@@ -547,6 +469,6 @@ def build_key_capabilities_from_oids(oids:List[str]) -> EvidenceKeyCapabilities:
     specified using a name (id-evidence-key-capability-sign) or a dotted notation (1.2.3.999.2.4)"""
     caps = EvidenceKeyCapabilities()
     for i, name in enumerate(oids):
-        caps[i] = mkoid(name)
+        caps[i] = evidence_make_oid(name)
     return caps
 
