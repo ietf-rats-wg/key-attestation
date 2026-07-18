@@ -14,8 +14,8 @@ Claude was asked to generate a parser/verifier based on the ASN.1 modulde Pkix-K
 pip install pyasn1 pyasn1-modules cryptography
 
 # Generate a sample DER and validate it
-python pkix_evidence_2025.py --sample --out sample.der
-python pkix_evidence_2025.py sample.der
+python pkix_evidence.py --sample --out sample.der
+python pkix_evidence.py sample.der
 
 # Parse any Evidence DER file you have
 python pkix_evidence_2025.py attestation.der
