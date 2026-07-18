@@ -28,3 +28,12 @@ $ make
 Command line usage requires that you have the necessary software installed.  See
 [the instructions](https://github.com/martinthomson/i-d-template/blob/main/doc/SETUP.md).
 
+## Directory Structure
+
+- **draft-ietf-rats-pkix-key-attestation.md** : File that contains the text of this specification.
+- **Pkix-Key-Attest-2025.asn** : File that contains the ASN.1 module described by this specification.
+- **go-src** : Directory that contains source code for a goLang Verifier based on this specification.
+- **sampledata** : Directory that contains examples of generated Evidence. These examples are created by the scripts found in the directory `src`.
+- **src** : Directory that contains Python scripts relating to the ASN.1 module offered by this specification. These scripts provide operations such as validating evidence or generating sample data. More information can be found in the `readme.md` file.
+- **src2** : Directory that contains Interim Python scripts used to migrate to latest ASN.1 module.
+- **tools** : Directory that contains scripts to automate some testing.
