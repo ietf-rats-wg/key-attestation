@@ -60,7 +60,9 @@ def validate_evidence(data: bytes, ak_cert: x509.Certificate, int_cert: x509.Cer
         # skipping this for the moment because apparently python cryptography's x.509 validator now only supports TLS certs
         # and not generic certs
         # https://cryptography.io/en/latest/x509/verification/
-        # Maybe the right answer is to use the openssl module for python to validate the cert chain
+        # Maybe the right answer is to use the openssl module for python to validate the cert chain?
+        # sample code here:
+        # https://stackoverflow.com/a/30719888
         # TODO
         pass
 
@@ -97,32 +99,60 @@ def validate_evidence(data: bytes, ak_cert: x509.Certificate, int_cert: x509.Cer
 
     # Now validate the signature on the Evidence
     ev = decode_evidence(data)
-    signatureBlock = ev.components[1] # SignatureBlockSeq
-    signatureAlgID = signatureBlock.components[0].components[1].components[0]
-    signatureValue = signatureBlock.components[0].components[2].asOctets()
+    signatureBlockSeq = ev.components[1] # SignatureBlockSeq
+    for signatureBlock in signatureBlockSeq:
+        signatureAlgID = signatureBlock.components[1].components[0]
+        signatureValue = signatureBlock.components[2].asOctets()
 
-    # binary value to be validated
-    tbs = ev.components[0]
-    tbs_bytes = der_encoder.encode(tbs)
+        # binary value to be validated
+        tbs = ev.components[0]
+        tbs_bytes = der_encoder.encode(tbs)
 
-    # TODO: Surely there is a generic way to get python to just verify any signature for any alg it recognizes
-    if signatureAlgID == univ.ObjectIdentifier(x509.SignatureAlgorithmOID.ECDSA_WITH_SHA256.dotted_string):
-        try:
-            pk = ak_cert.public_key()
-            ak_cert.public_key().verify(
-                signatureValue,
-                tbs_bytes,
-                ec.ECDSA(hashes.SHA256())
-            )
-        except cryptography.exceptions.InvalidSignature:
-            print("Signature verification failed on Evidence", file=sys.stderr)
+        # TODO: Surely there is a generic way to get python to just verify any signature for any alg it recognizes
+        if signatureAlgID == univ.ObjectIdentifier(x509.SignatureAlgorithmOID.ECDSA_WITH_SHA256.dotted_string):
+            try:
+                pk = ak_cert.public_key()
+                ak_cert.public_key().verify(
+                    signatureValue,
+                    tbs_bytes,
+                    ec.ECDSA(hashes.SHA256())
+                )
+            except cryptography.exceptions.InvalidSignature:
+                print("Signature verification failed on Evidence", file=sys.stderr)
+                return False
+        else:
+            print("Signature algorithm not supported", file=sys.stderr)
             return False
-    else:
-        print("Signature algorithm not supported", file=sys.stderr)
-        return False
 
     return True
 
+def read_evidence_file(file):
+    """Reads the evidence from file, accepts either PEM with the -----BEGIN EVIDENCE---- header, or raw DER"""
+    input = open(args.input, "rb").read()
+
+    # first, try it as raw DER
+    try:
+        ev = der_decoder.decode(input)
+        return ev
+    except:
+        # nothing, keep going
+        pass
+
+    # Then try it as PEM
+    input = str(input)
+    if input.startswith("-----BEGIN EVIDENCE-----"):
+        input = input[24:]
+
+    if input.endswith("-----END EVIDENCE-----"):
+        input = input[:-24]
+
+    try:
+        ev = der_decoder.decode(base64.decode(input))
+    except:
+        print("ERROR: input file could not be parsed as DER or as PEM.", file=sys.stderr)
+        exit(-1)
+
+    return ev
 
 def pretty_print_evidence(ev: Evidence, indent: int = 0) -> [str]:
     """Recursively print an Evidence structure to stdout."""
@@ -379,7 +409,7 @@ def write_pretty_print(file_basename: Path, data: bytes):
         for line in pretty_print_evidence(decode_evidence(data)):
             f.write(line+'\n')
 
-if __name__ == "__main__":
+def generate_samples():
     # generate AK key and cert chain
     ak_private_key, ak_cert, int_cert, ca_cert, ca_private_key = create_ak.generateAndSaveCerts()
 
@@ -396,3 +426,99 @@ if __name__ == "__main__":
         print("Evidence failed to validate", file=sys.stderr)
     write_b64_and_pem(SAMPLEDATA_DIR / "evidence2", ev2_der)
     write_pretty_print(SAMPLEDATA_DIR / "evidence2", ev2_der)
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="""Parse and verify PKIX-Evidence-2025 DER files
+        Examples:
+          # Generate a sample DER files to the sampledata/ dir
+          python src/main.py --generate
+
+          # Validate only (no pretty print)
+          python src/main.py --validate sample.der ak.ctr [int_ca.crt] [ca.crt] --quiet
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=textwrap.dedent("""
+        Examples:
+          # Generate a sample DER files to the sampledata/ dir
+          python src/main.py --generate
+
+          # Validate only (no pretty print)
+          python src/main.py --validate sample.der ak.ctr [int_ca.crt] [ca.crt] --quiet
+        """),
+    )
+
+    parser.add_argument("input", nargs="?", help="DER-encoded Evidence file to parse")
+    parser.add_argument("ak_cert", nargs="?", help="X.509 certificate file for the AK certificate. Mandatory for verification.")
+    parser.add_argument("int_cert", nargs="?", help="X.509 certificate file for the intermediate certificate. Optional.")
+    parser.add_argument("ca_cert", nargs="?", help="X.509 certificate file for the root certificate. Optional.")
+    parser.add_argument("--generate", action="store_true",
+                        help="Generate and parse a built-in sample Evidence blob")
+    parser.add_argument("--validate", action="store_true",
+                        help="Validate a sample Evidence blob")
+    parser.add_argument("--quiet", action="store_true",
+                        help="Only print validation result, not the full structure")
+    parser.add_argument("--prettyprint", action="store_true",
+                        help="Only pretty print the contents; do not validate")
+
+    args = parser.parse_args()
+
+
+    if args.generate:
+        print("Generating sample Evidence DER to sampledata/ …")
+        generate_samples()
+    elif args.validate:
+        if args.input is None:
+            print("ERROR: input file not provided", file=sys.stderr)
+            exit(-1)
+        else:
+            input = open(args.input, "rb").read()
+
+        if args.ak_cert is None:
+            print("ERROR: ak_cert file not provided", file=sys.stderr)
+            exit(-1)
+        else:
+            ak_cert = open(args.ak_cert, "rb").read()
+
+        if args.int_cert is None:
+            int_cert = None
+        else:
+            int_cert = open(args.int_cert, "rb").read()
+
+        if args.ca_cert is None:
+            ca_cert = None
+        else:
+            ca_cert = open(args.ca_cert, "rb").read()
+
+        # do the validation
+        if validate_evidence(input, ak_cert, int_cert, ca_cert):
+            print("Evidence validation successful")
+        else:
+            print("Evidence validation failed", file=sys.stderr)
+            exit(-1)
+
+        if not args.quiet:
+            try:
+                pretty_print_evidence(der_decoder.decode(input))
+            except:
+                print("Evidence failed to parse", file=sys.stderr)
+                exit(-1)
+    elif args.prettyprint:
+
+        if args.input is None:
+            print("ERROR: input file not provided", file=sys.stderr)
+            exit(-1)
+        else:
+            input = open(args.input, "rb").read()
+            try:
+                pretty_print_evidence(der_decoder.decode(input))
+            except:
+                print("Evidence failed to parse", file=sys.stderr)
+                exit(-1)
+    else:
+        parser.print_help()
+
+
