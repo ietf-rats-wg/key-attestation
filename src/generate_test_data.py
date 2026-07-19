@@ -49,6 +49,12 @@ def _decode_claim_value(raw_any: univ.Any) -> tuple[int | None, Any]:
     except Exception:
         return utag, raw_bytes.hex()
 
+def validate_evidence(data: bytes, ak_cert: x509.Certificate, int_cert: x509.Certificate, ca_cert: x509.Certificate) -> bool: # todo-- add certs
+    ev = decode_evidence(data)
+
+    
+
+
 def pretty_print_evidence(ev: Evidence, indent: int = 0) -> [str]:
     """Recursively print an Evidence structure to stdout."""
 
@@ -122,6 +128,10 @@ def pretty_print_evidence(ev: Evidence, indent: int = 0) -> [str]:
 
     return strs_out
 
+
+def _encode_generalizedtime(dt: datetime) -> bytes:
+    return dt.strftime("%Y%m%d%H%M%SZ")
+
 # ---------------------------------------------------------------------------
 # Main — end-to-end DER round-trip demonstration
 # ---------------------------------------------------------------------------
@@ -141,7 +151,7 @@ def build_example1(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
     )
     tx_claims[1] = make_claim(
         "id-evidence-claim-transaction-timestamp",
-        "20250314120000Z")
+        _encode_generalizedtime(datetime.now(timezone.utc)) )
 
     ak_public_key_der = ak_private_key.public_key().public_bytes(
         encoding=serialization.Encoding.DER,
@@ -191,7 +201,7 @@ def build_example2(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
     )
     tx_claims[1] = make_claim(
         "id-evidence-claim-transaction-timestamp",
-        "20250314120000Z")
+        _encode_generalizedtime(datetime.now(timezone.utc)))
 
     tx_element = ReportedElement()
     tx_element["elementType"] = evidence_make_oid("id-evidence-element-transaction")
@@ -303,7 +313,9 @@ def build_example3(ak_private_key: ec.EllipticCurvePrivateKey,
         "id-evidence-claim-transaction-nonce",
         b"\xca\xfe\xba\xbe\xde\xad\xbe\xef",
     )
-    tx_claims[1] = make_claim("id-evidence-claim-transaction-timestamp","20250314120000Z")
+    tx_claims[1] = make_claim(
+        "id-evidence-claim-transaction-timestamp",
+        _encode_generalizedtime(datetime.now(timezone.utc)))
 
     tx_element = ReportedElement()
     tx_element["elementType"] = evidence_make_oid("id-evidence-element-transaction")
