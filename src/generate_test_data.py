@@ -1,10 +1,15 @@
+import sys
 import textwrap
+import cryptography
+from cryptography.x509.verification import PolicyBuilder, Store
+from cryptography.hazmat.primitives.asymmetric.ec import EllipticCurveSignatureAlgorithm
+from pyasn1.type.univ import ObjectIdentifier
 
+import create_ak
 from pkix_evidence import *
 
 BASE_DIR = Path(__file__).resolve().parent
 SAMPLEDATA_DIR = BASE_DIR.parent / "sampledata"
-
 
 # ---------------------------------------------------------------------------
 # Pretty-print helpers
@@ -49,10 +54,74 @@ def _decode_claim_value(raw_any: univ.Any) -> tuple[int | None, Any]:
     except Exception:
         return utag, raw_bytes.hex()
 
-def validate_evidence(data: bytes, ak_cert: x509.Certificate, int_cert: x509.Certificate, ca_cert: x509.Certificate) -> bool: # todo-- add certs
-    ev = decode_evidence(data)
+def validate_evidence(data: bytes, ak_cert: x509.Certificate, int_cert: x509.Certificate=None, ca_cert: x509.Certificate=None) -> bool: # todo-- add certs
+    # First, validate the cert chain
+    if ca_cert is not None:
+        # skipping this for the moment because apparently python cryptography's x.509 validator now only supports TLS certs
+        # and not generic certs
+        # https://cryptography.io/en/latest/x509/verification/
+        # Maybe the right answer is to use the openssl module for python to validate the cert chain
+        # TODO
+        pass
 
-    
+    # Check that the ak_cert contains the id-kp-attestationKey
+    try:
+        eku = ak_cert.extensions.get_extension_for_oid(x509.oid.ExtensionOID.EXTENDED_KEY_USAGE).value
+    except:
+        print("ExtendedKeyUsage missing on AK cert", file=sys.stderr)
+        return False
+
+    # "the EKU certificate extension MUST include the id-kp-attestationKey"
+    if len(eku) == 0:
+        print("ExtendedKeyUsage is empty on AK cert", file=sys.stderr)
+        return False
+    found_id_kp_attestation = False
+    for eku_val in eku:
+        if eku_val == id_kp_attest_oid:
+            found_id_kp_attestation = True
+
+    if not found_id_kp_attestation:
+        print("ExtendedKeyUsage on AK cert does not contain id_kp_attestation ("+id_kp_attest_oid.dotted_string+")", file=sys.stderr)
+        return False
+
+    # the KeyUsage extension (KU) MUST have the digitalSignature bit set.
+    try:
+        ku = ak_cert.extensions.get_extension_for_oid(x509.oid.ExtensionOID.KEY_USAGE).value
+        if not ku.digital_signature:
+            print("KeyUsage does not assert digitalSignature", file=sys.stderr)
+            return False
+    except:
+        print("KeyUsage missing on AK cert", file=sys.stderr)
+        return False
+
+
+    # Now validate the signature on the Evidence
+    ev = decode_evidence(data)
+    signatureBlock = ev.components[1] # SignatureBlockSeq
+    signatureAlgID = signatureBlock.components[0].components[1].components[0]
+    signatureValue = signatureBlock.components[0].components[2].asOctets()
+
+    # binary value to be validated
+    tbs = ev.components[0]
+    tbs_bytes = der_encoder.encode(tbs)
+
+    # TODO: Surely there is a generic way to get python to just verify any signature for any alg it recognizes
+    if signatureAlgID == univ.ObjectIdentifier(x509.SignatureAlgorithmOID.ECDSA_WITH_SHA256.dotted_string):
+        try:
+            pk = ak_cert.public_key()
+            ak_cert.public_key().verify(
+                signatureValue,
+                tbs_bytes,
+                ec.ECDSA(hashes.SHA256())
+            )
+        except cryptography.exceptions.InvalidSignature:
+            print("Signature verification failed on Evidence", file=sys.stderr)
+            return False
+    else:
+        print("Signature algorithm not supported", file=sys.stderr)
+        return False
+
+    return True
 
 
 def pretty_print_evidence(ev: Evidence, indent: int = 0) -> [str]:
@@ -428,11 +497,15 @@ if __name__ == "__main__":
 
     # Build Example 1
     ev1_der = build_example1(ak_private_key, ak_cert, int_cert)
+    if not validate_evidence(ev1_der, ak_cert, int_cert, ca_cert):
+        print("Evidence failed to validate", file=sys.stderr)
     write_b64_and_pem(SAMPLEDATA_DIR / "evidence1", ev1_der)
     write_pretty_print(SAMPLEDATA_DIR / "evidence1", ev1_der)
 
     # Build Example 2
     ev2_der = build_example2(ak_private_key, ak_cert, int_cert)
+    if not validate_evidence(ev2_der, ak_cert, int_cert, ca_cert):
+        print("Evidence failed to validate", file=sys.stderr)
     write_b64_and_pem(SAMPLEDATA_DIR / "evidence2", ev2_der)
     write_pretty_print(SAMPLEDATA_DIR / "evidence2", ev2_der)
 

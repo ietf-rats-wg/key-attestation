@@ -8,7 +8,11 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.x509.oid import NameOID
 
+from pkix_evidence import id_kp_attest_oid
+
 output_dir = Path(__file__).resolve().parent.parent / "sampledata"
+
+
 
 def generate_ec_key() -> ec.EllipticCurvePrivateKey:
     return ec.generate_private_key(ec.SECP256R1())
@@ -122,8 +126,6 @@ def create_end_entity_cert(
     private_key = generate_ec_key()
     subject = build_name(cn, "pkix-key-attestation", "ietf-rats")
     now = datetime.now(timezone.utc)
-    
-    id_kp_attest_oid = x509.ObjectIdentifier("1.3.6.1.4.1.39901.4.1.1")
 
     cert = (
         x509.CertificateBuilder()

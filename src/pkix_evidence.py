@@ -41,10 +41,18 @@ from pyasn1_alt_modules.rfc5280 import (
     Certificate,              # Full X.509 Certificate
 )
 
-import create_ak
 from cryptography.hazmat.primitives import hashes, serialization
 
-
+# ---------------------------------------------------------------------------
+# id-kp OBJECT IDENTIFIER ::=
+#  { iso(1) identified-organization(3) dod(6) internet(1)
+#    security(5) mechanisms(5) pkix(7) kp(3) }
+#
+#  -- Attestation Key Extended Key Usage --
+#
+# id-kp-attestationKey OBJECT IDENTIFIER ::= { id-kp TBDMOD2 }
+# ---------------------------------------------------------------------------
+id_kp_attest_oid = x509.ObjectIdentifier("1.3.6.1.5.5.7.3.999")
 
 # ---------------------------------------------------------------------------
 # CLAIM ::= CLASS {
@@ -254,7 +262,7 @@ class PkixEvidence:
         tbs_der = der_encoder.encode(self.tbs)
         signature = ak_private_key.sign(
             tbs_der,
-            ec.ECDSA(hashes.SHA1()),
+            ec.ECDSA(hashes.SHA256()),
         )
 
         sig_block["signatureValue"] = univ.OctetString(signature)
