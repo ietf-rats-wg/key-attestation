@@ -1,3 +1,4 @@
+import sys
 
 # ---------------------------------------------------------------------------
 # Dependency imports with friendly error messages

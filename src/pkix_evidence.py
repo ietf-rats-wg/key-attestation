@@ -15,14 +15,11 @@ RFC 5280 types used directly from pyasn1_alt_modules.rfc5280:
   - SubjectPublicKeyInfo
   - Certificate
 """
-import base64
-from datetime import datetime, timezone
 from evidence_oid_registry import oid_name, OID_NAMES, CLAIM_EXPECTED_TAGS, KNOWN_ELEMENT_OIDS, KNOWN_CLAIM_OIDS, evidence_make_oid
 
 from cryptography import x509
 from cryptography.hazmat.primitives.asymmetric import ec
 
-from pathlib import Path
 from typing import List
 
 # ---------------------------------------------------------------------------
