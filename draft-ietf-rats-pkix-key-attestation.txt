@@ -5,7 +5,7 @@
 RATS                                                         J.-P. Fiset
 Internet-Draft                                                  Crypto4A
 Intended status: Standards Track                            M. Ounsworth
-Expires: 22 January 2027                                  Cryptic Forest
+Expires: 11 February 2027                                 Cryptic Forest
                                                            H. Tschofenig
                                                                 UniBw M.
                                                              H. Birkholz
@@ -13,7 +13,7 @@ Expires: 22 January 2027                                  Cryptic Forest
                                                               M. Wiseman
                                                                         
                                                                 N. Smith
-                                                            21 July 2026
+                                                          10 August 2026
 
 
             Evidence Encoding for Hardware Security Modules
@@ -70,7 +70,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 22 January 2027.
+   This Internet-Draft will expire on 11 February 2027.
 
 Copyright Notice
 
@@ -1083,38 +1083,44 @@ Table of Contents
    provided by PKCS#11.  Each purpose is assigned an object identifier
    (OID).
 
-      +============+====================+===========================+
-      | Capability | PKCS#11            | OID                       |
-      +============+====================+===========================+
-      | encrypt    | CKA_ENCRYPT        | id-evidence-key-          |
-      |            |                    | capability-encrypt        |
-      +------------+--------------------+---------------------------+
-      | decrypt    | CKA_DECRYPT        | id-evidence-key-          |
-      |            |                    | capability-decrypt        |
-      +------------+--------------------+---------------------------+
-      | wrap       | CKA_WRAP           | id-evidence-key-          |
-      |            |                    | capability-wrap           |
-      +------------+--------------------+---------------------------+
-      | unwrap     | CKA_UNWRAP         | id-evidence-key-          |
-      |            |                    | capability-unwrap         |
-      +------------+--------------------+---------------------------+
-      | sign       | CKA_SIGN           | id-evidence-key-          |
-      |            |                    | capability-sign           |
-      +------------+--------------------+---------------------------+
-      | sign-      | CKA_SIGN_RECOVER   | id-evidence-key-          |
-      | recover    |                    | capability-sign-recover   |
-      +------------+--------------------+---------------------------+
-      | verify     | CKA_VERIFY         | id-evidence-key-          |
-      |            |                    | capability-verify         |
-      +------------+--------------------+---------------------------+
-      | verify-    | CKA_VERIFY_RECOVER | id-evidence-key-          |
-      | recover    |                    | capability-verify-recover |
-      +------------+--------------------+---------------------------+
-      | derive     | CKA_DERIVE         | id-evidence-key-          |
-      |            |                    | capability-derive         |
-      +------------+--------------------+---------------------------+
+     +=============+====================+===========================+
+     | Capability  | PKCS#11            | OID                       |
+     +=============+====================+===========================+
+     | encrypt     | CKA_ENCRYPT        | id-evidence-key-          |
+     |             |                    | capability-encrypt        |
+     +-------------+--------------------+---------------------------+
+     | decrypt     | CKA_DECRYPT        | id-evidence-key-          |
+     |             |                    | capability-decrypt        |
+     +-------------+--------------------+---------------------------+
+     | wrap        | CKA_WRAP           | id-evidence-key-          |
+     |             |                    | capability-wrap           |
+     +-------------+--------------------+---------------------------+
+     | unwrap      | CKA_UNWRAP         | id-evidence-key-          |
+     |             |                    | capability-unwrap         |
+     +-------------+--------------------+---------------------------+
+     | sign        | CKA_SIGN           | id-evidence-key-          |
+     |             |                    | capability-sign           |
+     +-------------+--------------------+---------------------------+
+     | sign-       | CKA_SIGN_RECOVER   | id-evidence-key-          |
+     | recover     |                    | capability-sign-recover   |
+     +-------------+--------------------+---------------------------+
+     | verify      | CKA_VERIFY         | id-evidence-key-          |
+     |             |                    | capability-verify         |
+     +-------------+--------------------+---------------------------+
+     | verify-     | CKA_VERIFY_RECOVER | id-evidence-key-          |
+     | recover     |                    | capability-verify-recover |
+     +-------------+--------------------+---------------------------+
+     | derive      | CKA_DERIVE         | id-evidence-key-          |
+     |             |                    | capability-derive         |
+     +-------------+--------------------+---------------------------+
+     | decapsulate | CKA_DECAPSULATE    | id-evidence-key-          |
+     |             |                    | capability-decapsulate    |
+     +-------------+--------------------+---------------------------+
+     | encapsulate | CKA_ENCAPSULATE    | id-evidence-key-          |
+     |             |                    | capability-encapsulate    |
+     +-------------+--------------------+---------------------------+
 
-                                  Table 3
+                                 Table 3
 
    The use of an object identifier to report a purpose allows third
    parties to extend this list to support implementations that have
@@ -1793,6 +1799,10 @@ Table of Contents
        { id-evidence-key-capability 7 }
    id-evidence-key-capability-derive       OBJECT IDENTIFIER ::=
        { id-evidence-key-capability 8 }
+   id-evidence-key-capability-decapsulate  OBJECT IDENTIFIER ::=
+       { id-evidence-key-capability 9 }
+   id-evidence-key-capability-encapsulate  OBJECT IDENTIFIER ::=
+       { id-evidence-key-capability 10 }
 
 
    claim-transaction-nonce CLAIM ::= {
@@ -2247,9 +2257,9 @@ Table of Contents
               Deshpande, Y., Niemi, A., and T. Fossati, "Using
               Attestation in Transport Layer Security (TLS) and Datagram
               Transport Layer Security (DTLS)", Work in Progress,
-              Internet-Draft, draft-fossati-tls-attestation-09, 30 April
-              2025, <https://datatracker.ietf.org/doc/html/draft-
-              fossati-tls-attestation-09>.
+              Internet-Draft, draft-fossati-tls-attestation-10, 23 July
+              2026, <https://datatracker.ietf.org/doc/html/draft-
+              fossati-tls-attestation-10>.
 
    [I-D.ietf-lamps-csr-attestation]
               Ounsworth, M., Tschofenig, H., Birkholz, H., Wiseman, M.,
