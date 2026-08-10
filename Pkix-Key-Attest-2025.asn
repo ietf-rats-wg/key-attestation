@@ -207,6 +207,10 @@ id-evidence-key-capability-verify-recover OBJECT IDENTIFIER ::=
     { id-evidence-key-capability 7 }
 id-evidence-key-capability-derive       OBJECT IDENTIFIER ::=
     { id-evidence-key-capability 8 }
+id-evidence-key-capability-decapsulate  OBJECT IDENTIFIER ::=
+    { id-evidence-key-capability 9 }
+id-evidence-key-capability-encapsulate  OBJECT IDENTIFIER ::=
+    { id-evidence-key-capability 10 }
 
 
 claim-transaction-nonce CLAIM ::= {

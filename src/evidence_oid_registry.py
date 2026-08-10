@@ -54,6 +54,8 @@ EVIDENCE_KNOWN_OIDS: dict[str, str] = {
     "id-evidence-key-capability-verify": "1.3.6.1.5.5.999.2.6",
     "id-evidence-key-capability-verify-recover": "1.3.6.1.5.5.999.2.7",
     "id-evidence-key-capability-derive": "1.3.6.1.5.5.999.2.8",
+    "id-evidence-key-capability-decapsulate": "1.3.6.1.5.5.999.2.9",
+    "id-evidence-key-capability-encapsulate": "1.3.6.1.5.5.999.2.10",
     # Extended Key Usage
     "id-kp-attestationKey": "1.3.6.1.5.5.7.3.999",
 }

@@ -869,6 +869,8 @@ attributes provided by PKCS#11. Each purpose is assigned an object identifier (O
 | verify           | CKA_VERIFY         | id-evidence-key-capability-verify         |
 | verify-recover   | CKA_VERIFY_RECOVER | id-evidence-key-capability-verify-recover |
 | derive           | CKA_DERIVE         | id-evidence-key-capability-derive         |
+| decapsulate      | CKA_DECAPSULATE    | id-evidence-key-capability-decapsulate    |
+| encapsulate      | CKA_ENCAPSULATE    | id-evidence-key-capability-encapsulate    |
 
 The use of an object identifier to report a purpose allows third parties to extend this list to support
 implementations that have other key purposes.
