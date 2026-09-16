@@ -5,7 +5,7 @@
 RATS                                                         J.-P. Fiset
 Internet-Draft                                                  Crypto4A
 Intended status: Standards Track                            M. Ounsworth
-Expires: 11 February 2027                                 Cryptic Forest
+Expires: 20 March 2027                                    Cryptic Forest
                                                            H. Tschofenig
                                                                 UniBw M.
                                                              H. Birkholz
@@ -13,7 +13,7 @@ Expires: 11 February 2027                                 Cryptic Forest
                                                               M. Wiseman
                                                                         
                                                                 N. Smith
-                                                          10 August 2026
+                                                       16 September 2026
 
 
             Evidence Encoding for Hardware Security Modules
@@ -70,7 +70,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 February 2027.
+   This Internet-Draft will expire on 20 March 2027.
 
 Copyright Notice
 
@@ -569,11 +569,11 @@ Table of Contents
    A value provided by a claim is to be interpreted within the context
    of its element and in relation to the claim type.
 
-   It is RECOMMENDED that a claim type be defined for a specific element
-   type, to reduce confusion when it comes to interpretation of the
-   value.  In other words, a claim type SHOULD NOT be used by multiple
-   element types.  For example, if a concept of "revision" is applicable
-   to a platform and a key, the claim for one element type (platform
+   A claim type MUST be defined for a specific element type to reduce
+   confusion when it comes to interpretation of the value.  In other
+   words, a specific claim type MUST NOT be used by multiple element
+   types.  For example, if a concept of "revision" is applicable to a
+   platform and a key, the claim for one element type (platform
    revision) should have a different identifier from the one for the
    other element type (key revision).
 
@@ -922,10 +922,9 @@ Table of Contents
 
    The boolean claim fipsboot indicates whether the device is currently
    operating in FIPS mode.  When the claim value is "true", the HSM is
-   running in compliance with the FIPS 140 restrictions.  Among other
-   restrictions, it means that only FIPS-approved algorithms are
-   available.  If the value of this claim is "false", then the HSM is
-   not restricted to the behavior limited by compliance.
+   running in compliance with the FIPS 140 restrictions.  If the value
+   of this claim is "false", then the HSM is not restricted to the
+   behavior limited by compliance.
 
    The textual claim fipsver indicates the version of the FIPS CMVP
    specification with which the device's operational mode is compliant.
@@ -2265,9 +2264,9 @@ Table of Contents
               Ounsworth, M., Tschofenig, H., Birkholz, H., Wiseman, M.,
               and N. Smith, "Use of Remote Attestation with
               Certification Signing Requests", Work in Progress,
-              Internet-Draft, draft-ietf-lamps-csr-attestation-28, 16
-              June 2026, <https://datatracker.ietf.org/doc/html/draft-
-              ietf-lamps-csr-attestation-28>.
+              Internet-Draft, draft-ietf-lamps-csr-attestation-29, 2
+              September 2026, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-lamps-csr-attestation-29>.
 
    [I-D.ietf-rats-msg-wrap]
               Birkholz, H., Smith, N., Fossati, T., Tschofenig, H., and
