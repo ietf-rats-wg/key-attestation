@@ -492,8 +492,8 @@ or not.
 A value provided by a claim is to be interpreted within the context
 of its element and in relation to the claim type.
 
-It is RECOMMENDED that a claim type be defined for a specific element type, to reduce
-confusion when it comes to interpretation of the value. In other words, a claim type SHOULD
+A claim type MUST be defined for a specific element type to reduce
+confusion when it comes to interpretation of the value. In other words, a specific claim type MUST
 NOT be used by multiple element types. For example, if a concept of "revision" is applicable to a platform
 and a key, the claim for one element type (platform revision) should have a different identifier
 from the one for the other element type (key revision).
@@ -749,7 +749,7 @@ FIPS 140-3 offers compliance levels 1 through 4 with increasingly strict require
 the device to be taken out of FIPS mode and thus enable additional functionality or performance, and some offer configuration settings to change between compliance levels.
 
 The boolean claim `fipsboot` indicates whether the device is currently operating in FIPS mode. When the claim value is "true", the HSM is running in compliance with the
-FIPS 140 restrictions. Among other restrictions, it means that only FIPS-approved algorithms are available. If the value of this claim is "false", then the HSM is not
+FIPS 140 restrictions. If the value of this claim is "false", then the HSM is not
 restricted to the behavior limited by compliance.
 
 The textual claim `fipsver` indicates the version of the FIPS CMVP specification with which the device's operational mode is compliant. At the time of writing, the strings "FIPS 140-2" or "FIPS 140-3" SHOULD be used.
