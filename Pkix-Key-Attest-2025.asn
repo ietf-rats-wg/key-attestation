@@ -36,7 +36,7 @@ id-kp-attestationKey OBJECT IDENTIFIER ::= { id-kp TBDMOD2 }
 
 Evidence ::= SEQUENCE {
     tbs  TbsEvidence,
-    signatures  SEQUENCE SIZE (0..MAX) OF SignatureBlock,
+    signatures  SEQUENCE SIZE (1..MAX) OF SignatureBlock,
     intermediateCertificates  [0] SEQUENCE OF Certificate OPTIONAL
                                   -- As defined in RFC 5912
 }
@@ -80,13 +80,12 @@ CLAIM ::= CLASS {
 
 ReportedClaim ::= SEQUENCE {
     claimType  CLAIM.&id ({ClaimSet}),
-    value      CLAIM.&Type ({ClaimSet}{@claimType}) OPTIONAL
+    value      CLAIM.&Type ({ClaimSet}{@claimType})
 }
 
 ClaimSet CLAIM ::= {
       claim-transaction-nonce
       | claim-transaction-timestamp
-      | claim-transaction-ak-spki
       | claim-platform-vendor
       | claim-platform-oemid
       | claim-platform-hwmodel
@@ -134,9 +133,6 @@ id-evidence-claim-transaction-nonce     OBJECT IDENTIFIER ::=
     { id-evidence-claim-transaction 0 }
 id-evidence-claim-transaction-timestamp OBJECT IDENTIFIER ::=
     { id-evidence-claim-transaction 1 }
-id-evidence-claim-transaction-ak-spki   OBJECT IDENTIFIER ::=
-    { id-evidence-claim-transaction 2 }
-
 id-evidence-claim-platform            OBJECT IDENTIFIER ::=
     { id-evidence-claim 1 }
 id-evidence-claim-platform-vendor     OBJECT IDENTIFIER ::=
@@ -221,11 +217,6 @@ claim-transaction-nonce CLAIM ::= {
 claim-transaction-timestamp CLAIM ::= {
   ID id-evidence-claim-transaction-timestamp
   WITH TYPE GeneralizedTime
-}
-
-claim-transaction-ak-spki CLAIM ::= {
-  ID id-evidence-claim-transaction-ak-spki
-  WITH TYPE OCTET STRING
 }
 
 claim-platform-vendor CLAIM ::= {

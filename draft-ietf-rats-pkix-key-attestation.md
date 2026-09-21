@@ -88,11 +88,6 @@ normative:
     author:
       - org: ITU-T
     target: https://www.itu.int/rec/T-REC-X.680
-  X690:
-    title: "Information technology — ASN.1 encoding rules: BER, CER, DER"
-    author:
-      - org: ITU-T
-    target: https://www.itu.int/rec/T-REC-X.690
   PKCS11:
     title: "PKCS #11 Specification Version 3.1"
     author:
@@ -122,13 +117,9 @@ normative:
       ISO/IEC: 8825-1:2021
 
 informative:
-  RFC2986:
   RFC6024:
   RFC9019:
-  RFC4211:
   I-D.ietf-lamps-csr-attestation:
-  I-D.fossati-tls-attestation:
-  I-D.ietf-rats-msg-wrap:
   CNSA2.0:
     title: "Commercial National Security Algorithm Suite 2.0"
     author:
@@ -155,8 +146,6 @@ to a remote operator or auditor in a vendor-agnostic verifiable format.
 A more complex scenario would be to submit this Evidence to a Certification Authority to aid in determining
 whether the storage properties of this key meet the requirements of a given certificate profile.
 
-This specification also offers a format for requesting a cryptographic module to produce Evidence tailored for expected use.
-
 --- middle
 
 # Introduction
@@ -171,9 +160,7 @@ Concretely, this specification defines:
 
 * an element-and-claim data model organized around transaction, platform, and key elements, identified by OIDs;
 
-* encoding and signature-verification processing rules for PKIX Evidence;
-
-* an attestation request structure that allows a Presenter to request a scoped subset of elements and claims.
+* encoding and signature-verification processing rules for PKIX Evidence.
 
 The design is intentionally PKIX-native. ASN.1 and DER are used to align with existing certificate tooling, certification authority workflows, and HSM implementations where non-ASN.1 formats are less common.
 
@@ -229,6 +216,7 @@ The Evidence format offered by this specification is designed to carry the infor
 assess the location of the subject key along a number of commonly-required attributes. More specifically, a CA could
 determine which HSM was used to generate the subject key, whether this device adheres
 to certain jurisdiction policies (such as FIPS mode) and the constraints applied to the key (such as whether is it extractable).
+The use of Evidence in a certification request is specified in {{I-D.ietf-lamps-csr-attestation}}.
 
 For relatively simple HSM devices, storage properties such as "extractable" may always be false for all keys
 since the devices are not capable of key export and so the Evidence could be essentially a hard-coded template asserting these
@@ -318,8 +306,8 @@ platform, such as those carried out during audit reviews.
 Presenter:
 : Role that facilitates communication between the Attester and the Verifier. The
 Presenter initiates the operation of generating Evidence at the Attester and
-passes the generated Evidence to the Verifier. In the case of HSMs, the Presenter
-is responsible of selecting the claims that are part of the generated Evidence.
+passes the generated Evidence to the Verifier. The interface by which the Presenter
+initiates Evidence generation is outside the scope of this specification.
 
 Trust Anchor:
 : As defined in {{RFC6024}} and {{RFC9019}}, a Trust Anchor
@@ -395,9 +383,10 @@ contained by.  Presenting non-attestation data for validation by this AK public 
 An EKU that includes a KeyPurposeId of `id-kp-attestationKey` along with other attestation-related
 KeyPurposeId SHOULD NOT be marked as critical.
 
-Note that the data format specified in {{sec-data-model}} allows for zero, one, or multiple
-'SignatureBlock's, so a single Evidence statement could be un-protected, or could be endorsed by multiple
-AK chains leading to different trust anchors. See {{sec-verif-proc}} for a discussion of handling multiple SignatureBlocks.
+The data format specified in {{sec-data-model}} requires one or more `SignatureBlock` values.
+Multiple signature blocks allow one Attester identity, represented by a single subject DN,
+to use distinct Attestation Keys and signature algorithms. See {{sec-verif-proc}} for the
+processing rules.
 
 
 # Information Model {#sec-info-model}
@@ -440,7 +429,7 @@ are treated as different elements as they are reporting different portions of th
 The number of elements reported in an Evidence description, and their respective type, is
 left to the implementer. For a simple device where there is only one key, the list of
 reported elements could be fixed. For larger and more complex devices, the list of
-reported elements should be tailored to what is demanded by the Presenter.
+reported elements should be tailored to the intended use and authorized recipient of the Evidence.
 
 In particular, note that the `nonce` claim contained with the Transaction element is optional,
 and therefore it is possible that an extremely simple device that holds one static key
@@ -465,7 +454,7 @@ An element is defined by its type. This specification defines three element type
 
 * Transaction : This element is abstract in nature since it is associated with claims
   that do not describe portions of the Target Environment. Instead, these claims
-  relate to the current request for Evidence such as a `nonce` to support freshness.
+  relate to the Evidence-generation transaction, such as a `nonce` to support freshness.
 
 Although this document defines a short list of element types, this list is extensible
 to allow implementers to report on elements found in their implementation and not
@@ -507,13 +496,12 @@ report additional claims not covered by this specification.
 The number of claims reported within an element, and their respective type, is
 left to the implementer. For a simple device, the reported list of claims for an element
 might be fixed. However, for larger and more complex devices, the list of reported claims
-should be tailored to what is demanded by the Presenter.
+should be tailored to the intended use and authorized recipient of the Evidence.
 
 Claims of a particular type MAY be repeated within an element while others MUST NOT. For example, for a
 platform element, there can only be one "firmware version" claim. Therefore, the associated claim
-MUST NOT be repeated as it may lead to confusion. However, a claim relating to
-a "ak-spki" MAY be repeated, each claim describing a different attesting key.
-Therefore, the definition of a claim specifies whether or not multiple copies of that
+MUST NOT be repeated as it may lead to confusion. Other claim definitions can allow
+multiple independent values. Therefore, the definition of a claim specifies whether or not multiple copies of that
 claim are allowed within an element's claim set.
 
 If a Verifier detects, within a single element, multiple copies of a claim type that should not
@@ -527,15 +515,15 @@ consider later ones to overwrite the previous one.
 # Data Model {#sec-data-model}
 
 This section describes the data model associated with generated Evidence. For ease of
-deployment within the target ecosystem, ASN.1 definitions and DER encoding
-are used. A complete ASN.1 module is provided in {{sec-asn1-mod}}.
+deployment within the target ecosystem, ASN.1 definitions {{X680}} and DER encoding
+{{X.690}} are used. A complete ASN.1 module is provided in {{sec-asn1-mod}}.
 
 The top-level structures, as ASN.1 fragments, are:
 
 ~~~ asn.1
 Evidence ::= SEQUENCE {
     tbs  TbsEvidence,
-    signatures  SEQUENCE SIZE (0..MAX) OF SignatureBlock,
+    signatures  SEQUENCE SIZE (1..MAX) OF SignatureBlock,
     intermediateCertificates  [0] SEQUENCE OF Certificate OPTIONAL
                                   -- As defined in RFC 5912
 }
@@ -569,13 +557,10 @@ An `Evidence` message is composed of a protected section known as the To-Be-Sign
 The `TbsEvidence` corresponds to the "Evidence Description" referred to in {{sec-info-model}}.
 The integrity of the TBS section is ensured with one or multiple cryptographic signatures
 over the content of this section. There is a provision to carry X.509 certificates supporting each signature.
-The SEQUENCE OF `SignatureBlock` allows for both multi-algorithm protection and for counter-signatures
-of the Evidence.
-In an effort to keep the Evidence format simple, distinguishing between these two cases is left up to Verifier policy,
-potentially by making use of the certificates that accompany each signature.
-
-This design also does not prevent an attacker from removing, adding or re-ordering signatures without leaving trace.
-This is discussed as part of the security considerations in {{sec-detached-sigs}}.
+The SEQUENCE OF `SignatureBlock` supports algorithm agility by allowing the same Attester
+identity to sign the TBS section with multiple Attestation Keys. When more than one
+`SignatureBlock` is present, each signing certificate represents the same Attester
+identity with the same subject Distinguished Name (DN), but contains a distinct SPKI.
 
 The TBS section is composed of a version number, to ensure future extensibility, and a sequence of reported elements.
 For compliance with this specification, `TbsEvidence.version` MUST be `1`.
@@ -632,7 +617,7 @@ CLAIM ::= CLASS {
 
 ReportedClaim ::= SEQUENCE {
     claimType  CLAIM.&id ({ClaimSet}),
-    value      CLAIM.&Type ({ClaimSet}{@claimType}) OPTIONAL
+    value      CLAIM.&Type ({ClaimSet}{@claimType})
 }
 
 ClaimSet CLAIM ::= {
@@ -641,9 +626,7 @@ ClaimSet CLAIM ::= {
 }
 ~~~
 
-The `ClaimSet` object set in the complete ASN.1 module is extensible. This allows future or proprietary claim types to be encoded without changing the `ReportedClaim` syntax. A Verifier that does not recognize a claim type SHOULD ignore that claim as described in {{sec-info-model}}, unless local policy requires rejection.
-
-For generated Evidence, `value` MUST be present for every claim whose semantics are defined by this specification unless that claim type explicitly allows omission. In attestation requests, the value MAY be omitted when the value is to be supplied by the Attesting Environment.
+The `ClaimSet` object set in the complete ASN.1 module is extensible. This allows future or proprietary claim types to be encoded without changing the `ReportedClaim` syntax. A Verifier that does not recognize a claim type SHOULD ignore that claim as described in {{sec-info-model}}, unless local policy requires rejection. Every reported claim contains a value.
 
 Each claim type SHOULD be associated with a single element type. Therefore, it is encouraged
 to define claim types grouped with their respective element type.
@@ -879,10 +862,10 @@ implementations that have other key purposes.
 
 A transaction element is associated with the type `id-evidence-element-transaction`. This is
 an abstract element and does not relate to any state found in the Target Environment. Instead, it
-groups together claims that relate to the request of generating the Evidence.
+groups together claims that relate to the generation of the Evidence.
 
-For example, it is possible to include a `nonce` as part of the request to produce Evidence. This
-`nonce` is repeated as part of the Evidence to support
+For example, a Verifier can supply a `nonce` for the generation of Evidence. This
+`nonce` is included in the Evidence to support
 the freshness of the Evidence. The `nonce` is not related to any portion of the Target Environment
 and the transaction element is used to gather those values into claims.
 
@@ -899,12 +882,10 @@ for the claim value can be found.
 | ---             | ---           | ---       | ---                                      |
 | nonce           | {{RFC9711}}   | No        | id-evidence-claim-transaction-nonce      |
 | timestamp       | {{RFC9711}}   | No        | id-evidence-claim-transaction-timestamp  |
-| ak-spki         | {{&SELF}}     | Yes       | id-evidence-claim-transaction-ak-spki    |
 
 ### nonce
 
-The claim `nonce` is used to provide "freshness" quality as to the generated Evidence. A Presenter requesting Evidence MAY provide a nonce
-value as part of the request. This nonce value, if specified, SHOULD be repeated in the generated Evidence as a claim within the transaction element.
+The claim `nonce` is used to provide "freshness" quality as to the generated Evidence. If a nonce is used, it MUST be generated by the Verifier and conveyed to the Attester, possibly through a Presenter. The Attester MUST include the nonce unchanged in the generated Evidence. The mechanism by which the nonce is conveyed to the Attester is outside the scope of this specification.
 
 This claim is similar to the "eat_nonce" as defined in {{RFC9711}}. According to that specification, this claim may be specified multiple times with
 different values. However, within the scope of this specification, the "nonce" value can be specified only once within a transaction.
@@ -916,17 +897,6 @@ The time at which the Evidence was generated, according to the internal system c
 
 Note that security considerations should be taken relating to the evaluation of timestamps generated by HSMs. See {{sec-cons-hsm-timestamps}}.
 
-### ak-spki
-
-This claim contains the encoded Subject Public Key Information (SPKI) for the attestation key used to sign the Evidence. The definition
-and encoding for SPKIs are defined in X.509 certificates ({{RFC5280}}).
-
-This transaction claim is used to bind the content of the Evidence with the key(s) used to sign that Evidence. The importance
-of this binding is discussed in {{sec-detached-sigs}}.
-
-This claim can be reported multiple times. Each included claim MUST refer to a different attestation key. In other words, this claim
-should be repeated only if multiple attestation keys are used to sign the Evidence.
-
 ## Additional Element and Claim Types {#sec-additional-claim-types}
 
 It is expected that HSM vendors will register additional Element and Claim types by assigning OIDs from their own proprietary OID arcs to hold data describing additional proprietary key properties.
@@ -934,7 +904,7 @@ It is expected that HSM vendors will register additional Element and Claim types
 When new element and claim types are used, documentation similar to the one produced in this specification SHOULD be distributed to
 explain the semantics of the claims and the frequency that values can be provided.
 
-See {{sec-req-processing}}, {{sec-req-verification}} and {{sec-cons-verifier}} for handling of unrecognized custom types.
+See {{sec-cons-verifier}} for handling of unrecognized custom types.
 
 ## Encoding
 
@@ -957,7 +927,7 @@ header label is "EVIDENCE". For example:
 The `SignatureBlock.signatureValue` signs over the DER-encoded to-be-signed Evidence data
 `Evidence.tbs`.
 
-If `SignerIdentifier.certificate` is present, the signature MUST be validated with the subject public key of that end-entity X.509 certificate. If `SignerIdentifier.subjectPublicKeyInfo` is present, the signature MUST be validated with that public key. If `SignerIdentifier.keyId` is present, the Verifier MUST obtain the corresponding public key by some implementation-specific or out-of-band mechanism; if no such key can be obtained, the SignatureBlock MUST be treated as unverifiable and the Evidence MUST be rejected. The certificate-based mode remains the preferred form in PKIX deployments because it provides both the public key and an X.509 identity.
+If `SignerIdentifier.certificate` is present, the signature MUST be validated with the subject public key of that end-entity X.509 certificate. If `SignerIdentifier.subjectPublicKeyInfo` is present, the signature MUST be validated with that public key. If `SignerIdentifier.keyId` is present, the Verifier MUST obtain the corresponding public key by some implementation-specific or out-of-band mechanism; if no such key can be obtained, the SignatureBlock MUST be treated as unverifiable. If more than one field of `SignerIdentifier` is present, all present fields MUST identify the same public key; otherwise, the Evidence MUST be rejected. The certificate-based mode remains the preferred form in PKIX deployments because it provides both the public key and an X.509 identity.
 
 Verifiers MUST ensure, prior to accepting the signature associated with an end-entity certificate, that:
 
@@ -968,227 +938,11 @@ Verifiers MUST ensure, prior to accepting the signature associated with an end-e
 Verifiers MAY also use `Evidence.intermediateCertificates` to build a certification path from the end-entity
 certificate to a trust anchor.
 
-Note that the structure `Evidence` MAY contain zero or more SignatureBlocks.
-A structure `Evidence` with zero SignatureBlocks is unsigned and unprotected; Verifiers MUST treat it as untrusted and MUST NOT rely on its claims.
+The structure `Evidence` contains one or more `SignatureBlock` values. Each `SignatureBlock` represents a signature generated by the Attester over the same `TbsEvidence`. This specification does not use `SignatureBlock` for signatures added by an intermediary or another party.
 
-More than one SignatureBlock MAY be used to convey a number of different semantics.
-For example, the HSM's Attesting Environment might hold multiple Attestation Keys using different cryptographic
-algorithms in order to provide resilience against cryptographic degradation in a hybrid fashion. In this case a Verifier would be expected to validate
-all SignatureBlocks. Alternatively, the HSM's Attesting Service may hold multiple Attestation Keys (or multiple X.509 certificates for the same key) from
-multiple operational environments to which it belongs. In this case a Verifier would be expected to only validate the SignatureBlock corresponding to its
-own environment. Alternatively, multiple SignatureBlocks could be used to convey counter-signatures from external parties, in which case the Verifier
-needs to be equipped with environment-specific verification logic. Multiple of these cases, and potentially others, could be supported by a single Evidence object.
+More than one `SignatureBlock` supports algorithm agility for a single Attester identity. In this case, every `SignerIdentifier` MUST contain a certificate. The subject DNs in those certificates MUST identify the same Attester, using the name comparison rules in {{RFC5280}}, and the certificates MUST contain pairwise-distinct SPKIs. An Evidence producer MUST NOT combine signatures belonging to different Attester identities in one Evidence structure.
 
-Note that each SignatureBlock is a fully detached signature over the tbs content with no binding between the signed content and the SignatureBlocks meaning that a third-party can add a
-counter-signature of the Evidence after the fact, or an attacker can remove a SignatureBlock without leaving any trace. See {{sec-detached-sigs}} for further discussion.
-
-If any `transaction.ak-spki` claims are present, the Verifier SHOULD verify that each `SignerIdentifier`’s SubjectPublicKeyInfo (or the SPKI of its `certificate`) matches at least one `ak-spki` value. Each such claim is authoritative only when it is backed by a successfully verified SignatureBlock using the corresponding attestation key. An `ak-spki` claim that is not matched by a valid signature block MUST NOT by itself be treated as proof that the corresponding key was used to sign the Evidence.
-
-
-# Attestation Requests {#sec-reqs}
-
-This section is informative in nature and implementers of this specification do not need to adhere to it. The aim of this section is
-to provide a standard interface between a Presenter and an HSM producing Evidence. The authors hope that this standard interface will
-yield interoperable tools between offerings from different vendors.
-
-The interface presented in this section might be too complex for manufacturers of HSMs with limited capabilities such as smartcards
-or personal ID tokens. For devices with limited capabilities, a fixed Evidence endorsed by the vendor might be installed
-during manufacturing. Other approaches for constrained HSMs might be to report elements and claims that are fixed or offer limited
-variations.
-
-On the other hand, an enterprise-grade HSM with the capability to hold a large number of private keys is expected to be capable of generating
-Evidence catered to the specific constraints imposed by a Verifier and without exposing extraneous information. The aim of the request
-interface is to provide the means to select and report specific information in the generated Evidence.
-
-This section introduces the role of "Presenter" as shown in {{fig-arch}}. The Presenter is the role that initiates the generation of
-Evidence. Since HSMs are generally servers (client/server relationship) or peripherals (controller/peripheral relationship), a Presenter is
-required to launch the process of creating the Evidence and capturing it to forward it to the Verifier.
-
-~~~ aasvg
-+-----------------------------+
-|  Attester (HSM)             |
-|                             |
-|      +------------------+   |
-|      | Target           |   |
-|      | Environment      |   |
-|      | (Elements &      |   |
-|      |  values)         |   |
-|      +-------+----------+   |
-|              |              |
-|              | Collect      |
-|              | Claims(3)    |
-|              v              |
-|      +------------------+   |
-|      | Attesting        |   |
-|      | Environment      |   |
-|      +--------+---------+   |
-|            ^  |             |
-|            |  |             |
-+------------+--+-------------+
-             |  |
- Attestation |  |   Evidence(4)
- Request(2)  |  |
-             |  v
-     +----------------+   Nonce(1)  +------------+
-     |                |<------------|            |
-     |    Presenter   |             |  Verifier  |
-     |                |------------>|            |
-     +----------------+ Evidence(5) +------------+
-~~~
-{: #fig-arch title="Architecture"}
-
-
-The process of generating Evidence generally starts at the Verifier with the generation of a nonce. The nonce is used to ensure freshness
-of the Evidence and this quality is guaranteed by the Verifier. Therefore, if a nonce is used, it must be provided to the Presenter by
-the Verifier (1).
-
-An Attestation Request (request) is assembled by the Presenter and submitted to the HSM (2). The Attesting Environment parses the request and
-collects the appropriate measurements from the Target Environment (3).
-
-In the previous figure, the HSM is represented as being composed of an Attesting Environment and a Target Environment. This representation is offered
-as a simplified view and implementations are not required to adhere to this separation of concerns.
-
-The Attesting Environment produces Evidence based on the collected information and returns it to the Presenter for distribution (4). Finally, the
-Presenter forwards the Evidence to the Verifier (5).
-
-The aim of the figure is to depict the position of the Presenter as an intermediate role between the Attester and the Verifier.
-The role of "Presenter" is privileged as it controls the claims included in the Evidence being generated by the Attester. However, the role is not "trusted" as
-the Verifier does not have to take into account the participation of the Presenter as part of the function of appraising the Evidence.
-
-The attestation request, shown in the figure, consists of a structure `TbsEvidence` containing one `ReportedElement` for each element expected to
-be included in the Evidence produced by the HSM.
-
-Each instance of `ReportedElement` included in the request is referred to as a requested element. A requested element contains a number of instances
-of `ReportedClaim` known as requested claims. The collection of requested elements and requested claims represent the information desired
-by the Presenter.
-
-In most cases the value of a requested claim should be left unspecified by the Presenter. In the process of generating
-the Evidence, the values of the desired claims are measured by the Attesting Environment within the HSM and reported accordingly. For the purpose
-of creating a request, the Presenter does not specify the value of the requested claims and leaves them empty. This is possible because the definition of
-the structure `ReportedClaim` specifies the element `value` as optional.
-
-On the other hand, there are circumstances where the value of a requested claim should be provided by the Presenter. For example, when a particular
-cryptographic key is to be included in the Evidence, the request must include a key element with one of the "identifier" claim set to the value
-corresponding to the desired key.
-
-Some instances of `ReportedElement`, such as those representing the platform or the transaction, do not need identifiers as the associated elements are
-implicit in nature. Custom element types might need selection during an attestation request and related documentation should specify how this is
-achieved.
-
-The instance of `TbsEvidence` is unsigned and does not provide any means to maintain integrity when communicated from the Presenter to the HSM.
-These details are left to the implementer. However, it is worth pointing out that the structure offered by `Evidence` could be reused by an
-implementer to provide those capabilities, as described in {{sec-cons-auth-the-presenter}}.
-
-
-## Requested Claims with Specified Values
-
-This section deals with the requested claims specified in this document where a value should be provided by a Presenter. In other words, this
-section defines all requested claims that should set a value in the structure `ReportedClaim`. Requested claims not covered in this sub-section
-should not have a specified value (left empty).
-
-Since this section is non-normative, implementers may deviate from those recommendations.
-
-### Key Identifiers
-
-A Presenter may choose to select which cryptographic keys are reported as part of the generated Evidence. For each selected cryptographic key,
-the Presenter includes a requested element of type `id-evidence-element-key`. Among the requested claims for this element, the
-Presenter includes one claim with the type `id-evidence-claim-key-identifier`. The value of this claim should be
-set to the utf8String that represents the identifier for the specific key.
-
-An HSM receiving an attestation request which selects a key via this approach is expected to fail the transaction if it cannot find the cryptographic
-key associated with the specified identifier.
-
-### Nonce
-
-A Presenter may choose to include a nonce as part of the attestation request. When producing the Evidence, the HSM repeats the
-nonce that was provided as part of the request.
-
-When providing a nonce, a Presenter includes, in the attestation request, an element of type `id-evidence-element-transaction`
-with a claim of type `id-evidence-claim-transaction-nonce`. This claim is set with the value of the
-nonce as an octet string.
-
-It is important to note that the Presenter, as an untrusted participant, should not be generating the value for the nonce. In fact, the
-nonce should be generated by the Verifier so that the freshness of the Evidence can be trusted by the Verifier.
-
-### Reporting of Attestation Keys
-
-There is a provision for the Attesting Environment to report the attestation key(s) used during the generation of the Evidence. To this end,
-the transaction claim "ak-spki" is used.
-
-A Presenter invokes this provision by submitting an attestation request with a transaction claim of type "ak-spki" with a
-non-specified value (left empty).
-
-In this case, the Attesting Environment adds a transaction claim of type "ak-spki" for each Attestation Key used to sign the Evidence. The
-value of this claim is an octet string which is the encoding of the Subject Public Key Information (SPKI) associated
-with the Attestation Key. Details on SPKIs and their encoding can be found in X.509 certificates ({{RFC5280}}).
-
-This reporting effectively binds the signature blocks to the content (see {{sec-detached-sigs}}).
-
-### Custom Key Selection
-
-An implementer might desire to select multiple cryptographic keys based on a shared attribute. A possible approach
-is to include a single request element of type `id-evidence-element-key` including a claim with a set value. This claim
-would not be related to the key identifier as this is unique to each key. A HSM supporting this scheme could select all the cryptographic
-keys matching the specified claim and report them in the generated Evidence.
-
-This is a departure from the base request interface, as multiple key elements are reported from a single requested element.
-
-More elaborate selection schemes can be envisaged where multiple requested claims specifying values would be tested against cryptographic keys.
-Whether these claims are combined in a logical "and" or in a logical "or" would need to be specified by the implementer.
-
-### Custom Transaction Element Claims
-
-The extensibility offered by the proposed request interface allows an implementer to add custom claims to the transaction element in
-order to influence the way that the Evidence generation is performed.
-
-In such an approach, a new custom claim for requested elements of type "transaction" is defined. Then, a
-claim of that type is included in the attestation request (as part of the transaction element) while specifying a value. This value
-is considered by the HSM to select elements and claims during the generation of the Evidence.
-
-## Processing an Attestation Request {#sec-req-processing}
-
-This sub-section describes the considerations that are relevant when an Attesting Environment processes a request to generate
-Evidence. This section is non-normative and implementers may choose not to follow these recommendations.
-
-These recommendations apply to any attestation request scheme and are not restricted solely to the request interface proposed
-here.
-
-An Attesting Environment is expected to fail an attestation request if it contains an unrecognized element type. This is to ensure that all the semantics expected
-by the Presenter are fully understood by the Attesting Environment.
-
-An Attesting Environment is expected to fail an attestation request if it contains a requested claim with an unrecognized type and a specified value (that is, a value that is not empty). This represents a situation where the Presenter is selecting specific information that is not understood by the Attesting Environment.
-
-An Attesting Environment is encouraged to ignore unrecognized claim types in an attestation request. In this situation, the Attesting Environment is expected not to include
-the claim as part of the response. This guidance is intended to increase the likelihood of interoperability between tools of different vendors.
-
-An Attesting Environment is expected to include only elements and claims in the generated Evidence if these elements and claims were
-specified as part of the request. This is to give control to the Presenter as to what information is disclosed by the Attesting Environment.
-
-An Attesting Environment is expected to fail an attestation request if the Presenter does not have the appropriate access rights to the elements or claims included
-in the request.
-
-## Verification by Presenter {#sec-req-verification}
-
-This sub-section describes the considerations that are relevant when a Presenter receives Evidence from the Attester (the HSM)
-prior to distribution. This section is non-normative and implementers may choose not to follow these recommendations.
-
-These recommendations apply to any Evidence and are not restricted solely to Evidence generated from the proposed request interface.
-
-A Presenter is expected to review the Evidence produced by an Attester for fitness prior to distribution.
-
-A Presenter is expected not to disclose Evidence if it contains information it
-cannot parse. This restriction applies to element types and claim types. This is
-to ensure that the information provided by the Attester can be evaluated by the
-Presenter.
-
-A Presenter is expected not to disclose Evidence if it contains elements other than the ones that were requested of the Attester. This is to ensure that only the
-selected elements are exposed to the Verifier.
-
-A Presenter is expected not to disclose Evidence if it contains an element with a claim
-that was not requested of the Attester. This is to ensure that only the selected
-information is disclosed to the Verifier.
-
-Further privacy concerns are discussed in {{sec-cons-privacy}}.
+Each `SignatureBlock` is evaluated independently. A Verifier MUST successfully validate at least one `SignatureBlock` using an algorithm and certification path acceptable under its appraisal policy. A Verifier MAY validate additional `SignatureBlock` values when it supports their algorithms. The presence of a signature made with an algorithm that is unsupported or unacceptable to the Verifier does not make an otherwise acceptable signature invalid. A Verifier MUST reject Evidence when multiple signing certificates do not represent the same Attester identity as described above.
 
 
 # ASN.1 Module {#sec-asn1-mod}
@@ -1207,12 +961,12 @@ Further privacy concerns are discussed in {{sec-cons-privacy}}.
 
 Please replace "{{&SELF}}" with the RFC number assigned to this document.
 
-For the ASN.1 module found in Section 8, IANA is requested to assign
+For the ASN.1 module found in {{sec-asn1-mod}}, IANA is requested to assign
 an object identifier for the module identifier (TBDMOD1) with a
 description of "id-mod-pkix-evidence-2025". This should be allocated in the
 "SMI Security for PKIX Module Identifier" registry (1.3.6.1.5.5.7.0).
 
-For the ASN.1 module found in section 8, IANA is requested to assign an
+For the ASN.1 module found in {{sec-asn1-mod}}, IANA is requested to assign an
 object identifier for the extended key usage `id-kp-attestationKey` (TBDMOD2).
 This identifier should be allocated under the PKIX KP arc (1.3.6.1.5.5.7.3)
 with the description "Extended Key Usage (EKU) for signing Evidence".
@@ -1264,40 +1018,8 @@ within an HSM boundary -- that would be parsing Evidence
 produced by a different HSM -- implementers SHOULD opt for simple logic that rejects any
 data that does not match the expected format, instead of attempting to be flexible.
 
-In particular, the Attesting Environment SHOULD generate Evidence from scratch and
-avoid copying any content from the request. The Attesting Environment MUST generate Evidence
+In particular, the Attesting Environment SHOULD generate Evidence from scratch. The Attesting Environment MUST generate Evidence
 only from information and measurements that are directly observable by it.
-
-## Detached Signatures {#sec-detached-sigs}
-
-The construction of the Evidence structure includes a collection of signature
-blocks that are not explicitly bound to the content. This approach was influenced by the following
-motivations:
-
-* Multiple simultaneous signature blocks are desired to support hybrid environments where
-multiple keys using different cryptographic algorithms are required to support appraisal
-policies.
-
-* Provide the ability to add counter-signatures without having to define an envelop scheme.
-
-The concept of counter-signatures is important for environments where a number of heterogeneous
-devices are deployed. In those environments, it is possible for a trusted actor, intermediary between
-the Attester and the Verifier, to validate the original signature(s) and apply its own afterwards.
-
-The ability to add signature blocks to the Evidence after the original generation by the Attester leads
-to the unfortunate situation where signature blocks can also be removed without leaving any trace.
-Therefore, the signature blocks can be deemed as "detachable" or "stapled".
-
-Manipulation of the Evidence after it was generated can lead to undesired outcomes at the Verifier.
-
-Therefore, Verifiers MUST be designed to accept Evidence based on their appraisal policies, regardless
-of the presence or absence of certain signature(s). Consequently, Verifiers MUST NOT make any inferences
-based on the presence of a signature, as the signature could have been added or removed in transit.
-
-This specification provides the transaction claim "ak-spki" to effectively bind the content with
-the signature blocks that were inserted by the Attesting Environment. When this claim is provided, it reports
-the SPKI of one of the attestation keys used by the Attesting Environment to produce the Evidence. This claim
-is repeated for each of the attestation keys used by the Attesting Environment.
 
 ## Privacy {#sec-cons-privacy}
 
@@ -1308,31 +1030,18 @@ For example, an enterprise-grade HSM in a large multi-tenant cloud service could
 claims of any one of the keys would involve a Presenter that could potentially access any of the hosted keys.
 In such a case, privacy violations could occur if the Presenter was to disclose information that does not relate to the subject key.
 
-Implementers SHOULD be careful to avoid over-disclosure of information, for example by authenticating the Presenter as described in {{sec-cons-auth-the-presenter}} and
-only returning results for keys and portions of the Target Environment for which it is authorized.
-In the absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request authentication approach is described in {{sec-cons-auth-the-presenter}}.
+Implementers SHOULD avoid over-disclosure of information by authenticating and authorizing the entity that initiates Evidence generation and by including only keys and portions of the Target Environment that this entity is authorized to access. The interface for selecting the elements and claims included in Evidence is outside the scope of this specification.
 
-Furthermore, enterprise and cloud-services grade HSMs SHOULD support the full set of attestation request functionality described in {{sec-reqs}} so that
-Presenters can fine-tune the content of the generated Evidence such that it is appropriate for the intended Verifier.
+A Presenter SHOULD review Evidence before disclosure and SHOULD NOT disclose Evidence containing information that the intended Verifier is not authorized to receive. This specification does not provide Evidence encryption; deployments that require confidentiality MUST use an appropriate conveyance protocol or object-security mechanism.
 
 
 ## Authenticating and Authorizing the Presenter {#sec-cons-auth-the-presenter}
 
-The Presenter represents a privileged role within the architecture of this specification as it gets to learn about the existence of user keys and their protection properties, as well as details of the platform.
-The Presenter is in the position of deciding how much information to disclose to the Verifier, and to request a suitably redacted Evidence from the HSM.
+The Presenter represents a privileged role because it can learn about the existence of user keys and their protection properties, as well as details of the platform. It can also decide whether to disclose generated Evidence to a Verifier.
 
-For personal cryptographic tokens it might be appropriate for the attestation request interface to be un-authenticated. However, for enterprise and cloud-services
-grade HSMs the Presenter SHOULD be authenticated using the HSM's native authentication mechanism. The details are HSM-specific and are thus left up to the implementer. However,
-it is RECOMMENDED to implement an authorization framework similar to the following.
+For personal cryptographic tokens it might be appropriate for the local Evidence-generation interface to be unauthenticated. For enterprise and cloud-services grade HSMs, the entity invoking that interface SHOULD be authenticated using the HSM's native authentication mechanism. The details of this interface are HSM-specific and outside the scope of this specification.
 
-A Presenter SHOULD be allowed to request Evidence for any user keys which it is allowed to use.
-For example, a TLS application that is correctly authenticated to the HSM in order to use its TLS keys SHOULD be able to request Evidence related to those same keys without needing
-to perform any additional authentication or requiring any additional roles or permissions.
-HSMs that wish to allow a Presenter to request Evidence of keys which is not allowed to use, for example for the purposes of displaying HSM status information on an administrative
-console or UI, SHOULD have a "Attestation Requester" role or permission and SHOULD enforce the HSM's native access controls such that the Presenter can only retrieve Evidence for keys for which it has visibility.
-
-In the absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request MAY be authenticated by embedding the `TbsEvidence`
-of the request inside an `Evidence` signed with a certificate belonging to the Presenter.
+The HSM MUST enforce its native access controls when generating Evidence. An authenticated application SHOULD be allowed to obtain Evidence only for user keys that it is authorized to access. An administrative application that obtains Evidence for keys it is not allowed to use MUST have a distinct permission and MUST be limited to keys for which it has administrative visibility.
 
 ## Proof-of-Possession of User Keys
 
@@ -1346,12 +1055,12 @@ below.
 First, a user key intended for TLS, as an example, SHOULD only be used with the TLS protocol. Introducing a signature oracle whereby the TLS application key is used to sign Evidence could lead to cross-protocol attacks.
 In this example, an attacker could submit a "nonce" value which is in fact not random but is crafted in such a way as to appear as a valid message in some other protocol context or exploit some other weakness in the signature algorithm.
 
-Second, the Presenter who has connected to the HSM to request Evidence may have permissions to list the requested application keys but not permission to use them,
+Second, the Presenter that initiates Evidence generation may have permission to list the relevant application keys but not permission to use them,
 as in the case where the Presenter is an administrative UI displaying HSM status information to a system's administrator or auditor.
 
 Requiring the Attesting Environment to use the reported application keys to generate Evidence could, in some architectures, require the Attesting Environment to
 resolve complex access control logic and handle complex error conditions, which violates the "simple to implement" design principle outlined in {{sec-cons-simple}}.
-More discussions on authenticating the Presenter can be found in {{sec-cons-auth-the-presenter}}.
+More discussion on authenticating the Presenter can be found in {{sec-cons-auth-the-presenter}}.
 
 ## Timestamps and HSMs {#sec-cons-hsm-timestamps}
 
