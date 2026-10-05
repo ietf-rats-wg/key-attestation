@@ -129,6 +129,7 @@ informative:
   I-D.ietf-lamps-csr-attestation:
   I-D.fossati-tls-attestation:
   I-D.ietf-rats-msg-wrap:
+  I-D.ounsworth-rats-privacy-framework:
   CNSA2.0:
     title: "Commercial National Security Algorithm Suite 2.0"
     author:
@@ -1299,22 +1300,14 @@ the signature blocks that were inserted by the Attesting Environment. When this 
 the SPKI of one of the attestation keys used by the Attesting Environment to produce the Evidence. This claim
 is repeated for each of the attestation keys used by the Attesting Environment.
 
-## Privacy {#sec-cons-privacy}
+## Privacy and Evidence Encryption {#sec-cons-privacy}
 
-Some HSMs have the capacity of supporting cryptographic keys controlled by separate elements referred to as "tenants", and when the HSM is used in that mode
-it is referred to as a multi-tenant configuration.
+{{I.D.ounsworth-rats-privacy-framework}} presents a framework for identifying points in an Evidence conveyance protocol where designers and implementers need to be conscious of privacy concerns.
+For the evidence mechanism specified in this document, the primary privacy concern has to do with authenticating the requester against the HSM's local policies, and only releasing claims that they are authorized to view.
+The Attestation Request mechanism presented in {{sec-reqs}} and discussed in {{sec-cons-auth-the-presenter}} provide the core mechanism for accomplishing this.
 
-For example, an enterprise-grade HSM in a large multi-tenant cloud service could host TLS keys fronting multiple un-related web domains. Providing Evidence for
-claims of any one of the keys would involve a Presenter that could potentially access any of the hosted keys.
-In such a case, privacy violations could occur if the Presenter was to disclose information that does not relate to the subject key.
-
-Implementers SHOULD be careful to avoid over-disclosure of information, for example by authenticating the Presenter as described in {{sec-cons-auth-the-presenter}} and
-only returning results for keys and portions of the Target Environment for which it is authorized.
-In the absence of an existing mechanism for authenticating and authorizing administrative connections to the HSM, the attestation request authentication approach is described in {{sec-cons-auth-the-presenter}}.
-
-Furthermore, enterprise and cloud-services grade HSMs SHOULD support the full set of attestation request functionality described in {{sec-reqs}} so that
-Presenters can fine-tune the content of the generated Evidence such that it is appropriate for the intended Verifier.
-
+Additionally, {{I.D.ounsworth-rats-privacy-framework}} calls for object-level evidence encryption (instead of relying solely on transport encryption), and corresponding validation of the provided Verifyier encryption certificate against local policies. Such a mechanism is left out-of-scope in this specification since it is largely independent of the Evidence request and response structures defined here.
+Implementers are welcome to wrap the structures defined here in such an encryption layer either within the HSM or externally to the HSM at an entity such as the Presenter.
 
 ## Authenticating and Authorizing the Presenter {#sec-cons-auth-the-presenter}
 
