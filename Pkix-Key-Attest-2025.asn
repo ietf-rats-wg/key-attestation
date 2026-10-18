@@ -36,7 +36,7 @@ id-kp-attestationKey OBJECT IDENTIFIER ::= { id-kp TBDMOD2 }
 
 Evidence ::= SEQUENCE {
     tbs  TbsEvidence,
-    signatures  SEQUENCE SIZE (0..MAX) OF SignatureBlock,
+    signatures  SEQUENCE SIZE (1..MAX) OF SignatureBlock,
     intermediateCertificates  [0] SEQUENCE OF Certificate OPTIONAL
                                   -- As defined in RFC 5912
 }
@@ -80,7 +80,7 @@ CLAIM ::= CLASS {
 
 ReportedClaim ::= SEQUENCE {
     claimType  CLAIM.&id ({ClaimSet}),
-    value      CLAIM.&Type ({ClaimSet}{@claimType}) OPTIONAL
+    value      CLAIM.&Type ({ClaimSet}{@claimType})
 }
 
 ClaimSet CLAIM ::= {
