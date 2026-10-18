@@ -113,6 +113,7 @@ informative:
   RFC6024:
   RFC9019:
   I-D.ietf-lamps-csr-attestation:
+  I-D.ounsworth-rats-privacy-framework:
   CNSA2.0:
     title: "Commercial National Security Algorithm Suite 2.0"
     author:
@@ -1169,9 +1170,9 @@ data that does not match the expected format, instead of attempting to be flexib
 In particular, the Attesting Environment SHOULD generate Evidence from scratch. The Attesting Environment MUST generate Evidence
 only from information and measurements that are directly observable by it.
 
-## Privacy {#sec-cons-privacy}
+## Privacy and Evidence Encryption {#sec-cons-privacy}
 
-Some HSMs have the capacity of supporting cryptographic keys controlled by separate elements referred to as "tenants", and when the HSM is used in that mode
+Some HSMs have the capacity of supporting cryptographic keys controlled by separate entities referred to as "tenants", and when the HSM is used in that mode
 it is referred to as a multi-tenant configuration.
 
 For example, an enterprise-grade HSM in a large multi-tenant cloud service could host TLS keys fronting multiple un-related web domains. Providing Evidence for
@@ -1184,6 +1185,15 @@ is outside the scope of this specification.
 
 A Presenter SHOULD review Evidence before disclosure and SHOULD NOT disclose Evidence containing information that the intended Verifier is not authorized to receive.
 This specification does not provide Evidence encryption; deployments that require confidentiality MUST use an appropriate conveyance protocol or object-security mechanism.
+
+{{I-D.ounsworth-rats-privacy-framework}} presents a framework for identifying points in an Evidence conveyance protocol where designers and implementers need to be conscious of privacy concerns.
+For the evidence mechanism specified in this document, the primary privacy concern has to do with authenticating the Presenter against the HSM's local policies, and only releasing claims that they are authorized to view.
+The means by which a Presenter requests the generation of Evidence is not covered by this specification and is left to the implementers.
+
+Additionally, {{I-D.ounsworth-rats-privacy-framework}} calls for object-level evidence encryption (instead of relying solely on transport encryption), and corresponding validation
+of the provided Verifyier encryption certificate against local policies. Such a mechanism is left out-of-scope in this specification since it is largely independent of the Evidence
+formatting structures defined in this specification. Implementers are welcome to wrap the structures defined here in such an encryption layer either within the HSM or externally to the HSM
+at an entity such as the Presenter.
 
 ## Authenticating and Authorizing the Presenter {#sec-cons-auth-the-presenter}
 
