@@ -1322,7 +1322,7 @@ whether the storage properties of this key meet the requirements of a given cert
                 <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="auto internal xref">9.2</a>.  <a href="#name-simple-to-implement" class="internal xref">Simple to Implement</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.3">
-                <p id="section-toc.1-1.9.2.3.1"><a href="#section-9.3" class="auto internal xref">9.3</a>.  <a href="#name-privacy" class="internal xref">Privacy</a></p>
+                <p id="section-toc.1-1.9.2.3.1"><a href="#section-9.3" class="auto internal xref">9.3</a>.  <a href="#name-privacy-and-evidence-encryp" class="internal xref">Privacy and Evidence Encryption</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.4">
                 <p id="section-toc.1-1.9.2.4.1"><a href="#section-9.4" class="auto internal xref">9.4</a>.  <a href="#name-authenticating-and-authoriz" class="internal xref">Authenticating and Authorizing the Presenter</a></p>
@@ -3109,10 +3109,10 @@ only from information and measurements that are directly observable by it.<a hre
 </div>
 <div id="sec-cons-privacy">
 <section id="section-9.3">
-        <h3 id="name-privacy">
-<a href="#section-9.3" class="section-number selfRef">9.3. </a><a href="#name-privacy" class="section-name selfRef">Privacy</a>
+        <h3 id="name-privacy-and-evidence-encryp">
+<a href="#section-9.3" class="section-number selfRef">9.3. </a><a href="#name-privacy-and-evidence-encryp" class="section-name selfRef">Privacy and Evidence Encryption</a>
         </h3>
-<p id="section-9.3-1">Some HSMs have the capacity of supporting cryptographic keys controlled by separate elements referred to as "tenants", and when the HSM is used in that mode
+<p id="section-9.3-1">Some HSMs have the capacity of supporting cryptographic keys controlled by separate entities referred to as "tenants", and when the HSM is used in that mode
 it is referred to as a multi-tenant configuration.<a href="#section-9.3-1" class="pilcrow">¶</a></p>
 <p id="section-9.3-2">For example, an enterprise-grade HSM in a large multi-tenant cloud service could host TLS keys fronting multiple un-related web domains. Providing Evidence for
 claims of any one of the keys would involve a Presenter that could potentially access any of the hosted keys.
@@ -3122,6 +3122,13 @@ keys and portions of the Target Environment that this entity is authorized to ac
 is outside the scope of this specification.<a href="#section-9.3-3" class="pilcrow">¶</a></p>
 <p id="section-9.3-4">A Presenter <span class="bcp14">SHOULD</span> review Evidence before disclosure and <span class="bcp14">SHOULD NOT</span> disclose Evidence containing information that the intended Verifier is not authorized to receive.
 This specification does not provide Evidence encryption; deployments that require confidentiality <span class="bcp14">MUST</span> use an appropriate conveyance protocol or object-security mechanism.<a href="#section-9.3-4" class="pilcrow">¶</a></p>
+<p id="section-9.3-5"><span>[<a href="#I-D.ounsworth-rats-privacy-framework" class="cite xref">I-D.ounsworth-rats-privacy-framework</a>]</span> presents a framework for identifying points in an Evidence conveyance protocol where designers and implementers need to be conscious of privacy concerns.
+For the evidence mechanism specified in this document, the primary privacy concern has to do with authenticating the Presenter against the HSM's local policies, and only releasing claims that they are authorized to view.
+The means by which a Presenter requests the generation of Evidence is not covered by this specification and is left to the implementers.<a href="#section-9.3-5" class="pilcrow">¶</a></p>
+<p id="section-9.3-6">Additionally, <span>[<a href="#I-D.ounsworth-rats-privacy-framework" class="cite xref">I-D.ounsworth-rats-privacy-framework</a>]</span> calls for object-level evidence encryption (instead of relying solely on transport encryption), and corresponding validation
+of the provided Verifyier encryption certificate against local policies. Such a mechanism is left out-of-scope in this specification since it is largely independent of the Evidence
+formatting structures defined in this specification. Implementers are welcome to wrap the structures defined here in such an encryption layer either within the HSM or externally to the HSM
+at an entity such as the Presenter.<a href="#section-9.3-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-cons-auth-the-presenter">
@@ -3246,6 +3253,10 @@ such as the "nonce" claim of the "transaction" element, introduced in this speci
 <dt id="I-D.ietf-lamps-csr-attestation">[I-D.ietf-lamps-csr-attestation]</dt>
         <dd>
 <span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Wiseman, M.</span>, and <span class="refAuthor">N. Smith</span>, <span class="refTitle">"Use of Remote Attestation with Certification Signing Requests"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-lamps-csr-attestation-30</span>, <time datetime="2026-10-17" class="refDate">17 October 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-30">https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-30</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ounsworth-rats-privacy-framework">[I-D.ounsworth-rats-privacy-framework]</dt>
+        <dd>
+<span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, and <span class="refAuthor">G. Lehmann</span>, <span class="refTitle">"Privacy Framework for Remote ATtestation procedureS"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ounsworth-rats-privacy-framework-00</span>, <time datetime="2026-06-18" class="refDate">18 June 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ounsworth-rats-privacy-framework-00">https://datatracker.ietf.org/doc/html/draft-ounsworth-rats-privacy-framework-00</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC6024">[RFC6024]</dt>
         <dd>
