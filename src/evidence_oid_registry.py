@@ -93,9 +93,9 @@ CLAIM_EXPECTED_TAGS: dict[str, int] = {
 }
 
 KNOWN_ELEMENT_OIDS = {
-    EVIDENCE_KNOWN_OIDS.get("transaction"),
-    EVIDENCE_KNOWN_OIDS.get("platform"),
-    EVIDENCE_KNOWN_OIDS.get("key"),
+    EVIDENCE_KNOWN_OIDS["id-evidence-element-transaction"],
+    EVIDENCE_KNOWN_OIDS["id-evidence-element-platform"],
+    EVIDENCE_KNOWN_OIDS["id-evidence-element-key"],
 }
 KNOWN_CLAIM_OIDS = set(CLAIM_EXPECTED_TAGS.keys())
 

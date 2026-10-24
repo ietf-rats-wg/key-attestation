@@ -33,3 +33,7 @@ draft-ietf-rats-pkix-key-attestation.txt
 /go-cache/
 /pkix-evidence
 /go-work/
+
+# Python bytecode from reference and interop tests
+__pycache__/
+*.pyc

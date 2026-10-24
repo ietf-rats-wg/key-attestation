@@ -1,7 +1,6 @@
 import sys
 import textwrap
 import cryptography
-from cryptography.x509.verification import PolicyBuilder, Store
 from cryptography.hazmat.primitives.asymmetric.ec import EllipticCurveSignatureAlgorithm
 from pyasn1.type.univ import ObjectIdentifier
 import base64
@@ -65,76 +64,26 @@ def _decode_claim_value(raw_any: univ.Any) -> tuple[int | None, Any]:
     except Exception:
         return utag, raw_bytes.hex()
 
-def validate_evidence(ev: Evidence, ak_cert: x509.Certificate, int_cert: x509.Certificate=None, ca_cert: x509.Certificate=None) -> bool:
-    # First, validate the cert chain
-    if ca_cert is not None:
-        # skipping this for the moment because apparently python cryptography's x.509 validator now only supports TLS certs
-        # and not generic certs
-        # https://cryptography.io/en/latest/x509/verification/
-        # Maybe the right answer is to use the openssl module for python to validate the cert chain?
-        # sample code here:
-        # https://stackoverflow.com/a/30719888
-        # TODO
-        pass
+def validate_evidence(ev, ak_cert=None, int_cert=None, ca_cert=None, *, signature_only=False,
+                      require_all=False, expected_nonce=None):
+    from verification import verify_evidence, spki_bytes
+    def resolve(identifier):
+        if ak_cert is None:
+            return None
+        ski = ak_cert.extensions.get_extension_for_class(x509.SubjectKeyIdentifier).value.digest
+        return ak_cert if identifier == ski else None
+    result = verify_evidence(
+        ev, roots=[ca_cert] if ca_cert else [],
+        key_resolver=resolve if ak_cert else None,
+        trusted_spkis=[spki_bytes(ak_cert.public_key())] if ak_cert and not ca_cert else [],
+        extra_intermediates=[int_cert] if int_cert else [],
+        signature_only=signature_only, require_all=require_all, expected_nonce=expected_nonce)
+    for index, error in enumerate(result.signatures):
+        print(f"signature[{index}]: {error or 'ok'}", file=sys.stderr if error else sys.stdout)
+    for error in result.errors:
+        print(error, file=sys.stderr)
+    return result.accepted
 
-    # Check that the ak_cert contains the id-kp-attestationKey
-    try:
-        eku = ak_cert.extensions.get_extension_for_oid(x509.oid.ExtensionOID.EXTENDED_KEY_USAGE).value
-    except:
-        print("ExtendedKeyUsage missing on AK cert", file=sys.stderr)
-        return False
-
-    # "the EKU certificate extension MUST include the id-kp-attestationKey"
-    if len(eku) == 0:
-        print("ExtendedKeyUsage is empty on AK cert", file=sys.stderr)
-        return False
-    found_id_kp_attestation = False
-    for eku_val in eku:
-        if eku_val == id_kp_attest_oid:
-            found_id_kp_attestation = True
-
-    if not found_id_kp_attestation:
-        print("ExtendedKeyUsage on AK cert does not contain id_kp_attestation ("+id_kp_attest_oid.dotted_string+")", file=sys.stderr)
-        return False
-
-    # the KeyUsage extension (KU) MUST have the digitalSignature bit set.
-    try:
-        ku = ak_cert.extensions.get_extension_for_oid(x509.oid.ExtensionOID.KEY_USAGE).value
-        if not ku.digital_signature:
-            print("KeyUsage does not assert digitalSignature", file=sys.stderr)
-            return False
-    except:
-        print("KeyUsage missing on AK cert", file=sys.stderr)
-        return False
-
-
-    # Now validate the signature on the Evidence
-    signatureBlockSeq = ev.components[1] # SignatureBlockSeq
-    for signatureBlock in signatureBlockSeq:
-        signatureAlgID = signatureBlock.components[1].components[0]
-        signatureValue = signatureBlock.components[2].asOctets()
-
-        # binary value to be validated
-        tbs = ev.components[0]
-        tbs_bytes = der_encoder.encode(tbs)
-
-        # TODO: Surely there is a generic way to get python to just verify any signature for any alg it recognizes
-        if signatureAlgID == univ.ObjectIdentifier(x509.SignatureAlgorithmOID.ECDSA_WITH_SHA256.dotted_string):
-            try:
-                pk = ak_cert.public_key()
-                ak_cert.public_key().verify(
-                    signatureValue,
-                    tbs_bytes,
-                    ec.ECDSA(hashes.SHA256())
-                )
-            except cryptography.exceptions.InvalidSignature:
-                print("Signature verification failed on Evidence", file=sys.stderr)
-                return False
-        else:
-            print("Signature algorithm not supported", file=sys.stderr)
-            return False
-
-    return True
 
 def read_cert_file(filename) -> x509.Certificate:
     """Reads a cert from file, accepts PEM or raw DER."""
@@ -158,37 +107,17 @@ def read_cert_file(filename) -> x509.Certificate:
 
 
 def read_evidence_file(filename) -> Evidence:
-    """Reads the evidence from file, accepts either PEM with the -----BEGIN EVIDENCE---- header, or raw DER"""
-    input = open(filename, "rb").read()
+    """Read one strict DER, standard Base64 or EVIDENCE PEM object."""
+    data = Path(filename).read_bytes()
+    if data.startswith(b"\x30"):
+        return decode_evidence(data)
+    text = data.decode("ascii").strip()
+    if text.startswith("-----BEGIN"):
+        if not text.startswith(EVIDENCE_PEM_HEADER) or not text.endswith(EVIDENCE_PEM_FOOTER):
+            raise ValueError("Expected a single EVIDENCE PEM block")
+        text = text[len(EVIDENCE_PEM_HEADER):-len(EVIDENCE_PEM_FOOTER)]
+    return decode_evidence(base64.b64decode("".join(text.split()), validate=True))
 
-    # first, try it as raw DER
-    try:
-        ev = der_decoder.decode(input, asn1Spec=Evidence)
-        return ev
-    except:
-        # nothing, keep going
-        pass
-
-    # Then try it as PEM
-    # Specifically decoding as ASCII, not UTF8
-    input = input.decode("ascii")
-    if input.startswith(EVIDENCE_PEM_HEADER):
-        input = input[len(EVIDENCE_PEM_HEADER):].strip()
-
-    if input.endswith(EVIDENCE_PEM_FOOTER):
-        input = input[:-len(EVIDENCE_PEM_FOOTER)].strip()
-
-    try:
-        # add extra padding -- safe in all casses since base64.b64decode will complain about missing padding but will
-        # ignore too much padding
-        der_bytes = base64.b64decode(input + '==')
-        ev, remainder = der_decoder.decode(der_bytes, asn1Spec=Evidence())
-        # in theory, you could check that remainder == b"", but I won't bother.
-
-        return ev
-    except:
-        print("ERROR: input file could not be parsed as DER or as PEM.", file=sys.stderr)
-        exit(-1)
 
 def pretty_print_evidence(ev: Evidence, indent: int = 0) -> [str]:
     """Recursively print an Evidence structure to an output string."""
@@ -273,7 +202,7 @@ def _encode_generalizedtime(dt: datetime) -> bytes:
 
 def build_example1(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Certificate, int_cert: x509.Certificate) -> bytes:
     """
-    This example shows a minimal PKIX Evidence object with only transaction and platform entities a single signature where the AK key is identified only by
+    This example shows a minimal PKIX Evidence object with only transaction and platform elements a single signature where the AK key is identified only by
     its SHA1 hash KeyID.
     """
     ev = PkixEvidence()
@@ -323,7 +252,7 @@ def build_example1(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Cer
 def build_example2(ak_private_key: ec.EllipticCurvePrivateKey, ak_cert: x509.Certificate, int_cert: x509.Certificate) -> bytes:
     """
     This example shows a PKIX Evidence object that is attesting an application key held within the HSM.
-    For the purposes of this example, the Platform Entity is kept short.
+    For the purposes of this example, the Platform Element is kept short.
     This example embeds the AK and Intermediate CA certificates in the Evidence object. It chains to the same root as above.
     """
     ev = PkixEvidence()
@@ -445,23 +374,34 @@ def write_pretty_print(file_basename: Path, data: bytes):
         for line in pretty_print_evidence(decode_evidence(data)):
             f.write(line+'\n')
 
-def generate_samples():
-    # generate AK key and cert chain
-    ak_private_key, ak_cert, int_cert, ca_cert, ca_private_key = create_ak.generateAndSaveCerts()
-
-    # Build Example 1
-    ev1_der = build_example1(ak_private_key, ak_cert, int_cert)
-    if not validate_evidence(ev1_der, ak_cert, int_cert, ca_cert):
-        print("Evidence failed to validate", file=sys.stderr)
-    write_b64_and_pem(SAMPLEDATA_DIR / "evidence1", ev1_der)
-    write_pretty_print(SAMPLEDATA_DIR / "evidence1", ev1_der)
-
-    # Build Example 2
-    ev2_der = build_example2(ak_private_key, ak_cert, int_cert)
-    if not validate_evidence(ev2_der, ak_cert, int_cert, ca_cert):
-        print("Evidence failed to validate", file=sys.stderr)
-    write_b64_and_pem(SAMPLEDATA_DIR / "evidence2", ev2_der)
-    write_pretty_print(SAMPLEDATA_DIR / "evidence2", ev2_der)
+def generate_samples(output_dir=SAMPLEDATA_DIR):
+    """Stage and verify all examples before replacing public sample artifacts."""
+    import tempfile
+    from verification import spki_bytes
+    with tempfile.TemporaryDirectory(prefix="pkix-samples-") as directory:
+        old_dir = create_ak.output_dir
+        create_ak.output_dir = Path(directory)
+        try:
+            ak_key, ak_cert, int_cert, ca_cert, _ = create_ak.generateAndSaveCerts()
+            examples = [build_example1(ak_key, ak_cert, int_cert), build_example2(ak_key, ak_cert, int_cert)]
+            third = decode_evidence(examples[1])
+            sid = SignerIdentifier()
+            spki, _ = der_decoder.decode(spki_bytes(ak_key.public_key()), asn1Spec=SubjectPublicKeyInfo())
+            sid["subjectPublicKeyInfo"] = tagged_component_value(sid["subjectPublicKeyInfo"], spki)
+            third["signatures"][0]["sid"] = sid
+            examples.append(encode_evidence(third))
+            for index, data in enumerate(examples, 1):
+                if not validate_evidence(data, ak_cert, int_cert, ca_cert if index != 3 else None):
+                    raise ValueError(f"Example {index} failed validation")
+                basename = Path(directory) / f"evidence{index}"
+                write_b64_and_pem(basename, data)
+                write_pretty_print(basename, data)
+            destination = Path(output_dir)
+            destination.mkdir(parents=True, exist_ok=True)
+            for artifact in Path(directory).iterdir():
+                (destination / artifact.name).write_bytes(artifact.read_bytes())
+        finally:
+            create_ak.output_dir = old_dir
 
 
 def main():
@@ -488,9 +428,14 @@ def main():
     )
 
     parser.add_argument("input", nargs="?", help="DER-encoded Evidence file to parse")
-    parser.add_argument("ak_cert", nargs="?", help="X.509 certificate file for the AK certificate. Mandatory for verification.")
+    parser.add_argument("ak_cert", nargs="?", help="X.509 certificate file for the AK certificate. Optional for embedded certificates; otherwise supplies and pins the signer key.")
     parser.add_argument("int_cert", nargs="?", help="X.509 certificate file for the intermediate certificate. Optional.")
     parser.add_argument("ca_cert", nargs="?", help="X.509 certificate file for the root certificate. Optional.")
+    parser.add_argument("--output-dir", type=Path, default=SAMPLEDATA_DIR, help="Destination for generated public samples")
+    parser.add_argument("--signature-only", action="store_true", help="Diagnostic check without establishing signer trust")
+    parser.add_argument("--require-all", action="store_true", help="Require every signature block to be acceptable")
+    parser.add_argument("--nonce-hex", help="Expected verifier nonce in hexadecimal")
+    parser.add_argument("--ca", type=Path, help="Trust anchor certificate (alternative to positional ca_cert)")
     parser.add_argument("--generate", action="store_true",
                         help="Generate and parse a built-in sample Evidence blob")
     parser.add_argument("--validate", action="store_true",
@@ -505,8 +450,8 @@ def main():
 
     # "--generate"
     if args.generate:
-        print("Generating sample Evidence DER to sampledata/ …")
-        generate_samples()
+        print(f"Generating sample Evidence to {args.output_dir} …")
+        generate_samples(args.output_dir)
 
     # "--validate"
     elif args.validate:
@@ -516,24 +461,22 @@ def main():
         else:
             ev = read_evidence_file(args.input)
 
-        if args.ak_cert is None:
-            print("ERROR: ak_cert file not provided", file=sys.stderr)
-            exit(-1)
-        else:
-            ak_cert = read_cert_file(args.ak_cert)
+        ak_cert = read_cert_file(args.ak_cert) if args.ak_cert else None
 
         if args.int_cert is None:
             int_cert = None
         else:
             int_cert = read_cert_file(args.int_cert)
 
-        if args.ca_cert is None:
+        if args.ca is not None:
+            ca_cert = read_cert_file(args.ca)
+        elif args.ca_cert is None:
             ca_cert = None
         else:
             ca_cert = read_cert_file(args.ca_cert)
 
         # do the validation
-        if validate_evidence(ev, ak_cert, int_cert, ca_cert):
+        if validate_evidence(ev, ak_cert, int_cert, ca_cert, signature_only=args.signature_only, require_all=args.require_all, expected_nonce=bytes.fromhex(args.nonce_hex) if args.nonce_hex else None):
             print("Evidence validation successful")
         else:
             print("Evidence validation failed", file=sys.stderr)

@@ -137,10 +137,10 @@ def validate_generalized_time(
         )
  
     # --- timezone -------------------------------------------------------
-    if require_utc and tz is None:
+    if require_utc and tz != "Z":
         return ValidationResult(
             False,
-            "Timezone designator is required (RFC 5280 / DER require 'Z')",
+            "UTC Z designator is required (RFC 5280 / DER)",
         )
  
     if tz and tz != "Z":

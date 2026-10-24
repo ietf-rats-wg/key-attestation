@@ -35,5 +35,4 @@ Command line usage requires that you have the necessary software installed.  See
 - **go-src** : Directory that contains source code for a goLang Verifier based on this specification.
 - **sampledata** : Directory that contains examples of generated Evidence. These examples are created by the scripts found in the directory `src`.
 - **src** : Directory that contains Python scripts relating to the ASN.1 module offered by this specification. These scripts provide operations such as validating evidence or generating sample data. More information can be found in the `readme.md` file.
-- **src2** : Directory that contains Interim Python scripts used to migrate to latest ASN.1 module.
 - **tools** : Directory that contains scripts to automate some testing.

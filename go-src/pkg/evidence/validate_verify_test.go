@@ -8,6 +8,7 @@ import (
 	"crypto/rand"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"encoding/asn1"
 	"encoding/pem"
 	"math/big"
 	"strings"
@@ -17,18 +18,18 @@ import (
 
 func TestValidateRejectsWrongClaimTypes(t *testing.T) {
 	e := &Evidence{
-		TBS: TbsPkixEvidence{
+		TBS: TbsEvidence{
 			Version: 1,
-			ReportedEntities: []ReportedEntity{
+			ReportedElements: []ReportedElement{
 				{
-					EntityType: OIDEntityPlatform,
-					ClaimSet: []ReportedClaim{
+					ElementType: OIDElementPlatform,
+					Claims: []ReportedClaim{
 						{ClaimType: OIDClaimPlatformHWModel, Value: claimUTF8("not-bytes")},
 					},
 				},
 				{
-					EntityType: OIDEntityKey,
-					ClaimSet: []ReportedClaim{
+					ElementType: OIDElementKey,
+					Claims: []ReportedClaim{
 						{ClaimType: OIDClaimKeyIdentifier, Value: claimBytes([]byte("not-a-string"))},
 						{ClaimType: OIDClaimKeyPurpose, Value: claimBytes([]byte{0x06, 0x03, 0x2a, 0x03, 0xe7})},
 					},
@@ -45,7 +46,7 @@ func TestValidateRejectsWrongClaimTypes(t *testing.T) {
 	want := []string{
 		"claim hwmodel must be bytes",
 		"claim identifier must be utf8String",
-		"claim purpose must contain DER-encoded EvidenceKeyCapabilities",
+		"claim purpose must be purposes",
 	}
 	for _, needle := range want {
 		if !containsError(errs, needle) {
@@ -56,12 +57,12 @@ func TestValidateRejectsWrongClaimTypes(t *testing.T) {
 
 func TestValidateRejectsClaimInWrongEntity(t *testing.T) {
 	e := &Evidence{
-		TBS: TbsPkixEvidence{
+		TBS: TbsEvidence{
 			Version: 1,
-			ReportedEntities: []ReportedEntity{
+			ReportedElements: []ReportedElement{
 				{
-					EntityType: OIDEntityPlatform,
-					ClaimSet: []ReportedClaim{
+					ElementType: OIDElementPlatform,
+					Claims: []ReportedClaim{
 						{ClaimType: OIDClaimTransactionNonce, Value: claimBytes([]byte("nonce"))},
 					},
 				},
@@ -70,7 +71,7 @@ func TestValidateRejectsClaimInWrongEntity(t *testing.T) {
 	}
 
 	errs := Validate(e)
-	if !containsError(errs, "claim nonce is not valid for entity 1.2.3.999.0.1") {
+	if !containsError(errs, "claim nonce is not valid for element 1.3.6.1.5.5.999.0.1") {
 		t.Fatalf("Validate() did not reject misplaced claim: %v", errs)
 	}
 }
@@ -93,12 +94,12 @@ func TestVerifyEvidenceMatchesAKSPKIForKeyIDSigner(t *testing.T) {
 	}
 
 	e := &Evidence{
-		TBS: TbsPkixEvidence{
+		TBS: TbsEvidence{
 			Version: 1,
-			ReportedEntities: []ReportedEntity{
+			ReportedElements: []ReportedElement{
 				{
-					EntityType: OIDEntityTransaction,
-					ClaimSet: []ReportedClaim{
+					ElementType: OIDElementTransaction,
+					Claims: []ReportedClaim{
 						{ClaimType: OIDClaimTransactionAKSPKI, Value: claimBytes(cert.RawSubjectPublicKeyInfo)},
 					},
 				},
@@ -117,7 +118,15 @@ func TestVerifyEvidenceMatchesAKSPKIForKeyIDSigner(t *testing.T) {
 		IntermediateCertificates: []*x509.Certificate{cert},
 	}
 
-	res := VerifyEvidence(e, VerifyOptions{})
+	e.TBSDER, err = asn1.Marshal(e.TBS)
+	if err != nil {
+		t.Fatal(err)
+	}
+	e.Signatures[0].SignatureAlgorithm, e.Signatures[0].SignatureValue, err = signTBS(e.TBSDER, key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	res := VerifyEvidence(e, VerifyOptions{SignatureOnly: true})
 	if len(res.SignatureResults) != 1 || !res.SignatureResults[0].OK {
 		t.Fatalf("VerifyEvidence() signature failed: %+v", res)
 	}
@@ -173,6 +182,7 @@ func testCertificate(key crypto.Signer, subjectKeyID []byte) (*x509.Certificate,
 		NotBefore:             time.Now().Add(-time.Hour),
 		NotAfter:              time.Now().Add(time.Hour),
 		KeyUsage:              x509.KeyUsageDigitalSignature,
+		UnknownExtKeyUsage:    []asn1.ObjectIdentifier{OIDAttestationKey},
 		BasicConstraintsValid: true,
 		SubjectKeyId:          append([]byte(nil), subjectKeyID...),
 	}
@@ -186,19 +196,19 @@ func testCertificate(key crypto.Signer, subjectKeyID []byte) (*x509.Certificate,
 
 func TestValidateRejectsInvalidSPKIBytes(t *testing.T) {
 	e := &Evidence{
-		TBS: TbsPkixEvidence{
+		TBS: TbsEvidence{
 			Version: 1,
-			ReportedEntities: []ReportedEntity{
+			ReportedElements: []ReportedElement{
 				{
-					EntityType: OIDEntityKey,
-					ClaimSet: []ReportedClaim{
+					ElementType: OIDElementKey,
+					Claims: []ReportedClaim{
 						{ClaimType: OIDClaimKeyIdentifier, Value: claimUTF8("key-1")},
 						{ClaimType: OIDClaimKeySPKI, Value: claimBytes([]byte{0x01, 0x02, 0x03})},
 					},
 				},
 				{
-					EntityType: OIDEntityTransaction,
-					ClaimSet: []ReportedClaim{
+					ElementType: OIDElementTransaction,
+					Claims: []ReportedClaim{
 						{ClaimType: OIDClaimTransactionAKSPKI, Value: claimBytes([]byte{0x01, 0x02, 0x03})},
 					},
 				},

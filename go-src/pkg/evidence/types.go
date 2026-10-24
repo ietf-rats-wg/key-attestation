@@ -9,22 +9,22 @@ import (
 type PkixEvidenceRaw struct {
 	TBS                      asn1.RawValue
 	Signatures               []SignatureBlock
-	IntermediateCertificates []asn1.RawValue `asn1:"optional,tag:0"`
+	IntermediateCertificates []asn1.RawValue `asn1:"optional,explicit,tag:0"`
 }
 
-type TbsPkixEvidence struct {
+type TbsEvidence struct {
 	Version          int
-	ReportedEntities []ReportedEntity
+	ReportedElements []ReportedElement
 }
 
-type ReportedEntity struct {
-	EntityType asn1.ObjectIdentifier
-	ClaimSet   []ReportedClaim
+type ReportedElement struct {
+	ElementType asn1.ObjectIdentifier
+	Claims      []ReportedClaim
 }
 
 type ReportedClaim struct {
 	ClaimType asn1.ObjectIdentifier
-	Value     asn1.RawValue `asn1:"optional"`
+	Value     asn1.RawValue
 }
 
 type SignatureBlock struct {
@@ -40,7 +40,7 @@ type SignerIdentifier struct {
 }
 
 type Evidence struct {
-	TBS                      TbsPkixEvidence
+	TBS                      TbsEvidence
 	TBSDER                   []byte
 	Signatures               []SignatureBlock
 	IntermediateCertificates []*x509.Certificate

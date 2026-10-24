@@ -11,14 +11,14 @@ venv:
 install: venv
 	$(VENV_PYTHON) -m pip install -r $(REQUIREMENTS)
 
-check: install
-	$(VENV_PYTHON) -m py_compile pkix_evidence_der.py create_ak.py
+check:
+	$(VENV_PYTHON) -m unittest discover -s . -p 'test_*.py' -v
 
-run: install
-	$(VENV_PYTHON) pkix_evidence_der.py
+run:
+	$(VENV_PYTHON) main.py --help
 
-interop-test: install
-	../tools/test-interop.sh
+interop-test:
+	PYTHON_BIN="$(abspath $(VENV_PYTHON))" ../tools/test-interop.sh
 
-interop-test-negative: install
-	../tools/test-interop-negative.sh
+interop-test-negative:
+	PYTHON_BIN="$(abspath $(VENV_PYTHON))" ../tools/test-interop-negative.sh

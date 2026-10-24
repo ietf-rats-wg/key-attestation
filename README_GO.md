@@ -1,186 +1,141 @@
-# Go Implementation of draft-ietf-rats-pkix-key-attestation
+# Go implementation of PKIX Key Attestation
 
-This document describes the Go implementation of the "Evidence Encoding for Hardware Security Modules" from
-`draft-ietf-rats-pkix-key-attestation`.
+The implementation follows the local `draft-ietf-rats-pkix-key-attestation.md`
+and `Pkix-Key-Attest-2025.asn`. The OID assignments remain provisional:
+`1.3.6.1.5.5.999` for Evidence and `1.3.6.1.5.5.7.3.999` for the attestation EKU.
+These are temporary substitutions for the draft's TBD assignments.
 
-## Overview
+## Build and use
 
-The implementation provides the following:
+Run from the repository root:
 
-- **ASN.1 structures and OIDs** according to `Pkix-Key-Attest-2025.asn`
-- **Parser/decoder** for DER/PEM/Base64-encoded Evidence
-- **Validation** of the most important structural rules from the specification
-- **Signature verification** for RSA (PKCS#1 v1.5), RSA-PSS, ECDSA, and Ed25519
-- **CLI** for decode/validate/verify plus a sample generator
-
-Source code:
-
-- CLI: `go-src/cmd/pkix-evidence/main.go`
-- Evidence logic: `go-src/pkg/evidence/*.go`
-
-## Implementation
-
-### Data Model
-
-The core structures are defined in `go-src/pkg/evidence/types.go` and map directly to the ASN.1 structures:
-
-- `PkixEvidenceRaw` (envelope with `tbs`, `signatures`, `intermediateCertificates`)
-- `TbsPkixEvidence`
-- `ReportedEntity`
-- `ReportedClaim`
-- `SignatureBlock` / `SignerIdentifier`
-
-OIDs are defined in `go-src/pkg/evidence/oids.go`. In addition, metadata (`ClaimSpecs`)
-is provided for known claim types so that decode output can use readable names.
-
-### Parsing/Decoding
-
-- `ReadEvidence` detects DER/PEM/Base64 automatically, or via explicit `-format`
-- `Parse` decodes Evidence and returns both the structured form and the DER for the TBS block
-- `DecodeClaimValue` interprets context-specific claim values (`bytes`, `utf8String`, `bool`, `time`, `int`, `oid`)
-- `EvidenceToJSON` serializes the data into readable JSON
-
-### Validation
-
-`Validate` checks, among other things:
-
-- `version == 1`
-- only one transaction entity and only one platform entity
-- repeated claims according to the specification
-- key entities must contain at least one `identifier`
-- duplicate key identifiers across multiple key entities are detected
-
-### Signature Verification
-
-`VerifyEvidence` verifies signatures against:
-
-- signer certificate (`SignerIdentifier.certificate`) or SPKI
-- optionally: certificate chain validation against trust anchors (`-verify-chain -ca`)
-- optionally: binding to `transaction.ak-spki`
-
-Supported algorithms:
-
-- RSA (PKCS#1 v1.5): SHA-1/256/384/512
-- RSA-PSS
-- ECDSA: SHA-256/384/512
-- Ed25519
-
-## Usage (CLI)
-
-Build:
-
-```bash
-go build ./go-src/cmd/pkix-evidence
+```sh
+go build -o pkix-evidence ./go-src/cmd/pkix-evidence
+./pkix-evidence generate -out /tmp/evidence.der -nonce-hex deadbeef
+./pkix-evidence decode -in /tmp/evidence.der
+./pkix-evidence validate -in /tmp/evidence.der
+./pkix-evidence verify -in /tmp/evidence.der -signature-only
 ```
 
-### Decode
+Generation always signs the example and includes `transaction.ak-spki`. It uses
+an ephemeral key and a self-signed certificate with the required KU/EKU unless
+`-key` and `-cert` provide a matching signing key and certificate. The built-in
+nonce is demonstration data; supply a verifier-generated nonce with `-nonce-hex`.
+Unsigned generation and `-with-ak-spki=false` are rejected.
 
-```bash
-./pkix-evidence decode -in <file|-> [-format auto|der|pem|base64]
+`-signature-only` is an explicit diagnostic mode: it checks the structure,
+signature, certificate requirements and AK binding without establishing signer
+trust. It does not constitute an appraisal that the signer is trusted.
+
+For certificate path validation against configured trust anchors:
+
+```sh
+./pkix-evidence verify -in evidence.pem -ca roots.pem
 ```
 
-Outputs JSON with entities and claims.
+Intermediate certificates are taken from Evidence. Their order is irrelevant.
+The custom attestation EKU is checked separately from path building, including
+when it is critical. Go's TLS server-auth default is not used.
 
-### Validate
+For an out-of-band AK certificate and a `keyId`-based signer:
 
-```bash
-./pkix-evidence validate -in <file|-> [-format auto|der|pem|base64]
+```sh
+./pkix-evidence verify -in sampledata/evidence1.pem \
+  -signer-cert sampledata/ak.crt -ca sampledata/ca.crt
 ```
 
-Outputs `ok` or a list of validation errors.
+Without `-ca`, `-signer-cert` explicitly pins that certificate's public key. This
+also permits checking SPKI-based signers. The CLI resolves `keyId` by matching
+the configured certificate's SubjectKeyIdentifier. Library callers can provide
+an arbitrary `VerifyOptions.ResolveKeyID` callback instead. Resolution alone
+does not establish trust; configure roots or `TrustedSPKIs` separately.
 
-### Verify
+Use `-nonce-hex` on `verify` to require the expected nonce. Timestamp claims alone
+are not used as proof of freshness. `-require-all` adds a stricter policy that
+requires every signature block to be acceptable.
 
-```bash
-./pkix-evidence verify -in <file|-> [-format auto|der|pem|base64] [-ca <pem>] [-verify-chain] [-require-all]
+`decode`, `validate` and `verify` accept DER, standard Base64 and a single PEM
+block labelled `EVIDENCE`; use `-format auto|der|base64|pem` to select the format.
+`generate` supports `-format der|base64|pem`.
+
+## Data model and validation
+
+- `TbsEvidence` contains `ReportedElements`; each `ReportedElement` contains
+  `ElementType` and `Claims`. Decode JSON uses `elements`.
+- A claim carries its directly encoded universal ASN.1 value, selected by its
+  OID. `key.purpose` is a `KeyPurposes` SEQUENCE OF OID, without an OCTET STRING
+  wrapper. The standard catalog includes decapsulation and encapsulation.
+- `intermediateCertificates` uses an EXPLICIT `[0]` wrapper.
+- Version 1, nonempty signatures/elements/claims, required claim values and
+  nonempty signer identifiers are enforced. Fixed envelope structures reject
+  additional fields and trailing data.
+- Known claims are checked for type, element ownership, repetition, valid SPKI syntax,
+  FIPS level 1..4, key identifiers and distinct attestation keys. Unknown types
+  are retained as opaque extension values and skipped semantically. SPKI syntax
+  validation permits unknown key algorithms so an unsupported additional signer
+  does not prevent accepting a supported signature.
+- Repeated key identifiers within one key element are allowed; identifiers
+  shared across key elements are rejected. Equal SPKIs alone do not identify
+  the same addressable object.
+
+`VerifyEvidence` always runs structural validation and verifies that the decoded
+TBS model matches the original signed DER. `VerifyResult.Accepted` is the final
+policy decision. `SignatureResults` describe individual blocks, while
+`ChainErrors` and `EKUErrors` are diagnostics rather than global vetoes.
+`VerifiedAKSPKIs` contains only claim values backed by acceptable verified blocks.
+Check `Accepted` before relying on the Evidence as a whole.
+
+## Multi-signature policy and draft interpretation
+
+At least one acceptable signature is required. Additional invalid or unsupported
+blocks do not invalidate an acceptable block by themselves. KU with
+`digitalSignature`, the attestation EKU, end-entity status and certificate
+validity are checked for every certificate-backed block considered for
+acceptance. Subject DNs are compared by their DER encoding in both implementations.
+Multiple signing certificates must have the same subject DN and
+distinct public keys. All supplied SID key representations must agree.
+
+The draft explicitly requires rejecting Evidence with an unresolved `keyId`.
+This implementation follows that requirement even if another block is valid;
+the apparent tension with the general one-valid-block rule remains an editorial
+question for the draft. Conflicting SID fields and different Attester identities
+also reject the whole Evidence.
+
+When AK claims are present, this implementation applies a strict policy: every
+resolved signer must appear in those claims. An extra AK claim without a valid
+signature does not prove that key signed the Evidence. Verifiers accept absence
+of the optional claims, while generators always include them as required by the
+Evidence generation procedure.
+
+The old Go OID namespace, context-tagged ClaimValue encoding and implicit
+certificate wrapper are not supported as a legacy format. As required for
+extensibility, an unknown OID is still treated as an opaque extension, not as a
+recognized old standard claim. Consumers must check recognized claim names and
+values rather than treating successful parsing as recognition.
+
+## Algorithms and tests
+
+Signatures: RSA PKCS#1 v1.5 with SHA-1/256/384/512, RSA-PSS with those supported
+hashes, ECDSA with SHA-256/384/512, and Ed25519. Algorithm-specific parameters are
+checked. RSA-PSS supports MGF1 with the same hash as the message, a positive
+explicit salt length (or the ASN.1 default), and trailer field 1. Other MGF/hash
+combinations and zero-length salts are reported as unsupported. Supporting SHA-1
+for parsing/verification does not require a deployment to accept it: appraisal
+policy can restrict algorithms with `VerifyOptions.AllowedSignatureAlgorithms`
+or the CLI flag `-algorithms <oid[,oid...]>`. Python callers use
+`allowed_algorithms`. The default accepts the implemented algorithms.
+
+```sh
+go test ./...
+python3 -m venv src/.venv
+src/.venv/bin/python -m pip install -r src/requirements.txt
+PYTHON_BIN="$PWD/src/.venv/bin/python" tools/test-interop.sh
+PYTHON_BIN="$PWD/src/.venv/bin/python" tools/test-interop-negative.sh
 ```
 
-- `-verify-chain` verifies signer certificates against trust anchors from `-ca`
-- `-require-all` requires all signatures to be valid
-
-### Generate (Sample)
-
-A small unsigned sample in the current format:
-
-```bash
-./pkix-evidence generate -out <file|-> [-format der|pem|base64]
-```
-
-A signed sample (ECDSA P-256, self-signed certificate) including `transaction.ak-spki`:
-
-```bash
-./pkix-evidence generate -out <file|-> -format der -signed
-```
-
-With external key/certificate input (PEM):
-
-```bash
-./pkix-evidence generate -out <file|-> -format der -signed -key signer.key -cert signer.crt
-```
-
-Optionally, `transaction.ak-spki` can be omitted:
-
-```bash
-./pkix-evidence generate -out <file|-> -format der -signed -with-ak-spki=false
-```
-
-## Tests / Test Run
-
-A simple test run was performed to check the CLI against a generated sample:
-
-```bash
-./pkix-evidence generate -out /tmp/sample-evidence.der -format der
-./pkix-evidence decode -in /tmp/sample-evidence.der
-./pkix-evidence validate -in /tmp/sample-evidence.der
-```
-
-Result:
-
-- `decode` returns valid JSON
-- `validate` returns `ok`
-
-Note: the sample is **unsigned** (`Signatures` is empty). For signature tests, Evidence
-must be generated or supplied with signatures present.
-
-### Signature Tests (Description)
-
-For signature tests, Evidence with at least one `SignatureBlock` is required, as well as
-a trust anchor (CA) that validates the signer certificate. The CLI supports two levels:
-
-1. **Signature verification** against the certificate or SPKI contained in the `SignatureBlock`
-2. **Certificate chain verification** against trust anchors (`-verify-chain -ca`)
-
-Example flow (conceptual):
-
-```bash
-# Evidence (DER/PEM/Base64) is available and contains at least one signature
-./pkix-evidence verify -in evidence.der
-
-# Optional: also verify the certificate chain against trust anchors
-./pkix-evidence verify -in evidence.der -verify-chain -ca roots.pem
-
-# Optional: require all signatures to be valid
-./pkix-evidence verify -in evidence.der -require-all
-```
-
-Expected behavior:
-
-- For a valid signature: `signature[i]: ok`
-- For an invalid signature: `signature[i]: <error>`
-- If signatures are missing: warning `evidence is unsigned`
-- With `ak-spki` binding: warning if no signer SPKI matches `transaction.ak-spki`
-
-### Signature Tests (Sample with Embedded Signature)
-
-The CLI can generate a signed sample and verify it directly:
-
-```bash
-./pkix-evidence generate -out /tmp/sample-evidence-signed.der -format der -signed
-./pkix-evidence verify -in /tmp/sample-evidence-signed.der
-```
-
-Expected result:
-
-```text
-signature[0]: ok
-```
+The Python path tests require the system OpenSSL 3 executable. Tests create
+public certificates and Evidence in temporary directories; private keys stay in
+memory and repository samples are not overwritten. Coverage includes both
+implementation directions, independently transcribed DER values, explicit
+certificate tagging, claims and decoded values, keyId/SPKI signers, critical EKU,
+multiple algorithms and signers, and malformed Evidence with valid signatures.

@@ -62,14 +62,14 @@ id_kp_attest_oid = x509.ObjectIdentifier("1.3.6.1.5.5.7.3.999")
 #
 # ReportedClaim ::= SEQUENCE {
 #     claimType  CLAIM.&id ({ClaimSet}),
-#     value      CLAIM.&Type ({ClaimSet}{@claimType}) OPTIONAL
+#     value      CLAIM.&Type ({ClaimSet}{@claimType})
 # }
 # ---------------------------------------------------------------------------
 
 class ReportedClaim(univ.Sequence):
     componentType = namedtype.NamedTypes(
         namedtype.NamedType("claimType", univ.ObjectIdentifier()),
-        namedtype.OptionalNamedType("value", univ.Any()),
+        namedtype.NamedType("value", univ.Any()),
     )
 
 
@@ -115,7 +115,7 @@ class TbsEvidence(univ.Sequence):
 #
 # Uses rfc5280.SubjectPublicKeyInfo and rfc5280.Certificate directly.
 # The three fields carry EXPLICIT tags (schema overrides the global
-# IMPLICIT TAGS default with the EXPLICIT keyword per-field).
+# EXPLICIT TAGS default with the EXPLICIT keyword per-field).
 # ---------------------------------------------------------------------------
 
 class SignerIdentifier(univ.Sequence):
@@ -166,7 +166,7 @@ class SignatureBlock(univ.Sequence):
 
 class SignatureBlockSeq(univ.SequenceOf):
     componentType = SignatureBlock()
-    subtypeSpec = constraint.ValueSizeConstraint(0, float("inf"))
+    subtypeSpec = constraint.ValueSizeConstraint(1, float("inf"))
 
 
 # ---------------------------------------------------------------------------
@@ -182,9 +182,11 @@ class CertificateSeq(univ.SequenceOf):
 # EvidenceKeyCapabilities  ::= SEQUENCE OF OBJECT IDENTIFIER
 # ---------------------------------------------------------------------------
 
-class EvidenceKeyCapabilities(univ.SequenceOf):
+class KeyPurposes(univ.SequenceOf):
     componentType = univ.ObjectIdentifier()
 
+
+EvidenceKeyCapabilities = KeyPurposes  # Compatibility alias.
 
 # ---------------------------------------------------------------------------
 # Evidence  (top-level type)
@@ -194,11 +196,11 @@ class Evidence(univ.Sequence):
     """
     Evidence ::= SEQUENCE {
         tbs                           TbsEvidence,
-        signatures                    SEQUENCE SIZE (0..MAX) OF SignatureBlock,
+        signatures                    SEQUENCE SIZE (1..MAX) OF SignatureBlock,
         intermediateCertificates  [0] SEQUENCE OF Certificate OPTIONAL
     }
 
-    intermediateCertificates uses an IMPLICIT context tag [0] wrapping
+    intermediateCertificates uses an EXPLICIT context tag [0] wrapping
     a SEQUENCE OF rfc5280.Certificate.
     """
     componentType = namedtype.NamedTypes(
@@ -207,7 +209,7 @@ class Evidence(univ.Sequence):
         namedtype.OptionalNamedType(
             "intermediateCertificates",
             CertificateSeq().subtype(
-                implicitTag=Tag(tagClassContext, tagFormatConstructed, 0))),
+                explicitTag=Tag(tagClassContext, tagFormatConstructed, 0))),
     )
 
 
@@ -230,49 +232,66 @@ class PkixEvidence:
         # if there were already any signatures, wipe them before changing the TbsEvidence
         self.sigs = SignatureBlockSeq()
 
+        self._signers = []
         self.tbs['reportedElements'].append(element)
 
-    def sign_and_encode(self, ak_cert: x509.Certificate, ak_private_key: ec.EllipticCurvePrivateKey, int_cert: x509.Certificate, includeCerts: bool = True):
-        ''' Signs the evidence and returns the DER-encoded string'''
+    def sign_and_encode(self, ak_cert, ak_private_key, int_cert=None, includeCerts=True):
+        """Add a signer, bind its SPKI, and re-sign the final TBS with all selected keys.
 
-        # SignatureBlock using rfc5280.AlgorithmIdentifier
-        # ecdsa-with-SHA256  OID: 1.2.840.10045.4.3.2
-        alg_id = AlgorithmIdentifier()
-        alg_id["algorithm"] = univ.ObjectIdentifier((1, 2, 840, 10045, 4, 3, 2))
-        # parameters absent for ECDSA per RFC 5480
-
-        sid = SignerIdentifier()
-        if includeCerts:
-            sid["certificate"] = tagged_component_value(
-                sid["certificate"],
-                convert_crypto_cert_to_pyasn1(ak_cert),
-            )
-        else:
-            sid["keyId"] = ak_cert.extensions.get_extension_for_class(
-                x509.SubjectKeyIdentifier
-            ).value.digest
-
-        sig_block = SignatureBlock()
-        sig_block["sid"] = sid
-        sig_block["signatureAlgorithm"] = alg_id
-
+        Keys remain in memory only. Mutating elements via add_element clears signers.
+        """
+        from verification import sign_bytes, spki_bytes
+        key_spki = spki_bytes(ak_private_key.public_key())
+        if key_spki != spki_bytes(ak_cert.public_key()):
+            raise ValueError("Signing key does not match certificate")
+        if not hasattr(self, "_signers"):
+            self._signers = []
+        if any(spki_bytes(cert.public_key()) == key_spki for cert, _, _, _ in self._signers):
+            raise ValueError("Attestation key already selected")
+        self._signers.append((ak_cert, ak_private_key, int_cert, includeCerts))
+        tx_oid = evidence_make_oid("id-evidence-element-transaction")
+        ak_oid = evidence_make_oid("id-evidence-claim-transaction-ak-spki")
+        tx = next((el for el in self.tbs["reportedElements"] if el["elementType"] == tx_oid), None)
+        if tx is None:
+            tx = ReportedElement()
+            tx["elementType"] = tx_oid
+            tx["claims"] = ReportedClaimSeq()
+            self.tbs["reportedElements"].append(tx)
+            tx = self.tbs["reportedElements"][-1]
+        # Rebuild binding claims from the selected signers, including after edits.
+        kept = [c for c in tx["claims"] if c["claimType"] != ak_oid]
+        tx["claims"].clear()
+        for c in kept:
+            tx["claims"].append(c)
+        for cert, _, _, _ in self._signers:
+            tx["claims"].append(make_claim("id-evidence-claim-transaction-ak-spki", spki_bytes(cert.public_key())))
         tbs_der = der_encoder.encode(self.tbs)
-        signature = ak_private_key.sign(
-            tbs_der,
-            ec.ECDSA(hashes.SHA256()),
-        )
+        self.sigs = SignatureBlockSeq()
+        intermediates = []
+        for cert, key, intermediate, include in self._signers:
+            sid = SignerIdentifier()
+            if include:
+                sid["certificate"] = tagged_component_value(sid["certificate"], convert_crypto_cert_to_pyasn1(cert))
+            else:
+                sid["keyId"] = cert.extensions.get_extension_for_class(x509.SubjectKeyIdentifier).value.digest
+            algorithm, signature = sign_bytes(key, tbs_der)
+            block = SignatureBlock()
+            block["sid"] = sid
+            block["signatureAlgorithm"]["algorithm"] = univ.ObjectIdentifier(algorithm)
+            if algorithm.startswith("1.2.840.113549.1.1."):
+                block["signatureAlgorithm"]["parameters"] = univ.Null("")
+            block["signatureValue"] = signature
+            self.sigs.append(block)
+            if intermediate is not None and intermediate not in intermediates:
+                intermediates.append(intermediate)
+        result = self.encode(intermediates)
+        from verification import validate_structure
+        validate_structure(decode_evidence(result))
+        return result
 
-        sig_block["signatureValue"] = univ.OctetString(signature)
 
-        self.sigs.append(sig_block)
-
-        if includeCerts:
-            return self.encode([int_cert])
-        else:
-            return self.encode()
-
-
-    def encode(self, int_certs: list[x509.Certificate] = []):
+    def encode(self, int_certs=None):
+        int_certs = int_certs or []
         # Evidence
         ev = Evidence()
         ev["tbs"] = self.tbs
@@ -295,7 +314,7 @@ class PkixEvidence:
 # Helper: build a ClaimValue from a native Python value
 # ---------------------------------------------------------------------------
 
-def make_claim(claim_type_name: str, value=None) -> ReportedClaim:
+def make_claim(claim_type_name: str, value) -> ReportedClaim:
     """
     Build a ReportedClaim.
 
@@ -304,18 +323,18 @@ def make_claim(claim_type_name: str, value=None) -> ReportedClaim:
     claim_type_name : str
         A key from the OID dict (e.g. 'id-evidence-claim-platform-vendor')
         or a raw dotted OID string.
-    value : optional
-        Any value accepted by make_claim_value(), or None to omit the
-        optional ClaimValue field entirely.
+    value : bytes, str, bool, int, GeneralizedTime, or list of OID names
+        Required value of the ASN.1 type selected by the claim OID.
     """
+    claim_type_name = oid_name(claim_type_name)
     rc = ReportedClaim()
     rc["claimType"] = evidence_make_oid(claim_type_name)
+    if value is None:
+        raise ValueError("Every claim requires a value")
     if value is not None:
         match claim_type_name:
             case "id-evidence-claim-transaction-nonce"\
                  | "id-evidence-claim-transaction-ak-spki"\
-                 | "id-evidence-claim-platform-oemid"\
-                 | "id-evidence-claim-platform-hwmodel"\
                  | "id-evidence-claim-platform-oemid"\
                  | "id-evidence-claim-platform-hwmodel"\
                  | "id-evidence-claim-key-spki":
@@ -342,7 +361,7 @@ def make_claim(claim_type_name: str, value=None) -> ReportedClaim:
                  | "id-evidence-claim-platform-bootcount"\
                  | "id-evidence-claim-platform-fipslevel":
                 # INTEGER
-                if isinstance(value, int):
+                if type(value) is int:
                     rc["value"] = univ.Integer(value)
                 else:
                     raise Exception(f"Claim '{claim_type_name}' expects a value of type 'int'")
@@ -400,6 +419,9 @@ def decode_evidence(der_bytes: bytes) -> Evidence:
         raise ValueError(
             f"Unexpected trailing bytes after DER decode: {bytes(remainder).hex()}"
         )
+    if der_encoder.encode(obj) != der_bytes:
+        raise ValueError("Evidence is not canonical DER")
+    obj._signed_tbs_der = der_encoder.encode(obj["tbs"])
     return obj
 
 

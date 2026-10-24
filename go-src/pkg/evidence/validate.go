@@ -9,45 +9,59 @@ import (
 
 func Validate(e *Evidence) []error {
 	var errs []error
+	if len(e.Signatures) == 0 {
+		errs = append(errs, fmt.Errorf("evidence must contain at least one signature"))
+	}
+	if len(e.TBS.ReportedElements) == 0 {
+		errs = append(errs, fmt.Errorf("tbs must contain at least one element"))
+	}
+	for _, sig := range e.Signatures {
+		if sig.SID.KeyID == nil && !hasRawValue(sig.SID.Certificate) && !hasRawValue(sig.SID.SubjectPublicKeyInfo) {
+			errs = append(errs, fmt.Errorf("empty SignerIdentifier"))
+		}
+	}
 	if e.TBS.Version != 1 {
 		errs = append(errs, fmt.Errorf("tbs.version must be 1, got %d", e.TBS.Version))
 	}
 
-	entityCount := map[string]int{}
-	for _, entity := range e.TBS.ReportedEntities {
-		entityCount[entity.EntityType.String()]++
+	elementCount := map[string]int{}
+	for _, element := range e.TBS.ReportedElements {
+		elementCount[element.ElementType.String()]++
+		if len(element.Claims) == 0 {
+			errs = append(errs, fmt.Errorf("element must contain at least one claim"))
+		}
 		claimCount := map[string]int{}
-		for _, claim := range entity.ClaimSet {
+		for _, claim := range element.Claims {
 			claimCount[claim.ClaimType.String()]++
 			if spec, ok := ClaimSpecs[claim.ClaimType.String()]; ok && !spec.Multiple && claimCount[claim.ClaimType.String()] > 1 {
-				errs = append(errs, fmt.Errorf("claim %s appears multiple times in entity %s", spec.Name, entity.EntityType.String()))
+				errs = append(errs, fmt.Errorf("claim %s appears multiple times in element %s", spec.Name, element.ElementType.String()))
 			}
-			errs = append(errs, validateClaim(entity.EntityType, claim)...)
+			errs = append(errs, validateClaim(element.ElementType, claim)...)
 		}
 	}
 
-	if entityCount[OIDEntityPlatform.String()] > 1 {
-		errs = append(errs, fmt.Errorf("platform entity appears %d times", entityCount[OIDEntityPlatform.String()]))
+	if elementCount[OIDElementPlatform.String()] > 1 {
+		errs = append(errs, fmt.Errorf("platform element appears %d times", elementCount[OIDElementPlatform.String()]))
 	}
-	if entityCount[OIDEntityTransaction.String()] > 1 {
-		errs = append(errs, fmt.Errorf("transaction entity appears %d times", entityCount[OIDEntityTransaction.String()]))
+	if elementCount[OIDElementTransaction.String()] > 1 {
+		errs = append(errs, fmt.Errorf("transaction element appears %d times", elementCount[OIDElementTransaction.String()]))
 	}
 
-	keyIDs := map[string]struct{}{}
-	for _, entity := range e.TBS.ReportedEntities {
-		if !entity.EntityType.Equal(OIDEntityKey) {
+	keyIDs := map[string]int{}
+	for index, element := range e.TBS.ReportedElements {
+		if !element.ElementType.Equal(OIDElementKey) {
 			continue
 		}
-		ids := collectIdentifiers(entity)
+		ids := collectIdentifiers(element)
 		if len(ids) == 0 {
-			errs = append(errs, fmt.Errorf("key entity missing identifier claim"))
+			errs = append(errs, fmt.Errorf("key element missing identifier claim"))
 			continue
 		}
 		for _, id := range ids {
-			if _, ok := keyIDs[id]; ok {
-				errs = append(errs, fmt.Errorf("duplicate key identifier %q across key entities", id))
+			if previous, ok := keyIDs[id]; ok && previous != index {
+				errs = append(errs, fmt.Errorf("duplicate key identifier %q across key elements", id))
 			}
-			keyIDs[id] = struct{}{}
+			keyIDs[id] = index
 		}
 	}
 
@@ -57,15 +71,18 @@ func Validate(e *Evidence) []error {
 	return errs
 }
 
-func validateClaim(entityTypeOID asn1.ObjectIdentifier, claim ReportedClaim) []error {
+func validateClaim(elementTypeOID asn1.ObjectIdentifier, claim ReportedClaim) []error {
+	if !hasRawValue(claim.Value) {
+		return []error{fmt.Errorf("claim %s is missing a value", claim.ClaimType)}
+	}
 	spec, ok := ClaimSpecs[claim.ClaimType.String()]
 	if !ok {
 		return nil
 	}
 
 	var errs []error
-	if !spec.EntityType.Equal(entityTypeOID) {
-		errs = append(errs, fmt.Errorf("claim %s is not valid for entity %s", spec.Name, entityTypeOID.String()))
+	if !spec.ElementType.Equal(elementTypeOID) {
+		errs = append(errs, fmt.Errorf("claim %s is not valid for element %s", spec.Name, elementTypeOID.String()))
 	}
 
 	cv, err := DecodeClaimValue(claim.Value)
@@ -84,21 +101,21 @@ func validateClaim(entityTypeOID asn1.ObjectIdentifier, claim ReportedClaim) []e
 
 	switch {
 	case claim.ClaimType.Equal(OIDClaimKeySPKI), claim.ClaimType.Equal(OIDClaimTransactionAKSPKI):
-		if _, err := x509.ParsePKIXPublicKey(cv.Bytes); err != nil {
+		if err := validateSPKI(cv.Bytes); err != nil {
 			errs = append(errs, fmt.Errorf("claim %s must contain a DER SubjectPublicKeyInfo: %v", spec.Name, err))
 		}
 	case claim.ClaimType.Equal(OIDClaimKeyPurpose):
 		if _, err := DecodeCapabilities(cv.Bytes); err != nil {
-			errs = append(errs, fmt.Errorf("claim %s must contain DER-encoded EvidenceKeyCapabilities: %v", spec.Name, err))
+			errs = append(errs, fmt.Errorf("claim %s must contain KeyPurposes: %v", spec.Name, err))
 		}
 	}
 
 	return errs
 }
 
-func collectIdentifiers(entity ReportedEntity) []string {
+func collectIdentifiers(element ReportedElement) []string {
 	var ids []string
-	for _, claim := range entity.ClaimSet {
+	for _, claim := range element.Claims {
 		if !claim.ClaimType.Equal(OIDClaimKeyIdentifier) {
 			continue
 		}
@@ -115,11 +132,11 @@ func collectIdentifiers(entity ReportedEntity) []string {
 
 func validateFIPSLevel(e *Evidence) []error {
 	var errs []error
-	for _, entity := range e.TBS.ReportedEntities {
-		if !entity.EntityType.Equal(OIDEntityPlatform) {
+	for _, element := range e.TBS.ReportedElements {
+		if !element.ElementType.Equal(OIDElementPlatform) {
 			continue
 		}
-		for _, claim := range entity.ClaimSet {
+		for _, claim := range element.Claims {
 			if !claim.ClaimType.Equal(OIDClaimPlatformFIPSLevel) {
 				continue
 			}
@@ -132,7 +149,7 @@ func validateFIPSLevel(e *Evidence) []error {
 				errs = append(errs, fmt.Errorf("fipslevel claim must be int, got %s", cv.Kind))
 				continue
 			}
-			if cv.Int < 1 || cv.Int > 4 {
+			if cv.Integer == nil || !cv.Integer.IsInt64() || cv.Int < 1 || cv.Int > 4 {
 				errs = append(errs, fmt.Errorf("fipslevel must be in range 1..4, got %d", cv.Int))
 			}
 		}
@@ -143,11 +160,11 @@ func validateFIPSLevel(e *Evidence) []error {
 func validateAKSPKIUniqueness(e *Evidence) []error {
 	var errs []error
 	seen := map[string]struct{}{}
-	for _, entity := range e.TBS.ReportedEntities {
-		if !entity.EntityType.Equal(OIDEntityTransaction) {
+	for _, element := range e.TBS.ReportedElements {
+		if !element.ElementType.Equal(OIDElementTransaction) {
 			continue
 		}
-		for _, claim := range entity.ClaimSet {
+		for _, claim := range element.Claims {
 			if !claim.ClaimType.Equal(OIDClaimTransactionAKSPKI) {
 				continue
 			}
@@ -160,7 +177,13 @@ func validateAKSPKIUniqueness(e *Evidence) []error {
 				errs = append(errs, fmt.Errorf("ak-spki claim must be bytes, got %s", cv.Kind))
 				continue
 			}
-			k := base64.StdEncoding.EncodeToString(cv.Bytes)
+			keyBytes := cv.Bytes
+			if key, err := x509.ParsePKIXPublicKey(keyBytes); err == nil {
+				if canonical, err := x509.MarshalPKIXPublicKey(key); err == nil {
+					keyBytes = canonical
+				}
+			}
+			k := base64.StdEncoding.EncodeToString(keyBytes)
 			if _, ok := seen[k]; ok {
 				errs = append(errs, fmt.Errorf("ak-spki claim repeated with identical key material"))
 			}

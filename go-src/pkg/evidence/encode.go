@@ -21,20 +21,14 @@ import (
 	"time"
 )
 
+// GenerateSample creates a signed example. Unsigned Evidence is not valid.
 func GenerateSample() ([]byte, error) {
-	tbsDER, err := buildSampleTBS(false, nil)
-	if err != nil {
-		return nil, err
-	}
-	evidence := pkixEvidenceMarshal{
-		TBS:        asn1.RawValue{FullBytes: tbsDER},
-		Signatures: nil,
-	}
-	return asn1.Marshal(evidence)
+	return GenerateSampleSigned(SignOptions{})
 }
 
 type SignOptions struct {
-	WithAKSPKI bool
+	WithAKSPKI bool // Deprecated: AK binding is always included.
+	Nonce      []byte
 	KeyPath    string
 	CertPath   string
 }
@@ -75,7 +69,18 @@ func GenerateSampleSigned(opts SignOptions) ([]byte, error) {
 		return nil, err
 	}
 
-	tbsDER, err := buildSampleTBS(opts.WithAKSPKI, cert.RawSubjectPublicKeyInfo)
+	pub, err := publicKeyFromPrivate(key)
+	if err != nil {
+		return nil, err
+	}
+	spki, err := x509.MarshalPKIXPublicKey(pub)
+	if err != nil || !bytes.Equal(spki, cert.RawSubjectPublicKeyInfo) {
+		return nil, errors.New("signing key does not match certificate")
+	}
+	if err := checkAttestationCertificate(cert, nil); err != nil {
+		return nil, err
+	}
+	tbsDER, err := buildSampleTBS(true, cert.RawSubjectPublicKeyInfo, opts.Nonce)
 	if err != nil {
 		return nil, err
 	}
@@ -120,12 +125,17 @@ func FormatEvidence(der []byte, format string) ([]byte, error) {
 	}
 }
 
+func claimPurposes(oids []asn1.ObjectIdentifier) asn1.RawValue {
+	der, _ := asn1.Marshal(oids)
+	return asn1.RawValue{FullBytes: der}
+}
+
 func claimBytes(b []byte) asn1.RawValue {
-	return asn1.RawValue{Class: asn1.ClassContextSpecific, Tag: 0, IsCompound: false, Bytes: b}
+	return asn1.RawValue{Class: asn1.ClassUniversal, Tag: asn1.TagOctetString, IsCompound: false, Bytes: b}
 }
 
 func claimUTF8(s string) asn1.RawValue {
-	return asn1.RawValue{Class: asn1.ClassContextSpecific, Tag: 1, IsCompound: false, Bytes: []byte(s)}
+	return asn1.RawValue{Class: asn1.ClassUniversal, Tag: asn1.TagUTF8String, IsCompound: false, Bytes: []byte(s)}
 }
 
 func claimBool(v bool) asn1.RawValue {
@@ -133,16 +143,16 @@ func claimBool(v bool) asn1.RawValue {
 	if v {
 		byteVal = 0xff
 	}
-	return asn1.RawValue{Class: asn1.ClassContextSpecific, Tag: 2, IsCompound: false, Bytes: []byte{byteVal}}
+	return asn1.RawValue{Class: asn1.ClassUniversal, Tag: asn1.TagBoolean, IsCompound: false, Bytes: []byte{byteVal}}
 }
 
 func claimTime(t time.Time) asn1.RawValue {
 	ts := t.UTC().Format("20060102150405Z")
-	return asn1.RawValue{Class: asn1.ClassContextSpecific, Tag: 3, IsCompound: false, Bytes: []byte(ts)}
+	return asn1.RawValue{Class: asn1.ClassUniversal, Tag: asn1.TagGeneralizedTime, IsCompound: false, Bytes: []byte(ts)}
 }
 
 func claimInt(v int64) asn1.RawValue {
-	return asn1.RawValue{Class: asn1.ClassContextSpecific, Tag: 4, IsCompound: false, Bytes: asn1Content(v)}
+	return asn1.RawValue{Class: asn1.ClassUniversal, Tag: asn1.TagInteger, IsCompound: false, Bytes: asn1Content(v)}
 }
 
 func asn1Content(v interface{}) []byte {
@@ -157,25 +167,25 @@ func asn1Content(v interface{}) []byte {
 	return rv.Bytes
 }
 
-type tbsPkixEvidenceMarshal struct {
+type tbsEvidenceMarshal struct {
 	Version          int
-	ReportedEntities []reportedEntityMarshal
+	ReportedElements []reportedElementMarshal
 }
 
-type reportedEntityMarshal struct {
-	EntityType asn1.ObjectIdentifier
-	ClaimSet   []reportedClaimMarshal
+type reportedElementMarshal struct {
+	ElementType asn1.ObjectIdentifier
+	Claims      []reportedClaimMarshal
 }
 
 type reportedClaimMarshal struct {
 	ClaimType asn1.ObjectIdentifier
-	Value     asn1.RawValue `asn1:"optional"`
+	Value     asn1.RawValue
 }
 
 type pkixEvidenceMarshal struct {
 	TBS                      asn1.RawValue
 	Signatures               []signatureBlockMarshal
-	IntermediateCertificates []asn1.RawValue `asn1:"optional,tag:0"`
+	IntermediateCertificates []asn1.RawValue `asn1:"optional,explicit,tag:0"`
 }
 
 type signatureBlockMarshal struct {
@@ -190,11 +200,15 @@ type signerIdentifierMarshal struct {
 	Certificate          asn1.RawValue `asn1:"optional"`
 }
 
-func buildSampleTBS(withAKSPKI bool, akSPKI []byte) ([]byte, error) {
+func buildSampleTBS(withAKSPKI bool, akSPKI []byte, nonces ...[]byte) ([]byte, error) {
 	now := time.Now().UTC()
+	nonce := []byte("nonce-1234") // Demonstration only; callers should supply a verifier nonce.
+	if len(nonces) > 0 && nonces[0] != nil {
+		nonce = nonces[0]
+	}
 
 	transactionClaims := []reportedClaimMarshal{
-		{ClaimType: OIDClaimTransactionNonce, Value: claimBytes([]byte("nonce-1234"))},
+		{ClaimType: OIDClaimTransactionNonce, Value: claimBytes(nonce)},
 		{ClaimType: OIDClaimTransactionTimestamp, Value: claimTime(now)},
 	}
 	if withAKSPKI && len(akSPKI) > 0 {
@@ -204,14 +218,14 @@ func buildSampleTBS(withAKSPKI bool, akSPKI []byte) ([]byte, error) {
 		})
 	}
 
-	transaction := reportedEntityMarshal{
-		EntityType: OIDEntityTransaction,
-		ClaimSet:   transactionClaims,
+	transaction := reportedElementMarshal{
+		ElementType: OIDElementTransaction,
+		Claims:      transactionClaims,
 	}
 
-	platform := reportedEntityMarshal{
-		EntityType: OIDEntityPlatform,
-		ClaimSet: []reportedClaimMarshal{
+	platform := reportedElementMarshal{
+		ElementType: OIDElementPlatform,
+		Claims: []reportedClaimMarshal{
 			{ClaimType: OIDClaimPlatformVendor, Value: claimUTF8("IETF RATS")},
 			{ClaimType: OIDClaimPlatformHWSerial, Value: claimUTF8("HSM-0001")},
 			{ClaimType: OIDClaimPlatformFIPSBoot, Value: claimBool(true)},
@@ -220,19 +234,20 @@ func buildSampleTBS(withAKSPKI bool, akSPKI []byte) ([]byte, error) {
 		},
 	}
 
-	key := reportedEntityMarshal{
-		EntityType: OIDEntityKey,
-		ClaimSet: []reportedClaimMarshal{
+	key := reportedElementMarshal{
+		ElementType: OIDElementKey,
+		Claims: []reportedClaimMarshal{
 			{ClaimType: OIDClaimKeyIdentifier, Value: claimUTF8("key-001")},
 			{ClaimType: OIDClaimKeyExtractable, Value: claimBool(false)},
 			{ClaimType: OIDClaimKeySensitive, Value: claimBool(true)},
 			{ClaimType: OIDClaimKeyLocal, Value: claimBool(true)},
+			{ClaimType: OIDClaimKeyPurpose, Value: claimPurposes([]asn1.ObjectIdentifier{OIDKeyCapabilitySign, OIDKeyCapabilityDecapsulate})},
 		},
 	}
 
-	tbs := tbsPkixEvidenceMarshal{
+	tbs := tbsEvidenceMarshal{
 		Version:          1,
-		ReportedEntities: []reportedEntityMarshal{transaction, platform, key},
+		ReportedElements: []reportedElementMarshal{transaction, platform, key},
 	}
 	return asn1.Marshal(tbs)
 }
@@ -246,6 +261,10 @@ func selfSignedCertDER(key crypto.PrivateKey) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	ekuDER, err := asn1.Marshal([]asn1.ObjectIdentifier{OIDAttestationKey})
+	if err != nil {
+		return nil, err
+	}
 	template := x509.Certificate{
 		SerialNumber: serial,
 		Subject: pkix.Name{
@@ -254,6 +273,7 @@ func selfSignedCertDER(key crypto.PrivateKey) ([]byte, error) {
 		NotBefore:             time.Now().UTC().Add(-time.Hour),
 		NotAfter:              time.Now().UTC().Add(24 * time.Hour),
 		KeyUsage:              x509.KeyUsageDigitalSignature,
+		ExtraExtensions:       []pkix.Extension{{Id: asn1.ObjectIdentifier{2, 5, 29, 37}, Critical: true, Value: ekuDER}},
 		BasicConstraintsValid: true,
 	}
 	return x509.CreateCertificate(rand.Reader, &template, &template, pub, key)
@@ -332,7 +352,7 @@ func signTBS(tbsDER []byte, key crypto.PrivateKey) (pkix.AlgorithmIdentifier, []
 		if err != nil {
 			return pkix.AlgorithmIdentifier{}, nil, err
 		}
-		return pkix.AlgorithmIdentifier{Algorithm: oidSHA256WithRSA}, sig, nil
+		return pkix.AlgorithmIdentifier{Algorithm: oidSHA256WithRSA, Parameters: asn1.RawValue{Tag: asn1.TagNull}}, sig, nil
 	case ed25519.PrivateKey:
 		sig := ed25519.Sign(k, tbsDER)
 		return pkix.AlgorithmIdentifier{Algorithm: oidEd25519}, sig, nil

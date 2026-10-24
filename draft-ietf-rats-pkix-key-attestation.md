@@ -586,7 +586,7 @@ Evidence ::= SEQUENCE {
 SignatureBlock ::= SEQUENCE {
     sid SignerIdentifier,
     signatureAlgorithm AlgorithmIdentifier{
-        SIGNATURE-ALGORITHM, {SignatureAlgSet} },
+        SIGNATURE-ALGORITHM, { ... } },
     signatureValue OCTET STRING
 }
 
@@ -663,7 +663,7 @@ following ASN.1 fragment defines the structures associated with claims:
 
 ~~~ asn.1
 CLAIM ::= CLASS {
-    &id       OBJECT IDENTIFIER UNIQUE,690
+    &id       OBJECT IDENTIFIER UNIQUE,
     &Type
 } WITH SYNTAX {
     ID &id

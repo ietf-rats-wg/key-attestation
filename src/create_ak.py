@@ -152,7 +152,7 @@ def create_end_entity_cert(
             ),
             critical=True,
         )
-        .add_extension(x509.ExtendedKeyUsage([id_kp_attest_oid]), critical=False)
+        .add_extension(x509.ExtendedKeyUsage([id_kp_attest_oid]), critical=True)
         .sign(private_key=ca_private_key, algorithm=hashes.SHA256())
     )
 
@@ -161,9 +161,9 @@ def create_end_entity_cert(
     return private_key, cert
 
 
-def generateAndSaveCerts(ca_private_key: ec.EllipticCurvePrivateKey = None, ca_cert: x509.Certificate = None) -> tuple[ec.EllipticCurvePrivateKey, x509.Certificate, x509.Certificate, x509.Certificate]:
+def generateAndSaveCerts(ca_private_key: ec.EllipticCurvePrivateKey = None, ca_cert: x509.Certificate = None) -> tuple[ec.EllipticCurvePrivateKey, x509.Certificate, x509.Certificate, x509.Certificate, ec.EllipticCurvePrivateKey]:
     """
-    Returns the ak.key, ak.crt, int.ctr, and ca.crt.
+    Returns the in-memory AK key, AK certificate, intermediate certificate, root certificate, and in-memory root key.
     Saves the ak.crt and ca.crt to disk in the /sampledata dir
     """
 

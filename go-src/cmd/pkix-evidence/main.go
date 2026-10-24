@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
+	"crypto"
 	"crypto/x509"
 	"encoding/asn1"
+	"encoding/hex"
 	"encoding/json"
 	"encoding/pem"
 	"flag"
@@ -45,9 +48,9 @@ func usage() {
 	fmt.Fprintln(os.Stderr, "")
 	fmt.Fprintln(os.Stderr, "Usage:")
 	fmt.Fprintln(os.Stderr, "  pkix-evidence decode   -in <file|-> [-format auto|der|pem|base64]")
-	fmt.Fprintln(os.Stderr, "  pkix-evidence verify   -in <file|-> [-format auto|der|pem|base64] [-ca <pem>] [-verify-chain] [-require-all] [-require-attest-eku -attest-eku-oid <oid[,oid...]>]")
+	fmt.Fprintln(os.Stderr, "  pkix-evidence verify   -in <file|-> [-format auto|der|pem|base64] [-ca <pem>] [-verify-chain] [-require-all] [-signer-cert <pem>] [-signature-only] [-nonce-hex <hex>]")
 	fmt.Fprintln(os.Stderr, "  pkix-evidence validate -in <file|-> [-format auto|der|pem|base64]")
-	fmt.Fprintln(os.Stderr, "  pkix-evidence generate -out <file|-> [-format der|pem|base64] [-signed] [-with-ak-spki] [-key <pem>] [-cert <pem>]")
+	fmt.Fprintln(os.Stderr, "  pkix-evidence generate -out <file|-> [-format der|pem|base64] [-nonce-hex <hex>] [-key <pem>] [-cert <pem>]")
 }
 
 func decodeCmd(args []string) {
@@ -99,17 +102,27 @@ func generateCmd(args []string) {
 	fs := flag.NewFlagSet("generate", flag.ExitOnError)
 	outPath := fs.String("out", "-", "output file or - for stdout")
 	format := fs.String("format", "der", "output format: der|pem|base64")
-	signed := fs.Bool("signed", false, "generate a signed sample evidence")
-	withAKSPKI := fs.Bool("with-ak-spki", true, "include transaction.ak-spki when signing")
+	signed := fs.Bool("signed", true, "generate a signed sample evidence")
+	withAKSPKI := fs.Bool("with-ak-spki", true, "deprecated: AK binding is required")
+	nonceHex := fs.String("nonce-hex", "", "verifier nonce as hexadecimal bytes")
 	keyPath := fs.String("key", "", "PEM private key for signing (optional)")
 	certPath := fs.String("cert", "", "PEM signer certificate to embed (optional)")
 	_ = fs.Parse(args)
 
-	var der []byte
+	if !*signed || !*withAKSPKI {
+		failIf(fmt.Errorf("unsigned Evidence and omission of ak-spki are not supported"))
+	}
+	var nonce []byte
 	var err error
+	if *nonceHex != "" {
+		nonce, err = hex.DecodeString(*nonceHex)
+		failIf(err)
+	}
+	var der []byte
 	if *signed {
 		der, err = evidence.GenerateSampleSigned(evidence.SignOptions{
 			WithAKSPKI: *withAKSPKI,
+			Nonce:      nonce,
 			KeyPath:    *keyPath,
 			CertPath:   *certPath,
 		})
@@ -131,8 +144,12 @@ func verifyCmd(args []string) {
 	caPath := fs.String("ca", "", "PEM bundle of trust anchors")
 	verifyChain := fs.Bool("verify-chain", false, "verify signer certificate chain against -ca")
 	requireAll := fs.Bool("require-all", false, "require all signature blocks to verify")
-	requireAttestEKU := fs.Bool("require-attest-eku", false, "require attestation EKU on signer certificates")
-	attestEKUOID := fs.String("attest-eku-oid", "", "comma-separated attestation EKU OID list")
+	requireAttestEKU := fs.Bool("require-attest-eku", true, "require attestation EKU on signer certificates")
+	attestEKUOID := fs.String("attest-eku-oid", "", "additional accepted attestation EKU OIDs")
+	allowedAlgorithms := fs.String("algorithms", "", "comma-separated allowed signature algorithm OIDs")
+	signerPath := fs.String("signer-cert", "", "out-of-band signer certificate; pins its SPKI when no CA is supplied")
+	signatureOnly := fs.Bool("signature-only", false, "diagnostic signature check without establishing signer trust")
+	nonceHex := fs.String("nonce-hex", "", "expected verifier nonce as hexadecimal bytes")
 	_ = fs.Parse(args)
 
 	data, err := readInput(*inPath)
@@ -144,18 +161,20 @@ func verifyCmd(args []string) {
 
 	ekuOIDs, err := parseOIDList(*attestEKUOID)
 	failIf(err)
-	if *requireAttestEKU && len(ekuOIDs) == 0 {
-		failIf(fmt.Errorf("-require-attest-eku requires -attest-eku-oid"))
+	if !*requireAttestEKU {
+		failIf(fmt.Errorf("Attestation EKU checks cannot be disabled"))
 	}
 
 	opts := evidence.VerifyOptions{
+		SignatureOnly:         *signatureOnly,
 		RequireAllSignatures:  *requireAll,
 		VerifyChains:          *verifyChain,
 		CurrentTime:           time.Now(),
 		RequireAttestationEKU: *requireAttestEKU,
 		AttestationEKUOIDs:    ekuOIDs,
 	}
-	if *verifyChain {
+	if *verifyChain || *caPath != "" {
+		opts.VerifyChains = true
 		if *caPath == "" {
 			failIf(fmt.Errorf("-verify-chain requires -ca"))
 		}
@@ -164,45 +183,49 @@ func verifyCmd(args []string) {
 		opts.Roots = pool
 	}
 
+	if *signerPath != "" {
+		data, err := os.ReadFile(*signerPath)
+		failIf(err)
+		if block, _ := pem.Decode(data); block != nil {
+			data = block.Bytes
+		}
+		cert, err := x509.ParseCertificate(data)
+		failIf(err)
+		opts.ResolveKeyID = func(id []byte) (crypto.PublicKey, *x509.Certificate, error) {
+			if !bytes.Equal(id, cert.SubjectKeyId) || len(cert.SubjectKeyId) == 0 {
+				return nil, nil, fmt.Errorf("keyId does not match configured signer")
+			}
+			return cert.PublicKey, cert, nil
+		}
+		if opts.Roots == nil {
+			opts.TrustedSPKIs = [][]byte{cert.RawSubjectPublicKeyInfo}
+		}
+	}
+	if *nonceHex != "" {
+		opts.ExpectedNonce, err = hex.DecodeString(*nonceHex)
+		failIf(err)
+	}
+	if *allowedAlgorithms != "" {
+		opts.AllowedSignatureAlgorithms, err = parseOIDList(*allowedAlgorithms)
+		failIf(err)
+	}
 	res := evidence.VerifyEvidence(parsed, opts)
 
-	okCount := 0
 	for _, r := range res.SignatureResults {
 		if r.OK {
-			okCount++
 			fmt.Fprintf(os.Stdout, "signature[%d]: ok\n", r.Index)
 		} else {
 			fmt.Fprintf(os.Stdout, "signature[%d]: %s\n", r.Index, r.Error)
 		}
 	}
-
-	for _, err := range res.ChainErrors {
-		fmt.Fprintf(os.Stdout, "chain: %s\n", err)
+	for _, err := range res.Errors {
+		fmt.Fprintln(os.Stderr, err)
 	}
-	for _, err := range res.EKUErrors {
-		fmt.Fprintf(os.Stdout, "eku: %s\n", err)
-	}
-	if res.AKSPKIMismatch {
-		fmt.Fprintln(os.Stdout, "warning: ak-spki claim does not match all signer SPKIs")
-	}
-
-	if len(res.SignatureResults) == 0 {
-		fmt.Fprintln(os.Stdout, "warning: evidence is unsigned")
+	if !res.Accepted {
 		os.Exit(1)
 	}
-
-	if len(res.ChainErrors) > 0 || len(res.EKUErrors) > 0 || res.AKSPKIMismatch {
-		os.Exit(1)
-	}
-
-	if *requireAll {
-		for _, r := range res.SignatureResults {
-			if !r.OK {
-				os.Exit(1)
-			}
-		}
-	} else if okCount == 0 {
-		os.Exit(1)
+	if opts.SignatureOnly {
+		fmt.Fprintln(os.Stdout, "signature-only: signer trust was not established")
 	}
 }
 
