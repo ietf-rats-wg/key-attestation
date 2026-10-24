@@ -29,18 +29,18 @@ whether the storage properties of this key meet the requirements of a given cert
 <meta content="draft-ietf-rats-pkix-key-attestation-latest" name="ietf.draft">
 <!-- Generator version information:
   xml2rfc 3.34.1
-    Python 3.14.7
-    ConfigArgParse 1.7.7
+    Python 3.14.8
+    ConfigArgParse 1.8.0
     google-i18n-address 3.1.1
     intervaltree 3.2.1
     Jinja2 3.1.6
     lxml 6.1.1
     natsort 8.4.0
-    platformdirs 4.11.10
+    platformdirs 4.13.4
     pycountry 24.6.1
     PyYAML 6.0.3
     requests 2.33.1
-    wcwidth 0.8.4
+    wcwidth 0.9.2
 -->
 <link href="draft-ietf-rats-pkix-key-attestation.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -1056,11 +1056,11 @@ svg {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">Evidence Encoding for HSMs</td>
-<td class="right">September 2026</td>
+<td class="right">October 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Fiset, et al.</td>
-<td class="center">Expires 25 March 2027</td>
+<td class="center">Expires 27 April 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1073,12 +1073,12 @@ svg {
 <dd class="internet-draft">draft-ietf-rats-pkix-key-attestation-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-09-21" class="published">21 September 2026</time>
+<time datetime="2026-10-24" class="published">24 October 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-03-25">25 March 2027</time></dd>
+<dd class="expires"><time datetime="2027-04-27">27 April 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1153,7 +1153,7 @@ whether the storage properties of this key meet the requirements of a given cert
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 25 March 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 27 April 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1207,6 +1207,9 @@ whether the storage properties of this key meet the requirements of a given cert
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
                 <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-attestation-key-certificate" class="internal xref">Attestation Key Certificate Chain</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-presenter-role" class="internal xref">Presenter Role</a></p>
 </li>
             </ul>
 </li>
@@ -1273,6 +1276,9 @@ whether the storage properties of this key meet the requirements of a given cert
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3.2.2">
                     <p id="section-toc.1-1.5.2.3.2.2.1"><a href="#section-5.3.2" class="auto internal xref">5.3.2</a>.  <a href="#name-timestamp" class="internal xref">timestamp</a></p>
 </li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3.2.3">
+                    <p id="section-toc.1-1.5.2.3.2.3.1"><a href="#section-5.3.3" class="auto internal xref">5.3.3</a>.  <a href="#name-ak-spki" class="internal xref">ak-spki</a></p>
+</li>
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.4">
@@ -1284,7 +1290,21 @@ whether the storage properties of this key meet the requirements of a given cert
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
-            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-signing-and-verification-pr" class="internal xref">Signing and Verification Procedures</a></p>
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-processing" class="internal xref">Processing</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-initiation-from-presenter" class="internal xref">Initiation from Presenter</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
+                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-generation-of-evidence" class="internal xref">Generation of Evidence</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3">
+                <p id="section-toc.1-1.6.2.3.1"><a href="#section-6.3" class="auto internal xref">6.3</a>.  <a href="#name-verification-by-presenter" class="internal xref">Verification by Presenter</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.4">
+                <p id="section-toc.1-1.6.2.4.1"><a href="#section-6.4" class="auto internal xref">6.4</a>.  <a href="#name-verification-procedures" class="internal xref">Verification Procedures</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
             <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-asn1-module" class="internal xref">ASN.1 Module</a></p>
@@ -1302,7 +1322,7 @@ whether the storage properties of this key meet the requirements of a given cert
                 <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="auto internal xref">9.2</a>.  <a href="#name-simple-to-implement" class="internal xref">Simple to Implement</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.3">
-                <p id="section-toc.1-1.9.2.3.1"><a href="#section-9.3" class="auto internal xref">9.3</a>.  <a href="#name-privacy" class="internal xref">Privacy</a></p>
+                <p id="section-toc.1-1.9.2.3.1"><a href="#section-9.3" class="auto internal xref">9.3</a>.  <a href="#name-privacy-and-evidence-encryp" class="internal xref">Privacy and Evidence Encryption</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.4">
                 <p id="section-toc.1-1.9.2.4.1"><a href="#section-9.4" class="auto internal xref">9.4</a>.  <a href="#name-authenticating-and-authoriz" class="internal xref">Authenticating and Authorizing the Presenter</a></p>
@@ -1578,7 +1598,7 @@ as hardware, firmware, BIOS, software, etc., and how they are hardened."<a href=
 <p id="section-3.1-2">Some HSMs have a large amount of memory and can therefore contain a substantial amount of elements that
 can be observed independently by the Attesting Environment. Each of those elements, in turn, can contain a
 number of measurable attributes.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
-<p id="section-3.1-3">A certain level of complexity arises as multiple elements of the same class can be reported simultaneously in generated
+<p id="section-3.1-3">A certain level of complexity arises as multiple elements of the same class690 can be reported simultaneously in generated
 Evidence. In this case, multiple similar claims are reported simultaneously but associated with different elements.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
 <p id="section-3.1-4">For example, two independent user keys could be reported simultaneously in Evidence. Each key is associated with a
 SPKI (SubjectPublicKeyInfo). The measured values for the SPKI of the respective keys are different.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
@@ -1624,8 +1644,95 @@ contained by.  Presenting non-attestation data for validation by this AK public 
 KeyPurposeId <span class="bcp14">SHOULD NOT</span> be marked as critical.<a href="#section-3.2-5" class="pilcrow">¶</a></p>
 <p id="section-3.2-6">The data format specified in <a href="#sec-data-model" class="auto internal xref">Section 5</a> requires one or more <code>SignatureBlock</code> values.
 Multiple signature blocks allow one Attester identity, represented by a single subject DN,
-to use distinct Attestation Keys and signature algorithms. See <a href="#sec-verif-proc" class="auto internal xref">Section 6</a> for the
+to use distinct Attestation Keys and signature algorithms. See <a href="#sec-verif-proc" class="auto internal xref">Section 6.4</a> for the
 processing rules.<a href="#section-3.2-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="presenter">
+<section id="section-3.3">
+        <h3 id="name-presenter-role">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-presenter-role" class="section-name selfRef">Presenter Role</a>
+        </h3>
+<p id="section-3.3-1">This specification introduces the role of "Presenter" as shown in <a href="#fig-presenter" class="auto internal xref">Figure 1</a>. The Presenter is the role that initiates the generation of
+Evidence. Since HSMs are generally servers (client/server relationship) or peripherals (controller/peripheral relationship), a Presenter is
+required to launch the process of creating the Evidence and capturing it to forward it to the Verifier.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<span id="name-presenter-role-2"></span><div id="fig-presenter">
+<figure id="figure-1">
+          <div id="section-3.3-2.1">
+            <div class="alignLeft art-svg artwork" id="section-3.3-2.1.1">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="496" width="408" viewBox="0 0 408 496" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
+                <path d="M 8,32 L 8,336" fill="none" stroke="black"></path>
+                <path d="M 48,416 L 48,480" fill="none" stroke="black"></path>
+                <path d="M 64,80 L 64,160" fill="none" stroke="black"></path>
+                <path d="M 64,240 L 64,288" fill="none" stroke="black"></path>
+                <path d="M 112,296 L 112,408" fill="none" stroke="black"></path>
+                <path d="M 128,160 L 128,232" fill="none" stroke="black"></path>
+                <path d="M 136,288 L 136,408" fill="none" stroke="black"></path>
+                <path d="M 184,416 L 184,480" fill="none" stroke="black"></path>
+                <path d="M 216,80 L 216,160" fill="none" stroke="black"></path>
+                <path d="M 216,240 L 216,288" fill="none" stroke="black"></path>
+                <path d="M 248,32 L 248,336" fill="none" stroke="black"></path>
+                <path d="M 296,416 L 296,480" fill="none" stroke="black"></path>
+                <path d="M 400,416 L 400,480" fill="none" stroke="black"></path>
+                <path d="M 8,32 L 248,32" fill="none" stroke="black"></path>
+                <path d="M 64,80 L 216,80" fill="none" stroke="black"></path>
+                <path d="M 64,160 L 216,160" fill="none" stroke="black"></path>
+                <path d="M 64,240 L 216,240" fill="none" stroke="black"></path>
+                <path d="M 64,288 L 216,288" fill="none" stroke="black"></path>
+                <path d="M 8,336 L 248,336" fill="none" stroke="black"></path>
+                <path d="M 48,416 L 184,416" fill="none" stroke="black"></path>
+                <path d="M 296,416 L 400,416" fill="none" stroke="black"></path>
+                <path d="M 192,432 L 288,432" fill="none" stroke="black"></path>
+                <path d="M 192,464 L 288,464" fill="none" stroke="black"></path>
+                <path d="M 48,480 L 184,480" fill="none" stroke="black"></path>
+                <path d="M 296,480 L 400,480" fill="none" stroke="black"></path>
+                <polygon class="arrowhead" points="296,464 284,458.4 284,469.6" fill="black" transform="rotate(0,288,464)"></polygon>
+                <polygon class="arrowhead" points="200,432 188,426.4 188,437.6" fill="black" transform="rotate(180,192,432)"></polygon>
+                <polygon class="arrowhead" points="144,408 132,402.4 132,413.6" fill="black" transform="rotate(90,136,408)"></polygon>
+                <polygon class="arrowhead" points="136,232 124,226.4 124,237.6" fill="black" transform="rotate(90,128,232)"></polygon>
+                <polygon class="arrowhead" points="120,296 108,290.4 108,301.6" fill="black" transform="rotate(270,112,296)"></polygon>
+                <g class="text">
+                  <text x="60" y="52">Attester</text>
+                  <text x="120" y="52">(HSM)</text>
+                  <text x="100" y="100">Target</text>
+                  <text x="120" y="116">Environment</text>
+                  <text x="112" y="132">(Elements</text>
+                  <text x="160" y="132">&amp;</text>
+                  <text x="112" y="148">values)</text>
+                  <text x="168" y="196">Collect</text>
+                  <text x="176" y="212">Claims(3)</text>
+                  <text x="112" y="260">Attesting</text>
+                  <text x="120" y="276">Environment</text>
+                  <text x="56" y="372">Attestation</text>
+                  <text x="208" y="372">Evidence(4)</text>
+                  <text x="52" y="388">Request(2)</text>
+                  <text x="244" y="420">Nonce(1)</text>
+                  <text x="120" y="452">Presenter</text>
+                  <text x="348" y="452">Verifier</text>
+                  <text x="240" y="484">Evidence(5)</text>
+                </g>
+              </svg><a href="#section-3.3-2.1.1" class="pilcrow">¶</a>
+</div>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-presenter-role-2" class="selfRef">Presenter Role</a>
+          </figcaption></figure>
+</div>
+<p id="section-3.3-3">The process of generating Evidence generally starts at the Verifier with the generation of a nonce. The nonce is used to ensure freshness
+of the Evidence and this quality is guaranteed by the Verifier. Therefore, if a nonce is used, it must be provided to the Presenter by
+the Verifier (1).<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+<p id="section-3.3-4">An Attestation Request (request) is assembled by the Presenter and submitted to the HSM (2). The Attesting Environment parses the request and
+collects the appropriate measurements from the Target Environment (3).<a href="#section-3.3-4" class="pilcrow">¶</a></p>
+<p id="section-3.3-5">In the previous figure, the HSM is represented as being composed of an Attesting Environment and a Target Environment. This representation is offered
+as a simplified view and implementations are not required to adhere to this separation of concerns.<a href="#section-3.3-5" class="pilcrow">¶</a></p>
+<p id="section-3.3-6">The Attesting Environment produces Evidence based on the collected information and returns it to the Presenter for distribution (4). Finally, the
+Presenter forwards the Evidence to the Verifier (5).<a href="#section-3.3-6" class="pilcrow">¶</a></p>
+<p id="section-3.3-7">The aim of the figure is to depict the position of the Presenter as an intermediate role between the Attester and the Verifier.
+The role of "Presenter" is privileged as it controls the claims included in the Evidence being generated by the Attester. However, the role is not "trusted" as
+the Verifier does not have to take into account the participation of the Presenter as part of the function of appraising the Evidence.<a href="#section-3.3-7" class="pilcrow">¶</a></p>
+<p id="section-3.3-8">The attestation request is a message used by the presenter to specify the elements and the associated claims that are included by the Attester in the
+generated Evidence. The nonce specified by the Verifier <span class="bcp14">MUST</span> be included in the attestation request for the Attester to include in the Evidence.<a href="#section-3.3-8" class="pilcrow">¶</a></p>
+<p id="section-3.3-9">The nature and format of the attestation request is not dictated by this specification.<a href="#section-3.3-9" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1727,7 +1834,7 @@ unrecognized elements or claims, then it <span class="bcp14">SHOULD</span> still
 Each claim describes a portion of the state from the associated element. For example,
 a platform element could have a claim which indicates the firmware version currently running.
 Another example is a key element with a claim that reports whether the key is extractable
-or not.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+or not.690<a href="#section-4.3-1" class="pilcrow">¶</a></p>
 <p id="section-4.3-2">A value provided by a claim is to be interpreted within the context
 of its element and in relation to the claim type.<a href="#section-4.3-2" class="pilcrow">¶</a></p>
 <p id="section-4.3-3">A claim type <span class="bcp14">MUST</span> be defined for a specific element type to reduce
@@ -1764,7 +1871,7 @@ consider later ones to overwrite the previous one.<a href="#section-4.3-9" class
       </h2>
 <p id="section-5-1">This section describes the data model associated with generated Evidence. For ease of
 deployment within the target ecosystem, ASN.1 definitions <span>[<a href="#X680" class="cite xref">X680</a>]</span> and DER encoding
-<span>[<a href="#X.690" class="cite xref">X.690</a>]</span> are used. A complete ASN.1 module is provided in <a href="#sec-asn1-mod" class="auto internal xref">Section 7</a>.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<span>[<a href="#X690" class="cite xref">X690</a>]</span> are used. A complete ASN.1 module is provided in <a href="#sec-asn1-mod" class="auto internal xref">Section 7</a>.<a href="#section-5-1" class="pilcrow">¶</a></p>
 <p id="section-5-2">The top-level structures, as ASN.1 fragments, are:<a href="#section-5-2" class="pilcrow">¶</a></p>
 <div class="lang-asn.1 sourcecode" id="section-5-3">
 <pre>
@@ -1778,7 +1885,7 @@ Evidence ::= SEQUENCE {
 SignatureBlock ::= SEQUENCE {
     sid SignerIdentifier,
     signatureAlgorithm AlgorithmIdentifier{
-        SIGNATURE-ALGORITHM, {SignatureAlgSet} },
+        SIGNATURE-ALGORITHM, { ... } },
     signatureValue OCTET STRING
 }
 
@@ -2368,6 +2475,12 @@ for the claim value can be found.<a href="#section-5.3-4" class="pilcrow">¶</a>
               <td class="text-left" rowspan="1" colspan="1">No</td>
               <td class="text-left" rowspan="1" colspan="1">id-evidence-claim-transaction-timestamp</td>
             </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">ak-spki</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
+              <td class="text-left" rowspan="1" colspan="1">Yes</td>
+              <td class="text-left" rowspan="1" colspan="1">id-evidence-claim-transaction-ak-spki</td>
+            </tr>
           </tbody>
         </table>
 <div id="nonce">
@@ -2375,7 +2488,9 @@ for the claim value can be found.<a href="#section-5.3-4" class="pilcrow">¶</a>
           <h4 id="name-nonce">
 <a href="#section-5.3.1" class="section-number selfRef">5.3.1. </a><a href="#name-nonce" class="section-name selfRef">nonce</a>
           </h4>
-<p id="section-5.3.1-1">The claim <code>nonce</code> is used to provide "freshness" quality as to the generated Evidence. If a nonce is used, it <span class="bcp14">MUST</span> be generated by the Verifier and conveyed to the Attester, possibly through a Presenter. The Attester <span class="bcp14">MUST</span> include the nonce unchanged in the generated Evidence. The mechanism by which the nonce is conveyed to the Attester is outside the scope of this specification.<a href="#section-5.3.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.3.1-1">The claim <code>nonce</code> is used to provide "freshness" quality as to the generated Evidence. If a nonce is used, it <span class="bcp14">MUST</span> be generated by the Verifier and
+conveyed to the Attester, possibly through a Presenter. The Attester <span class="bcp14">MUST</span> include the nonce unchanged in the generated Evidence. The mechanism by which
+the nonce is conveyed to the Attester is outside the scope of this specification.<a href="#section-5.3.1-1" class="pilcrow">¶</a></p>
 <p id="section-5.3.1-2">This claim is similar to the "eat_nonce" as defined in <span>[<a href="#RFC9711" class="cite xref">RFC9711</a>]</span>. According to that specification, this claim may be specified multiple times with
 different values. However, within the scope of this specification, the "nonce" value can be specified only once within a transaction.<a href="#section-5.3.1-2" class="pilcrow">¶</a></p>
 </section>
@@ -2390,6 +2505,19 @@ different values. However, within the scope of this specification, the "nonce" v
 <p id="section-5.3.2-2">Note that security considerations should be taken relating to the evaluation of timestamps generated by HSMs. See <a href="#sec-cons-hsm-timestamps" class="auto internal xref">Section 9.6</a>.<a href="#section-5.3.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
+<div id="ak-spki">
+<section id="section-5.3.3">
+          <h4 id="name-ak-spki">
+<a href="#section-5.3.3" class="section-number selfRef">5.3.3. </a><a href="#name-ak-spki" class="section-name selfRef">ak-spki</a>
+          </h4>
+<p id="section-5.3.3-1">This claim contains the encoded Subject Public Key Information (SPKI) for the attestation key used to sign the Evidence. The definition
+and encoding for SPKIs are defined in X.509 certificates (<span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>).<a href="#section-5.3.3-1" class="pilcrow">¶</a></p>
+<p id="section-5.3.3-2">This transaction claim is used to bind the content of the Evidence with the key(s) used to sign that Evidence. The importance
+of this binding is discussed in <a href="#sec-verif-proc" class="auto internal xref">Section 6.4</a>.<a href="#section-5.3.3-2" class="pilcrow">¶</a></p>
+<p id="section-5.3.3-3">This claim can be reported multiple times. Each included claim <span class="bcp14">MUST</span> refer to a different attestation key. In other words, this claim
+should be repeated only if multiple attestation keys are used to sign the Evidence.<a href="#section-5.3.3-3" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <div id="sec-additional-claim-types">
@@ -2400,7 +2528,7 @@ different values. However, within the scope of this specification, the "nonce" v
 <p id="section-5.4-1">It is expected that HSM vendors will register additional Element and Claim types by assigning OIDs from their own proprietary OID arcs to hold data describing additional proprietary key properties.<a href="#section-5.4-1" class="pilcrow">¶</a></p>
 <p id="section-5.4-2">When new element and claim types are used, documentation similar to the one produced in this specification <span class="bcp14">SHOULD</span> be distributed to
 explain the semantics of the claims and the frequency that values can be provided.<a href="#section-5.4-2" class="pilcrow">¶</a></p>
-<p id="section-5.4-3">See <a href="#sec-cons-verifier" class="auto internal xref">Section 9.1</a> for handling of unrecognized custom types.<a href="#section-5.4-3" class="pilcrow">¶</a></p>
+<p id="section-5.4-3">See <a href="#sec-req-verification" class="auto internal xref">Section 6.3</a> and <a href="#sec-cons-verifier" class="auto internal xref">Section 9.1</a> for handling of unrecognized custom types.<a href="#section-5.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="encoding">
@@ -2408,7 +2536,7 @@ explain the semantics of the claims and the frequency that values can be provide
         <h3 id="name-encoding">
 <a href="#section-5.5" class="section-number selfRef">5.5. </a><a href="#name-encoding" class="section-name selfRef">Encoding</a>
         </h3>
-<p id="section-5.5-1">The structure <code>Evidence</code> is to be DER encoded <span>[<a href="#X.690" class="cite xref">X.690</a>]</span>.<a href="#section-5.5-1" class="pilcrow">¶</a></p>
+<p id="section-5.5-1">The structure <code>Evidence</code> is to be DER encoded <span>[<a href="#X690" class="cite xref">X690</a>]</span>.<a href="#section-5.5-1" class="pilcrow">¶</a></p>
 <p id="section-5.5-2">If a textual representation is required, then the DER encoding <span class="bcp14">MAY</span> be subsequently encoded into Standard Base64 as defined in <span>[<a href="#RFC4648" class="cite xref">RFC4648</a>]</span>.<a href="#section-5.5-2" class="pilcrow">¶</a></p>
 <p id="section-5.5-3">PEM-like representations are also allowed where a MIME-compliant Base64 transformation of the DER encoding is used, provided that the
 header label is "EVIDENCE". For example:<a href="#section-5.5-3" class="pilcrow">¶</a></p>
@@ -2423,28 +2551,123 @@ header label is "EVIDENCE". For example:<a href="#section-5.5-3" class="pilcrow"
 </div>
 </section>
 </div>
-<div id="sec-verif-proc">
+<div id="processing">
 <section id="section-6">
-      <h2 id="name-signing-and-verification-pr">
-<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-signing-and-verification-pr" class="section-name selfRef">Signing and Verification Procedures</a>
+      <h2 id="name-processing">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-processing" class="section-name selfRef">Processing</a>
       </h2>
-<p id="section-6-1">The <code>SignatureBlock.signatureValue</code> signs over the DER-encoded to-be-signed Evidence data
-<code>Evidence.tbs</code>.<a href="#section-6-1" class="pilcrow">¶</a></p>
-<p id="section-6-2">If <code>SignerIdentifier.certificate</code> is present, the signature <span class="bcp14">MUST</span> be validated with the subject public key of that end-entity X.509 certificate. If <code>SignerIdentifier.subjectPublicKeyInfo</code> is present, the signature <span class="bcp14">MUST</span> be validated with that public key. If <code>SignerIdentifier.keyId</code> is present, the Verifier <span class="bcp14">MUST</span> obtain the corresponding public key by some implementation-specific or out-of-band mechanism; if no such key can be obtained, the SignatureBlock <span class="bcp14">MUST</span> be treated as unverifiable. If more than one field of <code>SignerIdentifier</code> is present, all present fields <span class="bcp14">MUST</span> identify the same public key; otherwise, the Evidence <span class="bcp14">MUST</span> be rejected. The certificate-based mode remains the preferred form in PKIX deployments because it provides both the public key and an X.509 identity.<a href="#section-6-2" class="pilcrow">¶</a></p>
-<p id="section-6-3">Verifiers <span class="bcp14">MUST</span> ensure, prior to accepting the signature associated with an end-entity certificate, that:<a href="#section-6-3" class="pilcrow">¶</a></p>
+<p id="section-6-1">This section deals with the exchanges between the Presenter, the Attester and the Verifier during the request, generation and consumption
+of Evidence as defined in this specification. The architecture as shown in <a href="#fig-presenter" class="auto internal xref">Figure 1</a> should be used as a reference for this section.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<div id="initiation-from-presenter">
+<section id="section-6.1">
+        <h3 id="name-initiation-from-presenter">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-initiation-from-presenter" class="section-name selfRef">Initiation from Presenter</a>
+        </h3>
+<p id="section-6.1-1">The Presenter assembles a request to initiate the generation of Evidence by the Attester. This request selects the elements and the claims that
+are to be included in the generated Evidence.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1-2">Ultimately, the generated Evidence is consumed by the Verifier. Therefore, a certain level of coordination is required between the Presenter and
+the Verifier so that the generated Evidence includes the necessary information for the specific purpose.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
+<p id="section-6.1-3">The nonce used during the generation of Evidence is used to determine the freshness of the included information. Since the freshness is guaranteed
+by the Verifier, the nonce is generally selected by the Verifier. If the Verifier generates the nonce, then it must be transmitted to the Presenter
+prior to making the request. It is possible to devise schemes where a Presenter and a Verifier would agree to use a central "bell" as nonce,
+alleviating the need to transmit the nonce between the two parties prior to the generation of the Evidence.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
+<p id="section-6.1-4">Finally, in the case where an Attester have multiple attestation keys, the Presenter need to select the attestation key(s) that are required by the
+Verifier.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="generation-of-evidence">
+<section id="section-6.2">
+        <h3 id="name-generation-of-evidence">
+<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-generation-of-evidence" class="section-name selfRef">Generation of Evidence</a>
+        </h3>
+<p id="section-6.2-1">Upon receiving a request, the Attesting Environment verifies the validity of the request. This specification RECOMMENDS that:<a href="#section-6.2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-6-4.1">
-          <p id="section-6-4.1.1">the certificate contains the <code>KeyUsage</code> (KU) extension with the <code>digitalSignature</code> bit set; and,<a href="#section-6-4.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-6.2-2.1">
+            <p id="section-6.2-2.1.1">An Attesting Environment fails a request if it contains an unrecognized element. This is to ensure that all the semantics expected
+by the Presenter are fully understood by the Attesting Environment.<a href="#section-6.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-6-4.2">
-          <p id="section-6-4.2.1">the certificate contains the <code>Extended Key Usage</code> (EKU) extension that includes the <code>id-kp-attestationKey</code> usage.<a href="#section-6-4.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-6.2-2.2">
+            <p id="section-6.2-2.2.1">An Attesting Environment ignores unrecognized claim types for a specific element. In this situation, the Attesting Environment
+is expected not to include the claim as part of the response. This guidance is intended to increase the likelihood of interoperability between
+tools of different vendors.<a href="#section-6.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
-      </ul>
-<p id="section-6-5">Verifiers <span class="bcp14">MAY</span> also use <code>Evidence.intermediateCertificates</code> to build a certification path from the end-entity
-certificate to a trust anchor.<a href="#section-6-5" class="pilcrow">¶</a></p>
-<p id="section-6-6">The structure <code>Evidence</code> contains one or more <code>SignatureBlock</code> values. Each <code>SignatureBlock</code> represents a signature generated by the Attester over the same <code>TbsEvidence</code>. This specification does not use <code>SignatureBlock</code> for signatures added by an intermediary or another party.<a href="#section-6-6" class="pilcrow">¶</a></p>
-<p id="section-6-7">More than one <code>SignatureBlock</code> supports algorithm agility for a single Attester identity. In this case, every <code>SignerIdentifier</code> <span class="bcp14">MUST</span> contain a certificate. The subject DNs in those certificates <span class="bcp14">MUST</span> identify the same Attester, using the name comparison rules in <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>, and the certificates <span class="bcp14">MUST</span> contain pairwise-distinct SPKIs. An Evidence producer <span class="bcp14">MUST NOT</span> combine signatures belonging to different Attester identities in one Evidence structure.<a href="#section-6-7" class="pilcrow">¶</a></p>
-<p id="section-6-8">Each <code>SignatureBlock</code> is evaluated independently. A Verifier <span class="bcp14">MUST</span> successfully validate at least one <code>SignatureBlock</code> using an algorithm and certification path acceptable under its appraisal policy. A Verifier <span class="bcp14">MAY</span> validate additional <code>SignatureBlock</code> values when it supports their algorithms. The presence of a signature made with an algorithm that is unsupported or unacceptable to the Verifier does not make an otherwise acceptable signature invalid. A Verifier <span class="bcp14">MUST</span> reject Evidence when multiple signing certificates do not represent the same Attester identity as described above.<a href="#section-6-8" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-6.2-2.3">
+            <p id="section-6.2-2.3.1">An Attesting Environment includes only elements and claims in the generated Evidence if these elements and claims were
+specified as part of the request. This is to give control to the Presenter as to what information is disclosed by the Attesting Environment.<a href="#section-6.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-6.2-2.4">
+            <p id="section-6.2-2.4.1">An Attesting Environment fails a request if the Presenter does not have the appropriate access rights to the elements or claims included
+in the request.<a href="#section-6.2-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-6.2-3">The Attesting Environment collects the necessary information from the Target Environment and assembles the <code>TbsEvidence</code> structure.<a href="#section-6.2-3" class="pilcrow">¶</a></p>
+<p id="section-6.2-4">The during the assembly of <code>TbsEvidence</code>, the Attesting Environment <span class="bcp14">MUST</span>:<a href="#section-6.2-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-6.2-5.1">
+            <p id="section-6.2-5.1.1">include the nonce (if present) provided by the Presenter to transaction element using the claim <code>claim-transaction-nonce</code>; and,<a href="#section-6.2-5.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-6.2-5.2">
+            <p id="section-6.2-5.2.1">add a claim of type <code>claim-transaction-ak-spki</code> to the transaction element to represent each attestation key selected to sign the
+Evidence.<a href="#section-6.2-5.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-6.2-6">For each selected attestation key, the Attesting Environment generates a signature over the DER encoding of the structure <code>TbsEvidence</code>.
+Each signature is captured in a structure of type <code>SignatureBlock</code>. Each signature block is augmented with the appropriate information
+identifying the attestation key used to generate the signature.<a href="#section-6.2-6" class="pilcrow">¶</a></p>
+<p id="section-6.2-7">Finally, the structure <code>Evidence</code> is assembled by combining the strutures <code>TbsEvidence</code> and <code>SignatureBlock</code>. The Attesting Environment <span class="bcp14">MAY</span>
+add intermediate certificates required by the Verifier to ascertain as to the validity of the provided signatures.<a href="#section-6.2-7" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-req-verification">
+<section id="section-6.3">
+        <h3 id="name-verification-by-presenter">
+<a href="#section-6.3" class="section-number selfRef">6.3. </a><a href="#name-verification-by-presenter" class="section-name selfRef">Verification by Presenter</a>
+        </h3>
+<p id="section-6.3-1">This sub-section describes the considerations that are relevant when a Presenter receives Evidence from the Attester (the HSM)
+prior to distribution.<a href="#section-6.3-1" class="pilcrow">¶</a></p>
+<p id="section-6.3-2">A Presenter is expected to review the Evidence produced by an Attester for fitness prior to distribution.<a href="#section-6.3-2" class="pilcrow">¶</a></p>
+<p id="section-6.3-3">A Presenter is expected not to disclose Evidence if it contains information it
+cannot parse. This restriction applies to element types and claim types. This is
+to ensure that the information provided by the Attester can be evaluated by the
+Presenter.<a href="#section-6.3-3" class="pilcrow">¶</a></p>
+<p id="section-6.3-4">A Presenter is expected not to disclose Evidence if it contains elements other than the ones that were requested of the Attester. This is to ensure that only the
+selected elements are exposed to the Verifier.<a href="#section-6.3-4" class="pilcrow">¶</a></p>
+<p id="section-6.3-5">A Presenter is expected not to disclose Evidence if it contains an element with a claim
+that was not requested of the Attester. This is to ensure that only the selected
+information is disclosed to the Verifier.<a href="#section-6.3-5" class="pilcrow">¶</a></p>
+<p id="section-6.3-6">Further privacy concerns are discussed in <a href="#sec-cons-privacy" class="auto internal xref">Section 9.3</a>.<a href="#section-6.3-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-verif-proc">
+<section id="section-6.4">
+        <h3 id="name-verification-procedures">
+<a href="#section-6.4" class="section-number selfRef">6.4. </a><a href="#name-verification-procedures" class="section-name selfRef">Verification Procedures</a>
+        </h3>
+<p id="section-6.4-1">This sub-section describes the considerations to be taken by the Verifier when handling Evidence generated under this specification.<a href="#section-6.4-1" class="pilcrow">¶</a></p>
+<p id="section-6.4-2">If <code>SignerIdentifier.certificate</code> is present, the signature <span class="bcp14">MUST</span> be validated with the subject public key of that end-entity X.509 certificate.
+If <code>SignerIdentifier.subjectPublicKeyInfo</code> is present, the signature <span class="bcp14">MUST</span> be validated with that public key.
+If <code>SignerIdentifier.keyId</code> is present, the Verifier <span class="bcp14">MUST</span> obtain the corresponding public key by some implementation-specific or out-of-band mechanism;
+if no such key can be obtained, the SignatureBlock <span class="bcp14">MUST</span> be treated as unverifiable and the Evidence <span class="bcp14">MUST</span> be rejected.
+The certificate-based mode remains the preferred form in PKIX deployments because it provides both the public key and an X.509 identity.<a href="#section-6.4-2" class="pilcrow">¶</a></p>
+<p id="section-6.4-3">Verifiers <span class="bcp14">MUST</span> ensure, prior to accepting the signature associated with an end-entity certificate, that:<a href="#section-6.4-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-6.4-4.1">
+            <p id="section-6.4-4.1.1">the certificate contains the <code>KeyUsage</code> (KU) extension with the <code>digitalSignature</code> bit set; and,<a href="#section-6.4-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-6.4-4.2">
+            <p id="section-6.4-4.2.1">the certificate contains the <code>Extended Key Usage</code> (EKU) extension that includes the <code>id-kp-attestationKey</code> usage.<a href="#section-6.4-4.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-6.4-5">Verifiers <span class="bcp14">MAY</span> also use <code>Evidence.intermediateCertificates</code> to build a certification path from the end-entity
+certificate to a trust anchor.<a href="#section-6.4-5" class="pilcrow">¶</a></p>
+<p id="section-6.4-6">Each <code>SignatureBlock</code> is evaluated independently. A Verifier <span class="bcp14">MUST</span> successfully validate at least one <code>SignatureBlock</code> using an
+algorithm and certification path acceptable under its appraisal policy. A Verifier <span class="bcp14">MAY</span> validate additional <code>SignatureBlock</code> values
+when it supports their algorithms. The presence of a signature made with an algorithm that is unsupported or unacceptable to the Verifier
+does not make an otherwise acceptable signature invalid. A Verifier <span class="bcp14">MUST</span> reject Evidence when multiple signing certificates do not
+represent the same Attester identity as described above.<a href="#section-6.4-6" class="pilcrow">¶</a></p>
+<p id="section-6.4-7">If any <code>transaction.ak-spki</code> claims are present, the Verifier <span class="bcp14">SHOULD</span> verify that each <code>SignerIdentifier</code>’s SubjectPublicKeyInfo (or the SPKI of its <code>certificate</code>) matches at least one <code>ak-spki</code> value. Each such claim is authoritative only when it is backed by a successfully verified SignatureBlock using the corresponding attestation key. An <code>ak-spki</code> claim that is not matched by a valid signature block <span class="bcp14">MUST NOT</span> by itself be treated as proof that the corresponding key was used to sign the Evidence.<a href="#section-6.4-7" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <div id="sec-asn1-mod">
@@ -2544,6 +2767,7 @@ ReportedClaim ::= SEQUENCE {
 ClaimSet CLAIM ::= {
       claim-transaction-nonce
       | claim-transaction-timestamp
+      | claim-transaction-ak-spki
       | claim-platform-vendor
       | claim-platform-oemid
       | claim-platform-hwmodel
@@ -2591,6 +2815,9 @@ id-evidence-claim-transaction-nonce     OBJECT IDENTIFIER ::=
     { id-evidence-claim-transaction 0 }
 id-evidence-claim-transaction-timestamp OBJECT IDENTIFIER ::=
     { id-evidence-claim-transaction 1 }
+id-evidence-claim-transaction-ak-spki   OBJECT IDENTIFIER ::=
+    { id-evidence-claim-transaction 2 }
+
 id-evidence-claim-platform            OBJECT IDENTIFIER ::=
     { id-evidence-claim 1 }
 id-evidence-claim-platform-vendor     OBJECT IDENTIFIER ::=
@@ -2675,6 +2902,11 @@ claim-transaction-nonce CLAIM ::= {
 claim-transaction-timestamp CLAIM ::= {
   ID id-evidence-claim-transaction-timestamp
   WITH TYPE GeneralizedTime
+}
+
+claim-transaction-ak-spki CLAIM ::= {
+  ID id-evidence-claim-transaction-ak-spki
+  WITH TYPE OCTET STRING
 }
 
 claim-platform-vendor CLAIM ::= {
@@ -2877,16 +3109,26 @@ only from information and measurements that are directly observable by it.<a hre
 </div>
 <div id="sec-cons-privacy">
 <section id="section-9.3">
-        <h3 id="name-privacy">
-<a href="#section-9.3" class="section-number selfRef">9.3. </a><a href="#name-privacy" class="section-name selfRef">Privacy</a>
+        <h3 id="name-privacy-and-evidence-encryp">
+<a href="#section-9.3" class="section-number selfRef">9.3. </a><a href="#name-privacy-and-evidence-encryp" class="section-name selfRef">Privacy and Evidence Encryption</a>
         </h3>
-<p id="section-9.3-1">Some HSMs have the capacity of supporting cryptographic keys controlled by separate elements referred to as "tenants", and when the HSM is used in that mode
+<p id="section-9.3-1">Some HSMs have the capacity of supporting cryptographic keys controlled by separate entities referred to as "tenants", and when the HSM is used in that mode
 it is referred to as a multi-tenant configuration.<a href="#section-9.3-1" class="pilcrow">¶</a></p>
 <p id="section-9.3-2">For example, an enterprise-grade HSM in a large multi-tenant cloud service could host TLS keys fronting multiple un-related web domains. Providing Evidence for
 claims of any one of the keys would involve a Presenter that could potentially access any of the hosted keys.
 In such a case, privacy violations could occur if the Presenter was to disclose information that does not relate to the subject key.<a href="#section-9.3-2" class="pilcrow">¶</a></p>
-<p id="section-9.3-3">Implementers <span class="bcp14">SHOULD</span> avoid over-disclosure of information by authenticating and authorizing the entity that initiates Evidence generation and by including only keys and portions of the Target Environment that this entity is authorized to access. The interface for selecting the elements and claims included in Evidence is outside the scope of this specification.<a href="#section-9.3-3" class="pilcrow">¶</a></p>
-<p id="section-9.3-4">A Presenter <span class="bcp14">SHOULD</span> review Evidence before disclosure and <span class="bcp14">SHOULD NOT</span> disclose Evidence containing information that the intended Verifier is not authorized to receive. This specification does not provide Evidence encryption; deployments that require confidentiality <span class="bcp14">MUST</span> use an appropriate conveyance protocol or object-security mechanism.<a href="#section-9.3-4" class="pilcrow">¶</a></p>
+<p id="section-9.3-3">Implementers <span class="bcp14">SHOULD</span> avoid over-disclosure of information by authenticating and authorizing the entity that initiates Evidence generation and by including only
+keys and portions of the Target Environment that this entity is authorized to access. The interface for selecting the elements and claims included in Evidence
+is outside the scope of this specification.<a href="#section-9.3-3" class="pilcrow">¶</a></p>
+<p id="section-9.3-4">A Presenter <span class="bcp14">SHOULD</span> review Evidence before disclosure and <span class="bcp14">SHOULD NOT</span> disclose Evidence containing information that the intended Verifier is not authorized to receive.
+This specification does not provide Evidence encryption; deployments that require confidentiality <span class="bcp14">MUST</span> use an appropriate conveyance protocol or object-security mechanism.<a href="#section-9.3-4" class="pilcrow">¶</a></p>
+<p id="section-9.3-5"><span>[<a href="#I-D.ounsworth-rats-privacy-framework" class="cite xref">I-D.ounsworth-rats-privacy-framework</a>]</span> presents a framework for identifying points in an Evidence conveyance protocol where designers and implementers need to be conscious of privacy concerns.
+For the evidence mechanism specified in this document, the primary privacy concern has to do with authenticating the Presenter against the HSM's local policies, and only releasing claims that they are authorized to view.
+The means by which a Presenter requests the generation of Evidence is not covered by this specification and is left to the implementers.<a href="#section-9.3-5" class="pilcrow">¶</a></p>
+<p id="section-9.3-6">Additionally, <span>[<a href="#I-D.ounsworth-rats-privacy-framework" class="cite xref">I-D.ounsworth-rats-privacy-framework</a>]</span> calls for object-level evidence encryption (instead of relying solely on transport encryption), and corresponding validation
+of the provided Verifyier encryption certificate against local policies. Such a mechanism is left out-of-scope in this specification since it is largely independent of the Evidence
+formatting structures defined in this specification. Implementers are welcome to wrap the structures defined here in such an encryption layer either within the HSM or externally to the HSM
+at an entity such as the Presenter.<a href="#section-9.3-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-cons-auth-the-presenter">
@@ -2894,9 +3136,14 @@ In such a case, privacy violations could occur if the Presenter was to disclose 
         <h3 id="name-authenticating-and-authoriz">
 <a href="#section-9.4" class="section-number selfRef">9.4. </a><a href="#name-authenticating-and-authoriz" class="section-name selfRef">Authenticating and Authorizing the Presenter</a>
         </h3>
-<p id="section-9.4-1">The Presenter represents a privileged role because it can learn about the existence of user keys and their protection properties, as well as details of the platform. It can also decide whether to disclose generated Evidence to a Verifier.<a href="#section-9.4-1" class="pilcrow">¶</a></p>
-<p id="section-9.4-2">For personal cryptographic tokens it might be appropriate for the local Evidence-generation interface to be unauthenticated. For enterprise and cloud-services grade HSMs, the entity invoking that interface <span class="bcp14">SHOULD</span> be authenticated using the HSM's native authentication mechanism. The details of this interface are HSM-specific and outside the scope of this specification.<a href="#section-9.4-2" class="pilcrow">¶</a></p>
-<p id="section-9.4-3">The HSM <span class="bcp14">MUST</span> enforce its native access controls when generating Evidence. An authenticated application <span class="bcp14">SHOULD</span> be allowed to obtain Evidence only for user keys that it is authorized to access. An administrative application that obtains Evidence for keys it is not allowed to use <span class="bcp14">MUST</span> have a distinct permission and <span class="bcp14">MUST</span> be limited to keys for which it has administrative visibility.<a href="#section-9.4-3" class="pilcrow">¶</a></p>
+<p id="section-9.4-1">The Presenter represents a privileged role because it can learn about the existence of user keys and their protection properties, as well as details of the platform.
+It can also decide whether to disclose generated Evidence to a Verifier.<a href="#section-9.4-1" class="pilcrow">¶</a></p>
+<p id="section-9.4-2">For personal cryptographic tokens it might be appropriate for the local Evidence-generation interface to be unauthenticated. For enterprise and cloud-services grade HSMs,
+the entity invoking that interface <span class="bcp14">SHOULD</span> be authenticated using the HSM's native authentication mechanism. The details of this interface are HSM-specific and outside the
+scope of this specification.<a href="#section-9.4-2" class="pilcrow">¶</a></p>
+<p id="section-9.4-3">The HSM <span class="bcp14">MUST</span> enforce its native access controls when generating Evidence. An authenticated application <span class="bcp14">SHOULD</span> be allowed to obtain Evidence only for user keys that it
+is authorized to access. An administrative application that obtains Evidence for keys it is not allowed to use <span class="bcp14">MUST</span> have a distinct permission and <span class="bcp14">MUST</span> be limited to keys
+for which it has administrative visibility.<a href="#section-9.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="proof-of-possession-of-user-keys">
@@ -2915,7 +3162,7 @@ In this example, an attacker could submit a "nonce" value which is in fact not r
 as in the case where the Presenter is an administrative UI displaying HSM status information to a system's administrator or auditor.<a href="#section-9.5-4" class="pilcrow">¶</a></p>
 <p id="section-9.5-5">Requiring the Attesting Environment to use the reported application keys to generate Evidence could, in some architectures, require the Attesting Environment to
 resolve complex access control logic and handle complex error conditions, which violates the "simple to implement" design principle outlined in <a href="#sec-cons-simple" class="auto internal xref">Section 9.2</a>.
-More discussion on authenticating the Presenter can be found in <a href="#sec-cons-auth-the-presenter" class="auto internal xref">Section 9.4</a>.<a href="#section-9.5-5" class="pilcrow">¶</a></p>
+More discussions on authenticating the Presenter can be found in <a href="#sec-cons-auth-the-presenter" class="auto internal xref">Section 9.4</a>.<a href="#section-9.5-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-cons-hsm-timestamps">
@@ -2982,9 +3229,9 @@ such as the "nonce" claim of the "transaction" element, introduced in this speci
         <dd>
 <span class="refAuthor">ITU-T</span>, <span class="refTitle">"Information technology — ASN.1: Specification of basic notation"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.itu.int/rec/T-REC-X.680">https://www.itu.int/rec/T-REC-X.680</a>&gt;</span>. </dd>
 <dd class="break"></dd>
-<dt id="X.690">[X.690]</dt>
+<dt id="X690">[X690]</dt>
       <dd>
-<span class="refAuthor">ITU-T</span>, <span class="refTitle">"Information technology -- ASN.1 encoding rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)"</span>, <span class="seriesInfo">ITU-T Recommendation X.690</span>, <span class="seriesInfo">ISO/IEC 8825-1:2021</span>, <time datetime="2021-02" class="refDate">February 2021</time>, <span>&lt;<a href="https://www.itu.int/rec/T-REC-X.690">https://www.itu.int/rec/T-REC-X.690</a>&gt;</span>. </dd>
+<span class="refAuthor">ITU-T</span>, <span class="refTitle">"Information technology — ASN.1 encoding rules: BER, CER, DER"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.itu.int/rec/T-REC-X.690">https://www.itu.int/rec/T-REC-X.690</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
@@ -3005,7 +3252,11 @@ such as the "nonce" claim of the "transaction" element, introduced in this speci
 <dd class="break"></dd>
 <dt id="I-D.ietf-lamps-csr-attestation">[I-D.ietf-lamps-csr-attestation]</dt>
         <dd>
-<span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Wiseman, M.</span>, and <span class="refAuthor">N. Smith</span>, <span class="refTitle">"Use of Remote Attestation with Certification Signing Requests"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-lamps-csr-attestation-29</span>, <time datetime="2026-09-02" class="refDate">2 September 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-29">https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-29</a>&gt;</span>. </dd>
+<span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Wiseman, M.</span>, and <span class="refAuthor">N. Smith</span>, <span class="refTitle">"Use of Remote Attestation with Certification Signing Requests"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-lamps-csr-attestation-32</span>, <time datetime="2026-10-22" class="refDate">22 October 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-32">https://datatracker.ietf.org/doc/html/draft-ietf-lamps-csr-attestation-32</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ounsworth-rats-privacy-framework">[I-D.ounsworth-rats-privacy-framework]</dt>
+        <dd>
+<span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, and <span class="refAuthor">G. Lehmann</span>, <span class="refTitle">"Privacy Framework for Remote ATtestation procedureS"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ounsworth-rats-privacy-framework-00</span>, <time datetime="2026-06-18" class="refDate">18 June 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ounsworth-rats-privacy-framework-00">https://datatracker.ietf.org/doc/html/draft-ounsworth-rats-privacy-framework-00</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC6024">[RFC6024]</dt>
         <dd>
@@ -3031,17 +3282,17 @@ such as the "nonce" claim of the "transaction" element, introduced in this speci
 <div class="alignLeft art-text artwork" id="appendix-A-4">
 <pre>
 -----BEGIN CERTIFICATE-----
-MIIB7TCCAZOgAwIBAgIUV5Dh3UjqFKcSqD+INoqe4EW6UzYwCgYIKoZIzj0EAwIw
+MIIB7TCCAZOgAwIBAgIUHKnBw1t9UQKB/qynm/f5XYx1ZAIwCgYIKoZIzj0EAwIw
 RDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3Rh
-dGlvbjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2MDcyMTExMTIzOFoXDTM2MDcxODEx
-MTMzOFowRDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1h
+dGlvbjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2MTAxOTE3MDEzNVoXDTM2MTAxNjE3
+MDIzNVowRDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1h
 dHRlc3RhdGlvbjEPMA0GA1UEAwwGUm9vdENBMFkwEwYHKoZIzj0CAQYIKoZIzj0D
-AQcDQgAEZ+5x+vU1QHvE/rfN50XeGd+tlaCzeYzLI2yAOaNd3qeeKjtI1H3BV0nU
-+kvDgdnWqki6TnLRsX6DHqmffS0YeaNjMGEwDwYDVR0TAQH/BAUwAwEB/zAdBgNV
-HQ4EFgQURngIMjk7Qci5LcZ2gQfAS/T5v6AwHwYDVR0jBBgwFoAURngIMjk7Qci5
-LcZ2gQfAS/T5v6AwDgYDVR0PAQH/BAQDAgKEMAoGCCqGSM49BAMCA0gAMEUCIEQ7
-jM1fYGhwM6SAlHjAKvxXdTPyck3EQvdduA0l8Ek+AiEAubyYDczX9skUncZQ7Sd2
-lWyRnEuk7cl4Ku4PFXHkSiM=
+AQcDQgAEN4QgO/9AT+E5DOM25pmMVmqcrAgDscUuBQlAvx5tnHx4upS1CBQ1SWCz
+RcGcbkguu/QrxYW+nh+ZX+6ExGCV76NjMGEwDwYDVR0TAQH/BAUwAwEB/zAdBgNV
+HQ4EFgQU6KnOaGwg0LT25QOEOOzCK4CJLJwwHwYDVR0jBBgwFoAU6KnOaGwg0LT2
+5QOEOOzCK4CJLJwwDgYDVR0PAQH/BAQDAgKEMAoGCCqGSM49BAMCA0gAMEUCIQCy
+7yjuXW40pXdLBp81iXMbxCAUirxZMGFCrGlwkgDUHAIgd53tPlg5gwk6VJPU7RPm
++wVQWjoERyLkFFl2rCbvN6M=
 -----END CERTIFICATE-----
 </pre><a href="#appendix-A-4" class="pilcrow">¶</a>
 </div>
@@ -3056,15 +3307,25 @@ that the Verifier will be able to look up the AK key by its SHA1 hash.<a href="#
 <div class="alignLeft art-text artwork" id="appendix-A.1-2">
 <pre>
 -----BEGIN EVIDENCE-----
-MIIBvDCCAUUCAQEwggE+MIGwBgkrBgEFBYdnAAAwgaIwFgYKKwYBBQWHZwEAAAQI3q2+
-78r+ur4wHQYKKwYBBQWHZwEAARgPMjAyNjA3MjExMTEzMzhaMGkGCisGAQUFh2cBAAIE
-WzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABKxJDta4zEK/3rtwmAiJ9E4LES2OPZpz
-kli13hUKZU7GoDyzmrc7hVMBgtddRaacyGNPIrp5rA5UgAXLoTba0jowgYgGCSsGAQUF
+MIIDtTCCAUUCAQEwggE+MIGwBgkrBgEFBYdnAAAwgaIwFgYKKwYBBQWHZwEAAAQI3q2+
+78r+ur4wHQYKKwYBBQWHZwEAARgPMjAyNjEwMTkxNzAyMzVaMGkGCisGAQUFh2cBAAIE
+WzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABD69NQMqgJuSTrbzcblRVghJt7HmFlLd
+AKVnjxhsUkbdL5rD1Q9JQNkc4dBC9gFOf2EFeuqf2xw0Qbg/9bg/E70wgYgGCSsGAQUF
 h2cAATB7MBcGCisGAQUFh2cBAQAMCUFjbWUgQ29ycDAWBgorBgEFBYdnAQECBAhIU00t
 OTAwMDATBgorBgEFBYdnAQEDDAUyLjEuMDAPBgorBgEFBYdnAQEKAQH/MA8GCisGAQUF
-h2cBAQwCAQMwEQYKKwYBBQWHZwEBCAIDAVGAMHEwbzAYoBYEFB0KdBf6XwQ3pzNMkyzh
-Nbf3NBn+MAoGCCqGSM49BAMCBEcwRQIhAPRrdNsm+JqBb0m+25XYN5mAXVRkBgrkJXNg
-vE3ns4PfAiAqtgw3Zqh32EXfPgV/Z0Hizl3X1KXVXUt/ovMGkK8FUQ==
+h2cBAQwCAQMwEQYKKwYBBQWHZwEBCAIDAVGAMHEwbzAYoBYEFLRJCCdeDi7ku5sdqwEb
+SbxVeVmwMAoGCCqGSM49BAMCBEcwRQIgHJZcLsbt28RCsx1wG35yjcMu3V3X8ezZ84UT
+EyN75FoCIQDyn5C/pO2lKtMbfTmoX53yW/A3NgadyLrWOz7Kao7wN6CCAfUwggHxMIIB
+7TCCAZKgAwIBAgIUFRC9iC06b9IjIvQ5R1/dAVqk868wCgYIKoZIzj0EAwIwRDESMBAG
+A1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3RhdGlvbjEPMA0G
+A1UEAwwGUm9vdENBMB4XDTI2MTAxOTE3MDEzNVoXDTM2MTAxNjE3MDIzNVowQzESMBAG
+A1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3RhdGlvbjEOMAwG
+A1UEAwwFSW50Q0EwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAQJjeKWNuxkF9oYEyDq
+VUDa/IZGwb9TRprua1tWYn6NWfeFjyofQiu0U8xwqP40bh2vKxA6kI694mKSS6Ykdef7
+o2MwYTAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBQPAxi9xrUNxQt1hu0jfcTuWEJC
+fjAfBgNVHSMEGDAWgBToqc5obCDQtPblA4Q47MIrgIksnDAOBgNVHQ8BAf8EBAMCAoQw
+CgYIKoZIzj0EAwIDSQAwRgIhAOP2fUUSeo0QiRt3FylCrch3PuKDNl5P8rdHpPHPg//e
+AiEAqY0oaP+2ZzPJNduDa/R4R0xGePpuDU6JWInrM0UzUSU=
 -----END EVIDENCE-----
 </pre><a href="#appendix-A.1-2" class="pilcrow">¶</a>
 </div>
@@ -3078,7 +3339,7 @@ Evidence:
       Claim[0]: id-evidence-claim-transaction-nonce
               -&gt; [OCTET STRING] deadbeefcafebabe
       Claim[1]: id-evidence-claim-transaction-timestamp
-              -&gt; [GeneralizedTime] 20260721111338Z
+              -&gt; [GeneralizedTime] 20261019170235Z
       Claim[2]: id-evidence-claim-transaction-ak-spki
               -&gt; [OCTET STRING] 3059301306072a8648ce3d02...
     ReportedElement[1]: id-evidence-element-platform
@@ -3097,39 +3358,40 @@ Evidence:
   Signatures (1):
     SignatureBlock[0]:
       algorithm      : 1.2.840.10045.4.3.2
-      signatureValue : 3045022100f46b74db26f89a...
-      keyId          : 1d0a7417fa5f0437a7334c932ce135b7f73419fe
+      signatureValue : 304502201c965c2ec6eddbc4...
+      keyId          : b44908275e0e2ee4bb9b1dab011b49bc557959b0
+  Intermediate Certificates:  (1)
 </pre><a href="#appendix-A.1-4" class="pilcrow">¶</a>
 </div>
 <p id="appendix-A.1-5">For completeness of the sample, the following AK and Intermediate CA certificates are required for verification:<a href="#appendix-A.1-5" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="appendix-A.1-6">
 <pre>
 -----BEGIN CERTIFICATE-----
-MIICADCCAaagAwIBAgIUBTLdT9dE5Z4Xgw8WqLvV73ku9McwCgYIKoZIzj0EAwIw
+MIICBDCCAamgAwIBAgIUR1T8v7KK+CRv7t+xPfrpxjQM5T4wCgYIKoZIzj0EAwIw
 QzESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3Rh
-dGlvbjEOMAwGA1UEAwwFSW50Q0EwHhcNMjYwNzIxMTExMjM4WhcNMzYwNzE4MTEx
-MzM4WjBFMRIwEAYDVQQKDAlpZXRmLXJhdHMxHTAbBgNVBAsMFHBraXgta2V5LWF0
+dGlvbjEOMAwGA1UEAwwFSW50Q0EwHhcNMjYxMDE5MTcwMTM1WhcNMzYxMDE2MTcw
+MjM1WjBFMRIwEAYDVQQKDAlpZXRmLXJhdHMxHTAbBgNVBAsMFHBraXgta2V5LWF0
 dGVzdGF0aW9uMRAwDgYDVQQDDAd0ZXN0LWFrMFkwEwYHKoZIzj0CAQYIKoZIzj0D
-AQcDQgAErEkO1rjMQr/eu3CYCIn0TgsRLY49mnOSWLXeFQplTsagPLOatzuFUwGC
-111FppzIY08iunmsDlSABcuhNtrSOqN2MHQwDAYDVR0TAQH/BAIwADAdBgNVHQ4E
-FgQUHQp0F/pfBDenM0yTLOE1t/c0Gf4wHwYDVR0jBBgwFoAUAswMAJCNpSCrblVW
-cd/+xmxoywgwDgYDVR0PAQH/BAQDAgeAMBQGA1UdJQQNMAsGCSsGAQUFBwOHZzAK
-BggqhkjOPQQDAgNIADBFAiEAw9GJY2DN+HyeBGGc+jvrM1cj/iUbkbMa83GohWT8
-RcUCIENpvIaKhQHFsuQ+9696B/jsZMKohbQxVbJeTakSB4k8
+AQcDQgAEPr01AyqAm5JOtvNxuVFWCEm3seYWUt0ApWePGGxSRt0vmsPVD0lA2Rzh
+0EL2AU5/YQV66p/bHDRBuD/1uD8TvaN5MHcwDAYDVR0TAQH/BAIwADAdBgNVHQ4E
+FgQUtEkIJ14OLuS7mx2rARtJvFV5WbAwHwYDVR0jBBgwFoAUDwMYvca1DcULdYbt
+I33E7lhCQn4wDgYDVR0PAQH/BAQDAgeAMBcGA1UdJQEB/wQNMAsGCSsGAQUFBwOH
+ZzAKBggqhkjOPQQDAgNJADBGAiEA0fM8XoTtaMxWCtmCVdE0KvqtQ4Ny+9tIes41
+2I9tSC8CIQCc+PhTzp6JWmNxhBmNNXdoqlcjSj3b5o0kKEH/NPlvng==
 -----END CERTIFICATE-----
 
 -----BEGIN CERTIFICATE-----
-MIIB6zCCAZKgAwIBAgIUH/Gv/RA4QFmybrw2/okZGCpaomYwCgYIKoZIzj0EAwIw
+MIIB7TCCAZKgAwIBAgIUFRC9iC06b9IjIvQ5R1/dAVqk868wCgYIKoZIzj0EAwIw
 RDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3Rh
-dGlvbjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2MDcyMTExMTIzOFoXDTM2MDcxODEx
-MTMzOFowQzESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1h
+dGlvbjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2MTAxOTE3MDEzNVoXDTM2MTAxNjE3
+MDIzNVowQzESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1h
 dHRlc3RhdGlvbjEOMAwGA1UEAwwFSW50Q0EwWTATBgcqhkjOPQIBBggqhkjOPQMB
-BwNCAAQpI9FSblHeZQciaN+1UFyVbixK0AhNJnST/c4gdQ7/M8JEzucgccgBkKE2
-9569wQjwY72JOMyKNimlc+YCDkrWo2MwYTAPBgNVHRMBAf8EBTADAQH/MB0GA1Ud
-DgQWBBQCzAwAkI2lIKtuVVZx3/7GbGjLCDAfBgNVHSMEGDAWgBRGeAgyOTtByLkt
-xnaBB8BL9Pm/oDAOBgNVHQ8BAf8EBAMCAoQwCgYIKoZIzj0EAwIDRwAwRAIgaeUk
-+QXqxMemsYFhnMYziLDqEF0PN8/utxLqT/m1dNYCIFfw64Y/c1THO1YnNOiilmPx
-ShrU9GENFUICHM17CI7x
+BwNCAAQJjeKWNuxkF9oYEyDqVUDa/IZGwb9TRprua1tWYn6NWfeFjyofQiu0U8xw
+qP40bh2vKxA6kI694mKSS6Ykdef7o2MwYTAPBgNVHRMBAf8EBTADAQH/MB0GA1Ud
+DgQWBBQPAxi9xrUNxQt1hu0jfcTuWEJCfjAfBgNVHSMEGDAWgBToqc5obCDQtPbl
+A4Q47MIrgIksnDAOBgNVHQ8BAf8EBAMCAoQwCgYIKoZIzj0EAwIDSQAwRgIhAOP2
+fUUSeo0QiRt3FylCrch3PuKDNl5P8rdHpPHPg//eAiEAqY0oaP+2ZzPJNduDa/R4
+R0xGePpuDU6JWInrM0UzUSU=
 -----END CERTIFICATE-----
 </pre><a href="#appendix-A.1-6" class="pilcrow">¶</a>
 </div>
@@ -3146,42 +3408,43 @@ This example embeds the AK and Intermediate CA certificates in the Evidence obje
 <div class="alignLeft art-text artwork" id="appendix-A.2-2">
 <pre>
 -----BEGIN EVIDENCE-----
-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
+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
-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
+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
-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
+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
-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
+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
+M0UzUSU=
 -----END EVIDENCE-----
 </pre><a href="#appendix-A.2-2" class="pilcrow">¶</a>
 </div>
@@ -3195,7 +3458,7 @@ Evidence:
       Claim[0]: id-evidence-claim-transaction-nonce
               -&gt; [OCTET STRING] beefcafebabedead
       Claim[1]: id-evidence-claim-transaction-timestamp
-              -&gt; [GeneralizedTime] 20260721111338Z
+              -&gt; [GeneralizedTime] 20261019170235Z
       Claim[2]: id-evidence-claim-transaction-ak-spki
               -&gt; [OCTET STRING] 3059301306072a8648ce3d02...
     ReportedElement[1]: id-evidence-element-platform
@@ -3228,7 +3491,7 @@ Evidence:
   Signatures (1):
     SignatureBlock[0]:
       algorithm      : 1.2.840.10045.4.3.2
-      signatureValue : 3046022100d7d456541a7a05...
+      signatureValue : 30450221008952afc2c47d98...
       AK Certificate : present
   Intermediate Certificates:  (1)
 </pre><a href="#appendix-A.2-4" class="pilcrow">¶</a>

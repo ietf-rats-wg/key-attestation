@@ -5,7 +5,7 @@
 RATS                                                         J.-P. Fiset
 Internet-Draft                                                  Crypto4A
 Intended status: Standards Track                            M. Ounsworth
-Expires: 25 March 2027                                    Cryptic Forest
+Expires: 27 April 2027                                    Cryptic Forest
                                                            H. Tschofenig
                                                                 UniBw M.
                                                              H. Birkholz
@@ -13,7 +13,7 @@ Expires: 25 March 2027                                    Cryptic Forest
                                                               M. Wiseman
                                                                         
                                                                 N. Smith
-                                                       21 September 2026
+                                                         24 October 2026
 
 
             Evidence Encoding for Hardware Security Modules
@@ -67,7 +67,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 25 March 2027.
+   This Internet-Draft will expire on 27 April 2027.
 
 Copyright Notice
 
@@ -93,6 +93,7 @@ Table of Contents
    3.  Conventions and Terminology
      3.1.  Claims and measurements in generated Evidence
      3.2.  Attestation Key Certificate Chain
+     3.3.  Presenter Role
    4.  Information Model
      4.1.  Element
      4.2.  Element Type
@@ -113,15 +114,20 @@ Table of Contents
      5.3.  Transaction Element
        5.3.1.  nonce
        5.3.2.  timestamp
+       5.3.3.  ak-spki
      5.4.  Additional Element and Claim Types
      5.5.  Encoding
-   6.  Signing and Verification Procedures
+   6.  Processing
+     6.1.  Initiation from Presenter
+     6.2.  Generation of Evidence
+     6.3.  Verification by Presenter
+     6.4.  Verification Procedures
    7.  ASN.1 Module
    8.  IANA Considerations
    9.  Security Considerations
      9.1.  Policies relating to Verifier and Relying Party
      9.2.  Simple to Implement
-     9.3.  Privacy
+     9.3.  Privacy and Evidence Encryption
      9.4.  Authenticating and Authorizing the Presenter
      9.5.  Proof-of-Possession of User Keys
      9.6.  Timestamps and HSMs
@@ -382,8 +388,8 @@ Table of Contents
    contain a number of measurable attributes.
 
    A certain level of complexity arises as multiple elements of the same
-   class can be reported simultaneously in generated Evidence.  In this
-   case, multiple similar claims are reported simultaneously but
+   class690 can be reported simultaneously in generated Evidence.  In
+   this case, multiple similar claims are reported simultaneously but
    associated with different elements.
 
    For example, two independent user keys could be reported
@@ -443,8 +449,86 @@ Table of Contents
    The data format specified in Section 5 requires one or more
    SignatureBlock values.  Multiple signature blocks allow one Attester
    identity, represented by a single subject DN, to use distinct
-   Attestation Keys and signature algorithms.  See Section 6 for the
+   Attestation Keys and signature algorithms.  See Section 6.4 for the
    processing rules.
+
+3.3.  Presenter Role
+
+   This specification introduces the role of "Presenter" as shown in
+   Figure 1.  The Presenter is the role that initiates the generation of
+   Evidence.  Since HSMs are generally servers (client/server
+   relationship) or peripherals (controller/peripheral relationship), a
+   Presenter is required to launch the process of creating the Evidence
+   and capturing it to forward it to the Verifier.
+
+   +-----------------------------+
+   |  Attester (HSM)             |
+   |                             |
+   |      +------------------+   |
+   |      | Target           |   |
+   |      | Environment      |   |
+   |      | (Elements &      |   |
+   |      |  values)         |   |
+   |      +-------+----------+   |
+   |              |              |
+   |              | Collect      |
+   |              | Claims(3)    |
+   |              v              |
+   |      +------------------+   |
+   |      | Attesting        |   |
+   |      | Environment      |   |
+   |      +--------+---------+   |
+   |            ^  |             |
+   |            |  |             |
+   +------------+--+-------------+
+                |  |
+    Attestation |  |   Evidence(4)
+    Request(2)  |  |
+                |  v
+        +----------------+   Nonce(1)  +------------+
+        |                |<------------|            |
+        |    Presenter   |             |  Verifier  |
+        |                |------------>|            |
+        +----------------+ Evidence(5) +------------+
+
+                          Figure 1: Presenter Role
+
+   The process of generating Evidence generally starts at the Verifier
+   with the generation of a nonce.  The nonce is used to ensure
+   freshness of the Evidence and this quality is guaranteed by the
+   Verifier.  Therefore, if a nonce is used, it must be provided to the
+   Presenter by the Verifier (1).
+
+   An Attestation Request (request) is assembled by the Presenter and
+   submitted to the HSM (2).  The Attesting Environment parses the
+   request and collects the appropriate measurements from the Target
+   Environment (3).
+
+   In the previous figure, the HSM is represented as being composed of
+   an Attesting Environment and a Target Environment.  This
+   representation is offered as a simplified view and implementations
+   are not required to adhere to this separation of concerns.
+
+   The Attesting Environment produces Evidence based on the collected
+   information and returns it to the Presenter for distribution (4).
+   Finally, the Presenter forwards the Evidence to the Verifier (5).
+
+   The aim of the figure is to depict the position of the Presenter as
+   an intermediate role between the Attester and the Verifier.  The role
+   of "Presenter" is privileged as it controls the claims included in
+   the Evidence being generated by the Attester.  However, the role is
+   not "trusted" as the Verifier does not have to take into account the
+   participation of the Presenter as part of the function of appraising
+   the Evidence.
+
+   The attestation request is a message used by the presenter to specify
+   the elements and the associated claims that are included by the
+   Attester in the generated Evidence.  The nonce specified by the
+   Verifier MUST be included in the attestation request for the Attester
+   to include in the Evidence.
+
+   The nature and format of the attestation request is not dictated by
+   this specification.
 
 4.  Information Model
 
@@ -550,7 +634,7 @@ Table of Contents
    associated element.  For example, a platform element could have a
    claim which indicates the firmware version currently running.
    Another example is a key element with a claim that reports whether
-   the key is extractable or not.
+   the key is extractable or not.690
 
    A value provided by a claim is to be interpreted within the context
    of its element and in relation to the claim type.
@@ -600,7 +684,7 @@ Table of Contents
 
    This section describes the data model associated with generated
    Evidence.  For ease of deployment within the target ecosystem, ASN.1
-   definitions [X680] and DER encoding [X.690] are used.  A complete
+   definitions [X680] and DER encoding [X690] are used.  A complete
    ASN.1 module is provided in Section 7.
 
    The top-level structures, as ASN.1 fragments, are:
@@ -615,7 +699,7 @@ Table of Contents
    SignatureBlock ::= SEQUENCE {
        sid SignerIdentifier,
        signatureAlgorithm AlgorithmIdentifier{
-           SIGNATURE-ALGORITHM, {SignatureAlgSet} },
+           SIGNATURE-ALGORITHM, { ... } },
        signatureValue OCTET STRING
    }
 
@@ -1133,6 +1217,9 @@ Table of Contents
       | timestamp  | [RFC9711] | No        | id-evidence-claim-    |
       |            |           |           | transaction-timestamp |
       +------------+-----------+-----------+-----------------------+
+      | ak-spki    | RFCthis   | Yes       | id-evidence-claim-    |
+      |            |           |           | transaction-ak-spki   |
+      +------------+-----------+-----------+-----------------------+
 
                                  Table 4
 
@@ -1160,6 +1247,21 @@ Table of Contents
    Note that security considerations should be taken relating to the
    evaluation of timestamps generated by HSMs.  See Section 9.6.
 
+5.3.3.  ak-spki
+
+   This claim contains the encoded Subject Public Key Information (SPKI)
+   for the attestation key used to sign the Evidence.  The definition
+   and encoding for SPKIs are defined in X.509 certificates ([RFC5280]).
+
+   This transaction claim is used to bind the content of the Evidence
+   with the key(s) used to sign that Evidence.  The importance of this
+   binding is discussed in Section 6.4.
+
+   This claim can be reported multiple times.  Each included claim MUST
+   refer to a different attestation key.  In other words, this claim
+   should be repeated only if multiple attestation keys are used to sign
+   the Evidence.
+
 5.4.  Additional Element and Claim Types
 
    It is expected that HSM vendors will register additional Element and
@@ -1171,11 +1273,12 @@ Table of Contents
    explain the semantics of the claims and the frequency that values can
    be provided.
 
-   See Section 9.1 for handling of unrecognized custom types.
+   See Section 6.3 and Section 9.1 for handling of unrecognized custom
+   types.
 
 5.5.  Encoding
 
-   The structure Evidence is to be DER encoded [X.690].
+   The structure Evidence is to be DER encoded [X690].
 
    If a textual representation is required, then the DER encoding MAY be
    subsequently encoded into Standard Base64 as defined in [RFC4648].
@@ -1188,10 +1291,119 @@ Table of Contents
    (...)
    -----END EVIDENCE-----
 
-6.  Signing and Verification Procedures
+6.  Processing
 
-   The SignatureBlock.signatureValue signs over the DER-encoded to-be-
-   signed Evidence data Evidence.tbs.
+   This section deals with the exchanges between the Presenter, the
+   Attester and the Verifier during the request, generation and
+   consumption of Evidence as defined in this specification.  The
+   architecture as shown in Figure 1 should be used as a reference for
+   this section.
+
+6.1.  Initiation from Presenter
+
+   The Presenter assembles a request to initiate the generation of
+   Evidence by the Attester.  This request selects the elements and the
+   claims that are to be included in the generated Evidence.
+
+   Ultimately, the generated Evidence is consumed by the Verifier.
+   Therefore, a certain level of coordination is required between the
+   Presenter and the Verifier so that the generated Evidence includes
+   the necessary information for the specific purpose.
+
+   The nonce used during the generation of Evidence is used to determine
+   the freshness of the included information.  Since the freshness is
+   guaranteed by the Verifier, the nonce is generally selected by the
+   Verifier.  If the Verifier generates the nonce, then it must be
+   transmitted to the Presenter prior to making the request.  It is
+   possible to devise schemes where a Presenter and a Verifier would
+   agree to use a central "bell" as nonce, alleviating the need to
+   transmit the nonce between the two parties prior to the generation of
+   the Evidence.
+
+   Finally, in the case where an Attester have multiple attestation
+   keys, the Presenter need to select the attestation key(s) that are
+   required by the Verifier.
+
+6.2.  Generation of Evidence
+
+   Upon receiving a request, the Attesting Environment verifies the
+   validity of the request.  This specification RECOMMENDS that:
+
+   *  An Attesting Environment fails a request if it contains an
+      unrecognized element.  This is to ensure that all the semantics
+      expected by the Presenter are fully understood by the Attesting
+      Environment.
+
+   *  An Attesting Environment ignores unrecognized claim types for a
+      specific element.  In this situation, the Attesting Environment is
+      expected not to include the claim as part of the response.  This
+      guidance is intended to increase the likelihood of
+      interoperability between tools of different vendors.
+
+   *  An Attesting Environment includes only elements and claims in the
+      generated Evidence if these elements and claims were specified as
+      part of the request.  This is to give control to the Presenter as
+      to what information is disclosed by the Attesting Environment.
+
+   *  An Attesting Environment fails a request if the Presenter does not
+      have the appropriate access rights to the elements or claims
+      included in the request.
+
+   The Attesting Environment collects the necessary information from the
+   Target Environment and assembles the TbsEvidence structure.
+
+   The during the assembly of TbsEvidence, the Attesting Environment
+   MUST:
+
+   *  include the nonce (if present) provided by the Presenter to
+      transaction element using the claim claim-transaction-nonce; and,
+
+   *  add a claim of type claim-transaction-ak-spki to the transaction
+      element to represent each attestation key selected to sign the
+      Evidence.
+
+   For each selected attestation key, the Attesting Environment
+   generates a signature over the DER encoding of the structure
+   TbsEvidence.  Each signature is captured in a structure of type
+   SignatureBlock.  Each signature block is augmented with the
+   appropriate information identifying the attestation key used to
+   generate the signature.
+
+   Finally, the structure Evidence is assembled by combining the
+   strutures TbsEvidence and SignatureBlock.  The Attesting Environment
+   MAY add intermediate certificates required by the Verifier to
+   ascertain as to the validity of the provided signatures.
+
+6.3.  Verification by Presenter
+
+   This sub-section describes the considerations that are relevant when
+   a Presenter receives Evidence from the Attester (the HSM) prior to
+   distribution.
+
+   A Presenter is expected to review the Evidence produced by an
+   Attester for fitness prior to distribution.
+
+   A Presenter is expected not to disclose Evidence if it contains
+   information it cannot parse.  This restriction applies to element
+   types and claim types.  This is to ensure that the information
+   provided by the Attester can be evaluated by the Presenter.
+
+   A Presenter is expected not to disclose Evidence if it contains
+   elements other than the ones that were requested of the Attester.
+   This is to ensure that only the selected elements are exposed to the
+   Verifier.
+
+   A Presenter is expected not to disclose Evidence if it contains an
+   element with a claim that was not requested of the Attester.  This is
+   to ensure that only the selected information is disclosed to the
+   Verifier.
+
+   Further privacy concerns are discussed in Section 9.3.
+
+6.4.  Verification Procedures
+
+   This sub-section describes the considerations to be taken by the
+   Verifier when handling Evidence generated under this specification.
 
    If SignerIdentifier.certificate is present, the signature MUST be
    validated with the subject public key of that end-entity X.509
@@ -1200,11 +1412,10 @@ Table of Contents
    SignerIdentifier.keyId is present, the Verifier MUST obtain the
    corresponding public key by some implementation-specific or out-of-
    band mechanism; if no such key can be obtained, the SignatureBlock
-   MUST be treated as unverifiable.  If more than one field of
-   SignerIdentifier is present, all present fields MUST identify the
-   same public key; otherwise, the Evidence MUST be rejected.  The
-   certificate-based mode remains the preferred form in PKIX deployments
-   because it provides both the public key and an X.509 identity.
+   MUST be treated as unverifiable and the Evidence MUST be rejected.
+   The certificate-based mode remains the preferred form in PKIX
+   deployments because it provides both the public key and an X.509
+   identity.
 
    Verifiers MUST ensure, prior to accepting the signature associated
    with an end-entity certificate, that:
@@ -1218,20 +1429,6 @@ Table of Contents
    Verifiers MAY also use Evidence.intermediateCertificates to build a
    certification path from the end-entity certificate to a trust anchor.
 
-   The structure Evidence contains one or more SignatureBlock values.
-   Each SignatureBlock represents a signature generated by the Attester
-   over the same TbsEvidence.  This specification does not use
-   SignatureBlock for signatures added by an intermediary or another
-   party.
-
-   More than one SignatureBlock supports algorithm agility for a single
-   Attester identity.  In this case, every SignerIdentifier MUST contain
-   a certificate.  The subject DNs in those certificates MUST identify
-   the same Attester, using the name comparison rules in [RFC5280], and
-   the certificates MUST contain pairwise-distinct SPKIs.  An Evidence
-   producer MUST NOT combine signatures belonging to different Attester
-   identities in one Evidence structure.
-
    Each SignatureBlock is evaluated independently.  A Verifier MUST
    successfully validate at least one SignatureBlock using an algorithm
    and certification path acceptable under its appraisal policy.  A
@@ -1241,6 +1438,15 @@ Table of Contents
    not make an otherwise acceptable signature invalid.  A Verifier MUST
    reject Evidence when multiple signing certificates do not represent
    the same Attester identity as described above.
+
+   If any transaction.ak-spki claims are present, the Verifier SHOULD
+   verify that each SignerIdentifier’s SubjectPublicKeyInfo (or the SPKI
+   of its certificate) matches at least one ak-spki value.  Each such
+   claim is authoritative only when it is backed by a successfully
+   verified SignatureBlock using the corresponding attestation key.  An
+   ak-spki claim that is not matched by a valid signature block MUST NOT
+   by itself be treated as proof that the corresponding key was used to
+   sign the Evidence.
 
 7.  ASN.1 Module
 
@@ -1334,6 +1540,7 @@ Table of Contents
    ClaimSet CLAIM ::= {
          claim-transaction-nonce
          | claim-transaction-timestamp
+         | claim-transaction-ak-spki
          | claim-platform-vendor
          | claim-platform-oemid
          | claim-platform-hwmodel
@@ -1381,6 +1588,9 @@ Table of Contents
        { id-evidence-claim-transaction 0 }
    id-evidence-claim-transaction-timestamp OBJECT IDENTIFIER ::=
        { id-evidence-claim-transaction 1 }
+   id-evidence-claim-transaction-ak-spki   OBJECT IDENTIFIER ::=
+       { id-evidence-claim-transaction 2 }
+
    id-evidence-claim-platform            OBJECT IDENTIFIER ::=
        { id-evidence-claim 1 }
    id-evidence-claim-platform-vendor     OBJECT IDENTIFIER ::=
@@ -1465,6 +1675,11 @@ Table of Contents
    claim-transaction-timestamp CLAIM ::= {
      ID id-evidence-claim-transaction-timestamp
      WITH TYPE GeneralizedTime
+   }
+
+   claim-transaction-ak-spki CLAIM ::= {
+     ID id-evidence-claim-transaction-ak-spki
+     WITH TYPE OCTET STRING
    }
 
    claim-platform-vendor CLAIM ::= {
@@ -1660,10 +1875,10 @@ Table of Contents
    from scratch.  The Attesting Environment MUST generate Evidence only
    from information and measurements that are directly observable by it.
 
-9.3.  Privacy
+9.3.  Privacy and Evidence Encryption
 
    Some HSMs have the capacity of supporting cryptographic keys
-   controlled by separate elements referred to as "tenants", and when
+   controlled by separate entities referred to as "tenants", and when
    the HSM is used in that mode it is referred to as a multi-tenant
    configuration.
 
@@ -1686,6 +1901,26 @@ Table of Contents
    is not authorized to receive.  This specification does not provide
    Evidence encryption; deployments that require confidentiality MUST
    use an appropriate conveyance protocol or object-security mechanism.
+
+   [I-D.ounsworth-rats-privacy-framework] presents a framework for
+   identifying points in an Evidence conveyance protocol where designers
+   and implementers need to be conscious of privacy concerns.  For the
+   evidence mechanism specified in this document, the primary privacy
+   concern has to do with authenticating the Presenter against the HSM's
+   local policies, and only releasing claims that they are authorized to
+   view.  The means by which a Presenter requests the generation of
+   Evidence is not covered by this specification and is left to the
+   implementers.
+
+   Additionally, [I-D.ounsworth-rats-privacy-framework] calls for
+   object-level evidence encryption (instead of relying solely on
+   transport encryption), and corresponding validation of the provided
+   Verifyier encryption certificate against local policies.  Such a
+   mechanism is left out-of-scope in this specification since it is
+   largely independent of the Evidence formatting structures defined in
+   this specification.  Implementers are welcome to wrap the structures
+   defined here in such an encryption layer either within the HSM or
+   externally to the HSM at an entity such as the Presenter.
 
 9.4.  Authenticating and Authorizing the Presenter
 
@@ -1741,8 +1976,9 @@ Table of Contents
    keys to generate Evidence could, in some architectures, require the
    Attesting Environment to resolve complex access control logic and
    handle complex error conditions, which violates the "simple to
-   implement" design principle outlined in Section 9.2.  More discussion
-   on authenticating the Presenter can be found in Section 9.4.
+   implement" design principle outlined in Section 9.2.  More
+   discussions on authenticating the Presenter can be found in
+   Section 9.4.
 
 9.6.  Timestamps and HSMs
 
@@ -1816,11 +2052,9 @@ Table of Contents
               basic notation", n.d.,
               <https://www.itu.int/rec/T-REC-X.680>.
 
-   [X.690]    ITU-T, "Information technology -- ASN.1 encoding rules:
-              Specification of Basic Encoding Rules (BER), Canonical
-              Encoding Rules (CER) and Distinguished Encoding Rules
-              (DER)", ITU-T Recommendation X.690, ISO/IEC 8825-1:2021,
-              February 2021, <https://www.itu.int/rec/T-REC-X.690>.
+   [X690]     ITU-T, "Information technology — ASN.1 encoding rules:
+              BER, CER, DER", n.d.,
+              <https://www.itu.int/rec/T-REC-X.690>.
 
 10.2.  Informative References
 
@@ -1838,9 +2072,17 @@ Table of Contents
               Ounsworth, M., Tschofenig, H., Birkholz, H., Wiseman, M.,
               and N. Smith, "Use of Remote Attestation with
               Certification Signing Requests", Work in Progress,
-              Internet-Draft, draft-ietf-lamps-csr-attestation-29, 2
-              September 2026, <https://datatracker.ietf.org/doc/html/
-              draft-ietf-lamps-csr-attestation-29>.
+              Internet-Draft, draft-ietf-lamps-csr-attestation-32, 22
+              October 2026, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-lamps-csr-attestation-32>.
+
+   [I-D.ounsworth-rats-privacy-framework]
+              Ounsworth, M., Tschofenig, H., and G. Lehmann, "Privacy
+              Framework for Remote ATtestation procedureS", Work in
+              Progress, Internet-Draft, draft-ounsworth-rats-privacy-
+              framework-00, 18 June 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ounsworth-
+              rats-privacy-framework-00>.
 
    [RFC6024]  Reddy, R. and C. Wallace, "Trust Anchor Management
               Requirements", RFC 6024, DOI 10.17487/RFC6024, October
@@ -1862,17 +2104,17 @@ Appendix A.  Samples
    certificate:
 
    -----BEGIN CERTIFICATE-----
-   MIIB7TCCAZOgAwIBAgIUV5Dh3UjqFKcSqD+INoqe4EW6UzYwCgYIKoZIzj0EAwIw
+   MIIB7TCCAZOgAwIBAgIUHKnBw1t9UQKB/qynm/f5XYx1ZAIwCgYIKoZIzj0EAwIw
    RDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3Rh
-   dGlvbjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2MDcyMTExMTIzOFoXDTM2MDcxODEx
-   MTMzOFowRDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1h
+   dGlvbjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2MTAxOTE3MDEzNVoXDTM2MTAxNjE3
+   MDIzNVowRDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1h
    dHRlc3RhdGlvbjEPMA0GA1UEAwwGUm9vdENBMFkwEwYHKoZIzj0CAQYIKoZIzj0D
-   AQcDQgAEZ+5x+vU1QHvE/rfN50XeGd+tlaCzeYzLI2yAOaNd3qeeKjtI1H3BV0nU
-   +kvDgdnWqki6TnLRsX6DHqmffS0YeaNjMGEwDwYDVR0TAQH/BAUwAwEB/zAdBgNV
-   HQ4EFgQURngIMjk7Qci5LcZ2gQfAS/T5v6AwHwYDVR0jBBgwFoAURngIMjk7Qci5
-   LcZ2gQfAS/T5v6AwDgYDVR0PAQH/BAQDAgKEMAoGCCqGSM49BAMCA0gAMEUCIEQ7
-   jM1fYGhwM6SAlHjAKvxXdTPyck3EQvdduA0l8Ek+AiEAubyYDczX9skUncZQ7Sd2
-   lWyRnEuk7cl4Ku4PFXHkSiM=
+   AQcDQgAEN4QgO/9AT+E5DOM25pmMVmqcrAgDscUuBQlAvx5tnHx4upS1CBQ1SWCz
+   RcGcbkguu/QrxYW+nh+ZX+6ExGCV76NjMGEwDwYDVR0TAQH/BAUwAwEB/zAdBgNV
+   HQ4EFgQU6KnOaGwg0LT25QOEOOzCK4CJLJwwHwYDVR0jBBgwFoAU6KnOaGwg0LT2
+   5QOEOOzCK4CJLJwwDgYDVR0PAQH/BAQDAgKEMAoGCCqGSM49BAMCA0gAMEUCIQCy
+   7yjuXW40pXdLBp81iXMbxCAUirxZMGFCrGlwkgDUHAIgd53tPlg5gwk6VJPU7RPm
+   +wVQWjoERyLkFFl2rCbvN6M=
    -----END CERTIFICATE-----
 
 A.1.  Simple Platform Evidence
@@ -1885,15 +2127,25 @@ A.1.  Simple Platform Evidence
    look up the AK key by its SHA1 hash.
 
    -----BEGIN EVIDENCE-----
-   MIIBvDCCAUUCAQEwggE+MIGwBgkrBgEFBYdnAAAwgaIwFgYKKwYBBQWHZwEAAAQI3q2+
-   78r+ur4wHQYKKwYBBQWHZwEAARgPMjAyNjA3MjExMTEzMzhaMGkGCisGAQUFh2cBAAIE
-   WzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABKxJDta4zEK/3rtwmAiJ9E4LES2OPZpz
-   kli13hUKZU7GoDyzmrc7hVMBgtddRaacyGNPIrp5rA5UgAXLoTba0jowgYgGCSsGAQUF
+   MIIDtTCCAUUCAQEwggE+MIGwBgkrBgEFBYdnAAAwgaIwFgYKKwYBBQWHZwEAAAQI3q2+
+   78r+ur4wHQYKKwYBBQWHZwEAARgPMjAyNjEwMTkxNzAyMzVaMGkGCisGAQUFh2cBAAIE
+   WzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABD69NQMqgJuSTrbzcblRVghJt7HmFlLd
+   AKVnjxhsUkbdL5rD1Q9JQNkc4dBC9gFOf2EFeuqf2xw0Qbg/9bg/E70wgYgGCSsGAQUF
    h2cAATB7MBcGCisGAQUFh2cBAQAMCUFjbWUgQ29ycDAWBgorBgEFBYdnAQECBAhIU00t
    OTAwMDATBgorBgEFBYdnAQEDDAUyLjEuMDAPBgorBgEFBYdnAQEKAQH/MA8GCisGAQUF
-   h2cBAQwCAQMwEQYKKwYBBQWHZwEBCAIDAVGAMHEwbzAYoBYEFB0KdBf6XwQ3pzNMkyzh
-   Nbf3NBn+MAoGCCqGSM49BAMCBEcwRQIhAPRrdNsm+JqBb0m+25XYN5mAXVRkBgrkJXNg
-   vE3ns4PfAiAqtgw3Zqh32EXfPgV/Z0Hizl3X1KXVXUt/ovMGkK8FUQ==
+   h2cBAQwCAQMwEQYKKwYBBQWHZwEBCAIDAVGAMHEwbzAYoBYEFLRJCCdeDi7ku5sdqwEb
+   SbxVeVmwMAoGCCqGSM49BAMCBEcwRQIgHJZcLsbt28RCsx1wG35yjcMu3V3X8ezZ84UT
+   EyN75FoCIQDyn5C/pO2lKtMbfTmoX53yW/A3NgadyLrWOz7Kao7wN6CCAfUwggHxMIIB
+   7TCCAZKgAwIBAgIUFRC9iC06b9IjIvQ5R1/dAVqk868wCgYIKoZIzj0EAwIwRDESMBAG
+   A1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3RhdGlvbjEPMA0G
+   A1UEAwwGUm9vdENBMB4XDTI2MTAxOTE3MDEzNVoXDTM2MTAxNjE3MDIzNVowQzESMBAG
+   A1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3RhdGlvbjEOMAwG
+   A1UEAwwFSW50Q0EwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAQJjeKWNuxkF9oYEyDq
+   VUDa/IZGwb9TRprua1tWYn6NWfeFjyofQiu0U8xwqP40bh2vKxA6kI694mKSS6Ykdef7
+   o2MwYTAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBQPAxi9xrUNxQt1hu0jfcTuWEJC
+   fjAfBgNVHSMEGDAWgBToqc5obCDQtPblA4Q47MIrgIksnDAOBgNVHQ8BAf8EBAMCAoQw
+   CgYIKoZIzj0EAwIDSQAwRgIhAOP2fUUSeo0QiRt3FylCrch3PuKDNl5P8rdHpPHPg//e
+   AiEAqY0oaP+2ZzPJNduDa/R4R0xGePpuDU6JWInrM0UzUSU=
    -----END EVIDENCE-----
 
    Here is a pretty-print of the Evidence object:
@@ -1905,7 +2157,7 @@ A.1.  Simple Platform Evidence
          Claim[0]: id-evidence-claim-transaction-nonce
                  -> [OCTET STRING] deadbeefcafebabe
          Claim[1]: id-evidence-claim-transaction-timestamp
-                 -> [GeneralizedTime] 20260721111338Z
+                 -> [GeneralizedTime] 20261019170235Z
          Claim[2]: id-evidence-claim-transaction-ak-spki
                  -> [OCTET STRING] 3059301306072a8648ce3d02...
        ReportedElement[1]: id-evidence-element-platform
@@ -1924,38 +2176,39 @@ A.1.  Simple Platform Evidence
      Signatures (1):
        SignatureBlock[0]:
          algorithm      : 1.2.840.10045.4.3.2
-         signatureValue : 3045022100f46b74db26f89a...
-         keyId          : 1d0a7417fa5f0437a7334c932ce135b7f73419fe
+         signatureValue : 304502201c965c2ec6eddbc4...
+         keyId          : b44908275e0e2ee4bb9b1dab011b49bc557959b0
+     Intermediate Certificates:  (1)
 
    For completeness of the sample, the following AK and Intermediate CA
    certificates are required for verification:
 
    -----BEGIN CERTIFICATE-----
-   MIICADCCAaagAwIBAgIUBTLdT9dE5Z4Xgw8WqLvV73ku9McwCgYIKoZIzj0EAwIw
+   MIICBDCCAamgAwIBAgIUR1T8v7KK+CRv7t+xPfrpxjQM5T4wCgYIKoZIzj0EAwIw
    QzESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3Rh
-   dGlvbjEOMAwGA1UEAwwFSW50Q0EwHhcNMjYwNzIxMTExMjM4WhcNMzYwNzE4MTEx
-   MzM4WjBFMRIwEAYDVQQKDAlpZXRmLXJhdHMxHTAbBgNVBAsMFHBraXgta2V5LWF0
+   dGlvbjEOMAwGA1UEAwwFSW50Q0EwHhcNMjYxMDE5MTcwMTM1WhcNMzYxMDE2MTcw
+   MjM1WjBFMRIwEAYDVQQKDAlpZXRmLXJhdHMxHTAbBgNVBAsMFHBraXgta2V5LWF0
    dGVzdGF0aW9uMRAwDgYDVQQDDAd0ZXN0LWFrMFkwEwYHKoZIzj0CAQYIKoZIzj0D
-   AQcDQgAErEkO1rjMQr/eu3CYCIn0TgsRLY49mnOSWLXeFQplTsagPLOatzuFUwGC
-   111FppzIY08iunmsDlSABcuhNtrSOqN2MHQwDAYDVR0TAQH/BAIwADAdBgNVHQ4E
-   FgQUHQp0F/pfBDenM0yTLOE1t/c0Gf4wHwYDVR0jBBgwFoAUAswMAJCNpSCrblVW
-   cd/+xmxoywgwDgYDVR0PAQH/BAQDAgeAMBQGA1UdJQQNMAsGCSsGAQUFBwOHZzAK
-   BggqhkjOPQQDAgNIADBFAiEAw9GJY2DN+HyeBGGc+jvrM1cj/iUbkbMa83GohWT8
-   RcUCIENpvIaKhQHFsuQ+9696B/jsZMKohbQxVbJeTakSB4k8
+   AQcDQgAEPr01AyqAm5JOtvNxuVFWCEm3seYWUt0ApWePGGxSRt0vmsPVD0lA2Rzh
+   0EL2AU5/YQV66p/bHDRBuD/1uD8TvaN5MHcwDAYDVR0TAQH/BAIwADAdBgNVHQ4E
+   FgQUtEkIJ14OLuS7mx2rARtJvFV5WbAwHwYDVR0jBBgwFoAUDwMYvca1DcULdYbt
+   I33E7lhCQn4wDgYDVR0PAQH/BAQDAgeAMBcGA1UdJQEB/wQNMAsGCSsGAQUFBwOH
+   ZzAKBggqhkjOPQQDAgNJADBGAiEA0fM8XoTtaMxWCtmCVdE0KvqtQ4Ny+9tIes41
+   2I9tSC8CIQCc+PhTzp6JWmNxhBmNNXdoqlcjSj3b5o0kKEH/NPlvng==
    -----END CERTIFICATE-----
 
    -----BEGIN CERTIFICATE-----
-   MIIB6zCCAZKgAwIBAgIUH/Gv/RA4QFmybrw2/okZGCpaomYwCgYIKoZIzj0EAwIw
+   MIIB7TCCAZKgAwIBAgIUFRC9iC06b9IjIvQ5R1/dAVqk868wCgYIKoZIzj0EAwIw
    RDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3Rh
-   dGlvbjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2MDcyMTExMTIzOFoXDTM2MDcxODEx
-   MTMzOFowQzESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1h
+   dGlvbjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2MTAxOTE3MDEzNVoXDTM2MTAxNjE3
+   MDIzNVowQzESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1h
    dHRlc3RhdGlvbjEOMAwGA1UEAwwFSW50Q0EwWTATBgcqhkjOPQIBBggqhkjOPQMB
-   BwNCAAQpI9FSblHeZQciaN+1UFyVbixK0AhNJnST/c4gdQ7/M8JEzucgccgBkKE2
-   9569wQjwY72JOMyKNimlc+YCDkrWo2MwYTAPBgNVHRMBAf8EBTADAQH/MB0GA1Ud
-   DgQWBBQCzAwAkI2lIKtuVVZx3/7GbGjLCDAfBgNVHSMEGDAWgBRGeAgyOTtByLkt
-   xnaBB8BL9Pm/oDAOBgNVHQ8BAf8EBAMCAoQwCgYIKoZIzj0EAwIDRwAwRAIgaeUk
-   +QXqxMemsYFhnMYziLDqEF0PN8/utxLqT/m1dNYCIFfw64Y/c1THO1YnNOiilmPx
-   ShrU9GENFUICHM17CI7x
+   BwNCAAQJjeKWNuxkF9oYEyDqVUDa/IZGwb9TRprua1tWYn6NWfeFjyofQiu0U8xw
+   qP40bh2vKxA6kI694mKSS6Ykdef7o2MwYTAPBgNVHRMBAf8EBTADAQH/MB0GA1Ud
+   DgQWBBQPAxi9xrUNxQt1hu0jfcTuWEJCfjAfBgNVHSMEGDAWgBToqc5obCDQtPbl
+   A4Q47MIrgIksnDAOBgNVHQ8BAf8EBAMCAoQwCgYIKoZIzj0EAwIDSQAwRgIhAOP2
+   fUUSeo0QiRt3FylCrch3PuKDNl5P8rdHpPHPg//eAiEAqY0oaP+2ZzPJNduDa/R4
+   R0xGePpuDU6JWInrM0UzUSU=
    -----END CERTIFICATE-----
 
 A.2.  Key Attestation Evidence
@@ -1967,42 +2220,43 @@ A.2.  Key Attestation Evidence
    object.  It chains to the same root as above.
 
    -----BEGIN EVIDENCE-----
-   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
+   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
-   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
+   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
-   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
+   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
-   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
+   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
+   M0UzUSU=
    -----END EVIDENCE-----
 
    Here is a pretty-print of the Evidence object:
@@ -2014,7 +2268,7 @@ A.2.  Key Attestation Evidence
          Claim[0]: id-evidence-claim-transaction-nonce
                  -> [OCTET STRING] beefcafebabedead
          Claim[1]: id-evidence-claim-transaction-timestamp
-                 -> [GeneralizedTime] 20260721111338Z
+                 -> [GeneralizedTime] 20261019170235Z
          Claim[2]: id-evidence-claim-transaction-ak-spki
                  -> [OCTET STRING] 3059301306072a8648ce3d02...
        ReportedElement[1]: id-evidence-element-platform
@@ -2047,7 +2301,7 @@ A.2.  Key Attestation Evidence
      Signatures (1):
        SignatureBlock[0]:
          algorithm      : 1.2.840.10045.4.3.2
-         signatureValue : 3046022100d7d456541a7a05...
+         signatureValue : 30450221008952afc2c47d98...
          AK Certificate : present
      Intermediate Certificates:  (1)
 
