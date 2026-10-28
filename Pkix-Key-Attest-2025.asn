@@ -101,6 +101,11 @@ ClaimSet CLAIM ::= {
       | claim-platform-fipsver
       | claim-platform-fipslevel
       | claim-platform-fipsmodule
+      | claim-platform-ccmoduleid
+      | claim-platform-ccboot
+      | claim-platform-ccscheme
+      | claim-platform-ccrequirement
+      | claim-platform-cceallevel
       | claim-key-identifier
       | claim-key-spki
       | claim-key-extractable
@@ -167,6 +172,16 @@ id-evidence-claim-platform-fipslevel  OBJECT IDENTIFIER ::=
     { id-evidence-claim-platform 12 }
 id-evidence-claim-platform-fipsmodule OBJECT IDENTIFIER ::=
     { id-evidence-claim-platform 13 }
+id-evidence-claim-platform-ccmoduleid OBJECT IDENTIFIER ::=
+    { id-evidence-claim-platform 14 }
+id-evidence-claim-platform-ccboot     OBJECT IDENTIFIER ::=
+    { id-evidence-claim-platform 15 }
+id-evidence-claim-platform-ccscheme   OBJECT IDENTIFIER ::=
+    { id-evidence-claim-platform 16 }
+id-evidence-claim-platform-ccrequirement OBJECT IDENTIFIER ::=
+    { id-evidence-claim-platform 17 }
+id-evidence-claim-platform-cceallevel OBJECT IDENTIFIER ::=
+    { id-evidence-claim-platform 18 }
 
 id-evidence-claim-key                   OBJECT IDENTIFIER ::=
     { id-evidence-claim 2 }
@@ -295,6 +310,31 @@ claim-platform-fipslevel CLAIM ::= {
 
 claim-platform-fipsmodule CLAIM ::= {
   ID id-evidence-claim-platform-fipsmodule
+  WITH TYPE UTF8String
+}
+
+claim-platform-ccmoduleid CLAIM ::= {
+  ID id-evidence-claim-platform-ccmoduleid
+  WITH TYPE UTF8String
+}
+
+claim-platform-ccboot CLAIM ::= {
+  ID id-evidence-claim-platform-ccboot
+  WITH TYPE BOOLEAN
+}
+
+claim-platform-ccscheme CLAIM ::= {
+  ID id-evidence-claim-platform-ccscheme
+  WITH TYPE UTF8String
+}
+
+claim-platform-ccrequirement CLAIM ::= {
+  ID id-evidence-claim-platform-ccrequirement
+  WITH TYPE UTF8String
+}
+
+claim-platform-cceallevel CLAIM ::= {
+  ID id-evidence-claim-platform-cceallevel
   WITH TYPE UTF8String
 }
 

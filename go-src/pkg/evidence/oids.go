@@ -20,21 +20,26 @@ var (
 	OIDClaimTransactionTimestamp = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 0, 1}
 	OIDClaimTransactionAKSPKI    = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 0, 2}
 
-	OIDClaimPlatform           = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1}
-	OIDClaimPlatformVendor     = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 0}
-	OIDClaimPlatformOemID      = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 1}
-	OIDClaimPlatformHWModel    = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 2}
-	OIDClaimPlatformHWVersion  = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 3}
-	OIDClaimPlatformHWSerial   = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 4}
-	OIDClaimPlatformSWName     = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 5}
-	OIDClaimPlatformSWVersion  = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 6}
-	OIDClaimPlatformDebugStat  = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 7}
-	OIDClaimPlatformUptime     = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 8}
-	OIDClaimPlatformBootCount  = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 9}
-	OIDClaimPlatformFIPSBoot   = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 10}
-	OIDClaimPlatformFIPSVer    = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 11}
-	OIDClaimPlatformFIPSLevel  = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 12}
-	OIDClaimPlatformFIPSModule = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 13}
+	OIDClaimPlatform              = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1}
+	OIDClaimPlatformVendor        = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 0}
+	OIDClaimPlatformOemID         = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 1}
+	OIDClaimPlatformHWModel       = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 2}
+	OIDClaimPlatformHWVersion     = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 3}
+	OIDClaimPlatformHWSerial      = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 4}
+	OIDClaimPlatformSWName        = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 5}
+	OIDClaimPlatformSWVersion     = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 6}
+	OIDClaimPlatformDebugStat     = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 7}
+	OIDClaimPlatformUptime        = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 8}
+	OIDClaimPlatformBootCount     = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 9}
+	OIDClaimPlatformFIPSBoot      = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 10}
+	OIDClaimPlatformFIPSVer       = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 11}
+	OIDClaimPlatformFIPSLevel     = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 12}
+	OIDClaimPlatformFIPSModule    = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 13}
+	OIDClaimPlatformCCModuleID    = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 14}
+	OIDClaimPlatformCCBoot        = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 15}
+	OIDClaimPlatformCCScheme      = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 16}
+	OIDClaimPlatformCCRequirement = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 17}
+	OIDClaimPlatformCCEALLevel    = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 1, 18}
 
 	OIDClaimKey                 = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 2}
 	OIDClaimKeyIdentifier       = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 2, 0}
@@ -76,20 +81,25 @@ var ClaimSpecs = map[string]ClaimSpec{
 	OIDClaimTransactionTimestamp.String(): {Name: "timestamp", ValueKind: "time", Multiple: false, ElementType: OIDElementTransaction},
 	OIDClaimTransactionAKSPKI.String():    {Name: "ak-spki", ValueKind: "bytes", Multiple: true, ElementType: OIDElementTransaction},
 
-	OIDClaimPlatformVendor.String():     {Name: "vendor", ValueKind: "utf8String", Multiple: false, ElementType: OIDElementPlatform},
-	OIDClaimPlatformOemID.String():      {Name: "oemid", ValueKind: "bytes", Multiple: false, ElementType: OIDElementPlatform},
-	OIDClaimPlatformHWModel.String():    {Name: "hwmodel", ValueKind: "bytes", Multiple: false, ElementType: OIDElementPlatform},
-	OIDClaimPlatformHWVersion.String():  {Name: "hwversion", ValueKind: "utf8String", Multiple: false, ElementType: OIDElementPlatform},
-	OIDClaimPlatformHWSerial.String():   {Name: "hwserial", ValueKind: "utf8String", Multiple: false, ElementType: OIDElementPlatform},
-	OIDClaimPlatformSWName.String():     {Name: "swname", ValueKind: "utf8String", Multiple: false, ElementType: OIDElementPlatform},
-	OIDClaimPlatformSWVersion.String():  {Name: "swversion", ValueKind: "utf8String", Multiple: false, ElementType: OIDElementPlatform},
-	OIDClaimPlatformDebugStat.String():  {Name: "dbgstat", ValueKind: "int", Multiple: false, ElementType: OIDElementPlatform},
-	OIDClaimPlatformUptime.String():     {Name: "uptime", ValueKind: "int", Multiple: false, ElementType: OIDElementPlatform},
-	OIDClaimPlatformBootCount.String():  {Name: "bootcount", ValueKind: "int", Multiple: false, ElementType: OIDElementPlatform},
-	OIDClaimPlatformFIPSBoot.String():   {Name: "fipsboot", ValueKind: "bool", Multiple: false, ElementType: OIDElementPlatform},
-	OIDClaimPlatformFIPSVer.String():    {Name: "fipsver", ValueKind: "utf8String", Multiple: false, ElementType: OIDElementPlatform},
-	OIDClaimPlatformFIPSLevel.String():  {Name: "fipslevel", ValueKind: "int", Multiple: false, ElementType: OIDElementPlatform},
-	OIDClaimPlatformFIPSModule.String(): {Name: "fipsmodule", ValueKind: "utf8String", Multiple: false, ElementType: OIDElementPlatform},
+	OIDClaimPlatformVendor.String():        {Name: "vendor", ValueKind: "utf8String", Multiple: false, ElementType: OIDElementPlatform},
+	OIDClaimPlatformOemID.String():         {Name: "oemid", ValueKind: "bytes", Multiple: false, ElementType: OIDElementPlatform},
+	OIDClaimPlatformHWModel.String():       {Name: "hwmodel", ValueKind: "bytes", Multiple: false, ElementType: OIDElementPlatform},
+	OIDClaimPlatformHWVersion.String():     {Name: "hwversion", ValueKind: "utf8String", Multiple: false, ElementType: OIDElementPlatform},
+	OIDClaimPlatformHWSerial.String():      {Name: "hwserial", ValueKind: "utf8String", Multiple: false, ElementType: OIDElementPlatform},
+	OIDClaimPlatformSWName.String():        {Name: "swname", ValueKind: "utf8String", Multiple: false, ElementType: OIDElementPlatform},
+	OIDClaimPlatformSWVersion.String():     {Name: "swversion", ValueKind: "utf8String", Multiple: false, ElementType: OIDElementPlatform},
+	OIDClaimPlatformDebugStat.String():     {Name: "dbgstat", ValueKind: "int", Multiple: false, ElementType: OIDElementPlatform},
+	OIDClaimPlatformUptime.String():        {Name: "uptime", ValueKind: "int", Multiple: false, ElementType: OIDElementPlatform},
+	OIDClaimPlatformBootCount.String():     {Name: "bootcount", ValueKind: "int", Multiple: false, ElementType: OIDElementPlatform},
+	OIDClaimPlatformFIPSBoot.String():      {Name: "fipsboot", ValueKind: "bool", Multiple: false, ElementType: OIDElementPlatform},
+	OIDClaimPlatformFIPSVer.String():       {Name: "fipsver", ValueKind: "utf8String", Multiple: false, ElementType: OIDElementPlatform},
+	OIDClaimPlatformFIPSLevel.String():     {Name: "fipslevel", ValueKind: "int", Multiple: false, ElementType: OIDElementPlatform},
+	OIDClaimPlatformFIPSModule.String():    {Name: "fipsmodule", ValueKind: "utf8String", Multiple: false, ElementType: OIDElementPlatform},
+	OIDClaimPlatformCCModuleID.String():    {Name: "ccmoduleid", ValueKind: "utf8String", Multiple: false, ElementType: OIDElementPlatform},
+	OIDClaimPlatformCCBoot.String():        {Name: "ccboot", ValueKind: "bool", Multiple: false, ElementType: OIDElementPlatform},
+	OIDClaimPlatformCCScheme.String():      {Name: "ccscheme", ValueKind: "utf8String", Multiple: false, ElementType: OIDElementPlatform},
+	OIDClaimPlatformCCRequirement.String(): {Name: "ccrequirement", ValueKind: "utf8String", Multiple: false, ElementType: OIDElementPlatform},
+	OIDClaimPlatformCCEALLevel.String():    {Name: "cceallevel", ValueKind: "utf8String", Multiple: false, ElementType: OIDElementPlatform},
 
 	OIDClaimKeyIdentifier.String():       {Name: "identifier", ValueKind: "utf8String", Multiple: true, ElementType: OIDElementKey},
 	OIDClaimKeySPKI.String():             {Name: "spki", ValueKind: "bytes", Multiple: false, ElementType: OIDElementKey},

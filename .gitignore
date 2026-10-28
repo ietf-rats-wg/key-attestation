@@ -37,3 +37,4 @@ draft-ietf-rats-pkix-key-attestation.txt
 # Python bytecode from reference and interop tests
 __pycache__/
 *.pyc
+/scratch/

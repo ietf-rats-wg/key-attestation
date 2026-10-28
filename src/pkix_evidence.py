@@ -350,6 +350,10 @@ def make_claim(claim_type_name: str, value) -> ReportedClaim:
                  | "id-evidence-claim-platform-swversion"\
                  | "id-evidence-claim-platform-fipsver"\
                  | "id-evidence-claim-platform-fipsmodule"\
+                 | "id-evidence-claim-platform-ccmoduleid"\
+                 | "id-evidence-claim-platform-ccscheme"\
+                 | "id-evidence-claim-platform-ccrequirement"\
+                 | "id-evidence-claim-platform-cceallevel"\
                  | "id-evidence-claim-key-identifier":
                 # UTF8String
                 if isinstance(value, str):
@@ -366,6 +370,7 @@ def make_claim(claim_type_name: str, value) -> ReportedClaim:
                 else:
                     raise Exception(f"Claim '{claim_type_name}' expects a value of type 'int'")
             case "id-evidence-claim-platform-fipsboot"\
+                 | "id-evidence-claim-platform-ccboot"\
                  | "id-evidence-claim-key-extractable"\
                  | "id-evidence-claim-key-sensitive"\
                  | "id-evidence-claim-key-never-extractable"\

@@ -18,6 +18,11 @@ from cryptography.hazmat.primitives.asymmetric import ec, rsa, ed25519, padding
 from pyasn1.codec.der import decoder, encoder
 from pyasn1.type import univ, char, useful
 from evidence_oid_registry import EVIDENCE_KNOWN_OIDS as OIDS, CLAIM_EXPECTED_TAGS
+import re
+
+# Common Criteria schemes whose cceallevel claim must follow the EAL syntax.
+CC_EAL_SCHEMES = ("ISO15408", "CCRA", "EUCC")
+CC_EAL_PATTERN = re.compile(r"EAL[1-7](\+[A-Z]{3}_[A-Z]{3}\.[0-9]+(,[A-Z]{3}_[A-Z]{3}\.[0-9]+)*)?")
 
 
 def spki_bytes(key):
@@ -66,7 +71,7 @@ def validate_structure(ev):
             seen_elements.add(element_oid)
         if not len(element["claims"]):
             raise ValueError("Element requires claims")
-        counts, identifiers = {}, []
+        counts, identifiers, values = {}, [], {}
         for claim in element["claims"]:
             oid = str(claim["claimType"])
             if not claim["value"].hasValue() or not encoder.encode(claim["value"]):
@@ -92,6 +97,7 @@ def validate_structure(ev):
                 raise ValueError("fipslevel must be in range 1..4")
             if oid == OIDS["id-evidence-claim-key-identifier"]:
                 identifiers.append(str(value))
+            values[oid] = value
             if oid == OIDS["id-evidence-claim-transaction-ak-spki"]:
                 key_bytes = bytes(value)
                 try:
@@ -101,6 +107,11 @@ def validate_structure(ev):
                 if key_bytes in ak_keys:
                     raise ValueError("Repeated attestation key")
                 ak_keys.add(key_bytes)
+        scheme = values.get(OIDS["id-evidence-claim-platform-ccscheme"])
+        eal = values.get(OIDS["id-evidence-claim-platform-cceallevel"])
+        if scheme is not None and eal is not None and str(scheme).startswith(CC_EAL_SCHEMES):
+            if not CC_EAL_PATTERN.fullmatch(str(eal)):
+                raise ValueError("cceallevel must follow the EAL syntax")
         if element_oid == OIDS["id-evidence-element-key"]:
             if not identifiers:
                 raise ValueError("Key element requires identifier")

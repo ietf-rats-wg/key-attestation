@@ -5,6 +5,8 @@ import (
 	"encoding/asn1"
 	"encoding/base64"
 	"fmt"
+	"regexp"
+	"strings"
 )
 
 func Validate(e *Evidence) []error {
@@ -66,6 +68,7 @@ func Validate(e *Evidence) []error {
 	}
 
 	errs = append(errs, validateFIPSLevel(e)...)
+	errs = append(errs, validateCCEALLevel(e)...)
 	errs = append(errs, validateAKSPKIUniqueness(e)...)
 
 	return errs
@@ -155,6 +158,51 @@ func validateFIPSLevel(e *Evidence) []error {
 		}
 	}
 	return errs
+}
+
+// ccEALSchemes lists the Common Criteria schemes whose cceallevel claim must follow the EAL syntax.
+var ccEALSchemes = []string{"ISO15408", "CCRA", "EUCC"}
+
+var ccEALPattern = regexp.MustCompile(`^EAL[1-7](\+[A-Z]{3}_[A-Z]{3}\.[0-9]+(,[A-Z]{3}_[A-Z]{3}\.[0-9]+)*)?$`)
+
+func validateCCEALLevel(e *Evidence) []error {
+	var errs []error
+	for _, element := range e.TBS.ReportedElements {
+		if !element.ElementType.Equal(OIDElementPlatform) {
+			continue
+		}
+		var scheme, eal *ClaimValue
+		for _, claim := range element.Claims {
+			if !claim.ClaimType.Equal(OIDClaimPlatformCCScheme) && !claim.ClaimType.Equal(OIDClaimPlatformCCEALLevel) {
+				continue
+			}
+			cv, err := DecodeClaimValue(claim.Value)
+			if err != nil || cv.Kind != "utf8String" {
+				continue // reported by validateClaim
+			}
+			if claim.ClaimType.Equal(OIDClaimPlatformCCScheme) {
+				scheme = &cv
+			} else {
+				eal = &cv
+			}
+		}
+		if scheme == nil || eal == nil || !hasCCEALScheme(scheme.String) {
+			continue
+		}
+		if !ccEALPattern.MatchString(eal.String) {
+			errs = append(errs, fmt.Errorf("cceallevel %q does not follow the EAL syntax", eal.String))
+		}
+	}
+	return errs
+}
+
+func hasCCEALScheme(scheme string) bool {
+	for _, prefix := range ccEALSchemes {
+		if strings.HasPrefix(scheme, prefix) {
+			return true
+		}
+	}
+	return false
 }
 
 func validateAKSPKIUniqueness(e *Evidence) []error {

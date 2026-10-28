@@ -93,21 +93,6 @@ normative:
     author:
       - org: ITU-T
     target: https://www.itu.int/rec/T-REC-X.690
-  PKCS11:
-    title: "PKCS #11 Specification Version 3.1"
-    author:
-      - name: Dieter Bong
-      - name: Tony Cox
-      - org: OASIS PKCS 11 TC
-    date: 2022-08-11
-    target: https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/pkcs11-spec-v3.1-cs01.html
-  FIPS140-3:
-    title: "Security Requirements for Cryptographic Modules"
-    author:
-      - org: NIST, Information Technology Laboratory
-    seriesinfo:
-      FIPS: 140-3
-    target: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-3.pdf
 
 informative:
   RFC6024:
@@ -149,6 +134,33 @@ informative:
     author:
       - org: NIST
     target: https://csrc.nist.gov/projects/cryptographic-module-validation-program/validated-modules/search
+  FIPS140-3:
+    title: "Security Requirements for Cryptographic Modules"
+    author:
+      - org: NIST, Information Technology Laboratory
+    seriesinfo:
+      FIPS: 140-3
+    target: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-3.pdf
+  CC2022P1:
+    title: "Common Criteria for Information Technology Security Evaluation Part 1: Introduction and general model"
+    author:
+      - org: Common Criteria
+    date: 2022-11
+    target: https://www.commoncriteriaportal.org/files/ccfiles/CC2022PART1R1.pdf
+  CC2022P5:
+    title: "Common Criteria for Information Technology Security Evaluation Part 5: Pre-defined packages of security requirements"
+    author:
+      - org: Common Criteria
+    date: 2022-11
+    target: https://www.commoncriteriaportal.org/files/ccfiles/CC2022PART5R1.pdf
+  PKCS11:
+    title: "PKCS #11 Specification Version 3.1"
+    author:
+      - name: Dieter Bong
+      - name: Tony Cox
+      - org: OASIS PKCS 11 TC
+    date: 2022-08-11
+    target: https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/pkcs11-spec-v3.1-cs01.html
 
 entity:
   SELF: "RFCthis"
@@ -745,22 +757,27 @@ within this specification. In cases where the claim is borrowed from another spe
 the "Reference" column refers to the specification where the semantics
 for the claim value can be found.
 
-| Claim Type      | Reference      | Multiple? | OID                                   |
-| ---             | ---            | ---       | ---                                   |
-| vendor          | {{&SELF}}      | No        | id-evidence-claim-platform-vendor     |
-| oemid           | {{RFC9711}}    | No        | id-evidence-claim-platform-oemid      |
-| hwmodel         | {{RFC9711}}    | No        | id-evidence-claim-platform-hwmodel    |
-| hwversion       | {{RFC9711}}    | No        | id-evidence-claim-platform-hwversion  |
-| hwserial        | {{&SELF}}      | No        | id-evidence-claim-platform-hwserial   |
-| swname          | {{RFC9711}}    | No        | id-evidence-claim-platform-swname     |
-| swversion       | {{RFC9711}}    | No        | id-evidence-claim-platform-swversion  |
-| dbgstat         | {{RFC9711}}    | No        | id-evidence-claim-platform-dbgstat    |
-| uptime          | {{RFC9711}}    | No        | id-evidence-claim-platform-uptime     |
-| bootcount       | {{RFC9711}}    | No        | id-evidence-claim-platform-bootcount  |
-| fipsboot        | {{ISO19790}}   | No        | id-evidence-claim-platform-fipsboot   |
-| fipsver         | {{FIPS140-3}}  | No        | id-evidence-claim-platform-fipsver    |
-| fipslevel       | {{ISO19790}}   | No        | id-evidence-claim-platform-fipslevel  |
-| fipsmodule      | {{SP800-140B}} | No        | id-evidence-claim-platform-fipsmodule |
+| Claim Type      | Reference      | Multiple? | OID                                      |
+| ---             | ---            | ---       | ---                                      |
+| vendor          | {{&SELF}}      | No        | id-evidence-claim-platform-vendor        |
+| oemid           | {{RFC9711}}    | No        | id-evidence-claim-platform-oemid         |
+| hwmodel         | {{RFC9711}}    | No        | id-evidence-claim-platform-hwmodel       |
+| hwversion       | {{RFC9711}}    | No        | id-evidence-claim-platform-hwversion     |
+| hwserial        | {{&SELF}}      | No        | id-evidence-claim-platform-hwserial      |
+| swname          | {{RFC9711}}    | No        | id-evidence-claim-platform-swname        |
+| swversion       | {{RFC9711}}    | No        | id-evidence-claim-platform-swversion     |
+| dbgstat         | {{RFC9711}}    | No        | id-evidence-claim-platform-dbgstat       |
+| uptime          | {{RFC9711}}    | No        | id-evidence-claim-platform-uptime        |
+| bootcount       | {{RFC9711}}    | No        | id-evidence-claim-platform-bootcount     |
+| fipsboot        | {{ISO19790}}   | No        | id-evidence-claim-platform-fipsboot      |
+| fipsver         | {{FIPS140-3}}  | No        | id-evidence-claim-platform-fipsver       |
+| fipslevel       | {{ISO19790}}   | No        | id-evidence-claim-platform-fipslevel     |
+| fipsmodule      | {{SP800-140B}} | No        | id-evidence-claim-platform-fipsmodule    |
+| ccmoduleid      | {{&SELF}}      | No        | id-evidence-claim-platform-ccmoduleid    |
+| ccboot          | {{&SELF}}      | No        | id-evidence-claim-platform-ccboot        |
+| ccscheme        | {{CC2022P1}}   | No        | id-evidence-claim-platform-ccscheme      |
+| ccrequirement   | {{CC2022P1}}   | No        | id-evidence-claim-platform-ccrequirement |
+| cceallevel      | {{CC2022P5}}   | No        | id-evidence-claim-platform-cceallevel    |
 
 Each claim defined in the table above is described in the following sub-sections.
 
@@ -831,6 +848,51 @@ This information is available in the NIST CMVP database of validated modules {{C
 As an example, some devices may have the option to enable FIPS mode in configuration even if the vendor has not submitted this model for validation. As another example,
 a device may be running in a mode consistent with FIPS Level 3 but the device was only validated and certified to Level 2.
 A Relying Party wishing to know the validation status of the device MUST couple the device state information contained in the Evidence with a valid FIPS CMVP certificate for the device.
+
+### ccmoduleid, ccboot, ccscheme, ccrequirement and cceallevel
+
+Common Criteria certification schemes place stringent requirements on the mode of operation of the device and the cryptography offered by the module,
+including only enabling a restricted set of algorithms, key sizes and modes (e.g., only the algorithms listed in the Security Target of the device),
+certain requirements on entropy sources, and extensive start-up self-tests. Common Criteria offers Evaluation Assurance Levels (EAL) from EAL1 to EAL7,
+with increasingly strict requirements, optionally augmented with additional assurance components as signaled by a trailing "+" sign (see {{CC2022P5}}).
+Many HSMs include a configuration setting that allows the device to be taken out of its certified mode and thus enable additional functionality
+or performance, and some offer configuration settings to change between compliance levels.
+
+In this section, the evaluation, validation or certification scheme is referred to simply as the "certification scheme", and the evaluation,
+validation or certification of a module is referred to simply as its "certification".
+
+The claim `ccmoduleid` is a textual field used to represent the name of the module that was submitted to the certification scheme for certification.
+The information derived by combining this claim with the vendor name shall be sufficient to manually find the associated records in the certification databases.
+
+The boolean claim `ccboot` indicates whether the device was booted in, and has been continuously operating in, the Common Criteria certified mode.
+Among other restrictions, this means that only the restricted algorithm set is available. When the claim value is "true", the HSM has been running in
+compliance with the claimed restrictions since its last boot. If the value of this claim is "false", then the HSM is not restricted to
+the behavior limited by Common Criteria compliance; the claims `ccscheme`, `ccrequirement` and `cceallevel` then have no meaning and SHOULD be omitted.
+
+The textual claim `ccscheme` indicates the name and the version of the certification scheme specification with which the device's operational mode is compliant.
+At the time of writing, the strings "ISO15408 v3.1r5", "ISO15408:2022", "ISO15408:2026", "CCRA v3.1r5", "CCRA:2022" and "EUCC" are defined, but any other scheme
+can be named if the intended Verifier has knowledge about it.
+
+The textual claim `ccrequirement` indicates the name and the version of the requirements with which the device's operational mode is compliant. For the Common Criteria
+schemes, a particular Protection Profile or a proprietary Security Target is the requirement to be satisfied. At the time of writing, for the "ISO15408", "CCRA" and "EUCC"
+schemes, the values "EN 419 221-5:2018", "EN 419 241-2:2019" and "SecurityTarget:STversion" (where "STversion" is replaced with the exact version of the Security Target
+of the device) are defined, but any other requirement, specification or standard can be named if the intended Verifier has knowledge about it.
+
+The textual claim `cceallevel` indicates the compliance level to which the device is currently operating. When `ccscheme` is one of the "ISO15408", "CCRA" or "EUCC"
+schemes, `cceallevel` describes the Evaluation Assurance Level achieved (see {{CC2022P5}}) and MUST use the following syntax, expressed in EBNF:
+
+~~~
+EAL_desc        = "EAL", Level, [ "+", SAR, { ",", SAR } ] ;
+Level           = "1" | "2" | "3" | "4" | "5" | "6" | "7" ;
+SAR             = Class_Code, "_", Family_Code, ".", Component_Level ;
+Class_Code      = 3 * Upper ;
+Family_Code     = 3 * Upper ;
+Component_Level = Digit, { Digit } ;
+Upper           = ? an uppercase letter from "A" to "Z" ? ;
+Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+~~~
+
+Valid examples are "EAL1", "EAL4+AVA_VAN.5" and "EAL4+AVA_VAN.5,ALC_FLR.3".
 
 
 ## Key Element

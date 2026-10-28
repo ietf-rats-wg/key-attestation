@@ -35,6 +35,11 @@ EVIDENCE_KNOWN_OIDS: dict[str, str] = {
     "id-evidence-claim-platform-fipsver": "1.3.6.1.5.5.999.1.1.11",
     "id-evidence-claim-platform-fipslevel": "1.3.6.1.5.5.999.1.1.12",
     "id-evidence-claim-platform-fipsmodule": "1.3.6.1.5.5.999.1.1.13",
+    "id-evidence-claim-platform-ccmoduleid": "1.3.6.1.5.5.999.1.1.14",
+    "id-evidence-claim-platform-ccboot": "1.3.6.1.5.5.999.1.1.15",
+    "id-evidence-claim-platform-ccscheme": "1.3.6.1.5.5.999.1.1.16",
+    "id-evidence-claim-platform-ccrequirement": "1.3.6.1.5.5.999.1.1.17",
+    "id-evidence-claim-platform-cceallevel": "1.3.6.1.5.5.999.1.1.18",
     # Key claims
     "id-evidence-claim-key-identifier": "1.3.6.1.5.5.999.1.2.0",
     "id-evidence-claim-key-spki": "1.3.6.1.5.5.999.1.2.1",
@@ -82,6 +87,11 @@ CLAIM_EXPECTED_TAGS: dict[str, int] = {
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-fipsver"):      12,  # UTF8String      (fipsver)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-fipslevel") :    2,  # INTEGER         (fipslevel)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-fipsmodule"):   12,  # UTF8String      (fipsmodule)
+    EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-ccmoduleid"):   12,  # UTF8String      (ccmoduleid)
+    EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-ccboot"):        1,  # BOOLEAN         (ccboot)
+    EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-ccscheme"):     12,  # UTF8String      (ccscheme)
+    EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-ccrequirement"): 12, # UTF8String      (ccrequirement)
+    EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-cceallevel"):   12,  # UTF8String      (cceallevel)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-key-identifier"):        12,  # UTF8String      (key-identifier)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-key-spki"):               4,  # OCTET STRING    (key-spki)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-key-extractable"):        1,  # BOOLEAN         (key-extractable)

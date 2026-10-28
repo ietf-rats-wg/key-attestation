@@ -303,6 +303,21 @@ class PositiveInteropTests(InteropBase):
         key["claims"].append(key["claims"][0])
         self.verify_both(self.resign(ev))
 
+    def test_common_criteria_claims(self):
+        for scheme, eal in [("ISO15408:2022", "EAL4+AVA_VAN.5,ALC_FLR.3"), ("CCRA v3.1r5", "EAL1"),
+                            ("ProprietaryScheme", "free-form level")]:
+            with self.subTest(scheme=scheme, eal=eal):
+                ev = schema.decode_evidence(self.example)
+                platform = find_element(ev, "platform")
+                platform["claims"].append(claim("platform-ccmoduleid", "Example HSM"))
+                platform["claims"].append(claim("platform-ccboot", True))
+                platform["claims"].append(claim("platform-ccscheme", scheme))
+                platform["claims"].append(claim("platform-ccrequirement", "EN 419 221-5:2018"))
+                platform["claims"].append(claim("platform-cceallevel", eal))
+                data = self.resign(ev)
+                self.verify_both(data)
+                self.go_run("validate", data)
+
     def test_verifier_allows_absent_optional_ak_claim(self):
         ev = schema.decode_evidence(self.example)
         tx = find_element(ev, "transaction")
@@ -335,6 +350,10 @@ class NegativeInteropTests(InteropBase):
         def duplicate_key(ev): ev["tbs"]["reportedElements"].append(find_element(ev, "key"))
         def duplicate_ak(ev): find_element(ev, "transaction")["claims"].append(find_claim(ev, "transaction-ak-spki"))
         def bad_level(ev): find_element(ev, "platform")["claims"].append(claim("platform-fipslevel", 5))
+        def bad_eal(ev):
+            platform = find_element(ev, "platform")
+            platform["claims"].append(claim("platform-ccscheme", "EUCC"))
+            platform["claims"].append(claim("platform-cceallevel", "EAL8+AVA_VAN.5"))
         def old_tag(ev): find_claim(ev, "key-identifier")["value"] = b"\x81\x03old"
         def wrong_purpose(ev): replace_value(find_claim(ev, "key-purpose"), univ.OctetString(b"\x30\x00"))
         def missing_identifier(ev):
@@ -343,7 +362,7 @@ class NegativeInteropTests(InteropBase):
             key["claims"].clear()
             for c in kept: key["claims"].append(c)
         for mutate in [bad_version, repeated_platform, repeated_transaction, repeated_nonce, wrong_owner,
-                       wrong_identifier, bad_spki, duplicate_key, duplicate_ak, bad_level, old_tag, wrong_purpose, missing_identifier]:
+                       wrong_identifier, bad_spki, duplicate_key, duplicate_ak, bad_level, bad_eal, old_tag, wrong_purpose, missing_identifier]:
             with self.subTest(case=mutate.__name__):
                 ev = schema.decode_evidence(self.example)
                 mutate(ev)
