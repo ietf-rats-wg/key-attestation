@@ -863,53 +863,53 @@ Table of Contents
    to the specification where the semantics for the claim value can be
    found.
 
-      +============+=============+===========+=====================+
-      | Claim Type | Reference   | Multiple? | OID                 |
-      +============+=============+===========+=====================+
-      | vendor     | RFCthis     | No        | id-evidence-claim-  |
-      |            |             |           | platform-vendor     |
-      +------------+-------------+-----------+---------------------+
-      | oemid      | [RFC9711]   | No        | id-evidence-claim-  |
-      |            |             |           | platform-oemid      |
-      +------------+-------------+-----------+---------------------+
-      | hwmodel    | [RFC9711]   | No        | id-evidence-claim-  |
-      |            |             |           | platform-hwmodel    |
-      +------------+-------------+-----------+---------------------+
-      | hwversion  | [RFC9711]   | No        | id-evidence-claim-  |
-      |            |             |           | platform-hwversion  |
-      +------------+-------------+-----------+---------------------+
-      | hwserial   | RFCthis     | No        | id-evidence-claim-  |
-      |            |             |           | platform-hwserial   |
-      +------------+-------------+-----------+---------------------+
-      | swname     | [RFC9711]   | No        | id-evidence-claim-  |
-      |            |             |           | platform-swname     |
-      +------------+-------------+-----------+---------------------+
-      | swversion  | [RFC9711]   | No        | id-evidence-claim-  |
-      |            |             |           | platform-swversion  |
-      +------------+-------------+-----------+---------------------+
-      | dbgstat    | [RFC9711]   | No        | id-evidence-claim-  |
-      |            |             |           | platform-debugstat  |
-      +------------+-------------+-----------+---------------------+
-      | uptime     | [RFC9711]   | No        | id-evidence-claim-  |
-      |            |             |           | platform-uptime     |
-      +------------+-------------+-----------+---------------------+
-      | bootcount  | [RFC9711]   | No        | id-evidence-claim-  |
-      |            |             |           | platform-bootcount  |
-      +------------+-------------+-----------+---------------------+
-      | fipsboot   | [FIPS140-3] | No        | id-evidence-claim-  |
-      |            |             |           | platform-fipsboot   |
-      +------------+-------------+-----------+---------------------+
-      | fipsver    | [FIPS140-3] | No        | id-evidence-claim-  |
-      |            |             |           | platform-fipsver    |
-      +------------+-------------+-----------+---------------------+
-      | fipslevel  | [FIPS140-3] | No        | id-evidence-claim-  |
-      |            |             |           | platform-fipslevel  |
-      +------------+-------------+-----------+---------------------+
-      | fipsmodule | [FIPS140-3] | No        | id-evidence-claim-  |
-      |            |             |           | platform-fipsmodule |
-      +------------+-------------+-----------+---------------------+
+      +============+==============+===========+=====================+
+      | Claim Type | Reference    | Multiple? | OID                 |
+      +============+==============+===========+=====================+
+      | vendor     | RFCthis      | No        | id-evidence-claim-  |
+      |            |              |           | platform-vendor     |
+      +------------+--------------+-----------+---------------------+
+      | oemid      | [RFC9711]    | No        | id-evidence-claim-  |
+      |            |              |           | platform-oemid      |
+      +------------+--------------+-----------+---------------------+
+      | hwmodel    | [RFC9711]    | No        | id-evidence-claim-  |
+      |            |              |           | platform-hwmodel    |
+      +------------+--------------+-----------+---------------------+
+      | hwversion  | [RFC9711]    | No        | id-evidence-claim-  |
+      |            |              |           | platform-hwversion  |
+      +------------+--------------+-----------+---------------------+
+      | hwserial   | RFCthis      | No        | id-evidence-claim-  |
+      |            |              |           | platform-hwserial   |
+      +------------+--------------+-----------+---------------------+
+      | swname     | [RFC9711]    | No        | id-evidence-claim-  |
+      |            |              |           | platform-swname     |
+      +------------+--------------+-----------+---------------------+
+      | swversion  | [RFC9711]    | No        | id-evidence-claim-  |
+      |            |              |           | platform-swversion  |
+      +------------+--------------+-----------+---------------------+
+      | dbgstat    | [RFC9711]    | No        | id-evidence-claim-  |
+      |            |              |           | platform-debugstat  |
+      +------------+--------------+-----------+---------------------+
+      | uptime     | [RFC9711]    | No        | id-evidence-claim-  |
+      |            |              |           | platform-uptime     |
+      +------------+--------------+-----------+---------------------+
+      | bootcount  | [RFC9711]    | No        | id-evidence-claim-  |
+      |            |              |           | platform-bootcount  |
+      +------------+--------------+-----------+---------------------+
+      | fipsboot   | [ISO19790]   | No        | id-evidence-claim-  |
+      |            |              |           | platform-fipsboot   |
+      +------------+--------------+-----------+---------------------+
+      | fipsver    | [FIPS140-3]  | No        | id-evidence-claim-  |
+      |            |              |           | platform-fipsver    |
+      +------------+--------------+-----------+---------------------+
+      | fipslevel  | [ISO19790]   | No        | id-evidence-claim-  |
+      |            |              |           | platform-fipslevel  |
+      +------------+--------------+-----------+---------------------+
+      | fipsmodule | [SP800-140B] | No        | id-evidence-claim-  |
+      |            |              |           | platform-fipsmodule |
+      +------------+--------------+-----------+---------------------+
 
-                                 Table 1
+                                  Table 1
 
    Each claim defined in the table above is described in the following
    sub-sections.
@@ -981,6 +981,15 @@ Table of Contents
    additional functionality or performance, and some offer configuration
    settings to change between compliance levels.
 
+   [FIPS140-3] adopts the requirements of [ISO19790] (2012 edition).  In
+   this specification, "FIPS mode" refers to the "approved mode of
+   operation" and "compliance level" refers to the "security level",
+   both as defined in [ISO19790].  Guidance on how a module indicates
+   that it is operating in the approved mode is provided in
+   [FIPS140-3-IG].  The module name and overall security level of a
+   validated module are documented in its Security Policy, whose content
+   is specified in [SP800-140B].
+
    The boolean claim fipsboot indicates whether the device is currently
    operating in FIPS mode.  When the claim value is "true", the HSM is
    running in compliance with the FIPS 140 restrictions.  If the value
@@ -1004,15 +1013,16 @@ Table of Contents
 
    The FIPS status information found in Evidence indicates only the mode
    of operation of the device and is not authoritative of its validation
-   status.  This information is available on the NIST CMVP website or by
-   contacting the device vendor.  As an example, some devices may have
-   the option to enable FIPS mode in configuration even if the vendor
-   has not submitted this model for validation.  As another example, a
-   device may be running in a mode consistent with FIPS Level 3 but the
-   device was only validated and certified to Level 2.  A Relying Party
-   wishing to know the validation status of the device MUST couple the
-   device state information contained in the Evidence with a valid FIPS
-   CMVP certificate for the device.
+   status.  This information is available in the NIST CMVP database of
+   validated modules [CMVP] or by contacting the device vendor.  As an
+   example, some devices may have the option to enable FIPS mode in
+   configuration even if the vendor has not submitted this model for
+   validation.  As another example, a device may be running in a mode
+   consistent with FIPS Level 3 but the device was only validated and
+   certified to Level 2.  A Relying Party wishing to know the validation
+   status of the device MUST couple the device state information
+   contained in the Evidence with a valid FIPS CMVP certificate for the
+   device.
 
 5.2.  Key Element
 
@@ -2056,6 +2066,11 @@ Table of Contents
 
 10.2.  Informative References
 
+   [CMVP]     NIST, "Cryptographic Module Validation Program — Validated
+              Modules", n.d., <https://csrc.nist.gov/projects/
+              cryptographic-module-validation-program/validated-modules/
+              search>.
+
    [CNSA2.0]  National Security Agency, "Commercial National Security
               Algorithm Suite 2.0", n.d.,
               <https://media.defense.gov/2022/Sep/07/2003071834/-1/-1/0/
@@ -2065,6 +2080,12 @@ Table of Contents
               and Management of Publicly-Trusted Code Signing
               Certificates Version 3.8.0", n.d., <https://cabforum.org/
               working-groups/code-signing/documents/>.
+
+   [FIPS140-3-IG]
+              NIST and CCCS, "Implementation Guidance for FIPS 140-3 and
+              the Cryptographic Module Validation Program", 19 August
+              2026, <https://csrc.nist.gov/projects/cryptographic-
+              module-validation-program/fips-140-3-ig-announcements>.
 
    [I-D.ietf-lamps-csr-attestation]
               Ounsworth, M., Tschofenig, H., Birkholz, H., Wiseman, M.,
@@ -2082,6 +2103,11 @@ Table of Contents
               <https://datatracker.ietf.org/doc/html/draft-ounsworth-
               rats-privacy-framework-00>.
 
+   [ISO19790] ISO/IEC, "Information technology — Security techniques —
+              Security requirements for cryptographic modules", ISO/
+              IEC 19790:2012, n.d.,
+              <https://www.iso.org/standard/52906.html>.
+
    [RFC6024]  Reddy, R. and C. Wallace, "Trust Anchor Management
               Requirements", RFC 6024, DOI 10.17487/RFC6024, October
               2010, <https://www.rfc-editor.org/rfc/rfc6024>.
@@ -2090,6 +2116,13 @@ Table of Contents
               Firmware Update Architecture for Internet of Things",
               RFC 9019, DOI 10.17487/RFC9019, April 2021,
               <https://www.rfc-editor.org/rfc/rfc9019>.
+
+   [SP800-140B]
+              NIST, "Cryptographic Module Validation Program (CMVP)
+              Security Policy Requirements: CMVP Validation Authority
+              Updates to ISO/IEC 24759 and ISO/IEC 19790 Annex B", NIST
+              SP 800-140B Rev. 1, n.d.,
+              <https://csrc.nist.gov/pubs/sp/800/140/b/r1/final>.
 
 Appendix A.  Samples
 
