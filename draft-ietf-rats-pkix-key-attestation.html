@@ -1263,10 +1263,13 @@ whether the storage properties of this key meet the requirements of a given cert
                     <p id="section-toc.1-1.5.2.2.2.3.1"><a href="#section-5.2.3" class="auto internal xref">5.2.3</a>.  <a href="#name-extractable-sensitive-never" class="internal xref">extractable, sensitive, never-extractable, local</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2.2.4">
-                    <p id="section-toc.1-1.5.2.2.2.4.1"><a href="#section-5.2.4" class="auto internal xref">5.2.4</a>.  <a href="#name-expiry" class="internal xref">expiry</a></p>
+                    <p id="section-toc.1-1.5.2.2.2.4.1"><a href="#section-5.2.4" class="auto internal xref">5.2.4</a>.  <a href="#name-device-bound" class="internal xref">device-bound</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2.2.5">
-                    <p id="section-toc.1-1.5.2.2.2.5.1"><a href="#section-5.2.5" class="auto internal xref">5.2.5</a>.  <a href="#name-purpose" class="internal xref">purpose</a></p>
+                    <p id="section-toc.1-1.5.2.2.2.5.1"><a href="#section-5.2.5" class="auto internal xref">5.2.5</a>.  <a href="#name-expiry" class="internal xref">expiry</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2.2.6">
+                    <p id="section-toc.1-1.5.2.2.2.6.1"><a href="#section-5.2.6" class="auto internal xref">5.2.6</a>.  <a href="#name-purpose" class="internal xref">purpose</a></p>
 </li>
                 </ul>
 </li>
@@ -2358,6 +2361,12 @@ for the claim can be found.<a href="#section-5.2-4" class="pilcrow">¶</a></p>
               <td class="text-left" rowspan="1" colspan="1">id-evidence-claim-key-local</td>
             </tr>
             <tr>
+              <td class="text-left" rowspan="1" colspan="1">device-bound</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
+              <td class="text-left" rowspan="1" colspan="1">No</td>
+              <td class="text-left" rowspan="1" colspan="1">id-evidence-claim-key-device-bound</td>
+            </tr>
+            <tr>
               <td class="text-left" rowspan="1" colspan="1">expiry</td>
               <td class="text-left" rowspan="1" colspan="1">RFCthis</td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
@@ -2412,24 +2421,72 @@ directly to the attribute CKA_NEVER_EXTRACTABLE found in PKCS#11.<a href="#secti
 found in PKCS#11.<a href="#section-5.2.3-5" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="expiry">
+<div id="device-bound">
 <section id="section-5.2.4">
-          <h4 id="name-expiry">
-<a href="#section-5.2.4" class="section-number selfRef">5.2.4. </a><a href="#name-expiry" class="section-name selfRef">expiry</a>
+          <h4 id="name-device-bound">
+<a href="#section-5.2.4" class="section-number selfRef">5.2.4. </a><a href="#name-device-bound" class="section-name selfRef">device-bound</a>
           </h4>
-<p id="section-5.2.4-1">Reports a time after which the key is not to be used. The device <span class="bcp14">MAY</span> enforce this policy based on its internal clock.<a href="#section-5.2.4-1" class="pilcrow">¶</a></p>
-<p id="section-5.2.4-2">Note that security considerations should be taken relating to HSMs and their internal clocks. See <a href="#sec-cons-hsm-timestamps" class="auto internal xref">Section 9.6</a>.<a href="#section-5.2.4-2" class="pilcrow">¶</a></p>
+<p id="section-5.2.4-1">The boolean claim <code>device-bound</code> indicates whether the key is unique to the device on which it is hosted. When the claim value is "true", the device asserts that:<a href="#section-5.2.4-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.2.4-2.1">
+              <p id="section-5.2.4-2.1.1">the key was generated on the device;<a href="#section-5.2.4-2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-5.2.4-2.2">
+              <p id="section-5.2.4-2.2.1">the key has never been exported from the device, in any form; and,<a href="#section-5.2.4-2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-5.2.4-2.3">
+              <p id="section-5.2.4-2.3.1">the device offers no means to export the key in the future. This includes, but is not limited to, export in plaintext, export wrapped by another key,
+backup, cloning, and migration to another device.<a href="#section-5.2.4-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-5.2.4-3">The assertion applies to every means by which the key could leave the device, whether or not this specification
+defines a claim for it. In particular, a device that reports <code>device-bound</code> as "true" asserts that none of the following
+can reveal the key or let it be reconstructed outside the device:<a href="#section-5.2.4-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.2.4-4.1">
+              <p id="section-5.2.4-4.1.1">vendor-specific or proprietary mechanisms, including mechanisms not defined by PKCS#11 or any other standard API;<a href="#section-5.2.4-4.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-5.2.4-4.2">
+              <p id="section-5.2.4-4.2.1">splitting the key into shares or components (for example, M-of-N secret sharing), even if no single share reveals the key;<a href="#section-5.2.4-4.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-5.2.4-4.3">
+              <p id="section-5.2.4-4.3.1">administrative, maintenance, recovery or manufacturer interfaces, including interfaces available only to the vendor;<a href="#section-5.2.4-4.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-5.2.4-4.4">
+              <p id="section-5.2.4-4.4.1">debug interfaces, diagnostic modes, firmware updates or changes to the device's configuration or operating mode; and,<a href="#section-5.2.4-4.4.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-5.2.4-4.5">
+              <p id="section-5.2.4-4.5.1">exporting any value from which the key can be derived or recomputed outside the device.<a href="#section-5.2.4-4.5.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-5.2.4-5">A device that cannot make this assertion for all export mechanisms, including those it may enable in the future, <span class="bcp14">MUST NOT</span> report
+<code>device-bound</code> as "true".<a href="#section-5.2.4-5" class="pilcrow">¶</a></p>
+<p id="section-5.2.4-6">When the value of this claim is "false", the device makes no such assertion. A value of "false" does not by itself indicate that the key is extractable or
+was imported.<a href="#section-5.2.4-6" class="pilcrow">¶</a></p>
+<p id="section-5.2.4-7">A key for which <code>device-bound</code> is "true" can be understood as having attributes that the key claims "local", "extractable" and "never-extractable" express individually
+with the values "true", "false" and "true" respectively, but with the additional guarantee that no configuration change or future operation can make the key
+leave the device. If a key element reports <code>device-bound</code> as "true" along with any of the claims "local", "extractable" or "never-extractable" with a contradicting value,
+a Verifier <span class="bcp14">MUST</span> reject the Evidence as malformed.<a href="#section-5.2.4-7" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="expiry">
+<section id="section-5.2.5">
+          <h4 id="name-expiry">
+<a href="#section-5.2.5" class="section-number selfRef">5.2.5. </a><a href="#name-expiry" class="section-name selfRef">expiry</a>
+          </h4>
+<p id="section-5.2.5-1">Reports a time after which the key is not to be used. The device <span class="bcp14">MAY</span> enforce this policy based on its internal clock.<a href="#section-5.2.5-1" class="pilcrow">¶</a></p>
+<p id="section-5.2.5-2">Note that security considerations should be taken relating to HSMs and their internal clocks. See <a href="#sec-cons-hsm-timestamps" class="auto internal xref">Section 9.6</a>.<a href="#section-5.2.5-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="purpose">
-<section id="section-5.2.5">
+<section id="section-5.2.6">
           <h4 id="name-purpose">
-<a href="#section-5.2.5" class="section-number selfRef">5.2.5. </a><a href="#name-purpose" class="section-name selfRef">purpose</a>
+<a href="#section-5.2.6" class="section-number selfRef">5.2.6. </a><a href="#name-purpose" class="section-name selfRef">purpose</a>
           </h4>
-<p id="section-5.2.5-1">Reports the key purposes, also referred to as key capabilities, associated with the subject key. Since multiple purposes can be associated with a single key,
-the value of this claim is a list of purposes, each reported as an object identifier (OID).<a href="#section-5.2.5-1" class="pilcrow">¶</a></p>
-<p id="section-5.2.5-2">The value of this claim is the DER encoding of the following structure:<a href="#section-5.2.5-2" class="pilcrow">¶</a></p>
-<div class="lang-asn.1 sourcecode" id="section-5.2.5-3">
+<p id="section-5.2.6-1">Reports the key purposes, also referred to as key capabilities, associated with the subject key. Since multiple purposes can be associated with a single key,
+the value of this claim is a list of purposes, each reported as an object identifier (OID).<a href="#section-5.2.6-1" class="pilcrow">¶</a></p>
+<p id="section-5.2.6-2">The value of this claim is the DER encoding of the following structure:<a href="#section-5.2.6-2" class="pilcrow">¶</a></p>
+<div class="lang-asn.1 sourcecode" id="section-5.2.6-3">
 <pre>
 claim-key-purpose CLAIM ::= {
   ID id-evidence-claim-key-purpose
@@ -2438,10 +2495,10 @@ claim-key-purpose CLAIM ::= {
 
 KeyPurposes ::= SEQUENCE OF OBJECT IDENTIFIER
 
-</pre><a href="#section-5.2.5-3" class="pilcrow">¶</a>
+</pre><a href="#section-5.2.6-3" class="pilcrow">¶</a>
 </div>
-<p id="section-5.2.5-4">The following table describes the key purposes defined in this specification. The key purposes offered are based on key
-attributes provided by PKCS#11. Each purpose is assigned an object identifier (OID).<a href="#section-5.2.5-4" class="pilcrow">¶</a></p>
+<p id="section-5.2.6-4">The following table describes the key purposes defined in this specification. The key purposes offered are based on key
+attributes provided by PKCS#11. Each purpose is assigned an object identifier (OID).<a href="#section-5.2.6-4" class="pilcrow">¶</a></p>
 <table class="center" id="table-3">
             <caption><a href="#table-3" class="selfRef">Table 3</a></caption>
 <thead>
@@ -2509,8 +2566,8 @@ attributes provided by PKCS#11. Each purpose is assigned an object identifier (O
               </tr>
             </tbody>
           </table>
-<p id="section-5.2.5-6">The use of an object identifier to report a purpose allows third parties to extend this list to support
-implementations that have other key purposes.<a href="#section-5.2.5-6" class="pilcrow">¶</a></p>
+<p id="section-5.2.6-6">The use of an object identifier to report a purpose allows third parties to extend this list to support
+implementations that have other key purposes.<a href="#section-5.2.6-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2878,6 +2935,7 @@ ClaimSet CLAIM ::= {
       | claim-key-sensitive
       | claim-key-never-extractable
       | claim-key-local
+      | claim-key-device-bound
       | claim-key-expiry
       | claim-key-purpose,
       ...
@@ -2967,6 +3025,8 @@ id-evidence-claim-key-expiry            OBJECT IDENTIFIER ::=
     { id-evidence-claim-key 6 }
 id-evidence-claim-key-purpose           OBJECT IDENTIFIER ::=
     { id-evidence-claim-key 7 }
+id-evidence-claim-key-device-bound      OBJECT IDENTIFIER ::=
+    { id-evidence-claim-key 8 }
 
 id-evidence-key-capability              OBJECT IDENTIFIER ::=
     { id-evidence 2 }
@@ -3145,6 +3205,11 @@ claim-key-purpose CLAIM ::= {
 }
 
 KeyPurposes ::= SEQUENCE OF OBJECT IDENTIFIER
+
+claim-key-device-bound CLAIM ::= {
+  ID id-evidence-claim-key-device-bound
+  WITH TYPE BOOLEAN
+}
 
 END
 

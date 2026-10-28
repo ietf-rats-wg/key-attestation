@@ -111,8 +111,9 @@ Table of Contents
        5.2.1.  identifier
        5.2.2.  spki
        5.2.3.  extractable, sensitive, never-extractable, local
-       5.2.4.  expiry
-       5.2.5.  purpose
+       5.2.4.  device-bound
+       5.2.5.  expiry
+       5.2.6.  purpose
      5.3.  Transaction Element
        5.3.1.  nonce
        5.3.2.  timestamp
@@ -1159,6 +1160,9 @@ Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
       | local       | [PKCS11]  | No        | id-evidence-claim-    |
       |             |           |           | key-local             |
       +-------------+-----------+-----------+-----------------------+
+      | device-     | RFCthis   | No        | id-evidence-claim-    |
+      | bound       |           |           | key-device-bound      |
+      +-------------+-----------+-----------+-----------------------+
       | expiry      | RFCthis   | No        | id-evidence-claim-    |
       |             |           |           | key-expiry            |
       +-------------+-----------+-----------+-----------------------+
@@ -1214,7 +1218,61 @@ Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
    imported.  Corresponds directly to the attribute CKA_LOCAL found in
    PKCS#11.
 
-5.2.4.  expiry
+5.2.4.  device-bound
+
+   The boolean claim device-bound indicates whether the key is unique to
+   the device on which it is hosted.  When the claim value is "true",
+   the device asserts that:
+
+   *  the key was generated on the device;
+
+   *  the key has never been exported from the device, in any form; and,
+
+   *  the device offers no means to export the key in the future.  This
+      includes, but is not limited to, export in plaintext, export
+      wrapped by another key, backup, cloning, and migration to another
+      device.
+
+   The assertion applies to every means by which the key could leave the
+   device, whether or not this specification defines a claim for it.  In
+   particular, a device that reports device-bound as "true" asserts that
+   none of the following can reveal the key or let it be reconstructed
+   outside the device:
+
+   *  vendor-specific or proprietary mechanisms, including mechanisms
+      not defined by PKCS#11 or any other standard API;
+
+   *  splitting the key into shares or components (for example, M-of-N
+      secret sharing), even if no single share reveals the key;
+
+   *  administrative, maintenance, recovery or manufacturer interfaces,
+      including interfaces available only to the vendor;
+
+   *  debug interfaces, diagnostic modes, firmware updates or changes to
+      the device's configuration or operating mode; and,
+
+   *  exporting any value from which the key can be derived or
+      recomputed outside the device.
+
+   A device that cannot make this assertion for all export mechanisms,
+   including those it may enable in the future, MUST NOT report device-
+   bound as "true".
+
+   When the value of this claim is "false", the device makes no such
+   assertion.  A value of "false" does not by itself indicate that the
+   key is extractable or was imported.
+
+   A key for which device-bound is "true" can be understood as having
+   attributes that the key claims "local", "extractable" and "never-
+   extractable" express individually with the values "true", "false" and
+   "true" respectively, but with the additional guarantee that no
+   configuration change or future operation can make the key leave the
+   device.  If a key element reports device-bound as "true" along with
+   any of the claims "local", "extractable" or "never-extractable" with
+   a contradicting value, a Verifier MUST reject the Evidence as
+   malformed.
+
+5.2.5.  expiry
 
    Reports a time after which the key is not to be used.  The device MAY
    enforce this policy based on its internal clock.
@@ -1222,7 +1280,7 @@ Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
    Note that security considerations should be taken relating to HSMs
    and their internal clocks.  See Section 9.6.
 
-5.2.5.  purpose
+5.2.6.  purpose
 
    Reports the key purposes, also referred to as key capabilities,
    associated with the subject key.  Since multiple purposes can be
@@ -1666,6 +1724,7 @@ Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
          | claim-key-sensitive
          | claim-key-never-extractable
          | claim-key-local
+         | claim-key-device-bound
          | claim-key-expiry
          | claim-key-purpose,
          ...
@@ -1755,6 +1814,8 @@ Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
        { id-evidence-claim-key 6 }
    id-evidence-claim-key-purpose           OBJECT IDENTIFIER ::=
        { id-evidence-claim-key 7 }
+   id-evidence-claim-key-device-bound      OBJECT IDENTIFIER ::=
+       { id-evidence-claim-key 8 }
 
    id-evidence-key-capability              OBJECT IDENTIFIER ::=
        { id-evidence 2 }
@@ -1933,6 +1994,11 @@ Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
    }
 
    KeyPurposes ::= SEQUENCE OF OBJECT IDENTIFIER
+
+   claim-key-device-bound CLAIM ::= {
+     ID id-evidence-claim-key-device-bound
+     WITH TYPE BOOLEAN
+   }
 
    END
 
