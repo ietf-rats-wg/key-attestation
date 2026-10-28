@@ -28,7 +28,7 @@ EVIDENCE_KNOWN_OIDS: dict[str, str] = {
     "id-evidence-claim-platform-hwserial": "1.3.6.1.5.5.999.1.1.4",
     "id-evidence-claim-platform-swname": "1.3.6.1.5.5.999.1.1.5",
     "id-evidence-claim-platform-swversion": "1.3.6.1.5.5.999.1.1.6",
-    "id-evidence-claim-platform-debugstat": "1.3.6.1.5.5.999.1.1.7",
+    "id-evidence-claim-platform-dbgstat": "1.3.6.1.5.5.999.1.1.7",
     "id-evidence-claim-platform-uptime": "1.3.6.1.5.5.999.1.1.8",
     "id-evidence-claim-platform-bootcount": "1.3.6.1.5.5.999.1.1.9",
     "id-evidence-claim-platform-fipsboot": "1.3.6.1.5.5.999.1.1.10",
@@ -75,7 +75,7 @@ CLAIM_EXPECTED_TAGS: dict[str, int] = {
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-hwserial"):     12,  # UTF8String      (hwserial)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-swname"):       12,  # UTF8String      (swname)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-swversion"):    12,  # UTF8String      (swversion)
-    EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-debugstat"):     2,  # INTEGER         (debugstat)
+    EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-dbgstat"):       2,  # INTEGER         (dbgstat)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-uptime"):        2,  # INTEGER         (uptime)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-bootcount"):     2,  # INTEGER         (bootcount)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-fipsboot"):      1,  # BOOLEAN         (fipsboot)

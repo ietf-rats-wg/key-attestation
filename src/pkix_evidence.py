@@ -356,7 +356,7 @@ def make_claim(claim_type_name: str, value) -> ReportedClaim:
                     rc["value"] = char.UTF8String(value)
                 else:
                     raise Exception(f"Claim '{claim_type_name}' expects a value of type 'str'")
-            case "id-evidence-claim-platform-debugstat"\
+            case "id-evidence-claim-platform-dbgstat"\
                  | "id-evidence-claim-platform-uptime"\
                  | "id-evidence-claim-platform-bootcount"\
                  | "id-evidence-claim-platform-fipslevel":

@@ -754,7 +754,7 @@ for the claim value can be found.
 | hwserial        | {{&SELF}}      | No        | id-evidence-claim-platform-hwserial   |
 | swname          | {{RFC9711}}    | No        | id-evidence-claim-platform-swname     |
 | swversion       | {{RFC9711}}    | No        | id-evidence-claim-platform-swversion  |
-| dbgstat         | {{RFC9711}}    | No        | id-evidence-claim-platform-debugstat  |
+| dbgstat         | {{RFC9711}}    | No        | id-evidence-claim-platform-dbgstat    |
 | uptime          | {{RFC9711}}    | No        | id-evidence-claim-platform-uptime     |
 | bootcount       | {{RFC9711}}    | No        | id-evidence-claim-platform-bootcount  |
 | fipsboot        | {{ISO19790}}   | No        | id-evidence-claim-platform-fipsboot   |
