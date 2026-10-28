@@ -119,7 +119,7 @@ def read_evidence_file(filename) -> Evidence:
     return decode_evidence(base64.b64decode("".join(text.split()), validate=True))
 
 
-def pretty_print_evidence(ev: Evidence, indent: int = 0) -> [str]:
+def pretty_print_evidence(ev: Evidence, indent: int = 0) -> list[str]:
     """Recursively print an Evidence structure to an output string."""
 
     strs_out = []
@@ -371,7 +371,8 @@ def write_b64_and_pem(file_basename: Path, data: bytes):
 
 def write_pretty_print(file_basename: Path, data: bytes):
     with open(file_basename.with_suffix('.pp'), "w") as f:
-        for line in pretty_print_evidence(decode_evidence(data)):
+        evidence = decode_evidence(data)
+        for line in pretty_print_evidence(evidence):
             f.write(line+'\n')
 
 def generate_samples(output_dir=SAMPLEDATA_DIR):
@@ -379,29 +380,24 @@ def generate_samples(output_dir=SAMPLEDATA_DIR):
     import tempfile
     from verification import spki_bytes
     with tempfile.TemporaryDirectory(prefix="pkix-samples-") as directory:
-        old_dir = create_ak.output_dir
-        create_ak.output_dir = Path(directory)
-        try:
-            ak_key, ak_cert, int_cert, ca_cert, _ = create_ak.generateAndSaveCerts()
-            examples = [build_example1(ak_key, ak_cert, int_cert), build_example2(ak_key, ak_cert, int_cert)]
-            third = decode_evidence(examples[1])
-            sid = SignerIdentifier()
-            spki, _ = der_decoder.decode(spki_bytes(ak_key.public_key()), asn1Spec=SubjectPublicKeyInfo())
-            sid["subjectPublicKeyInfo"] = tagged_component_value(sid["subjectPublicKeyInfo"], spki)
-            third["signatures"][0]["sid"] = sid
-            examples.append(encode_evidence(third))
-            for index, data in enumerate(examples, 1):
-                if not validate_evidence(data, ak_cert, int_cert, ca_cert if index != 3 else None):
-                    raise ValueError(f"Example {index} failed validation")
-                basename = Path(directory) / f"evidence{index}"
-                write_b64_and_pem(basename, data)
-                write_pretty_print(basename, data)
-            destination = Path(output_dir)
-            destination.mkdir(parents=True, exist_ok=True)
-            for artifact in Path(directory).iterdir():
-                (destination / artifact.name).write_bytes(artifact.read_bytes())
-        finally:
-            create_ak.output_dir = old_dir
+        ak_key, ak_cert, int_cert, ca_cert, _ = create_ak.generateAndSaveCerts(Path(directory))
+        examples = [build_example1(ak_key, ak_cert, int_cert), build_example2(ak_key, ak_cert, int_cert)]
+        third = decode_evidence(examples[1])
+        sid = SignerIdentifier()
+        spki, _ = der_decoder.decode(spki_bytes(ak_key.public_key()), asn1Spec=SubjectPublicKeyInfo())
+        sid["subjectPublicKeyInfo"] = tagged_component_value(sid["subjectPublicKeyInfo"], spki)
+        third["signatures"][0]["sid"] = sid
+        examples.append(encode_evidence(third))
+        for index, data in enumerate(examples, 1):
+            if not validate_evidence(data, ak_cert, int_cert, ca_cert if index != 3 else None):
+                raise ValueError(f"Example {index} failed validation")
+            basename = Path(directory) / f"evidence{index}"
+            write_b64_and_pem(basename, data)
+            write_pretty_print(basename, data)
+        destination = Path(output_dir)
+        destination.mkdir(parents=True, exist_ok=True)
+        for artifact in Path(directory).iterdir():
+            (destination / artifact.name).write_bytes(artifact.read_bytes())
 
 
 def main():

@@ -10,18 +10,13 @@ from cryptography.hazmat.primitives.asymmetric import ec
 
 from pkix_evidence import id_kp_attest_oid
 
-output_dir = Path(__file__).resolve().parent.parent / "sampledata"
-
-
 
 def generate_ec_key() -> ec.EllipticCurvePrivateKey:
     return ec.generate_private_key(ec.SECP256R1())
 
 
-def save_cert_pem(cert: x509.Certificate, filename: str) -> None:
-    path = Path(output_dir, filename)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(cert.public_bytes(serialization.Encoding.PEM))
+def save_cert_pem(cert: x509.Certificate, path_file:Path) -> None:
+    path_file.write_bytes(cert.public_bytes(serialization.Encoding.PEM))
 
 
 def build_name(common_name: str, ou: str , o: str) -> x509.Name:
@@ -34,7 +29,7 @@ def build_name(common_name: str, ou: str , o: str) -> x509.Name:
     )
 
 
-def create_root_ca(ca_cert_file: str) -> tuple[ec.EllipticCurvePrivateKey, x509.Certificate]:
+def create_root_ca(ca_cert_file:Path) -> tuple[ec.EllipticCurvePrivateKey, x509.Certificate]:
     private_key = generate_ec_key()
     subject = issuer = build_name("RootCA", "pkix-key-attestation", "ietf-rats")
 
@@ -161,7 +156,11 @@ def create_end_entity_cert(
     return private_key, cert
 
 
-def generateAndSaveCerts(ca_private_key: ec.EllipticCurvePrivateKey = None, ca_cert: x509.Certificate = None) -> tuple[ec.EllipticCurvePrivateKey, x509.Certificate, x509.Certificate, x509.Certificate, ec.EllipticCurvePrivateKey]:
+def generateAndSaveCerts(
+        path_sample_dir: Path,
+        ca_private_key: ec.EllipticCurvePrivateKey|None = None,
+        ca_cert: x509.Certificate|None = None
+        ) -> tuple[ec.EllipticCurvePrivateKey, x509.Certificate, x509.Certificate, x509.Certificate, ec.EllipticCurvePrivateKey]:
     """
     Returns the in-memory AK key, AK certificate, intermediate certificate, root certificate, and in-memory root key.
     Saves the ak.crt and ca.crt to disk in the /sampledata dir
@@ -175,15 +174,17 @@ def generateAndSaveCerts(ca_private_key: ec.EllipticCurvePrivateKey = None, ca_c
 
 
     if ca_private_key is None or ca_cert is None:
-        ca_private_key, ca_cert = create_root_ca("ca.crt")
-    int_private_key, int_cert = create_int_ca(ca_private_key, ca_cert, "int.crt")
-    ak_private_key, ak_cert = create_end_entity_cert(int_private_key, int_cert, "ak.crt")
+        ca_private_key, ca_cert = create_root_ca(Path(path_sample_dir, "ca.crt"))
+    int_private_key, int_cert = create_int_ca(ca_private_key, ca_cert, Path(path_sample_dir, "int.crt"))
+    ak_private_key, ak_cert = create_end_entity_cert(int_private_key, int_cert, Path(path_sample_dir, "ak.crt"))
 
     return ak_private_key, ak_cert, int_cert, ca_cert, ca_private_key
 
 
 def main():
-    generateAndSaveCerts()
+    path_base_dir = Path(__file__).resolve().parent
+    path_sample_dir = Path(path_base_dir.parent, "sampledata")
+    generateAndSaveCerts(path_sample_dir)
 
 
 if __name__ == "__main__":

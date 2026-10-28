@@ -62,17 +62,12 @@ class InteropBase(unittest.TestCase):
             env = dict(os.environ, GOCACHE=os.environ.get("GOCACHE", "/tmp/go-build-key-attestation"))
             subprocess.run(["go", "build", "-o", cls.go, "./go-src/cmd/pkix-evidence"],
                            cwd=Path(__file__).resolve().parent.parent, env=env, check=True)
-        old = create_ak.output_dir
-        create_ak.output_dir = cls.base
-        try:
-            # Keep intermediate signing key in memory for additional test AKs.
-            root_key, cls.root = create_ak.create_root_ca("ca.crt")
-            cls.issuer_key, cls.intermediate = create_ak.create_int_ca(root_key, cls.root, "int.crt")
-            cls.key = ec.generate_private_key(ec.SECP256R1())
-            cls.cert = cls.certificate(cls.key)
-            (cls.base / "ak.crt").write_bytes(cls.cert.public_bytes(serialization.Encoding.PEM))
-        finally:
-            create_ak.output_dir = old
+        # Keep intermediate signing key in memory for additional test AKs.
+        root_key, cls.root = create_ak.create_root_ca(Path(cls.base, "ca.crt"))
+        cls.issuer_key, cls.intermediate = create_ak.create_int_ca(root_key, cls.root, Path(cls.base, "int.crt"))
+        cls.key = ec.generate_private_key(ec.SECP256R1())
+        cls.cert = cls.certificate(cls.key)
+        (cls.base / "ak.crt").write_bytes(cls.cert.public_bytes(serialization.Encoding.PEM))
         cls.example = samples.build_example2(cls.key, cls.cert, cls.intermediate)
 
     @classmethod
