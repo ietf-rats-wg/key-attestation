@@ -888,7 +888,7 @@ Table of Contents
       |            |              |           | platform-swversion  |
       +------------+--------------+-----------+---------------------+
       | dbgstat    | [RFC9711]    | No        | id-evidence-claim-  |
-      |            |              |           | platform-debugstat  |
+      |            |              |           | platform-dbgstat    |
       +------------+--------------+-----------+---------------------+
       | uptime     | [RFC9711]    | No        | id-evidence-claim-  |
       |            |              |           | platform-uptime     |
@@ -1557,7 +1557,7 @@ Table of Contents
          | claim-platform-hwserial
          | claim-platform-swname
          | claim-platform-swversion
-         | claim-platform-debugstat
+         | claim-platform-dbgstat
          | claim-platform-uptime
          | claim-platform-bootcount
          | claim-platform-fipsboot
@@ -1616,7 +1616,7 @@ Table of Contents
        { id-evidence-claim-platform 5 }
    id-evidence-claim-platform-swversion  OBJECT IDENTIFIER ::=
        { id-evidence-claim-platform 6 }
-   id-evidence-claim-platform-debugstat  OBJECT IDENTIFIER ::=
+   id-evidence-claim-platform-dbgstat    OBJECT IDENTIFIER ::=
        { id-evidence-claim-platform 7 }
    id-evidence-claim-platform-uptime     OBJECT IDENTIFIER ::=
        { id-evidence-claim-platform 8 }
@@ -1726,8 +1726,8 @@ Table of Contents
      WITH TYPE UTF8String
    }
 
-   claim-platform-debugstat CLAIM ::= {
-     ID id-evidence-claim-platform-debugstat
+   claim-platform-dbgstat CLAIM ::= {
+     ID id-evidence-claim-platform-dbgstat
      WITH TYPE INTEGER
    }
 

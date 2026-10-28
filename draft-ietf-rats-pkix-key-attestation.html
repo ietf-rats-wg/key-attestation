@@ -2078,7 +2078,7 @@ for the claim value can be found.<a href="#section-5.1-3" class="pilcrow">¶</a>
                 <span>[<a href="#RFC9711" class="cite xref">RFC9711</a>]</span>
 </td>
               <td class="text-left" rowspan="1" colspan="1">No</td>
-              <td class="text-left" rowspan="1" colspan="1">id-evidence-claim-platform-debugstat</td>
+              <td class="text-left" rowspan="1" colspan="1">id-evidence-claim-platform-dbgstat</td>
             </tr>
             <tr>
               <td class="text-left" rowspan="1" colspan="1">uptime</td>
@@ -2778,7 +2778,7 @@ ClaimSet CLAIM ::= {
       | claim-platform-hwserial
       | claim-platform-swname
       | claim-platform-swversion
-      | claim-platform-debugstat
+      | claim-platform-dbgstat
       | claim-platform-uptime
       | claim-platform-bootcount
       | claim-platform-fipsboot
@@ -2837,7 +2837,7 @@ id-evidence-claim-platform-swname     OBJECT IDENTIFIER ::=
     { id-evidence-claim-platform 5 }
 id-evidence-claim-platform-swversion  OBJECT IDENTIFIER ::=
     { id-evidence-claim-platform 6 }
-id-evidence-claim-platform-debugstat  OBJECT IDENTIFIER ::=
+id-evidence-claim-platform-dbgstat    OBJECT IDENTIFIER ::=
     { id-evidence-claim-platform 7 }
 id-evidence-claim-platform-uptime     OBJECT IDENTIFIER ::=
     { id-evidence-claim-platform 8 }
@@ -2947,8 +2947,8 @@ claim-platform-swversion CLAIM ::= {
   WITH TYPE UTF8String
 }
 
-claim-platform-debugstat CLAIM ::= {
-  ID id-evidence-claim-platform-debugstat
+claim-platform-dbgstat CLAIM ::= {
+  ID id-evidence-claim-platform-dbgstat
   WITH TYPE INTEGER
 }
 
