@@ -124,6 +124,31 @@ informative:
     author:
       - org: CA/Browser Forum
     target: https://cabforum.org/working-groups/code-signing/documents/
+  ISO19790:
+    title: "Information technology — Security techniques — Security requirements for cryptographic modules"
+    author:
+      - org: ISO/IEC
+    seriesinfo:
+      ISO/IEC: 19790:2012
+    target: https://www.iso.org/standard/52906.html
+  SP800-140B:
+    title: "Cryptographic Module Validation Program (CMVP) Security Policy Requirements: CMVP Validation Authority Updates to ISO/IEC 24759 and ISO/IEC 19790 Annex B"
+    author:
+      - org: NIST
+    seriesinfo:
+      NIST SP: 800-140B Rev. 1
+    target: https://csrc.nist.gov/pubs/sp/800/140/b/r1/final
+  FIPS140-3-IG:
+    title: "Implementation Guidance for FIPS 140-3 and the Cryptographic Module Validation Program"
+    author:
+      - org: NIST and CCCS
+    date: 2026-08-19
+    target: https://csrc.nist.gov/projects/cryptographic-module-validation-program/fips-140-3-ig-announcements
+  CMVP:
+    title: "Cryptographic Module Validation Program — Validated Modules"
+    author:
+      - org: NIST
+    target: https://csrc.nist.gov/projects/cryptographic-module-validation-program/validated-modules/search
 
 entity:
   SELF: "RFCthis"
@@ -720,22 +745,22 @@ within this specification. In cases where the claim is borrowed from another spe
 the "Reference" column refers to the specification where the semantics
 for the claim value can be found.
 
-| Claim Type      | Reference     | Multiple? | OID                                   |
-| ---             | ---           | ---       | ---                                   |
-| vendor          | {{&SELF}}     | No        | id-evidence-claim-platform-vendor     |
-| oemid           | {{RFC9711}}   | No        | id-evidence-claim-platform-oemid      |
-| hwmodel         | {{RFC9711}}   | No        | id-evidence-claim-platform-hwmodel    |
-| hwversion       | {{RFC9711}}   | No        | id-evidence-claim-platform-hwversion  |
-| hwserial        | {{&SELF}}     | No        | id-evidence-claim-platform-hwserial   |
-| swname          | {{RFC9711}}   | No        | id-evidence-claim-platform-swname     |
-| swversion       | {{RFC9711}}   | No        | id-evidence-claim-platform-swversion  |
-| dbgstat         | {{RFC9711}}   | No        | id-evidence-claim-platform-debugstat  |
-| uptime          | {{RFC9711}}   | No        | id-evidence-claim-platform-uptime     |
-| bootcount       | {{RFC9711}}   | No        | id-evidence-claim-platform-bootcount  |
-| fipsboot        | {{FIPS140-3}} | No        | id-evidence-claim-platform-fipsboot   |
-| fipsver         | {{FIPS140-3}} | No        | id-evidence-claim-platform-fipsver    |
-| fipslevel       | {{FIPS140-3}} | No        | id-evidence-claim-platform-fipslevel  |
-| fipsmodule      | {{FIPS140-3}} | No        | id-evidence-claim-platform-fipsmodule |
+| Claim Type      | Reference      | Multiple? | OID                                   |
+| ---             | ---            | ---       | ---                                   |
+| vendor          | {{&SELF}}      | No        | id-evidence-claim-platform-vendor     |
+| oemid           | {{RFC9711}}    | No        | id-evidence-claim-platform-oemid      |
+| hwmodel         | {{RFC9711}}    | No        | id-evidence-claim-platform-hwmodel    |
+| hwversion       | {{RFC9711}}    | No        | id-evidence-claim-platform-hwversion  |
+| hwserial        | {{&SELF}}      | No        | id-evidence-claim-platform-hwserial   |
+| swname          | {{RFC9711}}    | No        | id-evidence-claim-platform-swname     |
+| swversion       | {{RFC9711}}    | No        | id-evidence-claim-platform-swversion  |
+| dbgstat         | {{RFC9711}}    | No        | id-evidence-claim-platform-debugstat  |
+| uptime          | {{RFC9711}}    | No        | id-evidence-claim-platform-uptime     |
+| bootcount       | {{RFC9711}}    | No        | id-evidence-claim-platform-bootcount  |
+| fipsboot        | {{ISO19790}}   | No        | id-evidence-claim-platform-fipsboot   |
+| fipsver         | {{FIPS140-3}}  | No        | id-evidence-claim-platform-fipsver    |
+| fipslevel       | {{ISO19790}}   | No        | id-evidence-claim-platform-fipslevel  |
+| fipsmodule      | {{SP800-140B}} | No        | id-evidence-claim-platform-fipsmodule |
 
 Each claim defined in the table above is described in the following sub-sections.
 
@@ -786,6 +811,10 @@ including only enabling FIPS-approved algorithms, certain requirements on entrop
 FIPS 140-3 offers compliance levels 1 through 4 with increasingly strict requirements. Many HSMs include a configuration setting that allows
 the device to be taken out of FIPS mode and thus enable additional functionality or performance, and some offer configuration settings to change between compliance levels.
 
+{{FIPS140-3}} adopts the requirements of {{ISO19790}} (2012 edition). In this specification, "FIPS mode" refers to the "approved mode of operation" and "compliance level"
+refers to the "security level", both as defined in {{ISO19790}}. Guidance on how a module indicates that it is operating in the approved mode is provided in {{FIPS140-3-IG}}.
+The module name and overall security level of a validated module are documented in its Security Policy, whose content is specified in {{SP800-140B}}.
+
 The boolean claim `fipsboot` indicates whether the device is currently operating in FIPS mode. When the claim value is "true", the HSM is running in compliance with the
 FIPS 140 restrictions. If the value of this claim is "false", then the HSM is not
 restricted to the behavior limited by compliance.
@@ -798,7 +827,7 @@ The claim `fipsmodule` is a textual field used to represent the name of the modu
 be sufficient to find the associated records in the CMVP database.
 
 The FIPS status information found in Evidence indicates only the mode of operation of the device and is not authoritative of its validation status.
-This information is available on the NIST CMVP website or by contacting the device vendor.
+This information is available in the NIST CMVP database of validated modules {{CMVP}} or by contacting the device vendor.
 As an example, some devices may have the option to enable FIPS mode in configuration even if the vendor has not submitted this model for validation. As another example,
 a device may be running in a mode consistent with FIPS Level 3 but the device was only validated and certified to Level 2.
 A Relying Party wishing to know the validation status of the device MUST couple the device state information contained in the Evidence with a valid FIPS CMVP certificate for the device.
