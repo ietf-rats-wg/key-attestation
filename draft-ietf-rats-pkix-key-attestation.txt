@@ -227,12 +227,12 @@ Table of Contents
 
    The Evidence format offered by this specification is designed to
    carry the information necessary for a CA to assess the location of
-   the subject key along a number of commonly-required attributes.  More
-   specifically, a CA could determine which HSM was used to generate the
-   subject key, whether this device adheres to certain jurisdiction
-   policies (such as FIPS mode) and the constraints applied to the key
-   (such as whether is it extractable).  The use of Evidence in a
-   certification request is specified in
+   the subject key along with a number of commonly-required attributes.
+   More specifically, a CA could determine which HSM was used to
+   generate the subject key, whether this device adheres to certain
+   jurisdiction policies (such as FIPS mode) and the constraints applied
+   to the key (such as whether it is extractable).  The use of Evidence
+   in a certification request is specified in
    [I-D.ietf-lamps-csr-attestation].
 
    For relatively simple HSM devices, storage properties such as
@@ -242,7 +242,7 @@ Table of Contents
    more complex HSM devices require a more elaborate Evidence format
    that encompasses the mutability of these attributes.
 
-   Also, a client requesting a key attestation might wish to scope-down
+   Also, a client requesting a key attestation might wish to scope down
    the content of the produced Evidence as the HSM contains much more
    information than that which is relevant to the transaction.  Not
    reducing the scope of the generated Evidence could, in some
@@ -336,7 +336,7 @@ Table of Contents
       specification, it is interchangeable with "Attester" or "HSM".
 
    Platform Attestation:
-      Process of producing evidence containing claims pertaining to
+      Process of producing Evidence containing claims pertaining to
       measured values associated with the platform itself.  In general,
       the claims include enough information about the platform to allow
       a Relying Party to make judicious decisions about the platform,
@@ -361,7 +361,7 @@ Table of Contents
    Trusted Platform Module (TPM):
       A tamper-resistant processor generally located on a computer's
       motherboard used to enhance attestation functions for the hosting
-      platform as defined by the Trusted Computer Group.  TPMs are very
+      platform as defined by the Trusted Computing Group.  TPMs are very
       specialized Hardware Security Modules and generally use other
       protocols (than the one presented in this specification) to
       transmit Evidence.
@@ -424,8 +424,8 @@ Table of Contents
    case when the AK certificate is replaced as part of onboarding the
    device into a new operational environment.
 
-   The AK certificate associated with the AK that signs the evidence
-   have the following constraints:
+   The AK certificate associated with the AK that signs the Evidence has
+   the following constraints:
 
    *  the certificate MUST include the Extended Key Usage (EKU)
       certificate extension;
@@ -521,7 +521,7 @@ Table of Contents
    participation of the Presenter as part of the function of appraising
    the Evidence.
 
-   The attestation request is a message used by the presenter to specify
+   The attestation request is a message used by the Presenter to specify
    the elements and the associated claims that are included by the
    Attester in the generated Evidence.  The nonce specified by the
    Verifier MUST be included in the attestation request for the Attester
@@ -541,7 +541,7 @@ Table of Contents
       offered to prove the origin of the Evidence description and
       maintain its integrity.
 
-   The details of the signature section is left to the data model.  The
+   The details of the signature section are left to the data model.  The
    remainder of this section deals with the way the information is
    organized to form the Evidence description.
 
@@ -572,7 +572,7 @@ Table of Contents
    to different portions of the Target Environment.
 
    It is possible for two elements to be quite similar such as in a
-   situation where a key is imported twice in a HSM.  In this case, the
+   situation where a key is imported twice in an HSM.  In this case, the
    two related elements could be associated with similar claims.
    However, they are treated as different elements as they are reporting
    different portions of the Target Environment.
@@ -591,8 +591,8 @@ Table of Contents
    the device instead of being generated on-demand.  This model would
    essentially off-board the Attesting Environment to be part of the
    manufacturing infrastructure.  In the RATS Architecture, this
-   configuration would refer to the the information provided this way as
-   an Endorsement provided by the manufacturer as opposed to Evidence
+   configuration would refer to the information provided this way as an
+   Endorsement provided by the manufacturer as opposed to Evidence
    generated by the HSM.
 
 4.2.  Element Type
@@ -600,13 +600,13 @@ Table of Contents
    An element is defined by its type.  This specification defines three
    element types:
 
-   *  Platform : This element holds claims that describes the state of
+   *  Platform : This element holds claims that describe the state of
       the platform (or device) itself.  Elements of this type hold
       claims that are global in nature within the Target Environment.
 
    *  Key : The elements of this type represent a cryptographic key
       protected within the Target Environment and hold claims that
-      describes that specific key.
+      describe that specific key.
 
    *  Transaction : This element is abstract in nature since it is
       associated with claims that do not describe portions of the Target
@@ -616,7 +616,7 @@ Table of Contents
    Although this document defines a short list of element types, this
    list is extensible to allow implementers to report on elements found
    in their implementation and not covered by this specification.  By
-   using an Object Identifiers (OID) for specifying element types and
+   using Object Identifiers (OIDs) for specifying element types and
    claim types, this format is inherently extensible; implementers of
    this specification MAY define new custom or proprietary element types
    and place them alongside the standardized elements, or define new
@@ -634,7 +634,7 @@ Table of Contents
    associated element.  For example, a platform element could have a
    claim which indicates the firmware version currently running.
    Another example is a key element with a claim that reports whether
-   the key is extractable or not.690
+   the key is extractable or not.
 
    A value provided by a claim is to be interpreted within the context
    of its element and in relation to the claim type.
@@ -745,7 +745,7 @@ Table of Contents
    signature which is the structure SignerIdentifier (sid).  The signer
    identifier includes a combination of X.509 certificate,
    SubjectPublicKeyInfo (SPKI) and/or key identifier (keyId).  It is
-   expected that a X.509 certificate will be generally used, as it
+   expected that an X.509 certificate will be generally used, as it
    provides the public key needed to verify the signature and clearly
    identifies the subject that provided the signature.  The SPKI and
    keyId are allowed to support environments where X.509 certificates
@@ -828,7 +828,7 @@ Table of Contents
 
    The nature of a claim value is dictated by the claim type.  When a
    claim type is defined, the definition must include the type of the
-   value, its semantic and interpretation.
+   value, its semantics and interpretation.
 
    The following ASN.1 fragment illustrates how a claim is associated
    with a type, in this case the OID id-evidence-claim-transaction-nonce
@@ -1101,8 +1101,8 @@ Table of Contents
    the HSM.  Corresponds directly to the attribute CKA_EXTRACTABLE found
    in PKCS#11.
 
-   The claim "sensitive" indicates that the value of key cannot leave
-   the HSM in plaintext.  Corresponds directly to the attribute
+   The claim "sensitive" indicates that the value of the key cannot
+   leave the HSM in plaintext.  Corresponds directly to the attribute
    CKA_SENSITIVE found in PKCS#11.
 
    The claim "never-extractable" indicates if the key was never
@@ -1320,8 +1320,8 @@ Table of Contents
    transmit the nonce between the two parties prior to the generation of
    the Evidence.
 
-   Finally, in the case where an Attester have multiple attestation
-   keys, the Presenter need to select the attestation key(s) that are
+   Finally, in the case where an Attester has multiple attestation keys,
+   the Presenter needs to select the attestation key(s) that are
    required by the Verifier.
 
 6.2.  Generation of Evidence
@@ -1352,10 +1352,9 @@ Table of Contents
    The Attesting Environment collects the necessary information from the
    Target Environment and assembles the TbsEvidence structure.
 
-   The during the assembly of TbsEvidence, the Attesting Environment
-   MUST:
+   During the assembly of TbsEvidence, the Attesting Environment MUST:
 
-   *  include the nonce (if present) provided by the Presenter to
+   *  include the nonce (if present) provided by the Presenter to the
       transaction element using the claim claim-transaction-nonce; and,
 
    *  add a claim of type claim-transaction-ak-spki to the transaction
@@ -1370,9 +1369,9 @@ Table of Contents
    generate the signature.
 
    Finally, the structure Evidence is assembled by combining the
-   strutures TbsEvidence and SignatureBlock.  The Attesting Environment
+   structures TbsEvidence and SignatureBlock.  The Attesting Environment
    MAY add intermediate certificates required by the Verifier to
-   ascertain as to the validity of the provided signatures.
+   ascertain the validity of the provided signatures.
 
 6.3.  Verification by Presenter
 
@@ -1440,7 +1439,7 @@ Table of Contents
    the same Attester identity as described above.
 
    If any transaction.ak-spki claims are present, the Verifier SHOULD
-   verify that each SignerIdentifier’s SubjectPublicKeyInfo (or the SPKI
+   verify that each SignerIdentifier's SubjectPublicKeyInfo (or the SPKI
    of its certificate) matches at least one ak-spki value.  Each such
    claim is authoritative only when it is backed by a successfully
    verified SignatureBlock using the corresponding attestation key.  An
@@ -1883,7 +1882,7 @@ Table of Contents
    configuration.
 
    For example, an enterprise-grade HSM in a large multi-tenant cloud
-   service could host TLS keys fronting multiple un-related web domains.
+   service could host TLS keys fronting multiple unrelated web domains.
    Providing Evidence for claims of any one of the keys would involve a
    Presenter that could potentially access any of the hosted keys.  In
    such a case, privacy violations could occur if the Presenter was to
@@ -1905,7 +1904,7 @@ Table of Contents
    [I-D.ounsworth-rats-privacy-framework] presents a framework for
    identifying points in an Evidence conveyance protocol where designers
    and implementers need to be conscious of privacy concerns.  For the
-   evidence mechanism specified in this document, the primary privacy
+   Evidence mechanism specified in this document, the primary privacy
    concern has to do with authenticating the Presenter against the HSM's
    local policies, and only releasing claims that they are authorized to
    view.  The means by which a Presenter requests the generation of
@@ -1915,7 +1914,7 @@ Table of Contents
    Additionally, [I-D.ounsworth-rats-privacy-framework] calls for
    object-level evidence encryption (instead of relying solely on
    transport encryption), and corresponding validation of the provided
-   Verifyier encryption certificate against local policies.  Such a
+   Verifier encryption certificate against local policies.  Such a
    mechanism is left out-of-scope in this specification since it is
    largely independent of the Evidence formatting structures defined in
    this specification.  Implementers are welcome to wrap the structures
@@ -1976,9 +1975,8 @@ Table of Contents
    keys to generate Evidence could, in some architectures, require the
    Attesting Environment to resolve complex access control logic and
    handle complex error conditions, which violates the "simple to
-   implement" design principle outlined in Section 9.2.  More
-   discussions on authenticating the Presenter can be found in
-   Section 9.4.
+   implement" design principle outlined in Section 9.2.  More discussion
+   on authenticating the Presenter can be found in Section 9.4.
 
 9.6.  Timestamps and HSMs
 
@@ -1986,17 +1984,17 @@ Table of Contents
    clocks have a natural drift and must be corrected periodically.
    HSMs, like any other devices, are subject to these issues.
 
-   There are many situations where HSMs can not naturally correct their
-   internal system clocks.  For example, consider a HSM hosting a trust
+   There are many situations where HSMs cannot naturally correct their
+   internal system clocks.  For example, consider an HSM hosting a trust
    anchor and usually kept offline and booted up infrequently in a
    network without a reliable time management service.  Another example
    is a smart card which boots up only when held against an NFC reader.
 
-   When a timestamp generated from a HSM is evaluated, the expected
+   When a timestamp generated from an HSM is evaluated, the expected
    behavior of the system clock SHOULD be considered.
 
    More specifically, the timestamp SHOULD NOT be relied on for
-   establishing the freshness of the Evidence generated by a HSM.
+   establishing the freshness of the Evidence generated by an HSM.
    Instead, Verifiers SHOULD rely on other provisions such as the
    "nonce" claim of the "transaction" element, introduced in this
    specification.
@@ -2120,8 +2118,8 @@ Appendix A.  Samples
 A.1.  Simple Platform Evidence
 
    This example shows a minimal PKIX Evidence object with only
-   transaction and platform elements a single signature where the AK key
-   is identified only by its SHA1 hash KeyID.  In other words, this
+   transaction and platform elements and a single signature where the AK
+   key is identified only by its SHA1 hash KeyID.  In other words, this
    Evidence describes only the HSM itself (rather than application keys
    stored within it), and it assumes that the Verifier will be able to
    look up the AK key by its SHA1 hash.
