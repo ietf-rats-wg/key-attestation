@@ -188,7 +188,7 @@ secure cluster communication. In this scenario, the Verifier and Relying Party w
 deciding whether or not to admit the new HSM.
 
 A related scenario is when performing a key migration across HSMs.
-If the key is being migrated is associated with certain properties, for example an environment running in FIPS mode at
+If the key being migrated is associated with certain properties, for example an environment running in FIPS mode at
 FIPS Level 3, and the key is set to certain protection properties such as Non-Exportable and Dual-Control,
 then the HSM might wish to verify that the key was previously stored under the same conditions.
 This specification provides an Evidence format with sufficient details to support this type of
@@ -333,7 +333,7 @@ Some HSMs have a large amount of memory and can therefore contain a substantial 
 can be observed independently by the Attesting Environment. Each of those elements, in turn, can contain a
 number of measurable attributes.
 
-A certain level of complexity arises as multiple elements of the same class690 can be reported simultaneously in generated
+A certain level of complexity arises as multiple elements of the same class can be reported simultaneously in generated
 Evidence. In this case, multiple similar claims are reported simultaneously but associated with different elements.
 
 For example, two independent user keys could be reported simultaneously in Evidence. Each key is associated with a
