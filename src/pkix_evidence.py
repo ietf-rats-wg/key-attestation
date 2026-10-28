@@ -374,7 +374,8 @@ def make_claim(claim_type_name: str, value) -> ReportedClaim:
                  | "id-evidence-claim-key-extractable"\
                  | "id-evidence-claim-key-sensitive"\
                  | "id-evidence-claim-key-never-extractable"\
-                 | "id-evidence-claim-key-local":
+                 | "id-evidence-claim-key-local"\
+                 | "id-evidence-claim-key-device-bound":
                 # BOOLEAN
                 if isinstance(value, bool):
                     rc["value"] = univ.Boolean(value)   

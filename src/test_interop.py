@@ -48,6 +48,18 @@ def find_claim(ev, name):
                 if str(c["claimType"]) == OIDS["id-evidence-claim-" + name])
 
 
+def set_key_attributes(key, local, extractable, never_extractable):
+    """Replace the local, extractable and never-extractable claims of a key element."""
+    names = {"key-local": local, "key-extractable": extractable, "key-never-extractable": never_extractable}
+    oids = {OIDS["id-evidence-claim-" + name] for name in names}
+    kept = [c for c in key["claims"] if str(c["claimType"]) not in oids]
+    key["claims"].clear()
+    for c in kept:
+        key["claims"].append(c)
+    for name, value in names.items():
+        key["claims"].append(claim(name, value))
+
+
 def replace_value(c, value):
     c["value"] = encoder.encode(value)
 
@@ -318,6 +330,14 @@ class PositiveInteropTests(InteropBase):
                 self.verify_both(data)
                 self.go_run("validate", data)
 
+    def test_device_bound_key(self):
+        ev = schema.decode_evidence(self.example)
+        set_key_attributes(find_element(ev, "key"), local=True, extractable=False, never_extractable=True)
+        find_element(ev, "key")["claims"].append(claim("key-device-bound", True))
+        data = self.resign(ev)
+        self.verify_both(data)
+        self.go_run("validate", data)
+
     def test_verifier_allows_absent_optional_ak_claim(self):
         ev = schema.decode_evidence(self.example)
         tx = find_element(ev, "transaction")
@@ -350,6 +370,10 @@ class NegativeInteropTests(InteropBase):
         def duplicate_key(ev): ev["tbs"]["reportedElements"].append(find_element(ev, "key"))
         def duplicate_ak(ev): find_element(ev, "transaction")["claims"].append(find_claim(ev, "transaction-ak-spki"))
         def bad_level(ev): find_element(ev, "platform")["claims"].append(claim("platform-fipslevel", 5))
+        def extractable_device_bound(ev):
+            key = find_element(ev, "key")
+            set_key_attributes(key, local=True, extractable=True, never_extractable=True)
+            key["claims"].append(claim("key-device-bound", True))
         def bad_eal(ev):
             platform = find_element(ev, "platform")
             platform["claims"].append(claim("platform-ccscheme", "EUCC"))
@@ -362,7 +386,7 @@ class NegativeInteropTests(InteropBase):
             key["claims"].clear()
             for c in kept: key["claims"].append(c)
         for mutate in [bad_version, repeated_platform, repeated_transaction, repeated_nonce, wrong_owner,
-                       wrong_identifier, bad_spki, duplicate_key, duplicate_ak, bad_level, bad_eal, old_tag, wrong_purpose, missing_identifier]:
+                       wrong_identifier, bad_spki, duplicate_key, duplicate_ak, bad_level, bad_eal, extractable_device_bound, old_tag, wrong_purpose, missing_identifier]:
             with self.subTest(case=mutate.__name__):
                 ev = schema.decode_evidence(self.example)
                 mutate(ev)

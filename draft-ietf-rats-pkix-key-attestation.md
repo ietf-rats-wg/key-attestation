@@ -918,10 +918,11 @@ for the claim can be found.
 | ---               | ---         | ---       | ---                                     |
 | identifier        | {{&SELF}}   | Yes       | id-evidence-claim-key-identifier        |
 | spki              | {{&SELF}}   | No        | id-evidence-claim-key-spki              |
-| extractable       | {{PKCS11}}    | No        | id-evidence-claim-key-extractable       |
-| sensitive         | {{PKCS11}}    | No        | id-evidence-claim-key-sensitive         |
-| never-extractable | {{PKCS11}}    | No        | id-evidence-claim-key-never-extractable |
-| local             | {{PKCS11}}    | No        | id-evidence-claim-key-local             |
+| extractable       | {{PKCS11}}  | No        | id-evidence-claim-key-extractable       |
+| sensitive         | {{PKCS11}}  | No        | id-evidence-claim-key-sensitive         |
+| never-extractable | {{PKCS11}}  | No        | id-evidence-claim-key-never-extractable |
+| local             | {{PKCS11}}  | No        | id-evidence-claim-key-local             |
+| device-bound      | {{&SELF}}   | No        | id-evidence-claim-key-device-bound      |
 | expiry            | {{&SELF}}   | No        | id-evidence-claim-key-expiry            |
 | purpose           | {{&SELF}}   | No        | id-evidence-claim-key-purpose           |
 
@@ -959,6 +960,42 @@ directly to the attribute CKA_NEVER_EXTRACTABLE found in PKCS#11.
 
 The claim "local" indicates whether the key was generated locally or imported. Corresponds directly to the attribute CKA_LOCAL
 found in PKCS#11.
+
+### device-bound
+
+The boolean claim `device-bound` indicates whether the key is unique to the device on which it is hosted. When the claim value is "true", the device asserts that:
+
+* the key was generated on the device;
+
+* the key has never been exported from the device, in any form; and,
+
+* the device offers no means to export the key in the future. This includes, but is not limited to, export in plaintext, export wrapped by another key,
+  backup, cloning, and migration to another device.
+
+The assertion applies to every means by which the key could leave the device, whether or not this specification
+defines a claim for it. In particular, a device that reports `device-bound` as "true" asserts that none of the following
+can reveal the key or let it be reconstructed outside the device:
+
+* vendor-specific or proprietary mechanisms, including mechanisms not defined by PKCS#11 or any other standard API;
+
+* splitting the key into shares or components (for example, M-of-N secret sharing), even if no single share reveals the key;
+
+* administrative, maintenance, recovery or manufacturer interfaces, including interfaces available only to the vendor;
+
+* debug interfaces, diagnostic modes, firmware updates or changes to the device's configuration or operating mode; and,
+
+* exporting any value from which the key can be derived or recomputed outside the device.
+
+A device that cannot make this assertion for all export mechanisms, including those it may enable in the future, MUST NOT report
+`device-bound` as "true".
+
+When the value of this claim is "false", the device makes no such assertion. A value of "false" does not by itself indicate that the key is extractable or
+was imported.
+
+A key for which `device-bound` is "true" can be understood as having attributes that the key claims "local", "extractable" and "never-extractable" express individually
+with the values "true", "false" and "true" respectively, but with the additional guarantee that no configuration change or future operation can make the key
+leave the device. If a key element reports `device-bound` as "true" along with any of the claims "local", "extractable" or "never-extractable" with a contradicting value,
+a Verifier MUST reject the Evidence as malformed.
 
 ### expiry
 

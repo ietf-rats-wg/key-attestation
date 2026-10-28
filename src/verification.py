@@ -22,6 +22,12 @@ import re
 
 # Common Criteria schemes whose cceallevel claim must follow the EAL syntax.
 CC_EAL_SCHEMES = ("ISO15408", "CCRA", "EUCC")
+# Key claim values implied by device-bound = TRUE.
+DEVICE_BOUND_IMPLIES = {
+    OIDS["id-evidence-claim-key-local"]: True,
+    OIDS["id-evidence-claim-key-extractable"]: False,
+    OIDS["id-evidence-claim-key-never-extractable"]: True,
+}
 CC_EAL_PATTERN = re.compile(r"EAL[1-7](\+[A-Z]{3}_[A-Z]{3}\.[0-9]+(,[A-Z]{3}_[A-Z]{3}\.[0-9]+)*)?")
 
 
@@ -113,6 +119,11 @@ def validate_structure(ev):
             if not CC_EAL_PATTERN.fullmatch(str(eal)):
                 raise ValueError("cceallevel must follow the EAL syntax")
         if element_oid == OIDS["id-evidence-element-key"]:
+            device_bound = values.get(OIDS["id-evidence-claim-key-device-bound"])
+            if device_bound is not None and bool(device_bound):
+                for implied_oid, expected in DEVICE_BOUND_IMPLIES.items():
+                    if implied_oid in values and bool(values[implied_oid]) != expected:
+                        raise ValueError("device-bound contradicts local, extractable or never-extractable")
             if not identifiers:
                 raise ValueError("Key element requires identifier")
             for identifier in identifiers:

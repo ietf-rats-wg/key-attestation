@@ -69,6 +69,7 @@ func Validate(e *Evidence) []error {
 
 	errs = append(errs, validateFIPSLevel(e)...)
 	errs = append(errs, validateCCEALLevel(e)...)
+	errs = append(errs, validateDeviceBound(e)...)
 	errs = append(errs, validateAKSPKIUniqueness(e)...)
 
 	return errs
@@ -203,6 +204,42 @@ func hasCCEALScheme(scheme string) bool {
 		}
 	}
 	return false
+}
+
+// deviceBoundImplies lists the key claim values implied by device-bound = TRUE.
+var deviceBoundImplies = []struct {
+	oid      asn1.ObjectIdentifier
+	expected bool
+}{
+	{OIDClaimKeyLocal, true},
+	{OIDClaimKeyExtractable, false},
+	{OIDClaimKeyNeverExtractable, true},
+}
+
+func validateDeviceBound(e *Evidence) []error {
+	var errs []error
+	for _, element := range e.TBS.ReportedElements {
+		if !element.ElementType.Equal(OIDElementKey) {
+			continue
+		}
+		values := map[string]bool{}
+		for _, claim := range element.Claims {
+			cv, err := DecodeClaimValue(claim.Value)
+			if err != nil || cv.Kind != "bool" {
+				continue // reported by validateClaim
+			}
+			values[claim.ClaimType.String()] = cv.Bool
+		}
+		if !values[OIDClaimKeyDeviceBound.String()] {
+			continue
+		}
+		for _, implied := range deviceBoundImplies {
+			if value, ok := values[implied.oid.String()]; ok && value != implied.expected {
+				errs = append(errs, fmt.Errorf("device-bound contradicts claim %s", ClaimSpecs[implied.oid.String()].Name))
+			}
+		}
+	}
+	return errs
 }
 
 func validateAKSPKIUniqueness(e *Evidence) []error {

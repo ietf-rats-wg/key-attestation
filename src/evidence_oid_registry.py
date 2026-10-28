@@ -49,6 +49,7 @@ EVIDENCE_KNOWN_OIDS: dict[str, str] = {
     "id-evidence-claim-key-local": "1.3.6.1.5.5.999.1.2.5",
     "id-evidence-claim-key-expiry": "1.3.6.1.5.5.999.1.2.6",
     "id-evidence-claim-key-purpose": "1.3.6.1.5.5.999.1.2.7",
+    "id-evidence-claim-key-device-bound": "1.3.6.1.5.5.999.1.2.8",
     # Key capabilities
     "id-evidence-key-capability-encrypt": "1.3.6.1.5.5.999.2.0",
     "id-evidence-key-capability-decrypt": "1.3.6.1.5.5.999.2.1",
@@ -100,6 +101,7 @@ CLAIM_EXPECTED_TAGS: dict[str, int] = {
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-key-local"):              1,  # BOOLEAN         (key-local)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-key-expiry"):            24,  # GeneralizedTime (key-expiry)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-key-purpose"):           16,  # SEQUENCE        (key-purpose / KeyPurposes)
+    EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-key-device-bound"):       1,  # BOOLEAN         (key-device-bound)
 }
 
 KNOWN_ELEMENT_OIDS = {

@@ -112,6 +112,7 @@ ClaimSet CLAIM ::= {
       | claim-key-sensitive
       | claim-key-never-extractable
       | claim-key-local
+      | claim-key-device-bound
       | claim-key-expiry
       | claim-key-purpose,
       ...
@@ -201,6 +202,8 @@ id-evidence-claim-key-expiry            OBJECT IDENTIFIER ::=
     { id-evidence-claim-key 6 }
 id-evidence-claim-key-purpose           OBJECT IDENTIFIER ::=
     { id-evidence-claim-key 7 }
+id-evidence-claim-key-device-bound      OBJECT IDENTIFIER ::=
+    { id-evidence-claim-key 8 }
 
 id-evidence-key-capability              OBJECT IDENTIFIER ::=
     { id-evidence 2 }
@@ -379,5 +382,10 @@ claim-key-purpose CLAIM ::= {
 }
 
 KeyPurposes ::= SEQUENCE OF OBJECT IDENTIFIER
+
+claim-key-device-bound CLAIM ::= {
+  ID id-evidence-claim-key-device-bound
+  WITH TYPE BOOLEAN
+}
 
 END

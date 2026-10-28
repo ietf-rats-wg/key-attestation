@@ -50,6 +50,7 @@ var (
 	OIDClaimKeyLocal            = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 2, 5}
 	OIDClaimKeyExpiry           = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 2, 6}
 	OIDClaimKeyPurpose          = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 2, 7}
+	OIDClaimKeyDeviceBound      = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 1, 2, 8}
 
 	OIDKeyCapability              = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 2}
 	OIDKeyCapabilityEncrypt       = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 999, 2, 0}
@@ -109,6 +110,7 @@ var ClaimSpecs = map[string]ClaimSpec{
 	OIDClaimKeyLocal.String():            {Name: "local", ValueKind: "bool", Multiple: false, ElementType: OIDElementKey},
 	OIDClaimKeyExpiry.String():           {Name: "expiry", ValueKind: "time", Multiple: false, ElementType: OIDElementKey},
 	OIDClaimKeyPurpose.String():          {Name: "purpose", ValueKind: "purposes", Multiple: false, ElementType: OIDElementKey},
+	OIDClaimKeyDeviceBound.String():      {Name: "device-bound", ValueKind: "bool", Multiple: false, ElementType: OIDElementKey},
 }
 
 var KeyCapabilityNames = map[string]string{
