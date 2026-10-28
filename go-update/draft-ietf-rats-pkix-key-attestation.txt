@@ -5,7 +5,7 @@
 RATS                                                         J.-P. Fiset
 Internet-Draft                                                  Crypto4A
 Intended status: Standards Track                            M. Ounsworth
-Expires: 27 April 2027                                    Cryptic Forest
+Expires: 1 May 2027                                       Cryptic Forest
                                                            H. Tschofenig
                                                                 UniBw M.
                                                              H. Birkholz
@@ -13,7 +13,7 @@ Expires: 27 April 2027                                    Cryptic Forest
                                                               M. Wiseman
                                                                         
                                                                 N. Smith
-                                                         24 October 2026
+                                                         28 October 2026
 
 
             Evidence Encoding for Hardware Security Modules
@@ -67,7 +67,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 27 April 2027.
+   This Internet-Draft will expire on 1 May 2027.
 
 Copyright Notice
 
@@ -203,13 +203,13 @@ Table of Contents
    whether or not to admit the new HSM.
 
    A related scenario is when performing a key migration across HSMs.
-   If the key is being migrated is associated with certain properties,
-   for example an environment running in FIPS mode at FIPS Level 3, and
-   the key is set to certain protection properties such as Non-
-   Exportable and Dual-Control, then the HSM might wish to verify that
-   the key was previously stored under the same conditions.  This
-   specification provides an Evidence format with sufficient details to
-   support this type of implementation across HSM vendors.
+   If the key being migrated is associated with certain properties, for
+   example an environment running in FIPS mode at FIPS Level 3, and the
+   key is set to certain protection properties such as Non-Exportable
+   and Dual-Control, then the HSM might wish to verify that the key was
+   previously stored under the same conditions.  This specification
+   provides an Evidence format with sufficient details to support this
+   type of implementation across HSM vendors.
 
    These scenarios motivate the design requirements to have an ASN.1
    based Evidence format and a data model that more closely matches
@@ -388,8 +388,8 @@ Table of Contents
    contain a number of measurable attributes.
 
    A certain level of complexity arises as multiple elements of the same
-   class690 can be reported simultaneously in generated Evidence.  In
-   this case, multiple similar claims are reported simultaneously but
+   class can be reported simultaneously in generated Evidence.  In this
+   case, multiple similar claims are reported simultaneously but
    associated with different elements.
 
    For example, two independent user keys could be reported
