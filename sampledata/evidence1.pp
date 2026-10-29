@@ -5,7 +5,7 @@ Evidence:
       Claim[0]: id-evidence-claim-transaction-nonce
               -> [OCTET STRING] deadbeefcafebabe
       Claim[1]: id-evidence-claim-transaction-timestamp
-              -> [GeneralizedTime] 20261019170235Z
+              -> [GeneralizedTime] 20261029203546Z
       Claim[2]: id-evidence-claim-transaction-ak-spki
               -> [OCTET STRING] 3059301306072a8648ce3d02...
     ReportedElement[1]: id-evidence-element-platform
@@ -24,6 +24,6 @@ Evidence:
   Signatures (1):
     SignatureBlock[0]:
       algorithm      : 1.2.840.10045.4.3.2
-      signatureValue : 304502201c965c2ec6eddbc4...
-      keyId          : b44908275e0e2ee4bb9b1dab011b49bc557959b0
+      signatureValue : 3045022100f8927a26356ab3...
+      keyId          : 4bd267bdb07f9190364b34c25107cb178e3ed7f8
   Intermediate Certificates:  (1)

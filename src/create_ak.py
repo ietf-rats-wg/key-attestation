@@ -48,7 +48,7 @@ def create_root_ca(ca_cert_file:Path) -> tuple[ec.EllipticCurvePrivateKey, x509.
         .add_extension(x509.AuthorityKeyIdentifier.from_issuer_public_key(private_key.public_key()), critical=False)
         .add_extension(
             x509.KeyUsage(
-                digital_signature=True,
+                digital_signature=False,
                 content_commitment=False,
                 key_encipherment=False,
                 data_encipherment=False,
@@ -87,7 +87,7 @@ def create_int_ca(
         .serial_number(x509.random_serial_number())
         .not_valid_before(now - timedelta(minutes=1))
         .not_valid_after(now + timedelta(days=3650))
-        .add_extension(x509.BasicConstraints(ca=True, path_length=None), critical=True)
+        .add_extension(x509.BasicConstraints(ca=True, path_length=0), critical=True)
         .add_extension(x509.SubjectKeyIdentifier.from_public_key(private_key.public_key()), critical=False)
         .add_extension(x509.AuthorityKeyIdentifier.from_issuer_public_key(ca_private_key.public_key()), critical=False)
         .add_extension(

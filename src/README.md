@@ -151,5 +151,5 @@ If you activate the environment first, you can also run the script more simply:
 
 ```bash
 source src/.venv/bin/activate
-python src/pkix_evidence.py
+python src/main.py --generate
 ```
