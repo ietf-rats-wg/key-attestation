@@ -70,7 +70,7 @@ author:
 
   - name: Monty Wiseman
     country: United States of America
-    email: monty.wiseman@oracle.com
+    email: monty@iomt.dev
   -
     ins: N. Smith
     name: Ned Smith
