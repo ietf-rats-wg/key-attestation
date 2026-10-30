@@ -866,7 +866,8 @@ A Relying Party wishing to know the validation status of the device MUST couple 
 Common Criteria certification schemes place stringent requirements on the mode of operation of the device and the cryptography offered by the module,
 including only enabling a restricted set of algorithms, key sizes and modes (e.g., only the algorithms listed in the Security Target of the device),
 certain requirements on entropy sources, and extensive start-up self-tests. Common Criteria offers Evaluation Assurance Levels (EAL) from EAL1 to EAL7,
-with increasingly strict requirements, optionally augmented with additional assurance components as signaled by a trailing "+" sign (see {{CC2022P5}}).
+with increasingly strict requirements, optionally augmented with additional assurance components (see {{CC2022P5}}). This specification
+signals augmentation with a trailing "+" sign, following common industry practice.
 Many HSMs include a configuration setting that allows the device to be taken out of its certified mode and thus enable additional functionality
 or performance, and some offer configuration settings to change between compliance levels.
 
@@ -886,12 +887,12 @@ At the time of writing, the strings "ISO15408 v3.1r5", "ISO15408:2022", "ISO1540
 can be named if the intended Verifier has knowledge about it.
 
 The textual claim `ccrequirement` indicates the name and the version of the requirements with which the device's operational mode is compliant. For the Common Criteria
-schemes, a particular Protection Profile or a proprietary Security Target is the requirement to be satisfied. At the time of writing, for the "ISO15408", "CCRA" and "EUCC"
-schemes, the values "EN 419 221-5:2018", "EN 419 241-2:2019" and "SecurityTarget:STversion" (where "STversion" is replaced with the exact version of the Security Target
+schemes, a particular Protection Profile or a proprietary Security Target is the requirement to be satisfied. At the time of writing, when the value of `ccscheme`
+begins with "ISO15408", "CCRA" or "EUCC", the values "EN 419 221-5:2018", "EN 419 241-2:2019" and "SecurityTarget:STversion" (where "STversion" is replaced with the exact version of the Security Target
 of the device) are defined, but any other requirement, specification or standard can be named if the intended Verifier has knowledge about it.
 
-The textual claim `cceallevel` indicates the compliance level to which the device is currently operating. When `ccscheme` is one of the "ISO15408", "CCRA" or "EUCC"
-schemes, `cceallevel` describes the Evaluation Assurance Level achieved (see {{CC2022P5}}) and MUST use the following syntax, expressed in EBNF:
+The textual claim `cceallevel` indicates the assurance level of the certification under which the device is currently operating. When the value of `ccscheme`
+begins with "ISO15408", "CCRA" or "EUCC", `cceallevel` describes the Evaluation Assurance Level achieved (see {{CC2022P5}}) and MUST use the following syntax, expressed in EBNF:
 
 ~~~
 EAL_desc        = "EAL", Level, [ "+", SAR, { ",", SAR } ] ;
