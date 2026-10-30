@@ -128,7 +128,7 @@ informative:
     author:
       - org: NIST and CCCS
     date: 2026-08-19
-    target: https://csrc.nist.gov/projects/cryptographic-module-validation-program/fips-140-3-ig-announcements
+    target: https://csrc.nist.gov/csrc/media/Projects/cryptographic-module-validation-program/documents/fips%20140-3/FIPS%20140-3%20IG.pdf
   CMVP:
     title: "Cryptographic Module Validation Program — Validated Modules"
     author:
@@ -141,6 +141,13 @@ informative:
     seriesinfo:
       FIPS: 140-3
     target: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-3.pdf
+  FIPS140-2:
+    title: "Security Requirements for Cryptographic Modules"
+    author:
+      - org: NIST, Information Technology Laboratory
+    seriesinfo:
+      FIPS: 140-2
+    target: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-2.pdf
   CC2022P1:
     title: "Common Criteria for Information Technology Security Evaluation Part 1: Introduction and general model"
     author:
@@ -824,7 +831,7 @@ on the case or on an applied sticker.
 ### fipsboot, fipsver, fipslevel and fipsmodule
 
 FIPS 140-3 CMVP validation places stringent requirements on the mode of operation of the device and the cryptography offered by the module,
-including only enabling FIPS-approved algorithms, certain requirements on entropy sources, and extensive start-up self-tests.
+including restricting cryptographic services to approved (or explicitly allowed) security functions, certain requirements on entropy sources, and extensive start-up self-tests.
 FIPS 140-3 offers compliance levels 1 through 4 with increasingly strict requirements. Many HSMs include a configuration setting that allows
 the device to be taken out of FIPS mode and thus enable additional functionality or performance, and some offer configuration settings to change between compliance levels.
 
@@ -836,9 +843,13 @@ The boolean claim `fipsboot` indicates whether the device is currently operating
 FIPS 140 restrictions. If the value of this claim is "false", then the HSM is not
 restricted to the behavior limited by compliance.
 
-The textual claim `fipsver` indicates the version of the FIPS CMVP specification with which the device's operational mode is compliant. At the time of writing, the strings "FIPS 140-2" or "FIPS 140-3" SHOULD be used.
+A `fipsboot` value of "true" indicates that the module is in an approved mode of operation as described in its Security Policy.
+It is not, by itself, the per-service indicator required by {{ISO19790}} section 7.2.4.2. As clarified in {{FIPS140-3-IG}} IG 2.4.C,
+a module-level indicator satisfies that requirement only when the module, in that mode, prevents the use of any non-approved service.
 
-The integer claim `fipslevel` indicates the compliance level to which the device is currently operating and MUST only be 1, 2, 3, or 4. The `fipslevel` claim has no meaning if `fipsboot` is absent or `false`.
+The textual claim `fipsver` indicates the version of the FIPS CMVP specification with which the device's operational mode is compliant. At the time of writing, the string "FIPS 140-3" SHOULD be used; devices operating under the legacy {{FIPS140-2}} specification MAY report "FIPS 140-2".
+
+The integer claim `fipslevel` indicates the overall compliance level to which the device is currently operating and MUST only be 1, 2, 3, or 4. The `fipslevel` claim has no meaning if `fipsboot` is absent or `false`.
 
 The claim `fipsmodule` is a textual field used to represent the name of the module that was submitted to CMVP for validation. The information derived by combining this claim with the vendor name shall
 be sufficient to find the associated records in the CMVP database.
@@ -846,7 +857,7 @@ be sufficient to find the associated records in the CMVP database.
 The FIPS status information found in Evidence indicates only the mode of operation of the device and is not authoritative of its validation status.
 This information is available in the NIST CMVP database of validated modules {{CMVP}} or by contacting the device vendor.
 As an example, some devices may have the option to enable FIPS mode in configuration even if the vendor has not submitted this model for validation. As another example,
-a device may be running in a mode consistent with FIPS Level 3 but the device was only validated and certified to Level 2.
+a device may be running in a mode consistent with FIPS Level 3 but the device was only validated at Level 2.
 A Relying Party wishing to know the validation status of the device MUST couple the device state information contained in the Evidence with a valid FIPS CMVP certificate for the device.
 
 ### ccmoduleid, ccboot, ccscheme, ccrequirement and cceallevel
@@ -1273,9 +1284,9 @@ the HSM, which might be based on a set of rules and policies. Therefore, the int
 the provided Evidence may greatly influence the outcome of some decisions.
 
 A Verifier MAY reject Evidence if it lacks the claims required per the Verifier's
-appraisal policy. For example, if a Relying Party mandates a FIPS-certified device,
-it SHOULD reject Evidence lacking sufficient information to verify the device's FIPS
-certification status.
+appraisal policy. For example, if a Relying Party mandates a FIPS 140 validated device,
+it SHOULD reject Evidence lacking sufficient information to verify the device's FIPS 140
+validation status.
 
 If a Verifier encounters a claim with an unrecognized claim type, it MAY ignore it and
 treat it as extraneous information. By ignoring a claim, the Verifier may accept Evidence
