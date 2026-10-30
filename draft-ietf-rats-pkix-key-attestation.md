@@ -103,9 +103,10 @@ informative:
     title: "Commercial National Security Algorithm Suite 2.0"
     author:
       - org: National Security Agency
-    target: https://media.defense.gov/2022/Sep/07/2003071834/-1/-1/0/CSA_CNSA_2.0_ALGORITHMS_.PDF
+    date: 2022-09
+    target: https://media.defense.gov/2025/May/30/2003728741/-1/-1/0/CSA_CNSA_2.0_ALGORITHMS.PDF
   CSBR:
-    title: "Baseline Requirements for the Issuance and Management of Publicly-Trusted Code Signing Certificates Version 3.8.0"
+    title: "Baseline Requirements for the Issuance and Management of Publicly-Trusted Code Signing Certificates Version 3.8"
     author:
       - org: CA/Browser Forum
     target: https://cabforum.org/working-groups/code-signing/documents/
