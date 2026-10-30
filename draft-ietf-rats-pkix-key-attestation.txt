@@ -2279,13 +2279,13 @@ Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
               search>.
 
    [CNSA2.0]  National Security Agency, "Commercial National Security
-              Algorithm Suite 2.0", n.d.,
-              <https://media.defense.gov/2022/Sep/07/2003071834/-1/-1/0/
-              CSA_CNSA_2.0_ALGORITHMS_.PDF>.
+              Algorithm Suite 2.0", September 2022,
+              <https://media.defense.gov/2025/May/30/2003728741/-1/-1/0/
+              CSA_CNSA_2.0_ALGORITHMS.PDF>.
 
    [CSBR]     CA/Browser Forum, "Baseline Requirements for the Issuance
               and Management of Publicly-Trusted Code Signing
-              Certificates Version 3.8.0", n.d., <https://cabforum.org/
+              Certificates Version 3.8", n.d., <https://cabforum.org/
               working-groups/code-signing/documents/>.
 
    [FIPS140-2]
