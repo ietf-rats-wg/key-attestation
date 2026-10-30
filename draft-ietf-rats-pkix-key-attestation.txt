@@ -1201,9 +1201,8 @@ Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 
 5.2.2.  spki
 
-   The value of this claim contains the DER-encoded field
-   SubjectPublicKeyInfo (see [RFC5280]) associated with the
-   cryptographic key.
+   The value of this claim is the SubjectPublicKeyInfo (see [RFC5280])
+   associated with the cryptographic key.
 
 5.2.3.  extractable, sensitive, never-extractable, local
 
@@ -1419,9 +1418,10 @@ Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 
 5.3.3.  ak-spki
 
-   This claim contains the encoded Subject Public Key Information (SPKI)
-   for the attestation key used to sign the Evidence.  The definition
-   and encoding for SPKIs are defined in X.509 certificates ([RFC5280]).
+   This claim contains the Subject Public Key Information (SPKI) for the
+   attestation key used to sign the Evidence.  The claim value is of
+   type SubjectPublicKeyInfo, as defined for X.509 certificates in
+   [RFC5280].
 
    This transaction claim is used to bind the content of the Evidence
    with the key(s) used to sign that Evidence.  The importance of this
@@ -1866,7 +1866,7 @@ Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 
    claim-transaction-ak-spki CLAIM ::= {
      ID id-evidence-claim-transaction-ak-spki
-     WITH TYPE OCTET STRING
+     WITH TYPE SubjectPublicKeyInfo
    }
 
    claim-platform-vendor CLAIM ::= {
@@ -1971,7 +1971,7 @@ Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 
    claim-key-spki CLAIM ::= {
      ID id-evidence-claim-key-spki
-     WITH TYPE OCTET STRING
+     WITH TYPE SubjectPublicKeyInfo
    }
 
    claim-key-extractable CLAIM ::= {
@@ -2362,17 +2362,17 @@ Appendix A.  Samples
    certificate:
 
    -----BEGIN CERTIFICATE-----
-   MIIB7TCCAZOgAwIBAgIUZmkgCL+hY654qof+cj9+MtgyOGQwCgYIKoZIzj0EAwIw
+   MIIB7TCCAZOgAwIBAgIUCVQUR87O+0eUARsetFqBRAHmAVcwCgYIKoZIzj0EAwIw
    RDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3Rh
-   dGlvbjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2MTAyOTIwMzQ0NloXDTM2MTAyNjIw
-   MzU0NlowRDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1h
+   dGlvbjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2MTAzMDE3MjcyNloXDTM2MTAyNzE3
+   MjgyNlowRDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1h
    dHRlc3RhdGlvbjEPMA0GA1UEAwwGUm9vdENBMFkwEwYHKoZIzj0CAQYIKoZIzj0D
-   AQcDQgAEIIBb3ZYOSa5y260UmI34akyV2V7RUEgw2ebzabjm6ick3ncMHSQZgyv1
-   QALTummQ5159IaqcdQGTQevyzqpvfaNjMGEwDwYDVR0TAQH/BAUwAwEB/zAdBgNV
-   HQ4EFgQUrAmT7GYzOUl47mchYes0NsMLA/EwHwYDVR0jBBgwFoAUrAmT7GYzOUl4
-   7mchYes0NsMLA/EwDgYDVR0PAQH/BAQDAgIEMAoGCCqGSM49BAMCA0gAMEUCIHGq
-   RislHPxsh+an5PUgGCnZ0brc9S891RYIgqN0zgC3AiEApup15hJ5aQ92CyZLJyRA
-   mR6oFg5lLAgufzRV1g3OFK8=
+   AQcDQgAE2MKIigcMWyDufDBDbxgmGOaJznEcAaSu9i+6Vgvm6sCNVQwdM6hE/KmN
+   njzMFbS2DBAYV7ByT5lRvUoUNHkgv6NjMGEwDwYDVR0TAQH/BAUwAwEB/zAdBgNV
+   HQ4EFgQU8lE2CFDHeB8YHZ3qjTIGYLxdAhkwHwYDVR0jBBgwFoAU8lE2CFDHeB8Y
+   HZ3qjTIGYLxdAhkwDgYDVR0PAQH/BAQDAgIEMAoGCCqGSM49BAMCA0gAMEUCIQC7
+   Hmx5riaouDmr+UYm9yqlY3PmQZrPwRDF5uZPtSl9ygIgO61Lyo1RDu0HAgS6l8W5
+   qWI7VRoPR+IpmdnQyPHONvQ=
    -----END CERTIFICATE-----
 
 A.1.  Simple Platform Evidence
@@ -2385,25 +2385,25 @@ A.1.  Simple Platform Evidence
    look up the AK key by its SHA1 hash.
 
    -----BEGIN EVIDENCE-----
-   MIIDtzCCAUUCAQEwggE+MIGwBgkrBgEFBYdnAAAwgaIwFgYKKwYBBQWHZwEAAAQI3q2+
-   78r+ur4wHQYKKwYBBQWHZwEAARgPMjAyNjEwMjkyMDM1NDZaMGkGCisGAQUFh2cBAAIE
-   WzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABNTcBuLJDBgnLWkbq2cARUj1VWe/oyhc
-   BoJLDnqPdQ9R0ABYbHtAE757G3wU6w2J+A/+pXamjmUj8EmoMZXo/CYwgYgGCSsGAQUF
-   h2cAATB7MBcGCisGAQUFh2cBAQAMCUFjbWUgQ29ycDAWBgorBgEFBYdnAQECBAhIU00t
-   OTAwMDATBgorBgEFBYdnAQEDDAUyLjEuMDAPBgorBgEFBYdnAQEKAQH/MA8GCisGAQUF
-   h2cBAQwCAQMwEQYKKwYBBQWHZwEBCAIDAVGAMHEwbzAYoBYEFEvSZ72wf5GQNks0wlEH
-   yxeOPtf4MAoGCCqGSM49BAMCBEcwRQIhAPiSeiY1arNd4UKVM0Zjjkyzo54SWtt17Qcd
-   B4de841GAiAD5u5xptKytrNsJx53yTADfBZsyW/swMOqiJ5Hya4Ze6CCAfcwggHzMIIB
-   7zCCAZWgAwIBAgIUWyn3HCB9V/WWGnxExTmKW+tSrD4wCgYIKoZIzj0EAwIwRDESMBAG
-   A1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3RhdGlvbjEPMA0G
-   A1UEAwwGUm9vdENBMB4XDTI2MTAyOTIwMzQ0NloXDTM2MTAyNjIwMzU0NlowQzESMBAG
-   A1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3RhdGlvbjEOMAwG
-   A1UEAwwFSW50Q0EwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASG/kEyt0BsdXKXTgps
-   n2/0n9SRfqbHOBwIsd6qUQRaajQba3W62H5wIFBS8thUTNZqgn4jPnfHWFFjuMNsHvGu
-   o2YwZDASBgNVHRMBAf8ECDAGAQH/AgEAMB0GA1UdDgQWBBT9GQuI1iRU3GkimlRp/0cJ
-   kc4GBjAfBgNVHSMEGDAWgBSsCZPsZjM5SXjuZyFh6zQ2wwsD8TAOBgNVHQ8BAf8EBAMC
-   AoQwCgYIKoZIzj0EAwIDSAAwRQIgcgNJDkgYzlbIPbh75kkDLmkLhQHb36TukXDcMh/d
-   bfsCIQDtpJklROyn1G9dPBSkrduhRY/t28koPVvmhOiEmAOPBA==
+   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
    -----END EVIDENCE-----
 
    Here is a pretty-print of the Evidence object:
@@ -2415,9 +2415,9 @@ A.1.  Simple Platform Evidence
          Claim[0]: id-evidence-claim-transaction-nonce
                  -> [OCTET STRING] deadbeefcafebabe
          Claim[1]: id-evidence-claim-transaction-timestamp
-                 -> [GeneralizedTime] 20261029203546Z
+                 -> [GeneralizedTime] 20261030172826Z
          Claim[2]: id-evidence-claim-transaction-ak-spki
-                 -> [OCTET STRING] 3059301306072a8648ce3d02...
+                 -> [SubjectPublicKeyInfo] 3059301306072a8648ce3d02...
        ReportedElement[1]: id-evidence-element-platform
          Claim[0]: id-evidence-claim-platform-vendor
                  -> [UTF8String] Acme Corp
@@ -2434,39 +2434,39 @@ A.1.  Simple Platform Evidence
      Signatures (1):
        SignatureBlock[0]:
          algorithm      : 1.2.840.10045.4.3.2
-         signatureValue : 3045022100f8927a26356ab3...
-         keyId          : 4bd267bdb07f9190364b34c25107cb178e3ed7f8
+         signatureValue : 3044022044a79158010aa2e1...
+         keyId          : e8ec8f23b61e50cb5c21241cd5e816e1e9176e0e
      Intermediate Certificates:  (1)
 
    For completeness of the sample, the following AK and Intermediate CA
    certificates are required for verification:
 
    -----BEGIN CERTIFICATE-----
-   MIICAzCCAamgAwIBAgIUI7N6C99f5qXl0n0l8tdKJu4FM+swCgYIKoZIzj0EAwIw
+   MIICAjCCAamgAwIBAgIUfo0BU1lSG+5RYsfe83W8FR6x7TEwCgYIKoZIzj0EAwIw
    QzESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3Rh
-   dGlvbjEOMAwGA1UEAwwFSW50Q0EwHhcNMjYxMDI5MjAzNDQ2WhcNMzYxMDI2MjAz
-   NTQ2WjBFMRIwEAYDVQQKDAlpZXRmLXJhdHMxHTAbBgNVBAsMFHBraXgta2V5LWF0
+   dGlvbjEOMAwGA1UEAwwFSW50Q0EwHhcNMjYxMDMwMTcyNzI2WhcNMzYxMDI3MTcy
+   ODI2WjBFMRIwEAYDVQQKDAlpZXRmLXJhdHMxHTAbBgNVBAsMFHBraXgta2V5LWF0
    dGVzdGF0aW9uMRAwDgYDVQQDDAd0ZXN0LWFrMFkwEwYHKoZIzj0CAQYIKoZIzj0D
-   AQcDQgAE1NwG4skMGCctaRurZwBFSPVVZ7+jKFwGgksOeo91D1HQAFhse0ATvnsb
-   fBTrDYn4D/6ldqaOZSPwSagxlej8JqN5MHcwDAYDVR0TAQH/BAIwADAdBgNVHQ4E
-   FgQUS9JnvbB/kZA2SzTCUQfLF44+1/gwHwYDVR0jBBgwFoAU/RkLiNYkVNxpIppU
-   af9HCZHOBgYwDgYDVR0PAQH/BAQDAgeAMBcGA1UdJQEB/wQNMAsGCSsGAQUFBwOH
-   ZzAKBggqhkjOPQQDAgNIADBFAiEA4pLLhXeaxWQuKhXxB3IxtMHW17lg4hx4bSIF
-   pJoagKoCIBOyhyuDgIVa7r2+ViFsIKxz10ITPgZNHTbJT907ecaB
+   AQcDQgAEhpd4odzlBflOA10xzcMBqYBUugUC3aDopTWFCD/o5SuaDziS+OLjQS3t
+   u918nFJKsUPN7UVr5OfIw5hoLMs21KN5MHcwDAYDVR0TAQH/BAIwADAdBgNVHQ4E
+   FgQU6OyPI7YeUMtcISQc1egW4ekXbg4wHwYDVR0jBBgwFoAUXhvM7mgMhMZMgoq7
+   +TrurYj0DdwwDgYDVR0PAQH/BAQDAgeAMBcGA1UdJQEB/wQNMAsGCSsGAQUFBwOH
+   ZzAKBggqhkjOPQQDAgNHADBEAiA8aJ3XMJ1JfxuNHCwEkDH4Bg/GtGLR/UPsS2s7
+   PxpYMwIgFs9CbkSTSUegEWl8fT9NO8GHjFVjZCeiUfh6ywAQSIY=
    -----END CERTIFICATE-----
 
    -----BEGIN CERTIFICATE-----
-   MIIB7zCCAZWgAwIBAgIUWyn3HCB9V/WWGnxExTmKW+tSrD4wCgYIKoZIzj0EAwIw
+   MIIB7zCCAZWgAwIBAgIUdyk1efOS6JxuychsYSzI4t18e4AwCgYIKoZIzj0EAwIw
    RDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3Rh
-   dGlvbjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2MTAyOTIwMzQ0NloXDTM2MTAyNjIw
-   MzU0NlowQzESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1h
+   dGlvbjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2MTAzMDE3MjcyNloXDTM2MTAyNzE3
+   MjgyNlowQzESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1h
    dHRlc3RhdGlvbjEOMAwGA1UEAwwFSW50Q0EwWTATBgcqhkjOPQIBBggqhkjOPQMB
-   BwNCAASG/kEyt0BsdXKXTgpsn2/0n9SRfqbHOBwIsd6qUQRaajQba3W62H5wIFBS
-   8thUTNZqgn4jPnfHWFFjuMNsHvGuo2YwZDASBgNVHRMBAf8ECDAGAQH/AgEAMB0G
-   A1UdDgQWBBT9GQuI1iRU3GkimlRp/0cJkc4GBjAfBgNVHSMEGDAWgBSsCZPsZjM5
-   SXjuZyFh6zQ2wwsD8TAOBgNVHQ8BAf8EBAMCAoQwCgYIKoZIzj0EAwIDSAAwRQIg
-   cgNJDkgYzlbIPbh75kkDLmkLhQHb36TukXDcMh/dbfsCIQDtpJklROyn1G9dPBSk
-   rduhRY/t28koPVvmhOiEmAOPBA==
+   BwNCAASXy45a9FlTBpeE4r+6OG4eqe8H7joYz7HyJw4xgc/RZJGS9HJgbqj+yzrO
+   jlXcx5LJygIVG5L/YsKtHa5SWg8no2YwZDASBgNVHRMBAf8ECDAGAQH/AgEAMB0G
+   A1UdDgQWBBReG8zuaAyExkyCirv5Ou6tiPQN3DAfBgNVHSMEGDAWgBTyUTYIUMd4
+   HxgdneqNMgZgvF0CGTAOBgNVHQ8BAf8EBAMCAoQwCgYIKoZIzj0EAwIDSAAwRQIh
+   APnma1HIqzHM3dOH7CYYTsKTqtAWrNzPZsURXX7dF/NYAiBWx3BxXpMYo16ntvVJ
+   NM7+J8n2iEtXj+NxbKJk667JEw==
    -----END CERTIFICATE-----
 
 A.2.  Key Attestation Evidence
@@ -2478,43 +2478,42 @@ A.2.  Key Attestation Evidence
    object.  It chains to the same root as above.
 
    -----BEGIN EVIDENCE-----
-   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
-   hJgDjwQ=
+   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
    -----END EVIDENCE-----
 
    Here is a pretty-print of the Evidence object:
@@ -2526,9 +2525,9 @@ A.2.  Key Attestation Evidence
          Claim[0]: id-evidence-claim-transaction-nonce
                  -> [OCTET STRING] beefcafebabedead
          Claim[1]: id-evidence-claim-transaction-timestamp
-                 -> [GeneralizedTime] 20261029203546Z
+                 -> [GeneralizedTime] 20261030172826Z
          Claim[2]: id-evidence-claim-transaction-ak-spki
-                 -> [OCTET STRING] 3059301306072a8648ce3d02...
+                 -> [SubjectPublicKeyInfo] 3059301306072a8648ce3d02...
        ReportedElement[1]: id-evidence-element-platform
          Claim[0]: id-evidence-claim-platform-hwmodel
                  -> [OCTET STRING] 48534d2d39303030
@@ -2536,7 +2535,7 @@ A.2.  Key Attestation Evidence
          Claim[0]: id-evidence-claim-key-identifier
                  -> [UTF8String] 9a25f603-a2c4-4dad-9ee0-...
          Claim[1]: id-evidence-claim-key-spki
-                 -> [OCTET STRING] 3059301306072a8648ce3d02...
+                 -> [SubjectPublicKeyInfo] 3059301306072a8648ce3d02...
          Claim[2]: id-evidence-claim-key-extractable
                  -> [BOOLEAN] False
          Claim[3]: id-evidence-claim-key-never-extractable
@@ -2551,7 +2550,7 @@ A.2.  Key Attestation Evidence
          Claim[0]: id-evidence-claim-key-identifier
                  -> [UTF8String] 85704b99-7097-4bca-93b6-...
          Claim[1]: id-evidence-claim-key-spki
-                 -> [OCTET STRING] 3059301306072a8648ce3d02...
+                 -> [SubjectPublicKeyInfo] 3059301306072a8648ce3d02...
          Claim[2]: id-evidence-claim-key-extractable
                  -> [BOOLEAN] True
          Claim[3]: id-evidence-claim-key-sensitive
@@ -2559,7 +2558,7 @@ A.2.  Key Attestation Evidence
      Signatures (1):
        SignatureBlock[0]:
          algorithm      : 1.2.840.10045.4.3.2
-         signatureValue : 304402201a9c49165e32a7ff...
+         signatureValue : 3046022100adc171a4467829...
          AK Certificate : present
      Intermediate Certificates:  (1)
 
