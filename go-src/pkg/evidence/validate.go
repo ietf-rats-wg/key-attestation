@@ -89,7 +89,7 @@ func validateClaim(elementTypeOID asn1.ObjectIdentifier, claim ReportedClaim) []
 		errs = append(errs, fmt.Errorf("claim %s is not valid for element %s", spec.Name, elementTypeOID.String()))
 	}
 
-	cv, err := DecodeClaimValue(claim.Value)
+	cv, err := DecodeClaimValueFor(claim.ClaimType, claim.Value)
 	if err != nil {
 		errs = append(errs, fmt.Errorf("invalid %s claim encoding: %v", spec.Name, err))
 		return errs
@@ -253,13 +253,13 @@ func validateAKSPKIUniqueness(e *Evidence) []error {
 			if !claim.ClaimType.Equal(OIDClaimTransactionAKSPKI) {
 				continue
 			}
-			cv, err := DecodeClaimValue(claim.Value)
+			cv, err := DecodeClaimValueFor(claim.ClaimType, claim.Value)
 			if err != nil {
 				errs = append(errs, fmt.Errorf("invalid ak-spki claim encoding: %v", err))
 				continue
 			}
-			if cv.Kind != "bytes" {
-				errs = append(errs, fmt.Errorf("ak-spki claim must be bytes, got %s", cv.Kind))
+			if cv.Kind != "spki" {
+				errs = append(errs, fmt.Errorf("ak-spki claim must be spki, got %s", cv.Kind))
 				continue
 			}
 			keyBytes := cv.Bytes

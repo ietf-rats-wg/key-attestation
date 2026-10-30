@@ -80,7 +80,7 @@ var ElementTypeNames = map[string]string{
 var ClaimSpecs = map[string]ClaimSpec{
 	OIDClaimTransactionNonce.String():     {Name: "nonce", ValueKind: "bytes", Multiple: false, ElementType: OIDElementTransaction},
 	OIDClaimTransactionTimestamp.String(): {Name: "timestamp", ValueKind: "time", Multiple: false, ElementType: OIDElementTransaction},
-	OIDClaimTransactionAKSPKI.String():    {Name: "ak-spki", ValueKind: "bytes", Multiple: true, ElementType: OIDElementTransaction},
+	OIDClaimTransactionAKSPKI.String():    {Name: "ak-spki", ValueKind: "spki", Multiple: true, ElementType: OIDElementTransaction},
 
 	OIDClaimPlatformVendor.String():        {Name: "vendor", ValueKind: "utf8String", Multiple: false, ElementType: OIDElementPlatform},
 	OIDClaimPlatformOemID.String():         {Name: "oemid", ValueKind: "bytes", Multiple: false, ElementType: OIDElementPlatform},
@@ -103,7 +103,7 @@ var ClaimSpecs = map[string]ClaimSpec{
 	OIDClaimPlatformCCEALLevel.String():    {Name: "cceallevel", ValueKind: "utf8String", Multiple: false, ElementType: OIDElementPlatform},
 
 	OIDClaimKeyIdentifier.String():       {Name: "identifier", ValueKind: "utf8String", Multiple: true, ElementType: OIDElementKey},
-	OIDClaimKeySPKI.String():             {Name: "spki", ValueKind: "bytes", Multiple: false, ElementType: OIDElementKey},
+	OIDClaimKeySPKI.String():             {Name: "spki", ValueKind: "spki", Multiple: false, ElementType: OIDElementKey},
 	OIDClaimKeyExtractable.String():      {Name: "extractable", ValueKind: "bool", Multiple: false, ElementType: OIDElementKey},
 	OIDClaimKeySensitive.String():        {Name: "sensitive", ValueKind: "bool", Multiple: false, ElementType: OIDElementKey},
 	OIDClaimKeyNeverExtractable.String(): {Name: "never-extractable", ValueKind: "bool", Multiple: false, ElementType: OIDElementKey},

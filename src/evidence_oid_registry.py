@@ -73,7 +73,7 @@ OID_NAMES: dict = {v: k for k, v in EVIDENCE_KNOWN_OIDS.items()}
 CLAIM_EXPECTED_TAGS: dict[str, int] = {
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-transaction-nonce"):      4,  # OCTET STRING    (nonce)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-transaction-timestamp"): 24,  # GeneralizedTime (timestamp)
-    EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-transaction-ak-spki"):    4,  # OCTET STRING    (ak-spki)
+    EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-transaction-ak-spki"):   16,  # SEQUENCE        (ak-spki / SubjectPublicKeyInfo)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-vendor"):       12,  # UTF8String      (vendor)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-oemid"):         4,  # OCTET STRING    (oemid)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-hwmodel"):       4,  # OCTET STRING    (hwmodel)
@@ -94,7 +94,7 @@ CLAIM_EXPECTED_TAGS: dict[str, int] = {
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-ccrequirement"): 12, # UTF8String      (ccrequirement)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-platform-cceallevel"):   12,  # UTF8String      (cceallevel)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-key-identifier"):        12,  # UTF8String      (key-identifier)
-    EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-key-spki"):               4,  # OCTET STRING    (key-spki)
+    EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-key-spki"):              16,  # SEQUENCE        (key-spki / SubjectPublicKeyInfo)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-key-extractable"):        1,  # BOOLEAN         (key-extractable)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-key-sensitive"):          1,  # BOOLEAN         (key-sensitive)
     EVIDENCE_KNOWN_OIDS.get("id-evidence-claim-key-never-extractable"):  1,  # BOOLEAN         (key-never-extractable)

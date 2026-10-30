@@ -157,6 +157,11 @@ def pretty_print_evidence(ev: Evidence, indent: int = 0) -> list[str]:
                 elif 24 == tag_num:
                     chosen = "GeneralizedTime"
                     val = decoded
+                elif 16 == tag_num and ct in ("id-evidence-claim-transaction-ak-spki", "id-evidence-claim-key-spki"):
+                    chosen = "SubjectPublicKeyInfo"
+                    val = bytes(cv).hex()
+                    if len(val) > 24:
+                        val = val[:24] + '...'
                 elif 16 == tag_num and "id-evidence-claim-key-purpose" == ct:
                     chosen = "KeyPurposes"
                     val = ",".join(decoded)

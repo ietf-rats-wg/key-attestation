@@ -100,7 +100,7 @@ func TestVerifyEvidenceMatchesAKSPKIForKeyIDSigner(t *testing.T) {
 				{
 					ElementType: OIDElementTransaction,
 					Claims: []ReportedClaim{
-						{ClaimType: OIDClaimTransactionAKSPKI, Value: claimBytes(cert.RawSubjectPublicKeyInfo)},
+						{ClaimType: OIDClaimTransactionAKSPKI, Value: claimSPKI(cert.RawSubjectPublicKeyInfo)},
 					},
 				},
 			},
@@ -203,13 +203,13 @@ func TestValidateRejectsInvalidSPKIBytes(t *testing.T) {
 					ElementType: OIDElementKey,
 					Claims: []ReportedClaim{
 						{ClaimType: OIDClaimKeyIdentifier, Value: claimUTF8("key-1")},
-						{ClaimType: OIDClaimKeySPKI, Value: claimBytes([]byte{0x01, 0x02, 0x03})},
+						{ClaimType: OIDClaimKeySPKI, Value: claimSPKI([]byte{0x30, 0x01, 0x02})},
 					},
 				},
 				{
 					ElementType: OIDElementTransaction,
 					Claims: []ReportedClaim{
-						{ClaimType: OIDClaimTransactionAKSPKI, Value: claimBytes([]byte{0x01, 0x02, 0x03})},
+						{ClaimType: OIDClaimTransactionAKSPKI, Value: claimSPKI([]byte{0x30, 0x01, 0x02})},
 					},
 				},
 			},
@@ -222,5 +222,45 @@ func TestValidateRejectsInvalidSPKIBytes(t *testing.T) {
 	}
 	if !containsError(errs, "claim ak-spki must contain a DER SubjectPublicKeyInfo") {
 		t.Fatalf("Validate() did not reject invalid ak-spki claim: %v", errs)
+	}
+}
+
+func TestValidateRejectsOctetStringSPKIClaims(t *testing.T) {
+	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		t.Fatal(err)
+	}
+	spki, err := x509.MarshalPKIXPublicKey(&key.PublicKey)
+	if err != nil {
+		t.Fatal(err)
+	}
+	e := &Evidence{
+		TBS: TbsEvidence{
+			Version: 1,
+			ReportedElements: []ReportedElement{
+				{
+					ElementType: OIDElementTransaction,
+					Claims: []ReportedClaim{
+						{ClaimType: OIDClaimTransactionAKSPKI, Value: claimBytes(spki)},
+					},
+				},
+			},
+		},
+	}
+
+	e.TBS.ReportedElements = append(e.TBS.ReportedElements, ReportedElement{
+		ElementType: OIDElementKey,
+		Claims: []ReportedClaim{
+			{ClaimType: OIDClaimKeyIdentifier, Value: claimUTF8("key-1")},
+			{ClaimType: OIDClaimKeySPKI, Value: claimBytes(spki)},
+		},
+	})
+
+	errs := Validate(e)
+	if !containsError(errs, "claim spki must be spki, got bytes") {
+		t.Fatalf("Validate() accepted an OCTET STRING key spki claim: %v", errs)
+	}
+	if !containsError(errs, "claim ak-spki must be spki, got bytes") {
+		t.Fatalf("Validate() accepted an OCTET STRING ak-spki claim: %v", errs)
 	}
 }

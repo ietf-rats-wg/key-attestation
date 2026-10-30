@@ -953,8 +953,7 @@ cryptographic key.
 
 ### spki
 
-The value of this claim contains the DER-encoded field SubjectPublicKeyInfo (see {{RFC5280}}) associated with the cryptographic
-key.
+The value of this claim is the SubjectPublicKeyInfo (see {{RFC5280}}) associated with the cryptographic key.
 
 ### extractable, sensitive, never-extractable, local
 
@@ -1098,8 +1097,8 @@ Note that security considerations should be taken relating to the evaluation of 
 
 ### ak-spki
 
-This claim contains the encoded Subject Public Key Information (SPKI) for the attestation key used to sign the Evidence. The definition
-and encoding for SPKIs are defined in X.509 certificates ({{RFC5280}}).
+This claim contains the Subject Public Key Information (SPKI) for the attestation key used to sign the Evidence. The claim value is of
+type `SubjectPublicKeyInfo`, as defined for X.509 certificates in {{RFC5280}}.
 
 This transaction claim is used to bind the content of the Evidence with the key(s) used to sign that Evidence. The importance
 of this binding is discussed in {{sec-verif-proc}}.

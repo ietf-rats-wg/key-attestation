@@ -257,7 +257,7 @@ class PositiveInteropTests(InteropBase):
         sid["certificate"] = schema.tagged_component_value(sid["certificate"], certificate)
         claims = find_element(ev, "transaction")["claims"]
         ak_claims = [c for c in claims if str(c["claimType"]) == OIDS["id-evidence-claim-transaction-ak-spki"]]
-        replace_value(ak_claims[1], univ.OctetString(encoder.encode(public)))
+        replace_value(ak_claims[1], public)
         ev["signatures"][1]["signatureAlgorithm"]["algorithm"] = univ.ObjectIdentifier("1.2.3.4.100")
         result = self.verify_both(self.resign(ev))
         self.assertEqual(len(result.verified_ak_spkis), 1)
@@ -485,7 +485,7 @@ class NegativeInteropTests(InteropBase):
     def test_binding_mismatch(self):
         ev = schema.decode_evidence(self.example)
         other = ec.generate_private_key(ec.SECP256R1())
-        replace_value(find_claim(ev, "transaction-ak-spki"), univ.OctetString(spki_bytes(other.public_key())))
+        find_claim(ev, "transaction-ak-spki")["value"] = spki_bytes(other.public_key())
         self.verify_both(self.resign(ev), success=False)
 
     def test_missing_trust_and_wrong_nonce(self):

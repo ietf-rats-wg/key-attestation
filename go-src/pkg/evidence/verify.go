@@ -299,8 +299,8 @@ func attestationSPKIs(e *Evidence) [][]byte {
 		if el.ElementType.Equal(OIDElementTransaction) {
 			for _, c := range el.Claims {
 				if c.ClaimType.Equal(OIDClaimTransactionAKSPKI) {
-					cv, err := DecodeClaimValue(c.Value)
-					if err == nil {
+					cv, err := DecodeClaimValueFor(c.ClaimType, c.Value)
+					if err == nil && cv.Kind == "spki" {
 						keyBytes := cv.Bytes
 						if key, err := x509.ParsePKIXPublicKey(keyBytes); err == nil {
 							if canonical, err := x509.MarshalPKIXPublicKey(key); err == nil {

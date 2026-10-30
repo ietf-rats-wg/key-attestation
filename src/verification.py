@@ -44,6 +44,10 @@ def _exact(data, schema):
 
 def claim_value(claim):
     raw = encoder.encode(claim["value"])
+    if str(claim["claimType"]) in (OIDS["id-evidence-claim-transaction-ak-spki"], OIDS["id-evidence-claim-key-spki"]):
+        from pkix_evidence import SubjectPublicKeyInfo
+        _exact(raw, SubjectPublicKeyInfo())
+        return raw  # DER SubjectPublicKeyInfo
     expected = CLAIM_EXPECTED_TAGS.get(str(claim["claimType"]))
     schemas = {1: univ.Boolean, 2: univ.Integer, 4: univ.OctetString,
                12: char.UTF8String, 24: useful.GeneralizedTime,

@@ -333,11 +333,19 @@ def make_claim(claim_type_name: str, value) -> ReportedClaim:
         raise ValueError("Every claim requires a value")
     if value is not None:
         match claim_type_name:
-            case "id-evidence-claim-transaction-nonce"\
-                 | "id-evidence-claim-transaction-ak-spki"\
-                 | "id-evidence-claim-platform-oemid"\
-                 | "id-evidence-claim-platform-hwmodel"\
+            case "id-evidence-claim-transaction-ak-spki"\
                  | "id-evidence-claim-key-spki":
+                # SubjectPublicKeyInfo, supplied as its DER encoding
+                if isinstance(value, bytes):
+                    spki, rest = der_decoder.decode(value, asn1Spec=SubjectPublicKeyInfo())
+                    if rest:
+                        raise ValueError(f"Claim '{claim_type_name}' has trailing data after the SubjectPublicKeyInfo")
+                    rc["value"] = spki
+                else:
+                    raise Exception(f"Claim '{claim_type_name}' expects a value of type 'bytes'")
+            case "id-evidence-claim-transaction-nonce"\
+                 | "id-evidence-claim-platform-oemid"\
+                 | "id-evidence-claim-platform-hwmodel":
                 # OCTET STRING
                 if isinstance(value, bytes):
                     rc["value"] = univ.OctetString(value)

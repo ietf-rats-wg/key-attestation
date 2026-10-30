@@ -134,6 +134,11 @@ func claimBytes(b []byte) asn1.RawValue {
 	return asn1.RawValue{Class: asn1.ClassUniversal, Tag: asn1.TagOctetString, IsCompound: false, Bytes: b}
 }
 
+// claimSPKI carries a DER SubjectPublicKeyInfo as the claim value itself.
+func claimSPKI(der []byte) asn1.RawValue {
+	return asn1.RawValue{FullBytes: der}
+}
+
 func claimUTF8(s string) asn1.RawValue {
 	return asn1.RawValue{Class: asn1.ClassUniversal, Tag: asn1.TagUTF8String, IsCompound: false, Bytes: []byte(s)}
 }
@@ -214,7 +219,7 @@ func buildSampleTBS(withAKSPKI bool, akSPKI []byte, nonces ...[]byte) ([]byte, e
 	if withAKSPKI && len(akSPKI) > 0 {
 		transactionClaims = append(transactionClaims, reportedClaimMarshal{
 			ClaimType: OIDClaimTransactionAKSPKI,
-			Value:     claimBytes(akSPKI),
+			Value:     claimSPKI(akSPKI),
 		})
 	}
 

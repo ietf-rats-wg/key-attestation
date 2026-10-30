@@ -193,6 +193,26 @@ func DecodeClaimValue(raw asn1.RawValue) (ClaimValue, error) {
 	return cv, err
 }
 
+// DecodeClaimValueFor decodes a claim value, using the claim type to tell
+// apart claims whose values share the SEQUENCE tag.
+func DecodeClaimValueFor(claimType asn1.ObjectIdentifier, raw asn1.RawValue) (ClaimValue, error) {
+	isSPKI := claimType.Equal(OIDClaimTransactionAKSPKI) || claimType.Equal(OIDClaimKeySPKI)
+	if isSPKI && hasRawValue(raw) {
+		der, err := asn1.Marshal(raw)
+		if err != nil {
+			return ClaimValue{}, err
+		}
+		var rv asn1.RawValue
+		if err := unmarshalExact(der, &rv); err != nil {
+			return ClaimValue{}, err
+		}
+		if rv.Class == asn1.ClassUniversal && rv.Tag == asn1.TagSequence {
+			return ClaimValue{Kind: "spki", Bytes: der, Raw: der}, nil
+		}
+	}
+	return DecodeClaimValue(raw)
+}
+
 func DecodeCapabilities(der []byte) ([]string, error) {
 	var oids []asn1.ObjectIdentifier
 	err := unmarshalExact(der, &oids)
@@ -239,7 +259,7 @@ func EvidenceToJSON(e *Evidence) (EvidenceJSON, error) {
 			var cv ClaimValue
 			var err error
 			if ok {
-				cv, err = DecodeClaimValue(claim.Value)
+				cv, err = DecodeClaimValueFor(claim.ClaimType, claim.Value)
 			} else {
 				cv.Kind = "unknown"
 				cv.Raw, err = asn1.Marshal(claim.Value)
@@ -253,7 +273,7 @@ func EvidenceToJSON(e *Evidence) (EvidenceJSON, error) {
 				ValueKind: cv.Kind,
 			}
 			switch cv.Kind {
-			case "bytes":
+			case "bytes", "spki":
 				c.Value = base64.StdEncoding.EncodeToString(cv.Bytes)
 			case "purposes":
 				c.Capabilities, err = DecodeCapabilities(cv.Bytes)

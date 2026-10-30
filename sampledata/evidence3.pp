@@ -5,9 +5,9 @@ Evidence:
       Claim[0]: id-evidence-claim-transaction-nonce
               -> [OCTET STRING] beefcafebabedead
       Claim[1]: id-evidence-claim-transaction-timestamp
-              -> [GeneralizedTime] 20261029203546Z
+              -> [GeneralizedTime] 20261030172826Z
       Claim[2]: id-evidence-claim-transaction-ak-spki
-              -> [OCTET STRING] 3059301306072a8648ce3d02...
+              -> [SubjectPublicKeyInfo] 3059301306072a8648ce3d02...
     ReportedElement[1]: id-evidence-element-platform
       Claim[0]: id-evidence-claim-platform-hwmodel
               -> [OCTET STRING] 48534d2d39303030
@@ -15,7 +15,7 @@ Evidence:
       Claim[0]: id-evidence-claim-key-identifier
               -> [UTF8String] 9a25f603-a2c4-4dad-9ee0-...
       Claim[1]: id-evidence-claim-key-spki
-              -> [OCTET STRING] 3059301306072a8648ce3d02...
+              -> [SubjectPublicKeyInfo] 3059301306072a8648ce3d02...
       Claim[2]: id-evidence-claim-key-extractable
               -> [BOOLEAN] False
       Claim[3]: id-evidence-claim-key-never-extractable
@@ -30,7 +30,7 @@ Evidence:
       Claim[0]: id-evidence-claim-key-identifier
               -> [UTF8String] 85704b99-7097-4bca-93b6-...
       Claim[1]: id-evidence-claim-key-spki
-              -> [OCTET STRING] 3059301306072a8648ce3d02...
+              -> [SubjectPublicKeyInfo] 3059301306072a8648ce3d02...
       Claim[2]: id-evidence-claim-key-extractable
               -> [BOOLEAN] True
       Claim[3]: id-evidence-claim-key-sensitive
@@ -38,6 +38,6 @@ Evidence:
   Signatures (1):
     SignatureBlock[0]:
       algorithm      : 1.2.840.10045.4.3.2
-      signatureValue : 304402201a9c49165e32a7ff...
+      signatureValue : 3046022100adc171a4467829...
       SPKI algorithm : 1.2.840.10045.2.1
   Intermediate Certificates:  (1)
