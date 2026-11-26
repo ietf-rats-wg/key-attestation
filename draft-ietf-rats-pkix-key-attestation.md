@@ -81,6 +81,9 @@ author:
 normative:
   RFC9334:
   RFC5280:
+  RFC5652:
+  RFC6268:
+  RFC5035:
   RFC9711:
   RFC4648:
   X680:
@@ -195,7 +198,7 @@ to a Relying Party in a form that integrates with existing X.509-based trust inf
 
 Concretely, this specification defines:
 
-* an ASN.1/DER `Evidence` envelope containing a to-be-signed section, one or more signature blocks, and optional intermediate certificates;
+* a new CMS content type, `id-ct-pkixEvidence`, and a profile of CMS `SignedData` {{RFC5652}} that carries it, signed by one or more Attestation Keys and optionally countersigned;
 
 * an element-and-claim data model organized around transaction, platform, and key elements, identified by OIDs;
 
@@ -422,8 +425,12 @@ contained by. Presenting non-attestation data for validation by this AK public k
 An EKU that includes a KeyPurposeId of `id-kp-attestationKey` along with other attestation-related
 KeyPurposeId SHOULD NOT be marked as critical.
 
-The data format specified in {{sec-data-model}} requires one or more `SignatureBlock` values.
-Multiple signature blocks allow one Attester identity, represented by a single subject DN,
+These constraints apply to the certificates of Attestation Keys that produce a `SignerInfo` in the `SignedData`
+(see {{sec-cms-profile}}). They do not apply to the certificates of countersigners
+(see {{sec-cms-countersignatures}}), which are not Attesters.
+
+The data format specified in {{sec-data-model}} requires one or more `SignerInfo` values.
+Multiple `SignerInfo` values allow one Attester identity, represented by a single subject DN,
 to use distinct Attestation Keys and signature algorithms. See {{sec-verif-proc}} for the
 processing rules.
 
@@ -498,7 +505,7 @@ The Evidence format is composed of two main sections:
 * A signature section where one or more digital signatures are offered to prove the origin of the
   Evidence description and maintain its integrity.
 
-The details of the signature section are left to the data model. The remainder of this section
+The signature section is realized using CMS `SignedData`, as described in the data model. The remainder of this section
 deals with the way the information is organized to form the Evidence description.
 
 The Evidence description is associated with elements to help with the organization and comprehension
@@ -618,71 +625,157 @@ This section describes the data model associated with generated Evidence. For ea
 deployment within the target ecosystem, ASN.1 definitions {{X680}} and DER encoding
 {{X690}} are used. A complete ASN.1 module is provided in {{sec-asn1-mod}}.
 
-The top-level structures, as ASN.1 fragments, are:
+Evidence is conveyed using the Cryptographic Message Syntax (CMS) {{RFC5652}}. The Evidence description
+is defined as a new CMS content type, which is then signed using a profile of CMS `SignedData`. CMS ASN.1
+types are imported from {{RFC6268}} and are not redefined by this document.
+
+## Evidence Content Type {#sec-cms-content}
+
+The content type specific to this document, as ASN.1 fragments, is:
 
 ~~~ asn.1
-Evidence ::= SEQUENCE {
-    tbs  TbsEvidence,
-    signatures  SEQUENCE SIZE (1..MAX) OF SignatureBlock,
-    intermediateCertificates  [0] SEQUENCE OF Certificate OPTIONAL
-                                  -- As defined in RFC 5912
-}
+id-ct-pkixEvidence OBJECT IDENTIFIER ::= {
+    iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-9(9)
+    smime(16) ct(1) TBD }
 
-SignatureBlock ::= SEQUENCE {
-    sid SignerIdentifier,
-    signatureAlgorithm AlgorithmIdentifier{
-        SIGNATURE-ALGORITHM, { ... } },
-    signatureValue OCTET STRING
-}
+ct-pkixEvidence CONTENT-TYPE ::= {
+    TYPE PkixEvidence IDENTIFIED BY id-ct-pkixEvidence }
 
-SignerIdentifier ::= SEQUENCE {
-    keyId [0] EXPLICIT OCTET STRING OPTIONAL,
-    subjectPublicKeyInfo [1] EXPLICIT
-        SubjectPublicKeyInfo OPTIONAL,
-        -- As defined in RFC 5912
-    certificate [2] EXPLICIT Certificate OPTIONAL
-      -- As defined in RFC 5912
-} (
-    WITH COMPONENTS { ..., keyId PRESENT}
-    | WITH COMPONENTS { ..., subjectPublicKeyInfo PRESENT }
-    | WITH COMPONENTS { ...,certificate PRESENT } )
-
-TbsEvidence ::= SEQUENCE {
-    version INTEGER,
-    reportedElements SEQUENCE SIZE (1..MAX) OF ReportedElement
-}
+PkixEvidence ::= SEQUENCE {
+    version           INTEGER (1),
+    reportedElements  SEQUENCE SIZE (1..MAX) OF ReportedElement }
 ~~~
 
-An `Evidence` message is composed of a protected section known as the To-Be-Signed (TBS) section.
-The `TbsEvidence` corresponds to the "Evidence Description" referred to in {{sec-info-model}}.
-The integrity of the TBS section is ensured with one or multiple cryptographic signatures
-over the content of this section. There is a provision to carry X.509 certificates supporting each signature.
-The SEQUENCE OF `SignatureBlock` supports algorithm agility by allowing the same Attester
-identity to sign the TBS section with multiple Attestation Keys. When more than one
-`SignatureBlock` is present, each signing certificate represents the same Attester
-identity with the same subject Distinguished Name (DN), but contains a distinct SPKI.
+`PkixEvidence` corresponds to the "Evidence description" referred to in {{sec-info-model}}.
+It is composed of a version number and a sequence of reported elements.
+For compliance with this specification, `PkixEvidence.version` MUST be `1`.
+Future specifications which make compatibility-breaking changes to `PkixEvidence` MUST increment the version number.
 
-The TBS section is composed of a version number, to ensure future extensibility, and a sequence of reported elements.
-For compliance with this specification, `TbsEvidence.version` MUST be `1`.
-This envelope format is not extensible; future specifications which make compatibility-breaking changes MUST increment the version number.
+The `content-type` signed attribute required by {{sec-cms-attributes}} places `id-ct-pkixEvidence` under every
+Attestation Key signature. This identifies the signed data as PKIX Evidence and prevents
+a signature produced under this specification from being reinterpreted as a signature over
+another kind of content, or vice versa.
 
-A `SignatureBlock` is included for each signature submitted against the TBS section. The `SignatureBlock` includes
-the signature algorithm (signatureAlgorithm) and the signature itself (signatureValue). It also includes
-information to identify the authority that provided the signature which is the structure `SignerIdentifier` (sid).
-The signer identifier includes a combination of X.509 certificate, SubjectPublicKeyInfo (SPKI) and/or
-key identifier (keyId). It is expected that an X.509 certificate will be generally used, as it provides the public key needed
-to verify the signature and clearly identifies the subject that provided the signature. The SPKI and keyId are allowed
-to support environments where X.509 certificates are not used.
+## CMS SignedData Profile {#sec-cms-profile}
 
-The field `SignerIdentifier.keyId` is not constrained to specific details. It is an identifier that is shared between the Attester and the Verifier to establish which public key should be used during the verification of a signature block. The fields `SignerIdentifier.subjectPublicKeyInfo` and `SignerIdentifier.certificate` are encouraged as these fields have specific syntax and semantics. When `SignerIdentifier.keyId` is used without a certificate or SPKI, the Verifier MUST obtain the corresponding public key by some implementation-specific or out-of-band mechanism before it can validate the signature.
+Evidence is a `ContentInfo` {{RFC5652}} with `contentType` equal to `id-signedData` and `content`
+equal to a `SignedData` value. The complete `ContentInfo` MUST be DER encoded.
+The resulting structure is:
 
-The optional certificate list provided in `Evidence.intermediateCertificates` enables the insertion
-of X.509 certificates to support trusting the signatures found in signature blocks. This information is intended to provide
-the certificates required by the Verifier to validate the endorsement on the certificates included
-with the signatures. `intermediateCertificates` MAY include any or all intermediate CA certificates needed to build paths.
-It is not required to include trust anchors. Order is not significant.
+~~~
+ContentInfo (contentType = id-signedData)
+  SignedData (version = 3)
+    digestAlgorithms
+    encapContentInfo
+      eContentType = id-ct-pkixEvidence
+      eContent     = DER(PkixEvidence)
+    certificates   (AK certificates and intermediates, optional)
+    signerInfos    (one or more SignerInfo, one per Attestation Key)
+      SignerInfo
+        sid, digestAlgorithm, signedAttrs,
+        signatureAlgorithm, signature,
+        unsignedAttrs (countersignatures, optional)
+~~~
 
-As described in {{sec-info-model}}, the `TbsEvidence` is a collection of elements. Each element
+The following restrictions apply to the `SignedData`:
+
+* `version` MUST be 3. This follows from `eContentType` being a value other than `id-data`.
+
+* `digestAlgorithms` MUST contain the digest algorithm of each `SignerInfo`, and SHOULD NOT contain any other algorithm.
+
+* `encapContentInfo.eContentType` MUST be `id-ct-pkixEvidence`. `encapContentInfo.eContent` MUST be present and
+  MUST contain exactly one DER-encoded `PkixEvidence`.
+
+* `certificates`, when present, MUST use only the `certificate` alternative of `CertificateChoices`; the
+  `extendedCertificate`, `v1AttrCert`, `v2AttrCert` and `other` alternatives MUST NOT be used.
+  See {{sec-cms-certificates}}.
+
+* `crls` MUST be absent. Verifiers obtain revocation information according to their own validation policy.
+
+* `signerInfos` MUST contain at least one `SignerInfo`. Each `SignerInfo` is a signature by one Attestation Key of the
+  Attester; see {{sec-cms-multiple-signers}}. Entities other than the Attester MUST NOT add a `SignerInfo`; they
+  countersign instead, as described in {{sec-cms-countersignatures}}.
+
+There MUST NOT be any backwards compatibility with PKCS #7 as described in Section 5.2.1 of {{RFC5652}}.
+
+Within each `SignerInfo`:
+
+* `version` MUST be 1 when `sid` uses `issuerAndSerialNumber` and MUST be 3 when `sid` uses `subjectKeyIdentifier`.
+
+* `sid` identifies the Attestation Key as described in {{sec-cms-certificates}}.
+
+* `signedAttrs` MUST be present, and MUST be as described in {{sec-cms-attributes}}.
+
+* `unsignedAttrs`, if present, MUST contain only countersignature attributes, as described in {{sec-cms-countersignatures}}.
+
+### Signer Identification and Certificates {#sec-cms-certificates}
+
+When the Attestation Key is certified by an X.509 certificate, `sid` MUST identify that AK certificate,
+using either `issuerAndSerialNumber` or `subjectKeyIdentifier`, and that AK certificate MUST be included
+in `SignedData.certificates`. The AK certificate is subject to the constraints in {{sec-ak-chain}}.
+It is expected that an X.509 certificate will be generally used, as it provides the public key needed
+to verify the signature and clearly identifies the Attester that provided the signature.
+
+`SignedData.certificates` MAY also include any or all intermediate CA certificates needed to build a
+certification path, as well as the certificates of countersigners. It is not required to include trust anchors,
+and including a certificate never establishes it as a trust anchor. Order is not significant.
+
+In environments where X.509 certificates are not used, `sid` MUST use the `subjectKeyIdentifier` alternative,
+and `SignedData.certificates` MAY be absent. The key identifier is not constrained to specific details;
+it is an identifier that is shared between the Attester and the Verifier to establish which public key
+should be used to verify the signature. The full SubjectPublicKeyInfo of the Attestation Key MAY be
+asserted in the signed `ak-spki` transaction claim.
+
+### Signed Attributes {#sec-cms-attributes}
+
+Each `SignerInfo.signedAttrs` MUST contain:
+
+* exactly one `content-type` attribute {{RFC5652}}, whose value is `id-ct-pkixEvidence`; and,
+
+* exactly one `message-digest` attribute {{RFC5652}}.
+
+When `sid` identifies a certificate, `signedAttrs` SHOULD contain exactly one `signing-certificate-v2`
+attribute {{RFC5035}}, whose first `ESSCertIDv2` identifies the AK certificate. This places the
+identity of the signer under the signature.
+
+`signedAttrs` MUST NOT contain a `signing-time` attribute. As described in {{sec-cons-hsm-timestamps}},
+HSM clocks are not reliable; the `timestamp` transaction claim, with the caveats described for it, is
+the place to report the time of generation.
+
+Generators SHOULD NOT include any other signed attributes. Verifiers MUST ignore signed attributes that they do not recognize.
+
+Note that the signature in each `SignerInfo` is computed over the DER encoding of the
+signed attributes as described in Section 5.4 of {{RFC5652}}, and the `PkixEvidence` is
+bound to the signature through the `message-digest` attribute.
+
+### Multiple Signers {#sec-cms-multiple-signers}
+
+Multiple `SignerInfo` values support algorithm agility by allowing the same Attester identity to sign the
+`PkixEvidence` with multiple Attestation Keys, for example to provide resilience against cryptographic degradation
+in a hybrid fashion. When more than one `SignerInfo` is present and the Attestation Keys are certified, each signing
+certificate represents the same Attester identity with the same subject Distinguished Name (DN), but contains a
+distinct SPKI.
+
+Every `SignerInfo` protects the same `PkixEvidence`. Because CMS does not bind the `SignerInfo` values to each other,
+a `SignerInfo` can be removed without invalidating the others. The `ak-spki` transaction claim, which is
+inside the signed content, allows a Verifier to detect such removal. See {{sec-verif-proc}} and {{sec-cons-multi-sigs}}.
+
+### Countersignatures {#sec-cms-countersignatures}
+
+A party other than the Attester, for example a trusted intermediary between the Attester and the Verifier, MAY
+countersign a `SignerInfo` by adding a `countersignature` attribute (Section 11.4 of {{RFC5652}}) to that `SignerInfo`'s
+`unsignedAttrs`. A countersignature signs the `signature` value of the `SignerInfo` it is attached to, and therefore
+endorses that Attestation Key signature, rather than the Evidence directly.
+
+Countersigners are not Attesters. The AK certificate constraints of {{sec-ak-chain}} do not apply to
+countersigners, and the processing of countersignatures, including which countersigners are trusted, is a matter of
+Verifier policy. Verifiers that do not implement countersignatures MUST ignore `unsignedAttrs`.
+
+Since `unsignedAttrs` are not covered by the Attestation Key signature, the removal of a countersignature cannot be detected.
+
+## Elements and Claims {#sec-elements-claims}
+
+As described in {{sec-info-model}}, the `PkixEvidence` is a collection of elements. Each element
 is associated with a type that defines its class. The element types are represented by object identifiers
 (OIDs). The following ASN.1 fragment defines the structures associated with elements:
 
@@ -1101,10 +1194,13 @@ This claim contains the Subject Public Key Information (SPKI) for the attestatio
 type `SubjectPublicKeyInfo`, as defined for X.509 certificates in {{RFC5280}}.
 
 This transaction claim is used to bind the content of the Evidence with the key(s) used to sign that Evidence. The importance
-of this binding is discussed in {{sec-verif-proc}}.
+of this binding is discussed in {{sec-verif-proc}} and {{sec-cons-multi-sigs}}.
 
 This claim can be reported multiple times. Each included claim MUST refer to a different attestation key. In other words, this claim
 should be repeated only if multiple attestation keys are used to sign the Evidence.
+
+When the Attestation Key is not certified by an X.509 certificate (see {{sec-cms-certificates}}), this claim is the means by which
+the SubjectPublicKeyInfo of the Attestation Key is carried in the Evidence.
 
 ## Additional Element and Claim Types {#sec-additional-claim-types}
 
@@ -1117,7 +1213,7 @@ See {{sec-req-verification}} and {{sec-cons-verifier}} for handling of unrecogni
 
 ## Encoding
 
-The structure `Evidence` is to be DER encoded {{X690}}.
+The Evidence `ContentInfo`, including the `PkixEvidence` carried within it, is to be DER encoded {{X690}}.
 
 If a textual representation is required, then the DER encoding MAY be subsequently encoded into Standard Base64 as defined in {{RFC4648}}.
 
@@ -1168,21 +1264,21 @@ specified as part of the request. This is to give control to the Presenter as to
 * An Attesting Environment fails a request if the Presenter does not have the appropriate access rights to the elements or claims included
 in the request.
 
-The Attesting Environment collects the necessary information from the Target Environment and assembles the `TbsEvidence` structure.
+The Attesting Environment collects the necessary information from the Target Environment and assembles the `PkixEvidence` structure.
 
-During the assembly of `TbsEvidence`, the Attesting Environment MUST:
+During the assembly of `PkixEvidence`, the Attesting Environment MUST:
 
 * include the nonce (if present) provided by the Presenter to the transaction element using the claim `claim-transaction-nonce`; and,
 
 * add a claim of type `claim-transaction-ak-spki` to the transaction element to represent each attestation key selected to sign the
 Evidence.
 
-For each selected attestation key, the Attesting Environment generates a signature over the DER encoding of the structure `TbsEvidence`.
-Each signature is captured in a structure of type `SignatureBlock`. Each signature block is augmented with the appropriate information
-identifying the attestation key used to generate the signature.
+The DER encoding of `PkixEvidence` is placed in `encapContentInfo.eContent` of a `SignedData` with `eContentType` set to
+`id-ct-pkixEvidence`. For each selected attestation key, the Attesting Environment produces a `SignerInfo` according to Section 5.4 of
+{{RFC5652}} and the profile in {{sec-cms-profile}}, with a `sid` identifying the attestation key and the required signed attributes.
 
-Finally, the structure `Evidence` is assembled by combining the structures `TbsEvidence` and `SignatureBlock`. The Attesting Environment MAY
-add intermediate certificates required by the Verifier to ascertain the validity of the provided signatures.
+Finally, the `SignedData` is wrapped in a `ContentInfo`. When the attestation keys are certified, the Attesting Environment includes
+the AK certificates in `SignedData.certificates`, and MAY add intermediate certificates required by the Verifier to ascertain the validity of the provided signatures.
 
 ## Verification by Presenter {#sec-req-verification}
 
@@ -1210,28 +1306,58 @@ Further privacy concerns are discussed in {{sec-cons-privacy}}.
 
 This sub-section describes the considerations to be taken by the Verifier when handling Evidence generated under this specification.
 
-If `SignerIdentifier.certificate` is present, the signature MUST be validated with the subject public key of that end-entity X.509 certificate.
-If `SignerIdentifier.subjectPublicKeyInfo` is present, the signature MUST be validated with that public key.
-If `SignerIdentifier.keyId` is present, the Verifier MUST obtain the corresponding public key by some implementation-specific or out-of-band mechanism;
-if no such key can be obtained, the SignatureBlock MUST be treated as unverifiable and the Evidence MUST be rejected.
+The Verifier MUST validate the received `ContentInfo` against the profile in {{sec-cms-profile}}, including DER encoding,
+the outer and encapsulated content types, the presence of `eContent`, the permitted certificate choices, the version fields,
+and the presence of at least one `SignerInfo`. Evidence that does not conform to the profile MUST be rejected.
+
+For each `SignerInfo` it evaluates, the Verifier MUST:
+
+1. Check that `signedAttrs` contains exactly one `content-type` attribute with the value `id-ct-pkixEvidence`,
+   and exactly one `message-digest` attribute whose value matches the digest of the `eContent` octets, computed using
+   the `SignerInfo`'s `digestAlgorithm`.
+
+2. Obtain the public key of the Attestation Key:
+
+   * If `sid` identifies a certificate included in `SignedData.certificates`, use the subject public key of that certificate.
+     If a `signing-certificate-v2` attribute is present, the Verifier MUST check it according to {{RFC5035}}.
+
+   * Otherwise, `sid` is a `subjectKeyIdentifier` and the Verifier MUST obtain the corresponding public key by some
+     implementation-specific or out-of-band mechanism. A public key carried in an `ak-spki` claim MAY be used to verify the
+     signature, but a public key included in the Evidence cannot establish its own trustworthiness: the Verifier MUST
+     establish trust in that key by other means, such as a trust anchor configured as a raw public key.
+     If no trusted key can be obtained, the `SignerInfo` MUST be treated as unverifiable.
+
+3. Verify the signature over the DER-encoded signed attributes, as described in Section 5.6 of {{RFC5652}}.
+
+4. When a certificate is used, ensure that:
+
+   * the certificate contains the `KeyUsage` (KU) extension with the `digitalSignature` bit set;
+
+   * the certificate contains the `Extended Key Usage` (EKU) extension that includes the `id-kp-attestationKey` usage; and,
+
+   * a certification path can be validated from the certificate to a trust anchor, using `SignedData.certificates`
+     to build the path as needed.
+
 The certificate-based mode remains the preferred form in PKIX deployments because it provides both the public key and an X.509 identity.
 
-Verifiers MUST ensure, prior to accepting the signature associated with an end-entity certificate, that:
+Each `SignerInfo` is evaluated independently. A Verifier MUST successfully verify at least one `SignerInfo` using an
+algorithm, and where applicable a certification path, acceptable under its appraisal policy; otherwise the Evidence MUST be rejected.
+A Verifier MAY verify additional `SignerInfo` values when it supports their algorithms. The presence of a signature made with an
+algorithm that is unsupported or unacceptable to the Verifier does not make an otherwise acceptable signature invalid.
+A Verifier MUST reject Evidence when multiple signing certificates do not represent the same Attester identity as described
+in {{sec-cms-multiple-signers}}.
 
-* the certificate contains the `KeyUsage` (KU) extension with the `digitalSignature` bit set; and,
+If any `transaction.ak-spki` claims are present, the Verifier SHOULD verify that the SubjectPublicKeyInfo of the Attestation Key of
+each verified `SignerInfo` matches at least one `ak-spki` value. Each such claim is authoritative only when it is backed by a
+successfully verified `SignerInfo` using the corresponding attestation key. An `ak-spki` claim that is not matched by a verified
+`SignerInfo` MUST NOT by itself be treated as proof that the corresponding key was used to sign the Evidence. Conversely, an
+`ak-spki` claim with no corresponding `SignerInfo` indicates that a `SignerInfo` has been removed; a Verifier MAY reject such
+Evidence according to its policy.
 
-* the certificate contains the `Extended Key Usage` (EKU) extension that includes the `id-kp-attestationKey` usage.
+Countersignatures, if present, are processed according to Verifier policy as described in {{sec-cms-countersignatures}}.
 
-Verifiers MAY also use `Evidence.intermediateCertificates` to build a certification path from the end-entity
-certificate to a trust anchor.
-
-Each `SignatureBlock` is evaluated independently. A Verifier MUST successfully validate at least one `SignatureBlock` using an
-algorithm and certification path acceptable under its appraisal policy. A Verifier MAY validate additional `SignatureBlock` values
-when it supports their algorithms. The presence of a signature made with an algorithm that is unsupported or unacceptable to the Verifier
-does not make an otherwise acceptable signature invalid. A Verifier MUST reject Evidence when multiple signing certificates do not
-represent the same Attester identity as described above.
-
-If any `transaction.ak-spki` claims are present, the Verifier SHOULD verify that each `SignerIdentifier`'s SubjectPublicKeyInfo (or the SPKI of its `certificate`) matches at least one `ak-spki` value. Each such claim is authoritative only when it is backed by a successfully verified SignatureBlock using the corresponding attestation key. An `ak-spki` claim that is not matched by a valid signature block MUST NOT by itself be treated as proof that the corresponding key was used to sign the Evidence.
+The Verifier MUST then parse `eContent` as exactly one DER-encoded `PkixEvidence` and process the elements and claims
+as described in {{sec-data-model}}.
 
 
 # ASN.1 Module {#sec-asn1-mod}
@@ -1268,6 +1394,15 @@ details:
 * Name: evidence
 
 * Description: Evidence Encoding for Hardware Security Modules
+
+* Reference: {{&SELF}}
+
+IANA is requested to assign an object identifier for the content type `id-ct-pkixEvidence` (TBD)
+in the "SMI Security for S/MIME CMS Content Type" registry (1.2.840.113549.1.9.16.1) with the following details:
+
+* Decimal: TBD
+
+* Description: id-ct-pkixEvidence
 
 * Reference: {{&SELF}}
 
@@ -1309,6 +1444,44 @@ data that does not match the expected format, instead of attempting to be flexib
 
 In particular, the Attesting Environment SHOULD generate Evidence from scratch. The Attesting Environment MUST generate Evidence
 only from information and measurements that are directly observable by it.
+
+The CMS profile in {{sec-cms-profile}} is deliberately narrow so that generators can implement
+the minimal subset of CMS that it requires, without the need for a general-purpose CMS library,
+while Verifiers outside of an HSM boundary can use existing CMS implementations. Verifiers
+running within an HSM boundary SHOULD reject any CMS structure that falls outside this profile.
+
+## Multiple Signers and Countersignatures {#sec-cons-multi-sigs}
+
+The Evidence format supports two distinct ways for more than one key to sign:
+
+* Multiple `SignerInfo` values, each produced by an Attestation Key of the same Attester, are used to support
+  algorithm agility, such as hybrid environments where multiple keys using different cryptographic algorithms are
+  required to support appraisal policies.
+
+* Countersignatures, carried in the `unsignedAttrs` of a `SignerInfo`, are used by parties other than the Attester.
+  This is important for environments where a number of heterogeneous devices are deployed and a trusted actor,
+  intermediary between the Attester and the Verifier, validates the original signature(s) and endorses them with its own.
+
+Each `SignerInfo` is bound to the `PkixEvidence` content through its signed `message-digest` and
+`content-type` attributes. However, CMS does not bind the `SignerInfo` values to each other, so an attacker
+can remove a `SignerInfo` without invalidating the remaining ones. Similarly, since countersignatures are
+carried in unsigned attributes, they can be removed without leaving any trace.
+
+The transaction claim "ak-spki" binds the content to the set of Attestation Keys used by the Attesting Environment.
+Since the claim is within the signed content, the removal of a `SignerInfo` can be detected by a Verifier that
+checks that every `ak-spki` claim is matched by a `SignerInfo`. This claim also binds the algorithm and parameters
+of each Attestation Key to the content, as they are part of the SubjectPublicKeyInfo.
+
+Verifiers MUST be designed to accept Evidence based on their appraisal policies. Verifiers MUST NOT make any inferences
+based on the absence of a countersignature, or on the absence of a `SignerInfo` that is not referenced by an `ak-spki` claim,
+as these could have been removed in transit.
+
+## Cross-Protocol Attacks {#sec-cons-cross-protocol}
+
+The signed `content-type` attribute in every `SignerInfo` identifies the signed content as PKIX Evidence, including
+when the Attestation Key is not certified by an X.509 certificate and the `id-kp-attestationKey` EKU therefore offers no
+protection. Verifiers MUST check this attribute as part of the procedures in {{sec-verif-proc}}; accepting
+arbitrary CMS `SignedData` signed by an Attestation Key would bypass this check.
 
 ## Privacy and Evidence Encryption {#sec-cons-privacy}
 
@@ -1389,6 +1562,9 @@ Furthermore, the internal system clock of HSMs SHOULD NOT be relied on to enforc
 A reference implementation of this specification can be found at https://github.com/ietf-rats-wg/key-attestation
 
 It produces the following sample Evidence.
+
+Editor's note: the samples below still use the pre-CMS envelope and will be regenerated in the CMS format
+described in {{sec-cms-profile}}.
 
 All signatures throughout the samples chain to the following root certificate:
 

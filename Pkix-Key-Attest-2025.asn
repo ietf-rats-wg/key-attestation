@@ -9,17 +9,16 @@ BEGIN
 EXPORTS ALL ;
 
 IMPORTS
-  AlgorithmIdentifier{}, SIGNATURE-ALGORITHM
-    FROM AlgorithmInformation-2009 -- in [RFC5912]
-  { iso(1) identified-organization(3) dod(6) internet(1)
-    security(5)mechanisms(5) pkix(7) id-mod(0)
-    id-mod-algorithmInformation-02(58) }
-
-  Certificate, SubjectPublicKeyInfo
+  SubjectPublicKeyInfo
     FROM PKIX1Explicit-2009 -- in [RFC5912]
   { iso(1) identified-organization(3) dod(6) internet(1)
     security(5) mechanisms(5) pkix(7) id-mod(0)
     id-mod-pkix1-explicit-02(51) }
+
+  CONTENT-TYPE
+    FROM CryptographicMessageSyntax-2010 -- in [RFC6268]
+  { iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-9(9)
+    smime(16) modules(0) id-mod-cms-2009(58) }
 ;
 
 -- OID Arc
@@ -34,36 +33,24 @@ id-kp-attestationKey OBJECT IDENTIFIER ::= { id-kp TBDMOD2 }
 
 -- Evidence --
 
-Evidence ::= SEQUENCE {
-    tbs  TbsEvidence,
-    signatures  SEQUENCE SIZE (1..MAX) OF SignatureBlock,
-    intermediateCertificates  [0] SEQUENCE OF Certificate OPTIONAL
-                                  -- As defined in RFC 5912
-}
+-- Evidence is a ContentInfo with contentType id-signedData whose
+-- SignedData encapsulates a PkixEvidence. The CMS profile
+-- restrictions are specified in the text of this document; they
+-- are not expressed in this module.
 
-SignatureBlock ::= SEQUENCE {
-    sid SignerIdentifier,
-    signatureAlgorithm AlgorithmIdentifier
-        { SIGNATURE-ALGORITHM, { ... } },
-    signatureValue OCTET STRING
-}
+id-ct-pkixEvidence OBJECT IDENTIFIER ::= {
+    iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-9(9)
+    smime(16) ct(1) TBD }
 
-SignerIdentifier ::= SEQUENCE {
-    keyId [0] EXPLICIT OCTET STRING OPTIONAL,
-    subjectPublicKeyInfo [1] EXPLICIT
-        SubjectPublicKeyInfo OPTIONAL,
-        -- As defined in RFC 5912
-    certificate [2] EXPLICIT Certificate OPTIONAL
-      -- As defined in RFC 5912
-} (
-    WITH COMPONENTS { ..., keyId PRESENT}
-    | WITH COMPONENTS { ..., subjectPublicKeyInfo PRESENT }
-    | WITH COMPONENTS { ...,certificate PRESENT } )
+ct-pkixEvidence CONTENT-TYPE ::= {
+    TYPE PkixEvidence IDENTIFIED BY id-ct-pkixEvidence }
 
-TbsEvidence ::= SEQUENCE {
-    version INTEGER,
-    reportedElements SEQUENCE SIZE (1..MAX) OF ReportedElement
-}
+-- ct-pkixEvidence is added to the ContentSet of [RFC6268]
+ContentSet CONTENT-TYPE ::= { ct-pkixEvidence, ... }
+
+PkixEvidence ::= SEQUENCE {
+    version           INTEGER (1),
+    reportedElements  SEQUENCE SIZE (1..MAX) OF ReportedElement }
 
 ReportedElement ::= SEQUENCE {
     elementType         OBJECT IDENTIFIER,
