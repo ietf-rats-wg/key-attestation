@@ -34,9 +34,6 @@ Abstract
    Authority to aid in determining whether the storage properties of
    this key meet the requirements of a given certificate profile.
 
-   This specification also offers a format for requesting a
-   cryptographic module to produce Evidence tailored for expected use.
-
 About This Document
 
    This note is to be removed before publishing as an RFC.
@@ -96,6 +93,7 @@ Table of Contents
    3.  Conventions and Terminology
      3.1.  Claims and measurements in generated Evidence
      3.2.  Attestation Key Certificate Chain
+     3.3.  Presenter Role
    4.  Information Model
      4.1.  Element
      4.2.  Element Type
@@ -114,42 +112,40 @@ Table of Contents
                uptime, bootcount
        5.4.3.  hwserial
        5.4.4.  fipsboot, fipsver, fipslevel and fipsmodule
+       5.4.5.  ccmoduleid, ccboot, ccscheme, ccrequirement and
+               cceallevel
      5.5.  Key Element
        5.5.1.  identifier
        5.5.2.  spki
        5.5.3.  extractable, sensitive, never-extractable, local
-       5.5.4.  expiry
-       5.5.5.  purpose
+       5.5.4.  device-bound
+       5.5.5.  expiry
+       5.5.6.  purpose
      5.6.  Transaction Element
        5.6.1.  nonce
        5.6.2.  timestamp
        5.6.3.  ak-spki
      5.7.  Additional Element and Claim Types
      5.8.  Encoding
-   6.  Signing and Verification Procedures
-   7.  Attestation Requests
-     7.1.  Requested Claims with Specified Values
-       7.1.1.  Key Identifiers
-       7.1.2.  Nonce
-       7.1.3.  Reporting of Attestation Keys
-       7.1.4.  Custom Key Selection
-       7.1.5.  Custom Transaction Element Claims
-     7.2.  Processing an Attestation Request
-     7.3.  Verification by Presenter
-   8.  ASN.1 Module
-   9.  IANA Considerations
-   10. Security Considerations
-     10.1.  Policies relating to Verifier and Relying Party
-     10.2.  Simple to Implement
-     10.3.  Multiple Signers and Countersignatures
-     10.4.  Cross-Protocol Attacks
-     10.5.  Privacy
-     10.6.  Authenticating and Authorizing the Presenter
-     10.7.  Proof-of-Possession of User Keys
-     10.8.  Timestamps and HSMs
-   11. References
-     11.1.  Normative References
-     11.2.  Informative References
+   6.  Processing
+     6.1.  Initiation from Presenter
+     6.2.  Generation of Evidence
+     6.3.  Verification by Presenter
+     6.4.  Verification Procedures
+   7.  ASN.1 Module
+   8.  IANA Considerations
+   9.  Security Considerations
+     9.1.  Policies relating to Verifier and Relying Party
+     9.2.  Simple to Implement
+     9.3.  Multiple Signers and Countersignatures
+     9.4.  Cross-Protocol Attacks
+     9.5.  Privacy and Evidence Encryption
+     9.6.  Authenticating and Authorizing the Presenter
+     9.7.  Proof-of-Possession of User Keys
+     9.8.  Timestamps and HSMs
+   10. References
+     10.1.  Normative References
+     10.2.  Informative References
    Appendix A.  Samples
      A.1.  Simple Platform Evidence
      A.2.  Key Attestation Evidence
@@ -176,10 +172,7 @@ Table of Contents
       platform, and key elements, identified by OIDs;
 
    *  encoding and signature-verification processing rules for PKIX
-      Evidence;
-
-   *  an attestation request structure that allows a Presenter to
-      request a scoped subset of elements and claims.
+      Evidence.
 
    The design is intentionally PKIX-native.  ASN.1 and DER are used to
    align with existing certificate tooling, certification authority
@@ -222,13 +215,13 @@ Table of Contents
    whether or not to admit the new HSM.
 
    A related scenario is when performing a key migration across HSMs.
-   If the key is being migrated is associated with certain properties,
-   for example an environment running in FIPS mode at FIPS Level 3, and
-   the key is set to certain protection properties such as Non-
-   Exportable and Dual-Control, then the HSM might wish to verify that
-   the key was previously stored under the same conditions.  This
-   specification provides an Evidence format with sufficient details to
-   support this type of implementation across HSM vendors.
+   If the key being migrated is associated with certain properties, for
+   example an environment running in FIPS mode at FIPS Level 3, and the
+   key is set to certain protection properties such as Non-Exportable
+   and Dual-Control, then the HSM might wish to verify that the key was
+   previously stored under the same conditions.  This specification
+   provides an Evidence format with sufficient details to support this
+   type of implementation across HSM vendors.
 
    These scenarios motivate the design requirements to have an ASN.1
    based Evidence format and a data model that more closely matches
@@ -246,11 +239,13 @@ Table of Contents
 
    The Evidence format offered by this specification is designed to
    carry the information necessary for a CA to assess the location of
-   the subject key along a number of commonly-required attributes.  More
-   specifically, a CA could determine which HSM was used to generate the
-   subject key, whether this device adheres to certain jurisdiction
-   policies (such as FIPS mode) and the constraints applied to the key
-   (such as whether is it extractable).
+   the subject key along with a number of commonly-required attributes.
+   More specifically, a CA could determine which HSM was used to
+   generate the subject key, whether this device adheres to certain
+   jurisdiction policies (such as FIPS mode) and the constraints applied
+   to the key (such as whether it is extractable).  The use of Evidence
+   in a certification request is specified in
+   [I-D.ietf-lamps-csr-attestation].
 
    For relatively simple HSM devices, storage properties such as
    "extractable" may always be false for all keys since the devices are
@@ -259,7 +254,7 @@ Table of Contents
    more complex HSM devices require a more elaborate Evidence format
    that encompasses the mutability of these attributes.
 
-   Also, a client requesting a key attestation might wish to scope-down
+   Also, a client requesting a key attestation might wish to scope down
    the content of the produced Evidence as the HSM contains much more
    information than that which is relevant to the transaction.  Not
    reducing the scope of the generated Evidence could, in some
@@ -353,7 +348,7 @@ Table of Contents
       specification, it is interchangeable with "Attester" or "HSM".
 
    Platform Attestation:
-      Process of producing evidence containing claims pertaining to
+      Process of producing Evidence containing claims pertaining to
       measured values associated with the platform itself.  In general,
       the claims include enough information about the platform to allow
       a Relying Party to make judicious decisions about the platform,
@@ -363,8 +358,8 @@ Table of Contents
       Role that facilitates communication between the Attester and the
       Verifier.  The Presenter initiates the operation of generating
       Evidence at the Attester and passes the generated Evidence to the
-      Verifier.  In the case of HSMs, the Presenter is responsible of
-      selecting the claims that are part of the generated Evidence.
+      Verifier.  The interface by which the Presenter initiates Evidence
+      generation is outside the scope of this specification.
 
    Trust Anchor:
       As defined in [RFC6024] and [RFC9019], a Trust Anchor "represents
@@ -378,7 +373,7 @@ Table of Contents
    Trusted Platform Module (TPM):
       A tamper-resistant processor generally located on a computer's
       motherboard used to enhance attestation functions for the hosting
-      platform as defined by the Trusted Computer Group.  TPMs are very
+      platform as defined by the Trusted Computing Group.  TPMs are very
       specialized Hardware Security Modules and generally use other
       protocols (than the one presented in this specification) to
       transmit Evidence.
@@ -427,7 +422,7 @@ Table of Contents
    a large addressable space into portions recognizable by the user.
    More importantly, it curtails the produced Evidence to portions of
    the Target Environment that relate to the needs of the Verifier.  See
-   Section 10.5.
+   Section 9.5.
 
 3.2.  Attestation Key Certificate Chain
 
@@ -441,8 +436,8 @@ Table of Contents
    case when the AK certificate is replaced as part of onboarding the
    device into a new operational environment.
 
-   The AK certificate associated with the AK that signs the evidence
-   have the following constraints:
+   The AK certificate associated with the AK that signs the Evidence has
+   the following constraints:
 
    *  the certificate MUST include the Extended Key Usage (EKU)
       certificate extension;
@@ -463,16 +458,94 @@ Table of Contents
    with other attestation-related KeyPurposeId SHOULD NOT be marked as
    critical.
 
-   These constraints apply to the certificates of AKs that produce a
-   SignerInfo in the SignedData (see Section 5.2).  They do not apply to
-   the certificates of countersigners (see Section 5.2.4), which are
-   typically not Attesters.
+   These constraints apply to the certificates of Attestation Keys that
+   produce a SignerInfo in the SignedData (see Section 5.2).  They do
+   not apply to the certificates of countersigners (see Section 5.2.4),
+   which are not Attesters.
 
-   Note that the data format specified in Section 5 requires one or more
-   SignerInfo values, so Evidence is always signed by at least one AK,
-   and could be endorsed by multiple AK chains leading to different
-   trust anchors.  See Section 6 for a discussion of handling multiple
-   signers.
+   The data format specified in Section 5 requires one or more
+   SignerInfo values.  Multiple SignerInfo values allow one Attester
+   identity, represented by a single subject DN, to use distinct
+   Attestation Keys and signature algorithms.  See Section 6.4 for the
+   processing rules.
+
+3.3.  Presenter Role
+
+   This specification introduces the role of "Presenter" as shown in
+   Figure 1.  The Presenter is the role that initiates the generation of
+   Evidence.  Since HSMs are generally servers (client/server
+   relationship) or peripherals (controller/peripheral relationship), a
+   Presenter is required to launch the process of creating the Evidence
+   and capturing it to forward it to the Verifier.
+
+   +-----------------------------+
+   |  Attester (HSM)             |
+   |                             |
+   |      +------------------+   |
+   |      | Target           |   |
+   |      | Environment      |   |
+   |      | (Elements &      |   |
+   |      |  values)         |   |
+   |      +-------+----------+   |
+   |              |              |
+   |              | Collect      |
+   |              | Claims(3)    |
+   |              v              |
+   |      +------------------+   |
+   |      | Attesting        |   |
+   |      | Environment      |   |
+   |      +--------+---------+   |
+   |            ^  |             |
+   |            |  |             |
+   +------------+--+-------------+
+                |  |
+    Attestation |  |   Evidence(4)
+    Request(2)  |  |
+                |  v
+        +----------------+   Nonce(1)  +------------+
+        |                |<------------|            |
+        |    Presenter   |             |  Verifier  |
+        |                |------------>|            |
+        +----------------+ Evidence(5) +------------+
+
+                          Figure 1: Presenter Role
+
+   The process of generating Evidence generally starts at the Verifier
+   with the generation of a nonce.  The nonce is used to ensure
+   freshness of the Evidence and this quality is guaranteed by the
+   Verifier.  Therefore, if a nonce is used, it must be provided to the
+   Presenter by the Verifier (1).
+
+   An Attestation Request (request) is assembled by the Presenter and
+   submitted to the HSM (2).  The Attesting Environment parses the
+   request and collects the appropriate measurements from the Target
+   Environment (3).
+
+   In the previous figure, the HSM is represented as being composed of
+   an Attesting Environment and a Target Environment.  This
+   representation is offered as a simplified view and implementations
+   are not required to adhere to this separation of concerns.
+
+   The Attesting Environment produces Evidence based on the collected
+   information and returns it to the Presenter for distribution (4).
+   Finally, the Presenter forwards the Evidence to the Verifier (5).
+
+   The aim of the figure is to depict the position of the Presenter as
+   an intermediate role between the Attester and the Verifier.  The role
+   of "Presenter" is privileged as it controls the claims included in
+   the Evidence being generated by the Attester.  However, the role is
+   not "trusted" as the Verifier does not have to take into account the
+   participation of the Presenter as part of the function of appraising
+   the Evidence.
+
+   The attestation request is a message used by the Presenter to specify
+   the elements and the associated claims that are included by the
+   Attester in the generated Evidence.  The nonce specified by the
+   Verifier MUST be included in the attestation request for the Attester
+   to include in the Evidence.
+
+   The nature and format of the attestation request is not dictated by
+   this specification.
 
 4.  Information Model
 
@@ -516,7 +589,7 @@ Table of Contents
    to different portions of the Target Environment.
 
    It is possible for two elements to be quite similar such as in a
-   situation where a key is imported twice in a HSM.  In this case, the
+   situation where a key is imported twice in an HSM.  In this case, the
    two related elements could be associated with similar claims.
    However, they are treated as different elements as they are reporting
    different portions of the Target Environment.
@@ -525,7 +598,8 @@ Table of Contents
    respective type, is left to the implementer.  For a simple device
    where there is only one key, the list of reported elements could be
    fixed.  For larger and more complex devices, the list of reported
-   elements should be tailored to what is demanded by the Presenter.
+   elements should be tailored to the intended use and authorized
+   recipient of the Evidence.
 
    In particular, note that the nonce claim contained with the
    Transaction element is optional, and therefore it is possible that an
@@ -534,8 +608,8 @@ Table of Contents
    the device instead of being generated on-demand.  This model would
    essentially off-board the Attesting Environment to be part of the
    manufacturing infrastructure.  In the RATS Architecture, this
-   configuration would refer to the the information provided this way as
-   an Endorsement provided by the manufacturer as opposed to Evidence
+   configuration would refer to the information provided this way as an
+   Endorsement provided by the manufacturer as opposed to Evidence
    generated by the HSM.
 
 4.2.  Element Type
@@ -543,23 +617,23 @@ Table of Contents
    An element is defined by its type.  This specification defines three
    element types:
 
-   *  Platform : This element holds claims that describes the state of
+   *  Platform : This element holds claims that describe the state of
       the platform (or device) itself.  Elements of this type hold
       claims that are global in nature within the Target Environment.
 
    *  Key : The elements of this type represent a cryptographic key
       protected within the Target Environment and hold claims that
-      describes that specific key.
+      describe that specific key.
 
    *  Transaction : This element is abstract in nature since it is
       associated with claims that do not describe portions of the Target
-      Environment.  Instead, these claims relate to the current request
-      for Evidence such as a nonce to support freshness.
+      Environment.  Instead, these claims relate to the Evidence-
+      generation transaction, such as a nonce to support freshness.
 
    Although this document defines a short list of element types, this
    list is extensible to allow implementers to report on elements found
    in their implementation and not covered by this specification.  By
-   using an Object Identifiers (OID) for specifying element types and
+   using Object Identifiers (OIDs) for specifying element types and
    claim types, this format is inherently extensible; implementers of
    this specification MAY define new custom or proprietary element types
    and place them alongside the standardized elements, or define new
@@ -582,11 +656,11 @@ Table of Contents
    A value provided by a claim is to be interpreted within the context
    of its element and in relation to the claim type.
 
-   It is RECOMMENDED that a claim type be defined for a specific element
-   type, to reduce confusion when it comes to interpretation of the
-   value.  In other words, a claim type SHOULD NOT be used by multiple
-   element types.  For example, if a concept of "revision" is applicable
-   to a platform and a key, the claim for one element type (platform
+   A claim type MUST be defined for a specific element type to reduce
+   confusion when it comes to interpretation of the value.  In other
+   words, a specific claim type MUST NOT be used by multiple element
+   types.  For example, if a concept of "revision" is applicable to a
+   platform and a key, the claim for one element type (platform
    revision) should have a different identifier from the one for the
    other element type (key revision).
 
@@ -602,16 +676,16 @@ Table of Contents
    type, is left to the implementer.  For a simple device, the reported
    list of claims for an element might be fixed.  However, for larger
    and more complex devices, the list of reported claims should be
-   tailored to what is demanded by the Presenter.
+   tailored to the intended use and authorized recipient of the
+   Evidence.
 
    Claims of a particular type MAY be repeated within an element while
    others MUST NOT.  For example, for a platform element, there can only
    be one "firmware version" claim.  Therefore, the associated claim
-   MUST NOT be repeated as it may lead to confusion.  However, a claim
-   relating to a "ak-spki" MAY be repeated, each claim describing a
-   different attesting key.  Therefore, the definition of a claim
-   specifies whether or not multiple copies of that claim are allowed
-   within an element's claim set.
+   MUST NOT be repeated as it may lead to confusion.  Other claim
+   definitions can allow multiple independent values.  Therefore, the
+   definition of a claim specifies whether or not multiple copies of
+   that claim are allowed within an element's claim set.
 
    If a Verifier detects, within a single element, multiple copies of a
    claim type that should not be repeated, it MUST reject the Evidence
@@ -627,8 +701,8 @@ Table of Contents
 
    This section describes the data model associated with generated
    Evidence.  For ease of deployment within the target ecosystem, ASN.1
-   definitions and DER encoding are used.  A complete ASN.1 module is
-   provided in Section 8.
+   definitions [X680] and DER encoding [X690] are used.  A complete
+   ASN.1 module is provided in Section 7.
 
    Evidence is conveyed using the Cryptographic Message Syntax (CMS)
    [RFC5652].  The Evidence description is defined as a new CMS content
@@ -704,9 +778,10 @@ Table of Contents
       according to their own validation policy.
 
    *  signerInfos MUST contain at least one SignerInfo.  Each SignerInfo
-      is a signature by one Attestation Key of the Attester.  Entities
-      other than the Attester MUST NOT add a SignerInfo; they
-      countersign instead, as described in Section 5.2.4.
+      is a signature by one Attestation Key of the Attester; see
+      Section 5.2.3.  Entities other than the Attester MUST NOT add a
+      SignerInfo; they countersign instead, as described in
+      Section 5.2.4.
 
    There MUST NOT be any backwards compatibility with PKCS #7 as
    described in Section 5.2.1 of [RFC5652].
@@ -730,12 +805,16 @@ Table of Contents
    MUST identify that AK certificate, using either issuerAndSerialNumber
    or subjectKeyIdentifier, and that AK certificate MUST be included in
    SignedData.certificates.  The AK certificate is subject to the
-   constraints in Section 3.2.  SignedData.certificates MAY also include
-   any or all intermediate CA certificates needed to build a
-   certification path, as well as the certificates of countersigners.
-   It is not required to include trust anchors, and including a
-   certificate never establishes it as a trust anchor.  Order is not
-   significant.
+   constraints in Section 3.2.  It is expected that an X.509 certificate
+   will be generally used, as it provides the public key needed to
+   verify the signature and clearly identifies the Attester that
+   provided the signature.
+
+   SignedData.certificates MAY also include any or all intermediate CA
+   certificates needed to build a certification path, as well as the
+   certificates of countersigners.  It is not required to include trust
+   anchors, and including a certificate never establishes it as a trust
+   anchor.  Order is not significant.
 
    In environments where X.509 certificates are not used, sid MUST use
    the subjectKeyIdentifier alternative, and SignedData.certificates MAY
@@ -760,7 +839,7 @@ Table of Contents
    of the signer under the signature.
 
    signedAttrs MUST NOT contain a signing-time attribute.  As described
-   in Section 10.8, HSM clocks are not reliable; the timestamp
+   in Section 9.8, HSM clocks are not reliable; the timestamp
    transaction claim, with the caveats described for it, is the place to
    report the time of generation.
 
@@ -774,20 +853,19 @@ Table of Contents
 
 5.2.3.  Multiple Signers
 
-   More than one SignerInfo MAY be used when the Attester holds more
-   than one Attestation Key. For example, the HSM's Attesting
-   Environment might hold multiple Attestation Keys using different
-   cryptographic algorithms in order to provide resilience against
-   cryptographic degradation in a hybrid fashion.  Alternatively, the
-   HSM's Attesting Environment may hold multiple Attestation Keys (or
-   multiple X.509 certificates for the same key) from multiple
-   operational environments to which it belongs.
+   Multiple SignerInfo values support algorithm agility by allowing the
+   same Attester identity to sign the PkixEvidence with multiple
+   Attestation Keys, for example to provide resilience against
+   cryptographic degradation in a hybrid fashion.  When more than one
+   SignerInfo is present and the Attestation Keys are certified, each
+   signing certificate represents the same Attester identity with the
+   same subject Distinguished Name (DN), but contains a distinct SPKI.
 
    Every SignerInfo protects the same PkixEvidence.  Because CMS does
    not bind the SignerInfo values to each other, a SignerInfo can be
    removed without invalidating the others.  The ak-spki transaction
    claim, which is inside the signed content, allows a Verifier to
-   detect such removal.  See Section 6 and Section 10.3.
+   detect such removal.  See Section 6.4 and Section 9.3.
 
 5.2.4.  Countersignatures
 
@@ -845,7 +923,7 @@ Table of Contents
 
    ReportedClaim ::= SEQUENCE {
        claimType  CLAIM.&id ({ClaimSet}),
-       value      CLAIM.&Type ({ClaimSet}{@claimType}) OPTIONAL
+       value      CLAIM.&Type ({ClaimSet}{@claimType})
    }
 
    ClaimSet CLAIM ::= {
@@ -857,13 +935,8 @@ Table of Contents
    This allows future or proprietary claim types to be encoded without
    changing the ReportedClaim syntax.  A Verifier that does not
    recognize a claim type SHOULD ignore that claim as described in
-   Section 4, unless local policy requires rejection.
-
-   For generated Evidence, value MUST be present for every claim whose
-   semantics are defined by this specification unless that claim type
-   explicitly allows omission.  In attestation requests, the value MAY
-   be omitted when the value is to be supplied by the Attesting
-   Environment.
+   Section 4, unless local policy requires rejection.  Every reported
+   claim contains a value.
 
    Each claim type SHOULD be associated with a single element type.
    Therefore, it is encouraged to define claim types grouped with their
@@ -871,7 +944,7 @@ Table of Contents
 
    The nature of a claim value is dictated by the claim type.  When a
    claim type is defined, the definition must include the type of the
-   value, its semantic and interpretation.
+   value, its semantics and interpretation.
 
    The following ASN.1 fragment illustrates how a claim is associated
    with a type, in this case the OID id-evidence-claim-transaction-nonce
@@ -906,53 +979,69 @@ Table of Contents
    to the specification where the semantics for the claim value can be
    found.
 
-      +============+=============+===========+=====================+
-      | Claim Type | Reference   | Multiple? | OID                 |
-      +============+=============+===========+=====================+
-      | vendor     | RFCthis     | No        | id-evidence-claim-  |
-      |            |             |           | platform-vendor     |
-      +------------+-------------+-----------+---------------------+
-      | oemid      | [RFC9711]   | No        | id-evidence-claim-  |
-      |            |             |           | platform-oemid      |
-      +------------+-------------+-----------+---------------------+
-      | hwmodel    | [RFC9711]   | No        | id-evidence-claim-  |
-      |            |             |           | platform-hwmodel    |
-      +------------+-------------+-----------+---------------------+
-      | hwversion  | [RFC9711]   | No        | id-evidence-claim-  |
-      |            |             |           | platform-hwversion  |
-      +------------+-------------+-----------+---------------------+
-      | hwserial   | RFCthis     | No        | id-evidence-claim-  |
-      |            |             |           | platform-hwserial   |
-      +------------+-------------+-----------+---------------------+
-      | swname     | [RFC9711]   | No        | id-evidence-claim-  |
-      |            |             |           | platform-swname     |
-      +------------+-------------+-----------+---------------------+
-      | swversion  | [RFC9711]   | No        | id-evidence-claim-  |
-      |            |             |           | platform-swversion  |
-      +------------+-------------+-----------+---------------------+
-      | dbgstat    | [RFC9711]   | No        | id-evidence-claim-  |
-      |            |             |           | platform-debugstat  |
-      +------------+-------------+-----------+---------------------+
-      | uptime     | [RFC9711]   | No        | id-evidence-claim-  |
-      |            |             |           | platform-uptime     |
-      +------------+-------------+-----------+---------------------+
-      | bootcount  | [RFC9711]   | No        | id-evidence-claim-  |
-      |            |             |           | platform-bootcount  |
-      +------------+-------------+-----------+---------------------+
-      | fipsboot   | [FIPS140-3] | No        | id-evidence-claim-  |
-      |            |             |           | platform-fipsboot   |
-      +------------+-------------+-----------+---------------------+
-      | fipsver    | [FIPS140-3] | No        | id-evidence-claim-  |
-      |            |             |           | platform-fipsver    |
-      +------------+-------------+-----------+---------------------+
-      | fipslevel  | [FIPS140-3] | No        | id-evidence-claim-  |
-      |            |             |           | platform-fipslevel  |
-      +------------+-------------+-----------+---------------------+
-      | fipsmodule | [FIPS140-3] | No        | id-evidence-claim-  |
-      |            |             |           | platform-fipsmodule |
-      +------------+-------------+-----------+---------------------+
+   +===============+==============+===========+========================+
+   | Claim Type    | Reference    | Multiple? | OID                    |
+   +===============+==============+===========+========================+
+   | vendor        | RFCthis      | No        | id-evidence-claim-     |
+   |               |              |           | platform-vendor        |
+   +---------------+--------------+-----------+------------------------+
+   | oemid         | [RFC9711]    | No        | id-evidence-claim-     |
+   |               |              |           | platform-oemid         |
+   +---------------+--------------+-----------+------------------------+
+   | hwmodel       | [RFC9711]    | No        | id-evidence-claim-     |
+   |               |              |           | platform-hwmodel       |
+   +---------------+--------------+-----------+------------------------+
+   | hwversion     | [RFC9711]    | No        | id-evidence-claim-     |
+   |               |              |           | platform-hwversion     |
+   +---------------+--------------+-----------+------------------------+
+   | hwserial      | RFCthis      | No        | id-evidence-claim-     |
+   |               |              |           | platform-hwserial      |
+   +---------------+--------------+-----------+------------------------+
+   | swname        | [RFC9711]    | No        | id-evidence-claim-     |
+   |               |              |           | platform-swname        |
+   +---------------+--------------+-----------+------------------------+
+   | swversion     | [RFC9711]    | No        | id-evidence-claim-     |
+   |               |              |           | platform-swversion     |
+   +---------------+--------------+-----------+------------------------+
+   | dbgstat       | [RFC9711]    | No        | id-evidence-claim-     |
+   |               |              |           | platform-dbgstat       |
+   +---------------+--------------+-----------+------------------------+
+   | uptime        | [RFC9711]    | No        | id-evidence-claim-     |
+   |               |              |           | platform-uptime        |
+   +---------------+--------------+-----------+------------------------+
+   | bootcount     | [RFC9711]    | No        | id-evidence-claim-     |
+   |               |              |           | platform-bootcount     |
+   +---------------+--------------+-----------+------------------------+
+   | fipsboot      | [ISO19790]   | No        | id-evidence-claim-     |
+   |               |              |           | platform-fipsboot      |
+   +---------------+--------------+-----------+------------------------+
+   | fipsver       | [FIPS140-3]  | No        | id-evidence-claim-     |
+   |               |              |           | platform-fipsver       |
+   +---------------+--------------+-----------+------------------------+
+   | fipslevel     | [ISO19790]   | No        | id-evidence-claim-     |
+   |               |              |           | platform-fipslevel     |
+   +---------------+--------------+-----------+------------------------+
+   | fipsmodule    | [SP800-140B] | No        | id-evidence-claim-     |
+   |               |              |           | platform-fipsmodule    |
+   +---------------+--------------+-----------+------------------------+
+   | ccmoduleid    | RFCthis      | No        | id-evidence-claim-     |
+   |               |              |           | platform-ccmoduleid    |
+   +---------------+--------------+-----------+------------------------+
+   | ccboot        | RFCthis      | No        | id-evidence-claim-     |
+   |               |              |           | platform-ccboot        |
+   +---------------+--------------+-----------+------------------------+
+   | ccscheme      | [CC2022P1]   | No        | id-evidence-claim-     |
+   |               |              |           | platform-ccscheme      |
+   +---------------+--------------+-----------+------------------------+
+   | ccrequirement | [CC2022P1]   | No        | id-evidence-claim-     |
+   |               |              |           | platform-              |
+   |               |              |           | ccrequirement          |
+   +---------------+--------------+-----------+------------------------+
+   | cceallevel    | [CC2022P5]   | No        | id-evidence-claim-     |
+   |               |              |           | platform-cceallevel    |
+   +---------------+--------------+-----------+------------------------+
 
-                                 Table 1
+                                  Table 1
 
    Each claim defined in the table above is described in the following
    sub-sections.
@@ -1016,29 +1105,47 @@ Table of Contents
 
    FIPS 140-3 CMVP validation places stringent requirements on the mode
    of operation of the device and the cryptography offered by the
-   module, including only enabling FIPS-approved algorithms, certain
-   requirements on entropy sources, and extensive start-up self-tests.
-   FIPS 140-3 offers compliance levels 1 through 4 with increasingly
-   strict requirements.  Many HSMs include a configuration setting that
-   allows the device to be taken out of FIPS mode and thus enable
-   additional functionality or performance, and some offer configuration
-   settings to change between compliance levels.
+   module, including restricting cryptographic services to approved (or
+   explicitly allowed) security functions, certain requirements on
+   entropy sources, and extensive start-up self-tests.  FIPS 140-3
+   offers compliance levels 1 through 4 with increasingly strict
+   requirements.  Many HSMs include a configuration setting that allows
+   the device to be taken out of FIPS mode and thus enable additional
+   functionality or performance, and some offer configuration settings
+   to change between compliance levels.
+
+   [FIPS140-3] adopts the requirements of [ISO19790] (2012 edition).  In
+   this specification, "FIPS mode" refers to the "approved mode of
+   operation" and "compliance level" refers to the "security level",
+   both as defined in [ISO19790].  Guidance on how a module indicates
+   that it is operating in the approved mode is provided in
+   [FIPS140-3-IG].  The module name and overall security level of a
+   validated module are documented in its Security Policy, whose content
+   is specified in [SP800-140B].
 
    The boolean claim fipsboot indicates whether the device is currently
    operating in FIPS mode.  When the claim value is "true", the HSM is
-   running in compliance with the FIPS 140 restrictions.  Among other
-   restrictions, it means that only FIPS-approved algorithms are
-   available.  If the value of this claim is "false", then the HSM is
-   not restricted to the behavior limited by compliance.
+   running in compliance with the FIPS 140 restrictions.  If the value
+   of this claim is "false", then the HSM is not restricted to the
+   behavior limited by compliance.
+
+   A fipsboot value of "true" indicates that the module is in an
+   approved mode of operation as described in its Security Policy.  It
+   is not, by itself, the per-service indicator required by [ISO19790]
+   section 7.2.4.2.  As clarified in [FIPS140-3-IG] IG 2.4.C, a module-
+   level indicator satisfies that requirement only when the module, in
+   that mode, prevents the use of any non-approved service.
 
    The textual claim fipsver indicates the version of the FIPS CMVP
    specification with which the device's operational mode is compliant.
-   At the time of writing, the strings "FIPS 140-2" or "FIPS 140-3"
-   SHOULD be used.
+   At the time of writing, the string "FIPS 140-3" SHOULD be used;
+   devices operating under the legacy [FIPS140-2] specification MAY
+   report "FIPS 140-2".
 
-   The integer claim fipslevel indicates the compliance level to which
-   the device is currently operating and MUST only be 1, 2, 3, or 4.
-   The fipslevel claim has no meaning if fipsboot is absent or false.
+   The integer claim fipslevel indicates the overall compliance level to
+   which the device is currently operating and MUST only be 1, 2, 3, or
+   4.  The fipslevel claim has no meaning if fipsboot is absent or
+   false.
 
    The claim fipsmodule is a textual field used to represent the name of
    the module that was submitted to CMVP for validation.  The
@@ -1048,15 +1155,90 @@ Table of Contents
 
    The FIPS status information found in Evidence indicates only the mode
    of operation of the device and is not authoritative of its validation
-   status.  This information is available on the NIST CMVP website or by
-   contacting the device vendor.  As an example, some devices may have
-   the option to enable FIPS mode in configuration even if the vendor
-   has not submitted this model for validation.  As another example, a
-   device may be running in a mode consistent with FIPS Level 3 but the
-   device was only validated and certified to Level 2.  A Relying Party
-   wishing to know the validation status of the device MUST couple the
-   device state information contained in the Evidence with a valid FIPS
-   CMVP certificate for the device.
+   status.  This information is available in the NIST CMVP database of
+   validated modules [CMVP] or by contacting the device vendor.  As an
+   example, some devices may have the option to enable FIPS mode in
+   configuration even if the vendor has not submitted this model for
+   validation.  As another example, a device may be running in a mode
+   consistent with FIPS Level 3 but the device was only validated at
+   Level 2.  A Relying Party wishing to know the validation status of
+   the device MUST couple the device state information contained in the
+   Evidence with a valid FIPS CMVP certificate for the device.
+
+5.4.5.  ccmoduleid, ccboot, ccscheme, ccrequirement and cceallevel
+
+   Common Criteria certification schemes place stringent requirements on
+   the mode of operation of the device and the cryptography offered by
+   the module, including only enabling a restricted set of algorithms,
+   key sizes and modes (e.g., only the algorithms listed in the Security
+   Target of the device), certain requirements on entropy sources, and
+   extensive start-up self-tests.  Common Criteria offers Evaluation
+   Assurance Levels (EAL) from EAL1 to EAL7, with increasingly strict
+   requirements, optionally augmented with additional assurance
+   components (see [CC2022P5]).  This specification signals augmentation
+   with a trailing "+" sign, following common industry practice.  Many
+   HSMs include a configuration setting that allows the device to be
+   taken out of its certified mode and thus enable additional
+   functionality or performance, and some offer configuration settings
+   to change between compliance levels.
+
+   In this section, the evaluation, validation or certification scheme
+   is referred to simply as the "certification scheme", and the
+   evaluation, validation or certification of a module is referred to
+   simply as its "certification".
+
+   The claim ccmoduleid is a textual field used to represent the name of
+   the module that was submitted to the certification scheme for
+   certification.  The information derived by combining this claim with
+   the vendor name shall be sufficient to manually find the associated
+   records in the certification databases.
+
+   The boolean claim ccboot indicates whether the device was booted in,
+   and has been continuously operating in, the Common Criteria certified
+   mode.  Among other restrictions, this means that only the restricted
+   algorithm set is available.  When the claim value is "true", the HSM
+   has been running in compliance with the claimed restrictions since
+   its last boot.  If the value of this claim is "false", then the HSM
+   is not restricted to the behavior limited by Common Criteria
+   compliance; the claims ccscheme, ccrequirement and cceallevel then
+   have no meaning and SHOULD be omitted.
+
+   The textual claim ccscheme indicates the name and the version of the
+   certification scheme specification with which the device's
+   operational mode is compliant.  At the time of writing, the strings
+   "ISO15408 v3.1r5", "ISO15408:2022", "ISO15408:2026", "CCRA v3.1r5",
+   "CCRA:2022" and "EUCC" are defined, but any other scheme can be named
+   if the intended Verifier has knowledge about it.
+
+   The textual claim ccrequirement indicates the name and the version of
+   the requirements with which the device's operational mode is
+   compliant.  For the Common Criteria schemes, a particular Protection
+   Profile or a proprietary Security Target is the requirement to be
+   satisfied.  At the time of writing, when the value of ccscheme begins
+   with "ISO15408", "CCRA" or "EUCC", the values "EN 419 221-5:2018",
+   "EN 419 241-2:2019" and "SecurityTarget:STversion" (where "STversion"
+   is replaced with the exact version of the Security Target of the
+   device) are defined, but any other requirement, specification or
+   standard can be named if the intended Verifier has knowledge about
+   it.
+
+   The textual claim cceallevel indicates the assurance level of the
+   certification under which the device is currently operating.  When
+   the value of ccscheme begins with "ISO15408", "CCRA" or "EUCC",
+   cceallevel describes the Evaluation Assurance Level achieved (see
+   [CC2022P5]) and MUST use the following syntax, expressed in EBNF:
+
+EAL_desc        = "EAL", Level, [ "+", SAR, { ",", SAR } ] ;
+Level           = "1" | "2" | "3" | "4" | "5" | "6" | "7" ;
+SAR             = Class_Code, "_", Family_Code, ".", Component_Level ;
+Class_Code      = 3 * Upper ;
+Family_Code     = 3 * Upper ;
+Component_Level = Digit, { Digit } ;
+Upper           = ? an uppercase letter from "A" to "Z" ? ;
+Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+
+   Valid examples are "EAL1", "EAL4+AVA_VAN.5" and
+   "EAL4+AVA_VAN.5,ALC_FLR.3".
 
 5.5.  Key Element
 
@@ -1102,6 +1284,9 @@ Table of Contents
       | local       | [PKCS11]  | No        | id-evidence-claim-    |
       |             |           |           | key-local             |
       +-------------+-----------+-----------+-----------------------+
+      | device-     | RFCthis   | No        | id-evidence-claim-    |
+      | bound       |           |           | key-device-bound      |
+      +-------------+-----------+-----------+-----------------------+
       | expiry      | RFCthis   | No        | id-evidence-claim-    |
       |             |           |           | key-expiry            |
       +-------------+-----------+-----------+-----------------------+
@@ -1129,9 +1314,8 @@ Table of Contents
 
 5.5.2.  spki
 
-   The value of this claim contains the DER-encoded field
-   SubjectPublicKeyInfo (see [RFC5280]) associated with the
-   cryptographic key.
+   The value of this claim is the SubjectPublicKeyInfo (see [RFC5280])
+   associated with the cryptographic key.
 
 5.5.3.  extractable, sensitive, never-extractable, local
 
@@ -1145,8 +1329,8 @@ Table of Contents
    the HSM.  Corresponds directly to the attribute CKA_EXTRACTABLE found
    in PKCS#11.
 
-   The claim "sensitive" indicates that the value of key cannot leave
-   the HSM in plaintext.  Corresponds directly to the attribute
+   The claim "sensitive" indicates that the value of the key cannot
+   leave the HSM in plaintext.  Corresponds directly to the attribute
    CKA_SENSITIVE found in PKCS#11.
 
    The claim "never-extractable" indicates if the key was never
@@ -1157,15 +1341,69 @@ Table of Contents
    imported.  Corresponds directly to the attribute CKA_LOCAL found in
    PKCS#11.
 
-5.5.4.  expiry
+5.5.4.  device-bound
+
+   The boolean claim device-bound indicates whether the key is unique to
+   the device on which it is hosted.  When the claim value is "true",
+   the device asserts that:
+
+   *  the key was generated on the device;
+
+   *  the key has never been exported from the device, in any form; and,
+
+   *  the device offers no means to export the key in the future.  This
+      includes, but is not limited to, export in plaintext, export
+      wrapped by another key, backup, cloning, and migration to another
+      device.
+
+   The assertion applies to every means by which the key could leave the
+   device, whether or not this specification defines a claim for it.  In
+   particular, a device that reports device-bound as "true" asserts that
+   none of the following can reveal the key or let it be reconstructed
+   outside the device:
+
+   *  vendor-specific or proprietary mechanisms, including mechanisms
+      not defined by PKCS#11 or any other standard API;
+
+   *  splitting the key into shares or components (for example, M-of-N
+      secret sharing), even if no single share reveals the key;
+
+   *  administrative, maintenance, recovery or manufacturer interfaces,
+      including interfaces available only to the vendor;
+
+   *  debug interfaces, diagnostic modes, firmware updates or changes to
+      the device's configuration or operating mode; and,
+
+   *  exporting any value from which the key can be derived or
+      recomputed outside the device.
+
+   A device that cannot make this assertion for all export mechanisms,
+   including those it may enable in the future, MUST NOT report device-
+   bound as "true".
+
+   When the value of this claim is "false", the device makes no such
+   assertion.  A value of "false" does not by itself indicate that the
+   key is extractable or was imported.
+
+   A key for which device-bound is "true" can be understood as having
+   attributes that the key claims "local", "extractable" and "never-
+   extractable" express individually with the values "true", "false" and
+   "true" respectively, but with the additional guarantee that no
+   configuration change or future operation can make the key leave the
+   device.  If a key element reports device-bound as "true" along with
+   any of the claims "local", "extractable" or "never-extractable" with
+   a contradicting value, a Verifier MUST reject the Evidence as
+   malformed.
+
+5.5.5.  expiry
 
    Reports a time after which the key is not to be used.  The device MAY
    enforce this policy based on its internal clock.
 
    Note that security considerations should be taken relating to HSMs
-   and their internal clocks.  See Section 10.8.
+   and their internal clocks.  See Section 9.8.
 
-5.5.5.  purpose
+5.5.6.  purpose
 
    Reports the key purposes, also referred to as key capabilities,
    associated with the subject key.  Since multiple purposes can be
@@ -1235,14 +1473,13 @@ Table of Contents
    A transaction element is associated with the type id-evidence-
    element-transaction.  This is an abstract element and does not relate
    to any state found in the Target Environment.  Instead, it groups
-   together claims that relate to the request of generating the
-   Evidence.
+   together claims that relate to the generation of the Evidence.
 
-   For example, it is possible to include a nonce as part of the request
-   to produce Evidence.  This nonce is repeated as part of the Evidence
-   to support the freshness of the Evidence.  The nonce is not related
-   to any portion of the Target Environment and the transaction element
-   is used to gather those values into claims.
+   For example, a Verifier can supply a nonce for the generation of
+   Evidence.  This nonce is included in the Evidence to support the
+   freshness of the Evidence.  The nonce is not related to any portion
+   of the Target Environment and the transaction element is used to
+   gather those values into claims.
 
    A transaction element, if provided, MUST be included only once within
    the reported elements.  If a Verifier detects multiple elements of
@@ -1271,10 +1508,11 @@ Table of Contents
 5.6.1.  nonce
 
    The claim nonce is used to provide "freshness" quality as to the
-   generated Evidence.  A Presenter requesting Evidence MAY provide a
-   nonce value as part of the request.  This nonce value, if specified,
-   SHOULD be repeated in the generated Evidence as a claim within the
-   transaction element.
+   generated Evidence.  If a nonce is used, it MUST be generated by the
+   Verifier and conveyed to the Attester, possibly through a Presenter.
+   The Attester MUST include the nonce unchanged in the generated
+   Evidence.  The mechanism by which the nonce is conveyed to the
+   Attester is outside the scope of this specification.
 
    This claim is similar to the "eat_nonce" as defined in [RFC9711].
    According to that specification, this claim may be specified multiple
@@ -1289,24 +1527,23 @@ Table of Contents
    to the "iat" claim in [RFC9711].
 
    Note that security considerations should be taken relating to the
-   evaluation of timestamps generated by HSMs.  See Section 10.8.
+   evaluation of timestamps generated by HSMs.  See Section 9.8.
 
 5.6.3.  ak-spki
 
-   This claim contains the encoded Subject Public Key Information (SPKI)
-   for the attestation key used to sign the Evidence.  The definition
-   and encoding for SPKIs are defined in X.509 certificates ([RFC5280]).
+   This claim contains the Subject Public Key Information (SPKI) for the
+   attestation key used to sign the Evidence.  The claim value is of
+   type SubjectPublicKeyInfo, as defined for X.509 certificates in
+   [RFC5280].
 
    This transaction claim is used to bind the content of the Evidence
    with the key(s) used to sign that Evidence.  The importance of this
-   binding is discussed in Section 10.3.
+   binding is discussed in Section 6.4 and Section 9.3.
 
    This claim can be reported multiple times.  Each included claim MUST
    refer to a different attestation key.  In other words, this claim
    should be repeated only if multiple attestation keys are used to sign
-   the Evidence.  When present, an ak-spki claim SHOULD be included for
-   every Attestation Key that produces a SignerInfo, so that the removal
-   of a SignerInfo can be detected.
+   the Evidence.
 
    When the Attestation Key is not certified by an X.509 certificate
    (see Section 5.2.1), this claim is the means by which the
@@ -1324,13 +1561,13 @@ Table of Contents
    explain the semantics of the claims and the frequency that values can
    be provided.
 
-   See Section 7.2, Section 7.3 and Section 10.1 for handling of
-   unrecognized custom types.
+   See Section 6.3 and Section 9.1 for handling of unrecognized custom
+   types.
 
 5.8.  Encoding
 
    The Evidence ContentInfo, including the PkixEvidence carried within
-   it, is to be DER encoded [X.690].
+   it, is to be DER encoded [X690].
 
    If a textual representation is required, then the DER encoding MAY be
    subsequently encoded into Standard Base64 as defined in [RFC4648].
@@ -1343,12 +1580,119 @@ Table of Contents
    (...)
    -----END EVIDENCE-----
 
-6.  Signing and Verification Procedures
+6.  Processing
 
-   Evidence is generated by DER encoding the PkixEvidence, placing it in
-   encapContentInfo.eContent, and producing one SignerInfo per
-   Attestation Key according to Section 5.4 of [RFC5652] and the profile
-   in Section 5.2.
+   This section deals with the exchanges between the Presenter, the
+   Attester and the Verifier during the request, generation and
+   consumption of Evidence as defined in this specification.  The
+   architecture as shown in Figure 1 should be used as a reference for
+   this section.
+
+6.1.  Initiation from Presenter
+
+   The Presenter assembles a request to initiate the generation of
+   Evidence by the Attester.  This request selects the elements and the
+   claims that are to be included in the generated Evidence.
+
+   Ultimately, the generated Evidence is consumed by the Verifier.
+   Therefore, a certain level of coordination is required between the
+   Presenter and the Verifier so that the generated Evidence includes
+   the necessary information for the specific purpose.
+
+   The nonce used during the generation of Evidence is used to determine
+   the freshness of the included information.  Since the freshness is
+   guaranteed by the Verifier, the nonce is generally selected by the
+   Verifier.  If the Verifier generates the nonce, then it must be
+   transmitted to the Presenter prior to making the request.  It is
+   possible to devise schemes where a Presenter and a Verifier would
+   agree to use a central "bell" as nonce, alleviating the need to
+   transmit the nonce between the two parties prior to the generation of
+   the Evidence.
+
+   Finally, in the case where an Attester has multiple attestation keys,
+   the Presenter needs to select the attestation key(s) that are
+   required by the Verifier.
+
+6.2.  Generation of Evidence
+
+   Upon receiving a request, the Attesting Environment verifies the
+   validity of the request.  This specification RECOMMENDS that:
+
+   *  An Attesting Environment fails a request if it contains an
+      unrecognized element.  This is to ensure that all the semantics
+      expected by the Presenter are fully understood by the Attesting
+      Environment.
+
+   *  An Attesting Environment ignores unrecognized claim types for a
+      specific element.  In this situation, the Attesting Environment is
+      expected not to include the claim as part of the response.  This
+      guidance is intended to increase the likelihood of
+      interoperability between tools of different vendors.
+
+   *  An Attesting Environment includes only elements and claims in the
+      generated Evidence if these elements and claims were specified as
+      part of the request.  This is to give control to the Presenter as
+      to what information is disclosed by the Attesting Environment.
+
+   *  An Attesting Environment fails a request if the Presenter does not
+      have the appropriate access rights to the elements or claims
+      included in the request.
+
+   The Attesting Environment collects the necessary information from the
+   Target Environment and assembles the PkixEvidence structure.
+
+   During the assembly of PkixEvidence, the Attesting Environment MUST:
+
+   *  include the nonce (if present) provided by the Presenter to the
+      transaction element using the claim claim-transaction-nonce; and,
+
+   *  add a claim of type claim-transaction-ak-spki to the transaction
+      element to represent each attestation key selected to sign the
+      Evidence.
+
+   The DER encoding of PkixEvidence is placed in
+   encapContentInfo.eContent of a SignedData with eContentType set to
+   id-ct-pkixEvidence.  For each selected attestation key, the Attesting
+   Environment produces a SignerInfo according to Section 5.4 of
+   [RFC5652] and the profile in Section 5.2, with a sid identifying the
+   attestation key and the required signed attributes.
+
+   Finally, the SignedData is wrapped in a ContentInfo.  When the
+   attestation keys are certified, the Attesting Environment includes
+   the AK certificates in SignedData.certificates, and MAY add
+   intermediate certificates required by the Verifier to ascertain the
+   validity of the provided signatures.
+
+6.3.  Verification by Presenter
+
+   This sub-section describes the considerations that are relevant when
+   a Presenter receives Evidence from the Attester (the HSM) prior to
+   distribution.
+
+   A Presenter is expected to review the Evidence produced by an
+   Attester for fitness prior to distribution.
+
+   A Presenter is expected not to disclose Evidence if it contains
+   information it cannot parse.  This restriction applies to element
+   types and claim types.  This is to ensure that the information
+   provided by the Attester can be evaluated by the Presenter.
+
+   A Presenter is expected not to disclose Evidence if it contains
+   elements other than the ones that were requested of the Attester.
+   This is to ensure that only the selected elements are exposed to the
+   Verifier.
+
+   A Presenter is expected not to disclose Evidence if it contains an
+   element with a claim that was not requested of the Attester.  This is
+   to ensure that only the selected information is disclosed to the
+   Verifier.
+
+   Further privacy concerns are discussed in Section 9.5.
+
+6.4.  Verification Procedures
+
+   This sub-section describes the considerations to be taken by the
+   Verifier when handling Evidence generated under this specification.
 
    The Verifier MUST validate the received ContentInfo against the
    profile in Section 5.2, including DER encoding, the outer and
@@ -1396,18 +1740,20 @@ Table of Contents
           a trust anchor, using SignedData.certificates to build the
           path as needed.
 
-   The Verifier MUST successfully verify at least one SignerInfo using
-   an Attestation Key that is acceptable under its appraisal policy;
-   otherwise the Evidence MUST be rejected.  Whether more than one
-   verified SignerInfo is required is a matter of Verifier policy.  For
-   example, where multiple Attestation Keys are used in a hybrid fashion
-   (see Section 5.2.3), a Verifier would be expected to verify all of
-   the SignerInfo values.  Where multiple Attestation Keys are used for
-   different operational environments, a Verifier would be expected to
-   verify only the SignerInfo corresponding to its own environment.  A
-   SignerInfo that fails verification, or uses an algorithm the Verifier
-   does not support, does not by itself invalidate another SignerInfo
-   that verifies successfully.
+   The certificate-based mode remains the preferred form in PKIX
+   deployments because it provides both the public key and an X.509
+   identity.
+
+   Each SignerInfo is evaluated independently.  A Verifier MUST
+   successfully verify at least one SignerInfo using an algorithm, and
+   where applicable a certification path, acceptable under its appraisal
+   policy; otherwise the Evidence MUST be rejected.  A Verifier MAY
+   verify additional SignerInfo values when it supports their
+   algorithms.  The presence of a signature made with an algorithm that
+   is unsupported or unacceptable to the Verifier does not make an
+   otherwise acceptable signature invalid.  A Verifier MUST reject
+   Evidence when multiple signing certificates do not represent the same
+   Attester identity as described in Section 5.2.3.
 
    If any transaction.ak-spki claims are present, the Verifier SHOULD
    verify that the SubjectPublicKeyInfo of the Attestation Key of each
@@ -1427,296 +1773,7 @@ Table of Contents
    PkixEvidence and process the elements and claims as described in
    Section 5.
 
-7.  Attestation Requests
-
-   This section is informative in nature and implementers of this
-   specification do not need to adhere to it.  The aim of this section
-   is to provide a standard interface between a Presenter and an HSM
-   producing Evidence.  The authors hope that this standard interface
-   will yield interoperable tools between offerings from different
-   vendors.
-
-   The interface presented in this section might be too complex for
-   manufacturers of HSMs with limited capabilities such as smartcards or
-   personal ID tokens.  For devices with limited capabilities, a fixed
-   Evidence endorsed by the vendor might be installed during
-   manufacturing.  Other approaches for constrained HSMs might be to
-   report elements and claims that are fixed or offer limited
-   variations.
-
-   On the other hand, an enterprise-grade HSM with the capability to
-   hold a large number of private keys is expected to be capable of
-   generating Evidence catered to the specific constraints imposed by a
-   Verifier and without exposing extraneous information.  The aim of the
-   request interface is to provide the means to select and report
-   specific information in the generated Evidence.
-
-   This section introduces the role of "Presenter" as shown in Figure 1.
-   The Presenter is the role that initiates the generation of Evidence.
-   Since HSMs are generally servers (client/server relationship) or
-   peripherals (controller/peripheral relationship), a Presenter is
-   required to launch the process of creating the Evidence and capturing
-   it to forward it to the Verifier.
-
-   +-----------------------------+
-   |  Attester (HSM)             |
-   |                             |
-   |      +------------------+   |
-   |      | Target           |   |
-   |      | Environment      |   |
-   |      | (Elements &      |   |
-   |      |  values)         |   |
-   |      +-------+----------+   |
-   |              |              |
-   |              | Collect      |
-   |              | Claims(3)    |
-   |              v              |
-   |      +------------------+   |
-   |      | Attesting        |   |
-   |      | Environment      |   |
-   |      +--------+---------+   |
-   |            ^  |             |
-   |            |  |             |
-   +------------+--+-------------+
-                |  |
-    Attestation |  |   Evidence(4)
-    Request(2)  |  |
-                |  v
-        +----------------+   Nonce(1)  +------------+
-        |                |<------------|            |
-        |    Presenter   |             |  Verifier  |
-        |                |------------>|            |
-        +----------------+ Evidence(5) +------------+
-
-                           Figure 1: Architecture
-
-   The process of generating Evidence generally starts at the Verifier
-   with the generation of a nonce.  The nonce is used to ensure
-   freshness of the Evidence and this quality is guaranteed by the
-   Verifier.  Therefore, if a nonce is used, it must be provided to the
-   Presenter by the Verifier (1).
-
-   An Attestation Request (request) is assembled by the Presenter and
-   submitted to the HSM (2).  The Attesting Environment parses the
-   request and collects the appropriate measurements from the Target
-   Environment (3).
-
-   In the previous figure, the HSM is represented as being composed of
-   an Attesting Environment and a Target Environment.  This
-   representation is offered as a simplified view and implementations
-   are not required to adhere to this separation of concerns.
-
-   The Attesting Environment produces Evidence based on the collected
-   information and returns it to the Presenter for distribution (4).
-   Finally, the Presenter forwards the Evidence to the Verifier (5).
-
-   The aim of the figure is to depict the position of the Presenter as
-   an intermediate role between the Attester and the Verifier.  The role
-   of "Presenter" is privileged as it controls the claims included in
-   the Evidence being generated by the Attester.  However, the role is
-   not "trusted" as the Verifier does not have to take into account the
-   participation of the Presenter as part of the function of appraising
-   the Evidence.
-
-   The attestation request, shown in the figure, consists of a structure
-   PkixEvidence containing one ReportedElement for each element expected
-   to be included in the Evidence produced by the HSM.
-
-   Each instance of ReportedElement included in the request is referred
-   to as a requested element.  A requested element contains a number of
-   instances of ReportedClaim known as requested claims.  The collection
-   of requested elements and requested claims represent the information
-   desired by the Presenter.
-
-   In most cases the value of a requested claim should be left
-   unspecified by the Presenter.  In the process of generating the
-   Evidence, the values of the desired claims are measured by the
-   Attesting Environment within the HSM and reported accordingly.  For
-   the purpose of creating a request, the Presenter does not specify the
-   value of the requested claims and leaves them empty.  This is
-   possible because the definition of the structure ReportedClaim
-   specifies the element value as optional.
-
-   On the other hand, there are circumstances where the value of a
-   requested claim should be provided by the Presenter.  For example,
-   when a particular cryptographic key is to be included in the
-   Evidence, the request must include a key element with one of the
-   "identifier" claim set to the value corresponding to the desired key.
-
-   Some instances of ReportedElement, such as those representing the
-   platform or the transaction, do not need identifiers as the
-   associated elements are implicit in nature.  Custom element types
-   might need selection during an attestation request and related
-   documentation should specify how this is achieved.
-
-   The instance of PkixEvidence is unsigned and does not provide any
-   means to maintain integrity when communicated from the Presenter to
-   the HSM.  These details are left to the implementer.  However, it is
-   worth pointing out that CMS SignedData could be reused by an
-   implementer to provide those capabilities, as described in
-   Section 10.6.
-
-7.1.  Requested Claims with Specified Values
-
-   This section deals with the requested claims specified in this
-   document where a value should be provided by a Presenter.  In other
-   words, this section defines all requested claims that should set a
-   value in the structure ReportedClaim.  Requested claims not covered
-   in this sub-section should not have a specified value (left empty).
-
-   Since this section is non-normative, implementers may deviate from
-   those recommendations.
-
-7.1.1.  Key Identifiers
-
-   A Presenter may choose to select which cryptographic keys are
-   reported as part of the generated Evidence.  For each selected
-   cryptographic key, the Presenter includes a requested element of type
-   id-evidence-element-key.  Among the requested claims for this
-   element, the Presenter includes one claim with the type id-evidence-
-   claim-key-identifier.  The value of this claim should be set to the
-   utf8String that represents the identifier for the specific key.
-
-   An HSM receiving an attestation request which selects a key via this
-   approach is expected to fail the transaction if it cannot find the
-   cryptographic key associated with the specified identifier.
-
-7.1.2.  Nonce
-
-   A Presenter may choose to include a nonce as part of the attestation
-   request.  When producing the Evidence, the HSM repeats the nonce that
-   was provided as part of the request.
-
-   When providing a nonce, a Presenter includes, in the attestation
-   request, an element of type id-evidence-element-transaction with a
-   claim of type id-evidence-claim-transaction-nonce.  This claim is set
-   with the value of the nonce as an octet string.
-
-   It is important to note that the Presenter, as an untrusted
-   participant, should not be generating the value for the nonce.  In
-   fact, the nonce should be generated by the Verifier so that the
-   freshness of the Evidence can be trusted by the Verifier.
-
-7.1.3.  Reporting of Attestation Keys
-
-   There is a provision for the Attesting Environment to report the
-   attestation key(s) used during the generation of the Evidence.  To
-   this end, the transaction claim "ak-spki" is used.
-
-   A Presenter invokes this provision by submitting an attestation
-   request with a transaction claim of type "ak-spki" with a non-
-   specified value (left empty).
-
-   In this case, the Attesting Environment adds a transaction claim of
-   type "ak-spki" for each Attestation Key used to sign the Evidence.
-   The value of this claim is an octet string which is the encoding of
-   the Subject Public Key Information (SPKI) associated with the
-   Attestation Key. Details on SPKIs and their encoding can be found in
-   X.509 certificates ([RFC5280]).
-
-   This reporting effectively binds the set of SignerInfo values to the
-   content (see Section 10.3).
-
-7.1.4.  Custom Key Selection
-
-   An implementer might desire to select multiple cryptographic keys
-   based on a shared attribute.  A possible approach is to include a
-   single request element of type id-evidence-element-key including a
-   claim with a set value.  This claim would not be related to the key
-   identifier as this is unique to each key.  A HSM supporting this
-   scheme could select all the cryptographic keys matching the specified
-   claim and report them in the generated Evidence.
-
-   This is a departure from the base request interface, as multiple key
-   elements are reported from a single requested element.
-
-   More elaborate selection schemes can be envisaged where multiple
-   requested claims specifying values would be tested against
-   cryptographic keys.  Whether these claims are combined in a logical
-   "and" or in a logical "or" would need to be specified by the
-   implementer.
-
-7.1.5.  Custom Transaction Element Claims
-
-   The extensibility offered by the proposed request interface allows an
-   implementer to add custom claims to the transaction element in order
-   to influence the way that the Evidence generation is performed.
-
-   In such an approach, a new custom claim for requested elements of
-   type "transaction" is defined.  Then, a claim of that type is
-   included in the attestation request (as part of the transaction
-   element) while specifying a value.  This value is considered by the
-   HSM to select elements and claims during the generation of the
-   Evidence.
-
-7.2.  Processing an Attestation Request
-
-   This sub-section describes the considerations that are relevant when
-   an Attesting Environment processes a request to generate Evidence.
-   This section is non-normative and implementers may choose not to
-   follow these recommendations.
-
-   These recommendations apply to any attestation request scheme and are
-   not restricted solely to the request interface proposed here.
-
-   An Attesting Environment is expected to fail an attestation request
-   if it contains an unrecognized element type.  This is to ensure that
-   all the semantics expected by the Presenter are fully understood by
-   the Attesting Environment.
-
-   An Attesting Environment is expected to fail an attestation request
-   if it contains a requested claim with an unrecognized type and a
-   specified value (that is, a value that is not empty).  This
-   represents a situation where the Presenter is selecting specific
-   information that is not understood by the Attesting Environment.
-
-   An Attesting Environment is encouraged to ignore unrecognized claim
-   types in an attestation request.  In this situation, the Attesting
-   Environment is expected not to include the claim as part of the
-   response.  This guidance is intended to increase the likelihood of
-   interoperability between tools of different vendors.
-
-   An Attesting Environment is expected to include only elements and
-   claims in the generated Evidence if these elements and claims were
-   specified as part of the request.  This is to give control to the
-   Presenter as to what information is disclosed by the Attesting
-   Environment.
-
-   An Attesting Environment is expected to fail an attestation request
-   if the Presenter does not have the appropriate access rights to the
-   elements or claims included in the request.
-
-7.3.  Verification by Presenter
-
-   This sub-section describes the considerations that are relevant when
-   a Presenter receives Evidence from the Attester (the HSM) prior to
-   distribution.  This section is non-normative and implementers may
-   choose not to follow these recommendations.
-
-   These recommendations apply to any Evidence and are not restricted
-   solely to Evidence generated from the proposed request interface.
-
-   A Presenter is expected to review the Evidence produced by an
-   Attester for fitness prior to distribution.
-
-   A Presenter is expected not to disclose Evidence if it contains
-   information it cannot parse.  This restriction applies to element
-   types and claim types.  This is to ensure that the information
-   provided by the Attester can be evaluated by the Presenter.
-
-   A Presenter is expected not to disclose Evidence if it contains
-   elements other than the ones that were requested of the Attester.
-   This is to ensure that only the selected elements are exposed to the
-   Verifier.
-
-   A Presenter is expected not to disclose Evidence if it contains an
-   element with a claim that was not requested of the Attester.  This is
-   to ensure that only the selected information is disclosed to the
-   Verifier.
-
-   Further privacy concerns are discussed in Section 10.5.
-
-8.  ASN.1 Module
+7.  ASN.1 Module
 
    <CODE STARTS>
 
@@ -1731,6 +1788,12 @@ Table of Contents
    EXPORTS ALL ;
 
    IMPORTS
+     SubjectPublicKeyInfo
+       FROM PKIX1Explicit-2009 -- in [RFC5912]
+     { iso(1) identified-organization(3) dod(6) internet(1)
+       security(5) mechanisms(5) pkix(7) id-mod(0)
+       id-mod-pkix1-explicit-02(51) }
+
      CONTENT-TYPE
        FROM CryptographicMessageSyntax-2010 -- in [RFC6268]
      { iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-9(9)
@@ -1783,7 +1846,7 @@ Table of Contents
 
    ReportedClaim ::= SEQUENCE {
        claimType  CLAIM.&id ({ClaimSet}),
-       value      CLAIM.&Type ({ClaimSet}{@claimType}) OPTIONAL
+       value      CLAIM.&Type ({ClaimSet}{@claimType})
    }
 
    ClaimSet CLAIM ::= {
@@ -1797,19 +1860,25 @@ Table of Contents
          | claim-platform-hwserial
          | claim-platform-swname
          | claim-platform-swversion
-         | claim-platform-debugstat
+         | claim-platform-dbgstat
          | claim-platform-uptime
          | claim-platform-bootcount
          | claim-platform-fipsboot
          | claim-platform-fipsver
          | claim-platform-fipslevel
          | claim-platform-fipsmodule
+         | claim-platform-ccmoduleid
+         | claim-platform-ccboot
+         | claim-platform-ccscheme
+         | claim-platform-ccrequirement
+         | claim-platform-cceallevel
          | claim-key-identifier
          | claim-key-spki
          | claim-key-extractable
          | claim-key-sensitive
          | claim-key-never-extractable
          | claim-key-local
+         | claim-key-device-bound
          | claim-key-expiry
          | claim-key-purpose,
          ...
@@ -1856,7 +1925,7 @@ Table of Contents
        { id-evidence-claim-platform 5 }
    id-evidence-claim-platform-swversion  OBJECT IDENTIFIER ::=
        { id-evidence-claim-platform 6 }
-   id-evidence-claim-platform-debugstat  OBJECT IDENTIFIER ::=
+   id-evidence-claim-platform-dbgstat    OBJECT IDENTIFIER ::=
        { id-evidence-claim-platform 7 }
    id-evidence-claim-platform-uptime     OBJECT IDENTIFIER ::=
        { id-evidence-claim-platform 8 }
@@ -1870,6 +1939,16 @@ Table of Contents
        { id-evidence-claim-platform 12 }
    id-evidence-claim-platform-fipsmodule OBJECT IDENTIFIER ::=
        { id-evidence-claim-platform 13 }
+   id-evidence-claim-platform-ccmoduleid OBJECT IDENTIFIER ::=
+       { id-evidence-claim-platform 14 }
+   id-evidence-claim-platform-ccboot     OBJECT IDENTIFIER ::=
+       { id-evidence-claim-platform 15 }
+   id-evidence-claim-platform-ccscheme   OBJECT IDENTIFIER ::=
+       { id-evidence-claim-platform 16 }
+   id-evidence-claim-platform-ccrequirement OBJECT IDENTIFIER ::=
+       { id-evidence-claim-platform 17 }
+   id-evidence-claim-platform-cceallevel OBJECT IDENTIFIER ::=
+       { id-evidence-claim-platform 18 }
 
    id-evidence-claim-key                   OBJECT IDENTIFIER ::=
        { id-evidence-claim 2 }
@@ -1889,6 +1968,8 @@ Table of Contents
        { id-evidence-claim-key 6 }
    id-evidence-claim-key-purpose           OBJECT IDENTIFIER ::=
        { id-evidence-claim-key 7 }
+   id-evidence-claim-key-device-bound      OBJECT IDENTIFIER ::=
+       { id-evidence-claim-key 8 }
 
    id-evidence-key-capability              OBJECT IDENTIFIER ::=
        { id-evidence 2 }
@@ -1928,7 +2009,7 @@ Table of Contents
 
    claim-transaction-ak-spki CLAIM ::= {
      ID id-evidence-claim-transaction-ak-spki
-     WITH TYPE OCTET STRING
+     WITH TYPE SubjectPublicKeyInfo
    }
 
    claim-platform-vendor CLAIM ::= {
@@ -1966,8 +2047,8 @@ Table of Contents
      WITH TYPE UTF8String
    }
 
-   claim-platform-debugstat CLAIM ::= {
-     ID id-evidence-claim-platform-debugstat
+   claim-platform-dbgstat CLAIM ::= {
+     ID id-evidence-claim-platform-dbgstat
      WITH TYPE INTEGER
    }
 
@@ -2001,6 +2082,31 @@ Table of Contents
      WITH TYPE UTF8String
    }
 
+   claim-platform-ccmoduleid CLAIM ::= {
+     ID id-evidence-claim-platform-ccmoduleid
+     WITH TYPE UTF8String
+   }
+
+   claim-platform-ccboot CLAIM ::= {
+     ID id-evidence-claim-platform-ccboot
+     WITH TYPE BOOLEAN
+   }
+
+   claim-platform-ccscheme CLAIM ::= {
+     ID id-evidence-claim-platform-ccscheme
+     WITH TYPE UTF8String
+   }
+
+   claim-platform-ccrequirement CLAIM ::= {
+     ID id-evidence-claim-platform-ccrequirement
+     WITH TYPE UTF8String
+   }
+
+   claim-platform-cceallevel CLAIM ::= {
+     ID id-evidence-claim-platform-cceallevel
+     WITH TYPE UTF8String
+   }
+
    claim-key-identifier CLAIM ::= {
      ID id-evidence-claim-key-identifier
      WITH TYPE UTF8String
@@ -2008,7 +2114,7 @@ Table of Contents
 
    claim-key-spki CLAIM ::= {
      ID id-evidence-claim-key-spki
-     WITH TYPE OCTET STRING
+     WITH TYPE SubjectPublicKeyInfo
    }
 
    claim-key-extractable CLAIM ::= {
@@ -2043,22 +2149,27 @@ Table of Contents
 
    KeyPurposes ::= SEQUENCE OF OBJECT IDENTIFIER
 
+   claim-key-device-bound CLAIM ::= {
+     ID id-evidence-claim-key-device-bound
+     WITH TYPE BOOLEAN
+   }
+
    END
 
    <CODE ENDS>
 
-9.  IANA Considerations
+8.  IANA Considerations
 
    Please replace "RFCthis" with the RFC number assigned to this
    document.
 
-   For the ASN.1 module found in Section 8, IANA is requested to assign
+   For the ASN.1 module found in Section 7, IANA is requested to assign
    an object identifier for the module identifier (TBDMOD1) with a
    description of "id-mod-pkix-evidence-2025".  This should be allocated
    in the "SMI Security for PKIX Module Identifier" registry
    (1.3.6.1.5.5.7.0).
 
-   For the ASN.1 module found in section 8, IANA is requested to assign
+   For the ASN.1 module found in Section 7, IANA is requested to assign
    an object identifier for the extended key usage id-kp-attestationKey
    (TBDMOD2).  This identifier should be allocated under the PKIX KP arc
    (1.3.6.1.5.5.7.3) with the description "Extended Key Usage (EKU) for
@@ -2085,9 +2196,9 @@ Table of Contents
 
    *  Reference: RFCthis
 
-10.  Security Considerations
+9.  Security Considerations
 
-10.1.  Policies relating to Verifier and Relying Party
+9.1.  Policies relating to Verifier and Relying Party
 
    The generation of Evidence by an HSM is to provide sufficient
    information to a Verifier and, ultimately, a Relying Party to
@@ -2103,9 +2214,9 @@ Table of Contents
 
    A Verifier MAY reject Evidence if it lacks the claims required per
    the Verifier's appraisal policy.  For example, if a Relying Party
-   mandates a FIPS-certified device, it SHOULD reject Evidence lacking
-   sufficient information to verify the device's FIPS certification
-   status.
+   mandates a FIPS 140 validated device, it SHOULD reject Evidence
+   lacking sufficient information to verify the device's FIPS 140
+   validation status.
 
    If a Verifier encounters a claim with an unrecognized claim type, it
    MAY ignore it and treat it as extraneous information.  By ignoring a
@@ -2113,7 +2224,7 @@ Table of Contents
    malformed to a Verifier with different policies.  However, this
    approach fosters a higher likelihood of achieving interoperability.
 
-10.2.  Simple to Implement
+9.2.  Simple to Implement
 
    The nature of attestation requires the Attesting Environment to be
    implemented in an extremely privileged position within the HSM so
@@ -2131,9 +2242,8 @@ Table of Contents
    flexible.
 
    In particular, the Attesting Environment SHOULD generate Evidence
-   from scratch and avoid copying any content from the request.  The
-   Attesting Environment MUST generate Evidence only from information
-   and measurements that are directly observable by it.
+   from scratch.  The Attesting Environment MUST generate Evidence only
+   from information and measurements that are directly observable by it.
 
    The CMS profile in Section 5.2 is deliberately narrow so that
    generators can implement the minimal subset of CMS that it requires,
@@ -2142,16 +2252,16 @@ Table of Contents
    Verifiers running within an HSM boundary SHOULD reject any CMS
    structure that falls outside this profile.
 
-10.3.  Multiple Signers and Countersignatures
+9.3.  Multiple Signers and Countersignatures
 
    The Evidence format supports two distinct ways for more than one key
    to sign:
 
    *  Multiple SignerInfo values, each produced by an Attestation Key of
-      the Attester, are used to support hybrid environments where
-      multiple keys using different cryptographic algorithms are
-      required to support appraisal policies, or Attesters that belong
-      to multiple operational environments.
+      the same Attester, are used to support algorithm agility, such as
+      hybrid environments where multiple keys using different
+      cryptographic algorithms are required to support appraisal
+      policies.
 
    *  Countersignatures, carried in the unsignedAttrs of a SignerInfo,
       are used by parties other than the Attester.  This is important
@@ -2167,16 +2277,13 @@ Table of Contents
    Similarly, since countersignatures are carried in unsigned
    attributes, they can be removed without leaving any trace.
 
-   This specification provides the transaction claim "ak-spki" to bind
-   the content to the set of Attestation Keys used by the Attesting
-   Environment.  When this claim is provided, it reports the SPKI of one
-   of the attestation keys used by the Attesting Environment to produce
-   the Evidence, and it is repeated for each of those attestation keys.
-   Since the claim is within the signed content, the removal of a
-   SignerInfo can be detected by a Verifier that checks that every ak-
-   spki claim is matched by a SignerInfo.  This claim also binds the
-   algorithm and parameters of each Attestation Key to the content, as
-   they are part of the SubjectPublicKeyInfo.
+   The transaction claim "ak-spki" binds the content to the set of
+   Attestation Keys used by the Attesting Environment.  Since the claim
+   is within the signed content, the removal of a SignerInfo can be
+   detected by a Verifier that checks that every ak-spki claim is
+   matched by a SignerInfo.  This claim also binds the algorithm and
+   parameters of each Attestation Key to the content, as they are part
+   of the SubjectPublicKeyInfo.
 
    Verifiers MUST be designed to accept Evidence based on their
    appraisal policies.  Verifiers MUST NOT make any inferences based on
@@ -2184,81 +2291,85 @@ Table of Contents
    that is not referenced by an ak-spki claim, as these could have been
    removed in transit.
 
-10.4.  Cross-Protocol Attacks
+9.4.  Cross-Protocol Attacks
 
    The signed content-type attribute in every SignerInfo identifies the
    signed content as PKIX Evidence, including when the Attestation Key
    is not certified by an X.509 certificate and the id-kp-attestationKey
    EKU therefore offers no protection.  Verifiers MUST check this
-   attribute as part of the procedures in Section 6; accepting arbitrary
-   CMS SignedData signed by an Attestation Key would bypass this check.
+   attribute as part of the procedures in Section 6.4; accepting
+   arbitrary CMS SignedData signed by an Attestation Key would bypass
+   this check.
 
-10.5.  Privacy
+9.5.  Privacy and Evidence Encryption
 
    Some HSMs have the capacity of supporting cryptographic keys
-   controlled by separate elements referred to as "tenants", and when
+   controlled by separate entities referred to as "tenants", and when
    the HSM is used in that mode it is referred to as a multi-tenant
    configuration.
 
    For example, an enterprise-grade HSM in a large multi-tenant cloud
-   service could host TLS keys fronting multiple un-related web domains.
+   service could host TLS keys fronting multiple unrelated web domains.
    Providing Evidence for claims of any one of the keys would involve a
    Presenter that could potentially access any of the hosted keys.  In
    such a case, privacy violations could occur if the Presenter was to
    disclose information that does not relate to the subject key.
 
-   Implementers SHOULD be careful to avoid over-disclosure of
-   information, for example by authenticating the Presenter as described
-   in Section 10.6 and only returning results for keys and portions of
-   the Target Environment for which it is authorized.  In the absence of
-   an existing mechanism for authenticating and authorizing
-   administrative connections to the HSM, the attestation request
-   authentication approach is described in Section 10.6.
+   Implementers SHOULD avoid over-disclosure of information by
+   authenticating and authorizing the entity that initiates Evidence
+   generation and by including only keys and portions of the Target
+   Environment that this entity is authorized to access.  The interface
+   for selecting the elements and claims included in Evidence is outside
+   the scope of this specification.
 
-   Furthermore, enterprise and cloud-services grade HSMs SHOULD support
-   the full set of attestation request functionality described in
-   Section 7 so that Presenters can fine-tune the content of the
-   generated Evidence such that it is appropriate for the intended
-   Verifier.
+   A Presenter SHOULD review Evidence before disclosure and SHOULD NOT
+   disclose Evidence containing information that the intended Verifier
+   is not authorized to receive.  This specification does not provide
+   Evidence encryption; deployments that require confidentiality MUST
+   use an appropriate conveyance protocol or object-security mechanism.
 
-10.6.  Authenticating and Authorizing the Presenter
+   [I-D.ounsworth-rats-privacy-framework] presents a framework for
+   identifying points in an Evidence conveyance protocol where designers
+   and implementers need to be conscious of privacy concerns.  For the
+   Evidence mechanism specified in this document, the primary privacy
+   concern has to do with authenticating the Presenter against the HSM's
+   local policies, and only releasing claims that they are authorized to
+   view.  The means by which a Presenter requests the generation of
+   Evidence is not covered by this specification and is left to the
+   implementers.
 
-   The Presenter represents a privileged role within the architecture of
-   this specification as it gets to learn about the existence of user
-   keys and their protection properties, as well as details of the
-   platform.  The Presenter is in the position of deciding how much
-   information to disclose to the Verifier, and to request a suitably
-   redacted Evidence from the HSM.
+   Additionally, [I-D.ounsworth-rats-privacy-framework] calls for
+   object-level evidence encryption (instead of relying solely on
+   transport encryption), and corresponding validation of the provided
+   Verifier encryption certificate against local policies.  Such a
+   mechanism is left out-of-scope in this specification since it is
+   largely independent of the Evidence formatting structures defined in
+   this specification.  Implementers are welcome to wrap the structures
+   defined here in such an encryption layer either within the HSM or
+   externally to the HSM at an entity such as the Presenter.
+
+9.6.  Authenticating and Authorizing the Presenter
+
+   The Presenter represents a privileged role because it can learn about
+   the existence of user keys and their protection properties, as well
+   as details of the platform.  It can also decide whether to disclose
+   generated Evidence to a Verifier.
 
    For personal cryptographic tokens it might be appropriate for the
-   attestation request interface to be un-authenticated.  However, for
-   enterprise and cloud-services grade HSMs the Presenter SHOULD be
-   authenticated using the HSM's native authentication mechanism.  The
-   details are HSM-specific and are thus left up to the implementer.
-   However, it is RECOMMENDED to implement an authorization framework
-   similar to the following.
+   local Evidence-generation interface to be unauthenticated.  For
+   enterprise and cloud-services grade HSMs, the entity invoking that
+   interface SHOULD be authenticated using the HSM's native
+   authentication mechanism.  The details of this interface are HSM-
+   specific and outside the scope of this specification.
 
-   A Presenter SHOULD be allowed to request Evidence for any user keys
-   which it is allowed to use.  For example, a TLS application that is
-   correctly authenticated to the HSM in order to use its TLS keys
-   SHOULD be able to request Evidence related to those same keys without
-   needing to perform any additional authentication or requiring any
-   additional roles or permissions.  HSMs that wish to allow a Presenter
-   to request Evidence of keys which is not allowed to use, for example
-   for the purposes of displaying HSM status information on an
-   administrative console or UI, SHOULD have a "Attestation Requester"
-   role or permission and SHOULD enforce the HSM's native access
-   controls such that the Presenter can only retrieve Evidence for keys
-   for which it has visibility.
+   The HSM MUST enforce its native access controls when generating
+   Evidence.  An authenticated application SHOULD be allowed to obtain
+   Evidence only for user keys that it is authorized to access.  An
+   administrative application that obtains Evidence for keys it is not
+   allowed to use MUST have a distinct permission and MUST be limited to
+   keys for which it has administrative visibility.
 
-   In the absence of an existing mechanism for authenticating and
-   authorizing administrative connections to the HSM, the attestation
-   request MAY be authenticated by embedding the PkixEvidence of the
-   request inside a CMS SignedData signed with a certificate belonging
-   to the Presenter.  Note that the Presenter is not an Attester, so its
-   certificate is not expected to carry the id-kp-attestationKey EKU.
-
-10.7.  Proof-of-Possession of User Keys
+9.7.  Proof-of-Possession of User Keys
 
    With asymmetric keys within a Public Key Infrastructure (PKI) it is
    common to require a key holder to prove that they are in control of
@@ -2281,37 +2392,36 @@ Table of Contents
    way as to appear as a valid message in some other protocol context or
    exploit some other weakness in the signature algorithm.
 
-   Second, the Presenter who has connected to the HSM to request
-   Evidence may have permissions to list the requested application keys
-   but not permission to use them, as in the case where the Presenter is
-   an administrative UI displaying HSM status information to a system's
-   administrator or auditor.
+   Second, the Presenter that initiates Evidence generation may have
+   permission to list the relevant application keys but not permission
+   to use them, as in the case where the Presenter is an administrative
+   UI displaying HSM status information to a system's administrator or
+   auditor.
 
    Requiring the Attesting Environment to use the reported application
    keys to generate Evidence could, in some architectures, require the
    Attesting Environment to resolve complex access control logic and
    handle complex error conditions, which violates the "simple to
-   implement" design principle outlined in Section 10.2.  More
-   discussions on authenticating the Presenter can be found in
-   Section 10.6.
+   implement" design principle outlined in Section 9.2.  More discussion
+   on authenticating the Presenter can be found in Section 9.6.
 
-10.8.  Timestamps and HSMs
+9.8.  Timestamps and HSMs
 
    It is common for HSMs to have an inaccurate system clock.  Most
    clocks have a natural drift and must be corrected periodically.
    HSMs, like any other devices, are subject to these issues.
 
-   There are many situations where HSMs can not naturally correct their
-   internal system clocks.  For example, consider a HSM hosting a trust
+   There are many situations where HSMs cannot naturally correct their
+   internal system clocks.  For example, consider an HSM hosting a trust
    anchor and usually kept offline and booted up infrequently in a
    network without a reliable time management service.  Another example
    is a smart card which boots up only when held against an NFC reader.
 
-   When a timestamp generated from a HSM is evaluated, the expected
+   When a timestamp generated from an HSM is evaluated, the expected
    behavior of the system clock SHOULD be considered.
 
    More specifically, the timestamp SHOULD NOT be relied on for
-   establishing the freshness of the Evidence generated by a HSM.
+   establishing the freshness of the Evidence generated by an HSM.
    Instead, Verifiers SHOULD rely on other provisions such as the
    "nonce" claim of the "transaction" element, introduced in this
    specification.
@@ -2319,20 +2429,9 @@ Table of Contents
    Furthermore, the internal system clock of HSMs SHOULD NOT be relied
    on to enforce expiration policies.
 
-11.  References
+10.  References
 
-11.1.  Normative References
-
-   [FIPS140-3]
-              NIST, Information Technology Laboratory, "Security
-              Requirements for Cryptographic Modules", FIPS 140-3, n.d.,
-              <https://nvlpubs.nist.gov/nistpubs/FIPS/
-              NIST.FIPS.140-3.pdf>.
-
-   [PKCS11]   Bong, D., Cox, T., and OASIS PKCS 11 TC, "PKCS #11
-              Specification Version 3.1", 11 August 2022,
-              <https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/
-              pkcs11-spec-v3.1-cs01.html>.
+10.1.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -2386,32 +2485,53 @@ Table of Contents
               BER, CER, DER", n.d.,
               <https://www.itu.int/rec/T-REC-X.690>.
 
-   [X.690]    ITU-T, "Information technology -- ASN.1 encoding rules:
-              Specification of Basic Encoding Rules (BER), Canonical
-              Encoding Rules (CER) and Distinguished Encoding Rules
-              (DER)", ITU-T Recommendation X.690, ISO/IEC 8825-1:2021,
-              February 2021, <https://www.itu.int/rec/T-REC-X.690>.
+10.2.  Informative References
 
-11.2.  Informative References
+   [CC2022P1] Common Criteria, "Common Criteria for Information
+              Technology Security Evaluation Part 1: Introduction and
+              general model", November 2022,
+              <https://www.commoncriteriaportal.org/files/ccfiles/
+              CC2022PART1R1.pdf>.
+
+   [CC2022P5] Common Criteria, "Common Criteria for Information
+              Technology Security Evaluation Part 5: Pre-defined
+              packages of security requirements", November 2022,
+              <https://www.commoncriteriaportal.org/files/ccfiles/
+              CC2022PART5R1.pdf>.
+
+   [CMVP]     NIST, "Cryptographic Module Validation Program — Validated
+              Modules", n.d., <https://csrc.nist.gov/projects/
+              cryptographic-module-validation-program/validated-modules/
+              search>.
 
    [CNSA2.0]  National Security Agency, "Commercial National Security
-              Algorithm Suite 2.0", n.d.,
-              <https://media.defense.gov/2022/Sep/07/2003071834/-1/-1/0/
-              CSA_CNSA_2.0_ALGORITHMS_.PDF>.
+              Algorithm Suite 2.0", September 2022,
+              <https://media.defense.gov/2025/May/30/2003728741/-1/-1/0/
+              CSA_CNSA_2.0_ALGORITHMS.PDF>.
 
    [CSBR]     CA/Browser Forum, "Baseline Requirements for the Issuance
               and Management of Publicly-Trusted Code Signing
-              Certificates Version 3.8.0", n.d., <https://cabforum.org/
+              Certificates Version 3.8", n.d., <https://cabforum.org/
               working-groups/code-signing/documents/>.
 
-   [I-D.fossati-tls-attestation]
-              Tschofenig, H., Sheffer, Y., Howard, P., Mihalcea, I.,
-              Deshpande, Y., Niemi, A., and T. Fossati, "Using
-              Attestation in Transport Layer Security (TLS) and Datagram
-              Transport Layer Security (DTLS)", Work in Progress,
-              Internet-Draft, draft-fossati-tls-attestation-10, 23 July
-              2026, <https://datatracker.ietf.org/doc/html/draft-
-              fossati-tls-attestation-10>.
+   [FIPS140-2]
+              NIST, Information Technology Laboratory, "Security
+              Requirements for Cryptographic Modules", FIPS 140-2, n.d.,
+              <https://nvlpubs.nist.gov/nistpubs/FIPS/
+              NIST.FIPS.140-2.pdf>.
+
+   [FIPS140-3]
+              NIST, Information Technology Laboratory, "Security
+              Requirements for Cryptographic Modules", FIPS 140-3, n.d.,
+              <https://nvlpubs.nist.gov/nistpubs/FIPS/
+              NIST.FIPS.140-3.pdf>.
+
+   [FIPS140-3-IG]
+              NIST and CCCS, "Implementation Guidance for FIPS 140-3 and
+              the Cryptographic Module Validation Program", 19 August
+              2026, <https://csrc.nist.gov/csrc/media/Projects/
+              cryptographic-module-validation-program/documents/
+              fips%20140-3/FIPS%20140-3%20IG.pdf>.
 
    [I-D.ietf-lamps-csr-attestation]
               Ounsworth, M., Tschofenig, H., Birkholz, H., Wiseman, M.,
@@ -2421,22 +2541,23 @@ Table of Contents
               <https://datatracker.ietf.org/doc/html/draft-ietf-lamps-
               csr-attestation-34>.
 
-   [I-D.ietf-rats-msg-wrap]
-              Birkholz, H., Smith, N., Fossati, T., Tschofenig, H., and
-              D. Glaze, "RATS Conceptual Messages Wrapper (CMW)", Work
-              in Progress, Internet-Draft, draft-ietf-rats-msg-wrap-23,
-              11 December 2025, <https://datatracker.ietf.org/doc/html/
-              draft-ietf-rats-msg-wrap-23>.
+   [I-D.ounsworth-rats-privacy-framework]
+              Ounsworth, M., Tschofenig, H., and G. Lehmann, "Privacy
+              Framework for Remote ATtestation procedureS", Work in
+              Progress, Internet-Draft, draft-ounsworth-rats-privacy-
+              framework-00, 18 June 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ounsworth-
+              rats-privacy-framework-00>.
 
-   [RFC2986]  Nystrom, M. and B. Kaliski, "PKCS #10: Certification
-              Request Syntax Specification Version 1.7", RFC 2986,
-              DOI 10.17487/RFC2986, November 2000,
-              <https://www.rfc-editor.org/rfc/rfc2986>.
+   [ISO19790] ISO/IEC, "Information technology — Security techniques —
+              Security requirements for cryptographic modules", ISO/
+              IEC 19790:2012, n.d.,
+              <https://www.iso.org/standard/52906.html>.
 
-   [RFC4211]  Schaad, J., "Internet X.509 Public Key Infrastructure
-              Certificate Request Message Format (CRMF)", RFC 4211,
-              DOI 10.17487/RFC4211, September 2005,
-              <https://www.rfc-editor.org/rfc/rfc4211>.
+   [PKCS11]   Bong, D., Cox, T., and OASIS PKCS 11 TC, "PKCS #11
+              Specification Version 3.1", 11 August 2022,
+              <https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/
+              pkcs11-spec-v3.1-cs01.html>.
 
    [RFC6024]  Reddy, R. and C. Wallace, "Trust Anchor Management
               Requirements", RFC 6024, DOI 10.17487/RFC6024, October
@@ -2447,6 +2568,13 @@ Table of Contents
               RFC 9019, DOI 10.17487/RFC9019, April 2021,
               <https://www.rfc-editor.org/rfc/rfc9019>.
 
+   [SP800-140B]
+              NIST, "Cryptographic Module Validation Program (CMVP)
+              Security Policy Requirements: CMVP Validation Authority
+              Updates to ISO/IEC 24759 and ISO/IEC 19790 Annex B", NIST
+              SP 800-140B Rev. 1, n.d.,
+              <https://csrc.nist.gov/pubs/sp/800/140/b/r1/final>.
+
 Appendix A.  Samples
 
    A reference implementation of this specification can be found at
@@ -2454,46 +2582,55 @@ Appendix A.  Samples
 
    It produces the following sample Evidence.
 
-   Editor's note: the samples below still use the envelope from draft
-   -08 and will be regenerated in the CMS format described in
-   Section 5.2.
+   Editor's note: the samples below still use the pre-CMS envelope and
+   will be regenerated in the CMS format described in Section 5.2.
 
    All signatures throughout the samples chain to the following root
    certificate:
 
    -----BEGIN CERTIFICATE-----
-   MIIB7TCCAZOgAwIBAgIUV5Dh3UjqFKcSqD+INoqe4EW6UzYwCgYIKoZIzj0EAwIw
+   MIIB7TCCAZOgAwIBAgIUCVQUR87O+0eUARsetFqBRAHmAVcwCgYIKoZIzj0EAwIw
    RDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3Rh
-   dGlvbjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2MDcyMTExMTIzOFoXDTM2MDcxODEx
-   MTMzOFowRDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1h
+   dGlvbjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2MTAzMDE3MjcyNloXDTM2MTAyNzE3
+   MjgyNlowRDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1h
    dHRlc3RhdGlvbjEPMA0GA1UEAwwGUm9vdENBMFkwEwYHKoZIzj0CAQYIKoZIzj0D
-   AQcDQgAEZ+5x+vU1QHvE/rfN50XeGd+tlaCzeYzLI2yAOaNd3qeeKjtI1H3BV0nU
-   +kvDgdnWqki6TnLRsX6DHqmffS0YeaNjMGEwDwYDVR0TAQH/BAUwAwEB/zAdBgNV
-   HQ4EFgQURngIMjk7Qci5LcZ2gQfAS/T5v6AwHwYDVR0jBBgwFoAURngIMjk7Qci5
-   LcZ2gQfAS/T5v6AwDgYDVR0PAQH/BAQDAgKEMAoGCCqGSM49BAMCA0gAMEUCIEQ7
-   jM1fYGhwM6SAlHjAKvxXdTPyck3EQvdduA0l8Ek+AiEAubyYDczX9skUncZQ7Sd2
-   lWyRnEuk7cl4Ku4PFXHkSiM=
+   AQcDQgAE2MKIigcMWyDufDBDbxgmGOaJznEcAaSu9i+6Vgvm6sCNVQwdM6hE/KmN
+   njzMFbS2DBAYV7ByT5lRvUoUNHkgv6NjMGEwDwYDVR0TAQH/BAUwAwEB/zAdBgNV
+   HQ4EFgQU8lE2CFDHeB8YHZ3qjTIGYLxdAhkwHwYDVR0jBBgwFoAU8lE2CFDHeB8Y
+   HZ3qjTIGYLxdAhkwDgYDVR0PAQH/BAQDAgIEMAoGCCqGSM49BAMCA0gAMEUCIQC7
+   Hmx5riaouDmr+UYm9yqlY3PmQZrPwRDF5uZPtSl9ygIgO61Lyo1RDu0HAgS6l8W5
+   qWI7VRoPR+IpmdnQyPHONvQ=
    -----END CERTIFICATE-----
 
 A.1.  Simple Platform Evidence
 
    This example shows a minimal PKIX Evidence object with only
-   transaction and platform elements a single signature where the AK key
-   is identified only by its SHA1 hash KeyID.  In other words, this
+   transaction and platform elements and a single signature where the AK
+   key is identified only by its SHA1 hash KeyID.  In other words, this
    Evidence describes only the HSM itself (rather than application keys
    stored within it), and it assumes that the Verifier will be able to
    look up the AK key by its SHA1 hash.
 
    -----BEGIN EVIDENCE-----
-   MIIBvDCCAUUCAQEwggE+MIGwBgkrBgEFBYdnAAAwgaIwFgYKKwYBBQWHZwEAAAQI3q2+
-   78r+ur4wHQYKKwYBBQWHZwEAARgPMjAyNjA3MjExMTEzMzhaMGkGCisGAQUFh2cBAAIE
-   WzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABKxJDta4zEK/3rtwmAiJ9E4LES2OPZpz
-   kli13hUKZU7GoDyzmrc7hVMBgtddRaacyGNPIrp5rA5UgAXLoTba0jowgYgGCSsGAQUF
-   h2cAATB7MBcGCisGAQUFh2cBAQAMCUFjbWUgQ29ycDAWBgorBgEFBYdnAQECBAhIU00t
-   OTAwMDATBgorBgEFBYdnAQEDDAUyLjEuMDAPBgorBgEFBYdnAQEKAQH/MA8GCisGAQUF
-   h2cBAQwCAQMwEQYKKwYBBQWHZwEBCAIDAVGAMHEwbzAYoBYEFB0KdBf6XwQ3pzNMkyzh
-   Nbf3NBn+MAoGCCqGSM49BAMCBEcwRQIhAPRrdNsm+JqBb0m+25XYN5mAXVRkBgrkJXNg
-   vE3ns4PfAiAqtgw3Zqh32EXfPgV/Z0Hizl3X1KXVXUt/ovMGkK8FUQ==
+   MIIDtDCCAUMCAQEwggE8MIGuBgkrBgEFBYdnAAAwgaAwFgYKKwYBBQWHZwEAAAQI3q2+
+   78r+ur4wHQYKKwYBBQWHZwEAARgPMjAyNjEwMzAxNzI4MjZaMGcGCisGAQUFh2cBAAIw
+   WTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASGl3ih3OUF+U4DXTHNwwGpgFS6BQLdoOil
+   NYUIP+jlK5oPOJL44uNBLe273XycUkqxQ83tRWvk58jDmGgsyzbUMIGIBgkrBgEFBYdn
+   AAEwezAXBgorBgEFBYdnAQEADAlBY21lIENvcnAwFgYKKwYBBQWHZwEBAgQISFNNLTkw
+   MDAwEwYKKwYBBQWHZwEBAwwFMi4xLjAwDwYKKwYBBQWHZwEBCgEB/zAPBgorBgEFBYdn
+   AQEMAgEDMBEGCisGAQUFh2cBAQgCAwFRgDBwMG4wGKAWBBTo7I8jth5Qy1whJBzV6Bbh
+   6RduDjAKBggqhkjOPQQDAgRGMEQCIESnkVgBCqLh1Ztpf5V0pzLVbbe+m+QbgAzuUwXd
+   9FU6AiANfipxs3EeqYIDPfYMpGU+PTqOTYrH8nNE+WzCaUN/16CCAfcwggHzMIIB7zCC
+   AZWgAwIBAgIUdyk1efOS6JxuychsYSzI4t18e4AwCgYIKoZIzj0EAwIwRDESMBAGA1UE
+   CgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3RhdGlvbjEPMA0GA1UE
+   AwwGUm9vdENBMB4XDTI2MTAzMDE3MjcyNloXDTM2MTAyNzE3MjgyNlowQzESMBAGA1UE
+   CgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3RhdGlvbjEOMAwGA1UE
+   AwwFSW50Q0EwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASXy45a9FlTBpeE4r+6OG4e
+   qe8H7joYz7HyJw4xgc/RZJGS9HJgbqj+yzrOjlXcx5LJygIVG5L/YsKtHa5SWg8no2Yw
+   ZDASBgNVHRMBAf8ECDAGAQH/AgEAMB0GA1UdDgQWBBReG8zuaAyExkyCirv5Ou6tiPQN
+   3DAfBgNVHSMEGDAWgBTyUTYIUMd4HxgdneqNMgZgvF0CGTAOBgNVHQ8BAf8EBAMCAoQw
+   CgYIKoZIzj0EAwIDSAAwRQIhAPnma1HIqzHM3dOH7CYYTsKTqtAWrNzPZsURXX7dF/NY
+   AiBWx3BxXpMYo16ntvVJNM7+J8n2iEtXj+NxbKJk667JEw==
    -----END EVIDENCE-----
 
    Here is a pretty-print of the Evidence object:
@@ -2505,9 +2642,9 @@ A.1.  Simple Platform Evidence
          Claim[0]: id-evidence-claim-transaction-nonce
                  -> [OCTET STRING] deadbeefcafebabe
          Claim[1]: id-evidence-claim-transaction-timestamp
-                 -> [GeneralizedTime] 20260721111338Z
+                 -> [GeneralizedTime] 20261030172826Z
          Claim[2]: id-evidence-claim-transaction-ak-spki
-                 -> [OCTET STRING] 3059301306072a8648ce3d02...
+                 -> [SubjectPublicKeyInfo] 3059301306072a8648ce3d02...
        ReportedElement[1]: id-evidence-element-platform
          Claim[0]: id-evidence-claim-platform-vendor
                  -> [UTF8String] Acme Corp
@@ -2524,38 +2661,39 @@ A.1.  Simple Platform Evidence
      Signatures (1):
        SignatureBlock[0]:
          algorithm      : 1.2.840.10045.4.3.2
-         signatureValue : 3045022100f46b74db26f89a...
-         keyId          : 1d0a7417fa5f0437a7334c932ce135b7f73419fe
+         signatureValue : 3044022044a79158010aa2e1...
+         keyId          : e8ec8f23b61e50cb5c21241cd5e816e1e9176e0e
+     Intermediate Certificates:  (1)
 
    For completeness of the sample, the following AK and Intermediate CA
    certificates are required for verification:
 
    -----BEGIN CERTIFICATE-----
-   MIICADCCAaagAwIBAgIUBTLdT9dE5Z4Xgw8WqLvV73ku9McwCgYIKoZIzj0EAwIw
+   MIICAjCCAamgAwIBAgIUfo0BU1lSG+5RYsfe83W8FR6x7TEwCgYIKoZIzj0EAwIw
    QzESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3Rh
-   dGlvbjEOMAwGA1UEAwwFSW50Q0EwHhcNMjYwNzIxMTExMjM4WhcNMzYwNzE4MTEx
-   MzM4WjBFMRIwEAYDVQQKDAlpZXRmLXJhdHMxHTAbBgNVBAsMFHBraXgta2V5LWF0
+   dGlvbjEOMAwGA1UEAwwFSW50Q0EwHhcNMjYxMDMwMTcyNzI2WhcNMzYxMDI3MTcy
+   ODI2WjBFMRIwEAYDVQQKDAlpZXRmLXJhdHMxHTAbBgNVBAsMFHBraXgta2V5LWF0
    dGVzdGF0aW9uMRAwDgYDVQQDDAd0ZXN0LWFrMFkwEwYHKoZIzj0CAQYIKoZIzj0D
-   AQcDQgAErEkO1rjMQr/eu3CYCIn0TgsRLY49mnOSWLXeFQplTsagPLOatzuFUwGC
-   111FppzIY08iunmsDlSABcuhNtrSOqN2MHQwDAYDVR0TAQH/BAIwADAdBgNVHQ4E
-   FgQUHQp0F/pfBDenM0yTLOE1t/c0Gf4wHwYDVR0jBBgwFoAUAswMAJCNpSCrblVW
-   cd/+xmxoywgwDgYDVR0PAQH/BAQDAgeAMBQGA1UdJQQNMAsGCSsGAQUFBwOHZzAK
-   BggqhkjOPQQDAgNIADBFAiEAw9GJY2DN+HyeBGGc+jvrM1cj/iUbkbMa83GohWT8
-   RcUCIENpvIaKhQHFsuQ+9696B/jsZMKohbQxVbJeTakSB4k8
+   AQcDQgAEhpd4odzlBflOA10xzcMBqYBUugUC3aDopTWFCD/o5SuaDziS+OLjQS3t
+   u918nFJKsUPN7UVr5OfIw5hoLMs21KN5MHcwDAYDVR0TAQH/BAIwADAdBgNVHQ4E
+   FgQU6OyPI7YeUMtcISQc1egW4ekXbg4wHwYDVR0jBBgwFoAUXhvM7mgMhMZMgoq7
+   +TrurYj0DdwwDgYDVR0PAQH/BAQDAgeAMBcGA1UdJQEB/wQNMAsGCSsGAQUFBwOH
+   ZzAKBggqhkjOPQQDAgNHADBEAiA8aJ3XMJ1JfxuNHCwEkDH4Bg/GtGLR/UPsS2s7
+   PxpYMwIgFs9CbkSTSUegEWl8fT9NO8GHjFVjZCeiUfh6ywAQSIY=
    -----END CERTIFICATE-----
 
    -----BEGIN CERTIFICATE-----
-   MIIB6zCCAZKgAwIBAgIUH/Gv/RA4QFmybrw2/okZGCpaomYwCgYIKoZIzj0EAwIw
+   MIIB7zCCAZWgAwIBAgIUdyk1efOS6JxuychsYSzI4t18e4AwCgYIKoZIzj0EAwIw
    RDESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1hdHRlc3Rh
-   dGlvbjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2MDcyMTExMTIzOFoXDTM2MDcxODEx
-   MTMzOFowQzESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1h
+   dGlvbjEPMA0GA1UEAwwGUm9vdENBMB4XDTI2MTAzMDE3MjcyNloXDTM2MTAyNzE3
+   MjgyNlowQzESMBAGA1UECgwJaWV0Zi1yYXRzMR0wGwYDVQQLDBRwa2l4LWtleS1h
    dHRlc3RhdGlvbjEOMAwGA1UEAwwFSW50Q0EwWTATBgcqhkjOPQIBBggqhkjOPQMB
-   BwNCAAQpI9FSblHeZQciaN+1UFyVbixK0AhNJnST/c4gdQ7/M8JEzucgccgBkKE2
-   9569wQjwY72JOMyKNimlc+YCDkrWo2MwYTAPBgNVHRMBAf8EBTADAQH/MB0GA1Ud
-   DgQWBBQCzAwAkI2lIKtuVVZx3/7GbGjLCDAfBgNVHSMEGDAWgBRGeAgyOTtByLkt
-   xnaBB8BL9Pm/oDAOBgNVHQ8BAf8EBAMCAoQwCgYIKoZIzj0EAwIDRwAwRAIgaeUk
-   +QXqxMemsYFhnMYziLDqEF0PN8/utxLqT/m1dNYCIFfw64Y/c1THO1YnNOiilmPx
-   ShrU9GENFUICHM17CI7x
+   BwNCAASXy45a9FlTBpeE4r+6OG4eqe8H7joYz7HyJw4xgc/RZJGS9HJgbqj+yzrO
+   jlXcx5LJygIVG5L/YsKtHa5SWg8no2YwZDASBgNVHRMBAf8ECDAGAQH/AgEAMB0G
+   A1UdDgQWBBReG8zuaAyExkyCirv5Ou6tiPQN3DAfBgNVHSMEGDAWgBTyUTYIUMd4
+   HxgdneqNMgZgvF0CGTAOBgNVHQ8BAf8EBAMCAoQwCgYIKoZIzj0EAwIDSAAwRQIh
+   APnma1HIqzHM3dOH7CYYTsKTqtAWrNzPZsURXX7dF/NYAiBWx3BxXpMYo16ntvVJ
+   NM7+J8n2iEtXj+NxbKJk667JEw==
    -----END CERTIFICATE-----
 
 A.2.  Key Attestation Evidence
@@ -2567,42 +2705,42 @@ A.2.  Key Attestation Evidence
    object.  It chains to the same root as above.
 
    -----BEGIN EVIDENCE-----
-   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
+   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
-   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
+   dGVzdGF0aW9uMQ8wDQYDVQQDDAZSb290Q0EwHhcNMjYxMDMwMTcyNzI2WhcNMzYxMDI3
+   MTcyODI2WjBDMRIwEAYDVQQKDAlpZXRmLXJhdHMxHTAbBgNVBAsMFHBraXgta2V5LWF0
    dGVzdGF0aW9uMQ4wDAYDVQQDDAVJbnRDQTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IA
-   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
+   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
    -----END EVIDENCE-----
 
    Here is a pretty-print of the Evidence object:
@@ -2614,9 +2752,9 @@ A.2.  Key Attestation Evidence
          Claim[0]: id-evidence-claim-transaction-nonce
                  -> [OCTET STRING] beefcafebabedead
          Claim[1]: id-evidence-claim-transaction-timestamp
-                 -> [GeneralizedTime] 20260721111338Z
+                 -> [GeneralizedTime] 20261030172826Z
          Claim[2]: id-evidence-claim-transaction-ak-spki
-                 -> [OCTET STRING] 3059301306072a8648ce3d02...
+                 -> [SubjectPublicKeyInfo] 3059301306072a8648ce3d02...
        ReportedElement[1]: id-evidence-element-platform
          Claim[0]: id-evidence-claim-platform-hwmodel
                  -> [OCTET STRING] 48534d2d39303030
@@ -2624,7 +2762,7 @@ A.2.  Key Attestation Evidence
          Claim[0]: id-evidence-claim-key-identifier
                  -> [UTF8String] 9a25f603-a2c4-4dad-9ee0-...
          Claim[1]: id-evidence-claim-key-spki
-                 -> [OCTET STRING] 3059301306072a8648ce3d02...
+                 -> [SubjectPublicKeyInfo] 3059301306072a8648ce3d02...
          Claim[2]: id-evidence-claim-key-extractable
                  -> [BOOLEAN] False
          Claim[3]: id-evidence-claim-key-never-extractable
@@ -2639,7 +2777,7 @@ A.2.  Key Attestation Evidence
          Claim[0]: id-evidence-claim-key-identifier
                  -> [UTF8String] 85704b99-7097-4bca-93b6-...
          Claim[1]: id-evidence-claim-key-spki
-                 -> [OCTET STRING] 3059301306072a8648ce3d02...
+                 -> [SubjectPublicKeyInfo] 3059301306072a8648ce3d02...
          Claim[2]: id-evidence-claim-key-extractable
                  -> [BOOLEAN] True
          Claim[3]: id-evidence-claim-key-sensitive
@@ -2647,7 +2785,7 @@ A.2.  Key Attestation Evidence
      Signatures (1):
        SignatureBlock[0]:
          algorithm      : 1.2.840.10045.4.3.2
-         signatureValue : 3046022100d7d456541a7a05...
+         signatureValue : 3046022100adc171a4467829...
          AK Certificate : present
      Intermediate Certificates:  (1)
 
@@ -2693,7 +2831,7 @@ Authors' Addresses
 
    Monty Wiseman
    United States of America
-   Email: monty.wiseman@oracle.com
+   Email: monty@iomt.dev
 
 
    Ned Smith
