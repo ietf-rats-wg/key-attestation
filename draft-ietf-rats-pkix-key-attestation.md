@@ -797,7 +797,7 @@ identity. When the Attestation Keys are certified, each signing certificate MUST
 Every `SignerInfo` protects the same `PkixEvidence`, which MUST contain exactly one `ak-spki` transaction claim for each
 `SignerInfo`. Because these claims are inside the signed content, every signature covers the complete set of Attestation
 Keys, which allows a Verifier to detect a removed `SignerInfo`. This serves the same purpose as the `multiple-signatures`
-attribute of {{RFC5752}} without requiring an additional signed attribute. The `multiple-signatures` attribute MUST NOT be included. See {{sec-verif-proc}} and {{sec-cons-multi-sigs}}.
+attribute of {{RFC5752}} without requiring an additional signed attribute. The `multiple-signatures` attribute MUST NOT be included. See {{sec-verif-proc}}.
 
 ### Countersignatures {#sec-cms-countersignatures}
 
@@ -1235,7 +1235,7 @@ This claim contains the Subject Public Key Information (SPKI) for the attestatio
 type `SubjectPublicKeyInfo`, as defined for X.509 certificates in {{RFC5280}}.
 
 This transaction claim is used to bind the content of the Evidence with the key(s) used to sign that Evidence. The importance
-of this binding is discussed in {{sec-verif-proc}} and {{sec-cons-multi-sigs}}.
+of this binding is discussed in {{sec-verif-proc}}.
 
 This claim MUST be reported exactly once for each `SignerInfo` (see {{sec-cms-multiple-signers}}). Each included claim MUST refer
 to a different attestation key.
@@ -1490,7 +1490,7 @@ running within an HSM boundary SHOULD reject any CMS structure that falls outsid
 
 ## Drift from CMS
 
-The deliberately narrow and static CMS profile does present a security risk in that it will not allow for future security updates to CMS that fix vulnerabilities identified in the CMS specification. This is a deliberate choice that prioritizes interoperability over this aspect of security. The use case that motivates this decision is when a key is exported from one HSM to another and the exporting HSM requires attestation of the key-wrapping-key that it is exporting for. Consider a situation where an HSM is reaching end-of-life and production keys need to be extracted from it, if this HSM is not able to parse the key attestation of the newer HSM for which it is exporting, then the keys will become locked into that hardware, presenting an unacceptable risk to availability of those keys.  
+The deliberately narrow and static CMS profile does present a security risk in that it will not allow for future security updates to CMS that fix vulnerabilities identified in the CMS specification. This is a deliberate choice that prioritizes interoperability over this aspect of security. The use case that motivates this decision is when a key is exported from one HSM to another and the exporting HSM requires attestation of the key-wrapping-key that it is exporting for. Consider a situation where an HSM is reaching end-of-life and production keys need to be extracted from it, if this HSM is not able to parse the key attestation of the newer HSM for which it is exporting, then the keys will become locked into that hardware, presenting an unacceptable risk to availability of those keys.
 
 Implementations are free to add new security-enhancing CMS features provided that they are backwards-compatible in the sense that they will be ignored by a legacy parser.
 
