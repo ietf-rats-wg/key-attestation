@@ -1060,7 +1060,7 @@ svg {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Fiset, et al.</td>
-<td class="center">Expires 30 May 2027</td>
+<td class="center">Expires 31 May 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1073,12 +1073,12 @@ svg {
 <dd class="internet-draft">draft-ietf-rats-pkix-key-attestation-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-11-26" class="published">26 November 2026</time>
+<time datetime="2026-11-27" class="published">27 November 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-05-30">30 May 2027</time></dd>
+<dd class="expires"><time datetime="2027-05-31">31 May 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1153,7 +1153,7 @@ whether the storage properties of this key meet the requirements of a given cert
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 30 May 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 31 May 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1911,8 +1911,10 @@ consider later ones to overwrite the previous one.<a href="#section-4.3-9" class
 deployment within the target ecosystem, ASN.1 definitions <span>[<a href="#X680" class="cite xref">X680</a>]</span> and DER encoding
 <span>[<a href="#X690" class="cite xref">X690</a>]</span> are used. A complete ASN.1 module is provided in <a href="#sec-asn1-mod" class="auto internal xref">Section 7</a>.<a href="#section-5-1" class="pilcrow">¶</a></p>
 <p id="section-5-2">Evidence is conveyed using the Cryptographic Message Syntax (CMS) <span>[<a href="#RFC5652" class="cite xref">RFC5652</a>]</span>. The Evidence description
-is defined as a new CMS content type, which is then signed using a profile of CMS <code>SignedData</code>. CMS ASN.1
-types are imported from <span>[<a href="#RFC6268" class="cite xref">RFC6268</a>]</span> and are not redefined by this document.<a href="#section-5-2" class="pilcrow">¶</a></p>
+is defined as a new CMS content type, which is then signed using a profile of CMS <code>SignedData</code>. The profile
+is expressed as restricted, encoding-compatible versions of the CMS <code>ContentInfo</code>, <code>SignedData</code>,
+<code>EncapsulatedContentInfo</code> and <code>SignerInfo</code> types (see <a href="#sec-cms-profile" class="auto internal xref">Section 5.2</a>). All other CMS ASN.1 types are
+imported from <span>[<a href="#RFC6268" class="cite xref">RFC6268</a>]</span>.<a href="#section-5-2" class="pilcrow">¶</a></p>
 <div id="sec-cms-content">
 <section id="section-5.1">
         <h3 id="name-evidence-content-type">
@@ -1948,65 +1950,107 @@ another kind of content, or vice versa.<a href="#section-5.1-4" class="pilcrow">
         <h3 id="name-cms-signeddata-profile">
 <a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-cms-signeddata-profile" class="section-name selfRef">CMS SignedData Profile</a>
         </h3>
-<p id="section-5.2-1">Evidence is a <code>ContentInfo</code> <span>[<a href="#RFC5652" class="cite xref">RFC5652</a>]</span> with <code>contentType</code> equal to <code>id-signedData</code> and <code>content</code>
-equal to a <code>SignedData</code> value. The complete <code>ContentInfo</code> <span class="bcp14">MUST</span> be DER encoded.
-The resulting structure is:<a href="#section-5.2-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-5.2-2">
+<p id="section-5.2-1">This section provides a profile of CMS in which to carry <code>PkixEvidence</code>. The intention is to allow producers and consumers of this Evidence
+operating within constrained environments to operate with a self-contained ASN.1 module and parser; i.e., it is an explicit design goal
+that parsers producers and parsers do not require a full-featured CMS library. Producers <span class="bcp14">MUST NOT</span> use any CMS features that are
+not explicitly allowed by this profile. Parsers <span class="bcp14">MAY</span> reject any Evidence that does not conform to this profile, but also <span class="bcp14">MAY</span>
+silently ignore any unrecognized attributes and parse as if the profile was respected.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<p id="section-5.2-2">Evidence is carried within a <code>ContentInfo</code> <span>[<a href="#RFC5652" class="cite xref">RFC5652</a>]</span> with <code>contentType</code> equal to <code>id-signedData</code> and <code>content</code>
+equal to a <code>SignedData</code> value. The complete <code>ContentInfo</code> <span class="bcp14">MUST</span> be DER encoded.<a href="#section-5.2-2" class="pilcrow">¶</a></p>
+<p id="section-5.2-3">The profile is expressed by the following ASN.1 types. Each is a restriction of the
+correspondingly-named CMS type from <span>[<a href="#RFC6268" class="cite xref">RFC6268</a>]</span> that keeps the same tags, so a
+DER-encoded <code>PkixEvidenceContentInfo</code> is also a valid DER-encoded CMS <code>ContentInfo</code>. A
+general-purpose CMS implementation can therefore process the Evidence unchanged,
+while a constrained implementation needs only the types below.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+<div class="lang-asn.1 sourcecode" id="section-5.2-4">
 <pre>
-ContentInfo (contentType = id-signedData)
-  SignedData (version = 3)
-    digestAlgorithms
-    encapContentInfo
-      eContentType = id-ct-pkixEvidence
-      eContent     = DER(PkixEvidence)
-    certificates   (AK certificates and intermediates, optional)
-    signerInfos    (one or more SignerInfo, one per Attestation Key)
-      SignerInfo
-        sid, digestAlgorithm, signedAttrs,
-        signatureAlgorithm, signature,
-        unsignedAttrs (countersignatures, optional)
-</pre><a href="#section-5.2-2" class="pilcrow">¶</a>
+PkixEvidenceContentInfo ::= SEQUENCE {
+    contentType       OBJECT IDENTIFIER (id-signedData),
+    content           [0] EXPLICIT PkixEvidenceSignedData }
+
+PkixEvidenceSignedData ::= SEQUENCE {
+    version           CMSVersion (v3),
+    digestAlgorithms  SET OF DigestAlgorithmIdentifier,
+    encapContentInfo  PkixEvidenceEncapContentInfo,
+    certificates      [0] IMPLICIT SET OF Certificate OPTIONAL,
+    -- crls [1] is not permitted
+    signerInfos       SET SIZE (1..MAX) OF PkixEvidenceSignerInfo }
+
+PkixEvidenceEncapContentInfo ::= SEQUENCE {
+    eContentType      OBJECT IDENTIFIER (id-ct-pkixEvidence),
+    eContent          [0] EXPLICIT OCTET STRING
+                          (CONTAINING PkixEvidence) }
+
+PkixEvidenceSignerInfo ::= SEQUENCE {
+    version             CMSVersion (v1 | v3),
+    sid                 SignerIdentifier,
+    digestAlgorithm     DigestAlgorithmIdentifier,
+    signedAttrs         [0] IMPLICIT Attributes
+                            {{ PkixEvidenceSignedAttributes }},
+    signatureAlgorithm  SignatureAlgorithmIdentifier,
+    signature           SignatureValue,
+    unsignedAttrs       [1] IMPLICIT Attributes
+                            {{ PkixEvidenceUnsignedAttributes }}
+                            OPTIONAL }
+  ( WITH COMPONENTS { ..., version (v1),
+      sid (WITH COMPONENTS {
+          ..., issuerAndSerialNumber PRESENT }) } |
+    WITH COMPONENTS { ..., version (v3),
+      sid (WITH COMPONENTS {
+          ..., subjectKeyIdentifier PRESENT }) } )
+
+PkixEvidenceSignedAttributes ATTRIBUTE ::= {
+    aa-contentType | aa-messageDigest | aa-signingCertificateV2,
+    ... }
+
+PkixEvidenceUnsignedAttributes ATTRIBUTE ::= {
+    aa-countersignature, ... }
+</pre><a href="#section-5.2-4" class="pilcrow">¶</a>
 </div>
-<p id="section-5.2-3">The following restrictions apply to the <code>SignedData</code>:<a href="#section-5.2-3" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-5.2-4.1">
-            <p id="section-5.2-4.1.1"><code>version</code> <span class="bcp14">MUST</span> be 3. This follows from <code>eContentType</code> being a value other than <code>id-data</code>.<a href="#section-5.2-4.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-5.2-4.2">
-            <p id="section-5.2-4.2.1"><code>digestAlgorithms</code> <span class="bcp14">MUST</span> contain the digest algorithm of each <code>SignerInfo</code>, and <span class="bcp14">SHOULD NOT</span> contain any other algorithm.<a href="#section-5.2-4.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-5.2-4.3">
-            <p id="section-5.2-4.3.1"><code>encapContentInfo.eContentType</code> <span class="bcp14">MUST</span> be <code>id-ct-pkixEvidence</code>. <code>encapContentInfo.eContent</code> <span class="bcp14">MUST</span> be present and
-<span class="bcp14">MUST</span> contain exactly one DER-encoded <code>PkixEvidence</code>.<a href="#section-5.2-4.3.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-5.2-4.4">
-            <p id="section-5.2-4.4.1"><code>certificates</code>, when present, <span class="bcp14">MUST</span> use only the <code>certificate</code> alternative of <code>CertificateChoices</code>; the
-<code>extendedCertificate</code>, <code>v1AttrCert</code>, <code>v2AttrCert</code> and <code>other</code> alternatives <span class="bcp14">MUST NOT</span> be used.
-See <a href="#sec-cms-certificates" class="auto internal xref">Section 5.2.1</a>.<a href="#section-5.2-4.4.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-5.2-4.5">
-            <p id="section-5.2-4.5.1"><code>crls</code> <span class="bcp14">MUST</span> be absent. Verifiers obtain revocation information according to their own validation policy.<a href="#section-5.2-4.5.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-5.2-4.6">
-            <p id="section-5.2-4.6.1"><code>signerInfos</code> <span class="bcp14">MUST</span> contain at least one <code>SignerInfo</code>. Each <code>SignerInfo</code> is a signature by one Attestation Key of the
-Attester; see <a href="#sec-cms-multiple-signers" class="auto internal xref">Section 5.2.3</a>. Entities other than the Attester <span class="bcp14">MUST NOT</span> add a <code>SignerInfo</code>; they
-countersign instead, as described in <a href="#sec-cms-countersignatures" class="auto internal xref">Section 5.2.4</a>.<a href="#section-5.2-4.6.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-5.2-5">There <span class="bcp14">MUST NOT</span> be any backwards compatibility with PKCS #7 as described in Section 5.2.1 of <span>[<a href="#RFC5652" class="cite xref">RFC5652</a>]</span>.<a href="#section-5.2-5" class="pilcrow">¶</a></p>
-<p id="section-5.2-6">Within each <code>SignerInfo</code>:<a href="#section-5.2-6" class="pilcrow">¶</a></p>
+<p id="section-5.2-5">Some restrictions cannot be expressed in the ASN.1.
+These, and the restrictions above, are stated in the text below.<a href="#section-5.2-5" class="pilcrow">¶</a></p>
+<p id="section-5.2-6">The following restrictions apply to the <code>SignedData</code>:<a href="#section-5.2-6" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-5.2-7.1">
-            <p id="section-5.2-7.1.1"><code>version</code> <span class="bcp14">MUST</span> be 1 when <code>sid</code> uses <code>issuerAndSerialNumber</code> and <span class="bcp14">MUST</span> be 3 when <code>sid</code> uses <code>subjectKeyIdentifier</code>.<a href="#section-5.2-7.1.1" class="pilcrow">¶</a></p>
+            <p id="section-5.2-7.1.1"><code>version</code> <span class="bcp14">MUST</span> be 3. This follows from <code>eContentType</code> being a value other than <code>id-data</code>.<a href="#section-5.2-7.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-5.2-7.2">
-            <p id="section-5.2-7.2.1"><code>sid</code> identifies the Attestation Key as described in <a href="#sec-cms-certificates" class="auto internal xref">Section 5.2.1</a>.<a href="#section-5.2-7.2.1" class="pilcrow">¶</a></p>
+            <p id="section-5.2-7.2.1"><code>digestAlgorithms</code> <span class="bcp14">MUST</span> contain the digest algorithm of each <code>SignerInfo</code>, and <span class="bcp14">SHOULD NOT</span> contain any other algorithm.<a href="#section-5.2-7.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-5.2-7.3">
-            <p id="section-5.2-7.3.1"><code>signedAttrs</code> <span class="bcp14">MUST</span> be present, and <span class="bcp14">MUST</span> be as described in <a href="#sec-cms-attributes" class="auto internal xref">Section 5.2.2</a>.<a href="#section-5.2-7.3.1" class="pilcrow">¶</a></p>
+            <p id="section-5.2-7.3.1"><code>encapContentInfo.eContentType</code> <span class="bcp14">MUST</span> be <code>id-ct-pkixEvidence</code>. <code>encapContentInfo.eContent</code> <span class="bcp14">MUST</span> be present and
+<span class="bcp14">MUST</span> contain exactly one DER-encoded <code>PkixEvidence</code>.<a href="#section-5.2-7.3.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-5.2-7.4">
-            <p id="section-5.2-7.4.1"><code>unsignedAttrs</code>, if present, <span class="bcp14">MUST</span> contain only countersignature attributes, as described in <a href="#sec-cms-countersignatures" class="auto internal xref">Section 5.2.4</a>.<a href="#section-5.2-7.4.1" class="pilcrow">¶</a></p>
+            <p id="section-5.2-7.4.1"><code>certificates</code>, when present, <span class="bcp14">MUST</span> use only the <code>certificate</code> alternative of <code>CertificateChoices</code>; the
+<code>extendedCertificate</code>, <code>v1AttrCert</code>, <code>v2AttrCert</code> and <code>other</code> alternatives <span class="bcp14">MUST NOT</span> be used.
+See <a href="#sec-cms-certificates" class="auto internal xref">Section 5.2.1</a>.<a href="#section-5.2-7.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.2-7.5">
+            <p id="section-5.2-7.5.1"><code>crls</code> <span class="bcp14">MUST</span> be absent. Verifiers obtain revocation information according to their own validation policy.<a href="#section-5.2-7.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.2-7.6">
+            <p id="section-5.2-7.6.1"><code>signerInfos</code> <span class="bcp14">MUST</span> contain at least one <code>SignerInfo</code>. Each <code>SignerInfo</code> is a signature by one Attestation Key of the
+Attester; see <a href="#sec-cms-multiple-signers" class="auto internal xref">Section 5.2.3</a>. All <code>SignerInfo</code> values <span class="bcp14">MUST</span> be produced by the same Attester
+identity. When the Attestation Keys are certified, each signing certificate <span class="bcp14">MUST</span> represent that same Attester
+identity with the same subject Distinguished Name (DN), but contain a distinct SPKI. Entities other than the
+Attester <span class="bcp14">MUST NOT</span> add a <code>SignerInfo</code>; they countersign instead, as described in <a href="#sec-cms-countersignatures" class="auto internal xref">Section 5.2.4</a>. For Attestation Keys that are not contained in certificates, the verifier <span class="bcp14">MAY</span> enforce the "same entity" requirement by other out-of-band methods.<a href="#section-5.2-7.6.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-5.2-8">There <span class="bcp14">MUST NOT</span> be any backwards compatibility with PKCS #7 as described in Section 5.2.1 of <span>[<a href="#RFC5652" class="cite xref">RFC5652</a>]</span>.<a href="#section-5.2-8" class="pilcrow">¶</a></p>
+<p id="section-5.2-9">Within each <code>SignerInfo</code>:<a href="#section-5.2-9" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.2-10.1">
+            <p id="section-5.2-10.1.1"><code>version</code> <span class="bcp14">MUST</span> be 1 when <code>sid</code> uses <code>issuerAndSerialNumber</code> and <span class="bcp14">MUST</span> be 3 when <code>sid</code> uses <code>subjectKeyIdentifier</code>.<a href="#section-5.2-10.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.2-10.2">
+            <p id="section-5.2-10.2.1"><code>sid</code> identifies the Attestation Key as described in <a href="#sec-cms-certificates" class="auto internal xref">Section 5.2.1</a>.<a href="#section-5.2-10.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.2-10.3">
+            <p id="section-5.2-10.3.1"><code>signedAttrs</code> <span class="bcp14">MUST</span> be present, and <span class="bcp14">MUST</span> be as described in <a href="#sec-cms-attributes" class="auto internal xref">Section 5.2.2</a>.<a href="#section-5.2-10.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.2-10.4">
+            <p id="section-5.2-10.4.1"><code>unsignedAttrs</code>, if present, <span class="bcp14">MUST</span> contain only countersignature attributes, as described in <a href="#sec-cms-countersignatures" class="auto internal xref">Section 5.2.4</a>.<a href="#section-5.2-10.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <div id="sec-cms-certificates">
@@ -2062,9 +2106,7 @@ bound to the signature through the <code>message-digest</code> attribute.<a href
           </h4>
 <p id="section-5.2.3-1">Multiple <code>SignerInfo</code> values support algorithm agility by allowing the same Attester identity to sign the
 <code>PkixEvidence</code> with multiple Attestation Keys, for example to provide resilience against cryptographic degradation
-in a hybrid fashion. When more than one <code>SignerInfo</code> is present and the Attestation Keys are certified, each signing
-certificate represents the same Attester identity with the same subject Distinguished Name (DN), but contains a
-distinct SPKI.<a href="#section-5.2.3-1" class="pilcrow">¶</a></p>
+in a hybrid fashion. All <code>SignerInfo</code> values represent the same Attester identity, as required in <a href="#sec-cms-profile" class="auto internal xref">Section 5.2</a>.<a href="#section-5.2.3-1" class="pilcrow">¶</a></p>
 <p id="section-5.2.3-2">Every <code>SignerInfo</code> protects the same <code>PkixEvidence</code>. Because CMS does not bind the <code>SignerInfo</code> values to each other,
 a <code>SignerInfo</code> can be removed without invalidating the others. The <code>ak-spki</code> transaction claim, which is
 inside the signed content, allows a Verifier to detect such removal. See <a href="#sec-verif-proc" class="auto internal xref">Section 6.4</a> and <a href="#sec-cons-multi-sigs" class="auto internal xref">Section 9.3</a>.<a href="#section-5.2.3-2" class="pilcrow">¶</a></p>
@@ -2999,7 +3041,7 @@ algorithm, and where applicable a certification path, acceptable under its appra
 A Verifier <span class="bcp14">MAY</span> verify additional <code>SignerInfo</code> values when it supports their algorithms. The presence of a signature made with an
 algorithm that is unsupported or unacceptable to the Verifier does not make an otherwise acceptable signature invalid.
 A Verifier <span class="bcp14">MUST</span> reject Evidence when multiple signing certificates do not represent the same Attester identity as described
-in <a href="#sec-cms-multiple-signers" class="auto internal xref">Section 5.2.3</a>.<a href="#section-6.4-6" class="pilcrow">¶</a></p>
+in <a href="#sec-cms-profile" class="auto internal xref">Section 5.2</a>.<a href="#section-6.4-6" class="pilcrow">¶</a></p>
 <p id="section-6.4-7">If any <code>transaction.ak-spki</code> claims are present, the Verifier <span class="bcp14">SHOULD</span> verify that the SubjectPublicKeyInfo of the Attestation Key of
 each verified <code>SignerInfo</code> matches at least one <code>ak-spki</code> value. Each such claim is authoritative only when it is backed by a
 successfully verified <code>SignerInfo</code> using the corresponding attestation key. An <code>ak-spki</code> claim that is not matched by a verified
@@ -3033,16 +3075,30 @@ BEGIN
 EXPORTS ALL ;
 
 IMPORTS
-  SubjectPublicKeyInfo
+  SubjectPublicKeyInfo, Certificate
     FROM PKIX1Explicit-2009 -- in [RFC5912]
   { iso(1) identified-organization(3) dod(6) internet(1)
     security(5) mechanisms(5) pkix(7) id-mod(0)
     id-mod-pkix1-explicit-02(51) }
 
-  CONTENT-TYPE
+  ATTRIBUTE
+    FROM PKIX-CommonTypes-2009 -- in [RFC5912]
+  { iso(1) identified-organization(3) dod(6) internet(1)
+    security(5) mechanisms(5) pkix(7) id-mod(0)
+    id-mod-pkixCommon-02(57) }
+
+  CONTENT-TYPE, CMSVersion, DigestAlgorithmIdentifier,
+  SignatureAlgorithmIdentifier, SignatureValue, SignerIdentifier,
+  Attributes{}, id-signedData, aa-contentType, aa-messageDigest,
+  aa-countersignature
     FROM CryptographicMessageSyntax-2010 -- in [RFC6268]
   { iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-9(9)
     smime(16) modules(0) id-mod-cms-2009(58) }
+
+  aa-signingCertificateV2
+    FROM ExtendedSecurityServices-2009 -- in [RFC5911]
+  { iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-9(9)
+    smime(16) modules(0) id-mod-ess-2006-02(42) }
 ;
 
 -- OID Arc
@@ -3058,9 +3114,11 @@ id-kp-attestationKey OBJECT IDENTIFIER ::= { id-kp TBDMOD2 }
 -- Evidence --
 
 -- Evidence is a ContentInfo with contentType id-signedData whose
--- SignedData encapsulates a PkixEvidence. The CMS profile
--- restrictions are specified in the text of this document; they
--- are not expressed in this module.
+-- SignedData encapsulates a PkixEvidence. The CMS profile is
+-- expressed by the PkixEvidence* types below, each of which is an
+-- encoding-compatible restriction of the corresponding CMS type.
+-- Restrictions that cannot be expressed in ASN.1 are specified in
+-- the text of this document.
 
 id-ct-pkixEvidence OBJECT IDENTIFIER ::= {
     iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-9(9)
@@ -3075,6 +3133,48 @@ ContentSet CONTENT-TYPE ::= { ct-pkixEvidence, ... }
 PkixEvidence ::= SEQUENCE {
     version           INTEGER (1),
     reportedElements  SEQUENCE SIZE (1..MAX) OF ReportedElement }
+
+PkixEvidenceContentInfo ::= SEQUENCE {
+    contentType       OBJECT IDENTIFIER (id-signedData),
+    content           [0] EXPLICIT PkixEvidenceSignedData }
+
+PkixEvidenceSignedData ::= SEQUENCE {
+    version           CMSVersion (v3),
+    digestAlgorithms  SET OF DigestAlgorithmIdentifier,
+    encapContentInfo  PkixEvidenceEncapContentInfo,
+    certificates      [0] IMPLICIT SET OF Certificate OPTIONAL,
+    -- crls [1] is not permitted
+    signerInfos       SET SIZE (1..MAX) OF PkixEvidenceSignerInfo }
+
+PkixEvidenceEncapContentInfo ::= SEQUENCE {
+    eContentType      OBJECT IDENTIFIER (id-ct-pkixEvidence),
+    eContent          [0] EXPLICIT OCTET STRING
+                          (CONTAINING PkixEvidence) }
+
+PkixEvidenceSignerInfo ::= SEQUENCE {
+    version             CMSVersion (v1 | v3),
+    sid                 SignerIdentifier,
+    digestAlgorithm     DigestAlgorithmIdentifier,
+    signedAttrs         [0] IMPLICIT Attributes
+                            {{ PkixEvidenceSignedAttributes }},
+    signatureAlgorithm  SignatureAlgorithmIdentifier,
+    signature           SignatureValue,
+    unsignedAttrs       [1] IMPLICIT Attributes
+                            {{ PkixEvidenceUnsignedAttributes }}
+                            OPTIONAL }
+  ( WITH COMPONENTS { ..., version (v1),
+      sid (WITH COMPONENTS {
+          ..., issuerAndSerialNumber PRESENT }) } |
+    WITH COMPONENTS { ..., version (v3),
+      sid (WITH COMPONENTS {
+          ..., subjectKeyIdentifier PRESENT }) } )
+
+PkixEvidenceSignedAttributes ATTRIBUTE ::= {
+    aa-contentType | aa-messageDigest | aa-signingCertificateV2,
+    ... }
+
+PkixEvidenceUnsignedAttributes ATTRIBUTE ::= {
+    aa-countersignature, ... }
 
 ReportedElement ::= SEQUENCE {
     elementType         OBJECT IDENTIFIER,
@@ -3649,6 +3749,14 @@ such as the "nonce" claim of the "transaction" element, introduced in this speci
 <dt id="RFC5652">[RFC5652]</dt>
         <dd>
 <span class="refAuthor">Housley, R.</span>, <span class="refTitle">"Cryptographic Message Syntax (CMS)"</span>, <span class="seriesInfo">STD 70</span>, <span class="seriesInfo">RFC 5652</span>, <span class="seriesInfo">DOI 10.17487/RFC5652</span>, <time datetime="2009-09" class="refDate">September 2009</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5652">https://www.rfc-editor.org/rfc/rfc5652</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5911">[RFC5911]</dt>
+        <dd>
+<span class="refAuthor">Hoffman, P.</span> and <span class="refAuthor">J. Schaad</span>, <span class="refTitle">"New ASN.1 Modules for Cryptographic Message Syntax (CMS) and S/MIME"</span>, <span class="seriesInfo">RFC 5911</span>, <span class="seriesInfo">DOI 10.17487/RFC5911</span>, <time datetime="2010-06" class="refDate">June 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5911">https://www.rfc-editor.org/rfc/rfc5911</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5912">[RFC5912]</dt>
+        <dd>
+<span class="refAuthor">Hoffman, P.</span> and <span class="refAuthor">J. Schaad</span>, <span class="refTitle">"New ASN.1 Modules for the Public Key Infrastructure Using X.509 (PKIX)"</span>, <span class="seriesInfo">RFC 5912</span>, <span class="seriesInfo">DOI 10.17487/RFC5912</span>, <time datetime="2010-06" class="refDate">June 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5912">https://www.rfc-editor.org/rfc/rfc5912</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC6268">[RFC6268]</dt>
         <dd>
