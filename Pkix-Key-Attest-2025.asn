@@ -9,17 +9,30 @@ BEGIN
 EXPORTS ALL ;
 
 IMPORTS
-  AlgorithmIdentifier{}, SIGNATURE-ALGORITHM
-    FROM AlgorithmInformation-2009 -- in [RFC5912]
-  { iso(1) identified-organization(3) dod(6) internet(1)
-    security(5)mechanisms(5) pkix(7) id-mod(0)
-    id-mod-algorithmInformation-02(58) }
-
-  Certificate, SubjectPublicKeyInfo
+  SubjectPublicKeyInfo, Certificate
     FROM PKIX1Explicit-2009 -- in [RFC5912]
   { iso(1) identified-organization(3) dod(6) internet(1)
     security(5) mechanisms(5) pkix(7) id-mod(0)
     id-mod-pkix1-explicit-02(51) }
+
+  ATTRIBUTE
+    FROM PKIX-CommonTypes-2009 -- in [RFC5912]
+  { iso(1) identified-organization(3) dod(6) internet(1)
+    security(5) mechanisms(5) pkix(7) id-mod(0)
+    id-mod-pkixCommon-02(57) }
+
+  CONTENT-TYPE, CMSVersion, DigestAlgorithmIdentifier,
+  SignatureAlgorithmIdentifier, SignatureValue, SignerIdentifier,
+  Attributes{}, id-signedData, aa-contentType, aa-messageDigest,
+  aa-countersignature
+    FROM CryptographicMessageSyntax-2010 -- in [RFC6268]
+  { iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-9(9)
+    smime(16) modules(0) id-mod-cms-2009(58) }
+
+  aa-signingCertificateV2
+    FROM ExtendedSecurityServices-2009 -- in [RFC5911]
+  { iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-9(9)
+    smime(16) modules(0) id-mod-ess-2006-02(42) }
 ;
 
 -- OID Arc
@@ -34,36 +47,68 @@ id-kp-attestationKey OBJECT IDENTIFIER ::= { id-kp TBDMOD2 }
 
 -- Evidence --
 
-Evidence ::= SEQUENCE {
-    tbs  TbsEvidence,
-    signatures  SEQUENCE SIZE (1..MAX) OF SignatureBlock,
-    intermediateCertificates  [0] SEQUENCE OF Certificate OPTIONAL
-                                  -- As defined in RFC 5912
-}
+-- Evidence is a ContentInfo with contentType id-signedData whose
+-- SignedData encapsulates a PkixEvidence. The CMS profile is
+-- expressed by the PkixEvidence* types below, each of which is an
+-- encoding-compatible restriction of the corresponding CMS type.
+-- Restrictions that cannot be expressed in ASN.1 are specified in
+-- the text of this document.
 
-SignatureBlock ::= SEQUENCE {
-    sid SignerIdentifier,
-    signatureAlgorithm AlgorithmIdentifier
-        { SIGNATURE-ALGORITHM, { ... } },
-    signatureValue OCTET STRING
-}
+id-ct-pkixEvidence OBJECT IDENTIFIER ::= {
+    iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-9(9)
+    smime(16) ct(1) TBD }
 
-SignerIdentifier ::= SEQUENCE {
-    keyId [0] EXPLICIT OCTET STRING OPTIONAL,
-    subjectPublicKeyInfo [1] EXPLICIT
-        SubjectPublicKeyInfo OPTIONAL,
-        -- As defined in RFC 5912
-    certificate [2] EXPLICIT Certificate OPTIONAL
-      -- As defined in RFC 5912
-} (
-    WITH COMPONENTS { ..., keyId PRESENT}
-    | WITH COMPONENTS { ..., subjectPublicKeyInfo PRESENT }
-    | WITH COMPONENTS { ...,certificate PRESENT } )
+ct-pkixEvidence CONTENT-TYPE ::= {
+    TYPE PkixEvidence IDENTIFIED BY id-ct-pkixEvidence }
 
-TbsEvidence ::= SEQUENCE {
-    version INTEGER,
-    reportedElements SEQUENCE SIZE (1..MAX) OF ReportedElement
-}
+-- ct-pkixEvidence is added to the ContentSet of [RFC6268]
+ContentSet CONTENT-TYPE ::= { ct-pkixEvidence, ... }
+
+PkixEvidence ::= SEQUENCE {
+    version           INTEGER (1),
+    reportedElements  SEQUENCE SIZE (1..MAX) OF ReportedElement }
+
+PkixEvidenceContentInfo ::= SEQUENCE {
+    contentType       OBJECT IDENTIFIER (id-signedData),
+    content           [0] EXPLICIT PkixEvidenceSignedData }
+
+PkixEvidenceSignedData ::= SEQUENCE {
+    version           CMSVersion (v3),
+    digestAlgorithms  SET OF DigestAlgorithmIdentifier,
+    encapContentInfo  PkixEvidenceEncapContentInfo,
+    certificates      [0] IMPLICIT SET OF Certificate OPTIONAL,
+    -- crls [1] is not permitted
+    signerInfos       SET SIZE (1..MAX) OF PkixEvidenceSignerInfo }
+
+PkixEvidenceEncapContentInfo ::= SEQUENCE {
+    eContentType      OBJECT IDENTIFIER (id-ct-pkixEvidence),
+    eContent          [0] EXPLICIT OCTET STRING
+                          (CONTAINING PkixEvidence) }
+
+PkixEvidenceSignerInfo ::= SEQUENCE {
+    version             CMSVersion (v1 | v3),
+    sid                 SignerIdentifier,
+    digestAlgorithm     DigestAlgorithmIdentifier,
+    signedAttrs         [0] IMPLICIT Attributes
+                            {{ PkixEvidenceSignedAttributes }},
+    signatureAlgorithm  SignatureAlgorithmIdentifier,
+    signature           SignatureValue,
+    unsignedAttrs       [1] IMPLICIT Attributes
+                            {{ PkixEvidenceUnsignedAttributes }}
+                            OPTIONAL }
+  ( WITH COMPONENTS { ..., version (v1),
+      sid (WITH COMPONENTS {
+          ..., issuerAndSerialNumber PRESENT }) } |
+    WITH COMPONENTS { ..., version (v3),
+      sid (WITH COMPONENTS {
+          ..., subjectKeyIdentifier PRESENT }) } )
+
+PkixEvidenceSignedAttributes ATTRIBUTE ::= {
+    aa-contentType | aa-messageDigest | aa-signingCertificateV2,
+    ... }
+
+PkixEvidenceUnsignedAttributes ATTRIBUTE ::= {
+    aa-countersignature, ... }
 
 ReportedElement ::= SEQUENCE {
     elementType         OBJECT IDENTIFIER,
@@ -118,7 +163,7 @@ ClaimSet CLAIM ::= {
       ...
 }
 
-id-evidence OBJECT IDENTIFIER ::= { 
+id-evidence OBJECT IDENTIFIER ::= {
      iso(1) identified-organization(3) dod(6)
      internet(1) security(5) mechanisms(5) TBDMOD3 }
 
