@@ -2109,7 +2109,7 @@ attribute of <span>[<a href="#RFC5752" class="cite xref">RFC5752</a>]</span> wit
           <h4 id="name-countersignatures">
 <a href="#section-5.2.4" class="section-number selfRef">5.2.4. </a><a href="#name-countersignatures" class="section-name selfRef">Countersignatures</a>
           </h4>
-<p id="section-5.2.4-1">A party other than the Attester, for example a trusted intermediary between the Attester and the Verifier, <span class="bcp14">MAY</span>
+<p id="section-5.2.4-1">A party other than the Attester, for example a third party Endorser, <span class="bcp14">MAY</span>
 countersign a <code>SignerInfo</code> by adding a <code>countersignature</code> attribute (Section 11.4 of <span>[<a href="#RFC5652" class="cite xref">RFC5652</a>]</span>) to that <code>SignerInfo</code>'s
 <code>unsignedAttrs</code>. A countersignature signs the <code>signature</code> value of the <code>SignerInfo</code> it is attached to, and therefore
 endorses that Attestation Key signature, rather than the Evidence directly.<a href="#section-5.2.4-1" class="pilcrow">¶</a></p>
@@ -2117,6 +2117,7 @@ endorses that Attestation Key signature, rather than the Evidence directly.<a hr
 countersigners, and the processing of countersignatures, including which countersigners are trusted, is a matter of
 Verifier policy. Verifiers that do not implement countersignatures <span class="bcp14">MUST</span> ignore <code>unsignedAttrs</code>.<a href="#section-5.2.4-2" class="pilcrow">¶</a></p>
 <p id="section-5.2.4-3">Since <code>unsignedAttrs</code> are not covered by the Attestation Key signature, the removal of a countersignature cannot be detected.<a href="#section-5.2.4-3" class="pilcrow">¶</a></p>
+<p id="section-5.2.4-4">An intended use case for counter signatures is for HSMs within a cluster to assert that they contain the same key stored under the same properties. Another intended use case is for adding counter-signatures by auditing infrastructure, or to add additional endorsement information such as external endorsements of the HSM's certification status. HSM vendors <span class="bcp14">MAY</span> add proprietary attributes to the counter-signature SignerInfo to indicate a clustering relationship or carry additional endorsement information, which a generic parser <span class="bcp14">MAY</span> ignore.<a href="#section-5.2.4-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>

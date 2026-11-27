@@ -920,13 +920,12 @@ Table of Contents
 
 5.2.4.  Countersignatures
 
-   A party other than the Attester, for example a trusted intermediary
-   between the Attester and the Verifier, MAY countersign a SignerInfo
-   by adding a countersignature attribute (Section 11.4 of [RFC5652]) to
-   that SignerInfo's unsignedAttrs.  A countersignature signs the
-   signature value of the SignerInfo it is attached to, and therefore
-   endorses that Attestation Key signature, rather than the Evidence
-   directly.
+   A party other than the Attester, for example a third party Endorser,
+   MAY countersign a SignerInfo by adding a countersignature attribute
+   (Section 11.4 of [RFC5652]) to that SignerInfo's unsignedAttrs.  A
+   countersignature signs the signature value of the SignerInfo it is
+   attached to, and therefore endorses that Attestation Key signature,
+   rather than the Evidence directly.
 
    Countersigners are not Attesters.  The AK certificate constraints of
    Section 3.2 do not apply to countersigners, and the processing of
@@ -936,6 +935,16 @@ Table of Contents
 
    Since unsignedAttrs are not covered by the Attestation Key signature,
    the removal of a countersignature cannot be detected.
+
+   An intended use case for counter signatures is for HSMs within a
+   cluster to assert that they contain the same key stored under the
+   same properties.  Another intended use case is for adding counter-
+   signatures by auditing infrastructure, or to add additional
+   endorsement information such as external endorsements of the HSM's
+   certification status.  HSM vendors MAY add proprietary attributes to
+   the counter-signature SignerInfo to indicate a clustering
+   relationship or carry additional endorsement information, which a
+   generic parser MAY ignore.
 
 5.3.  Elements and Claims
 
