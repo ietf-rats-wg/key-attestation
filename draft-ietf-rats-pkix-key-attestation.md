@@ -1440,6 +1440,8 @@ in the "SMI Security for S/MIME CMS Content Type" registry (1.2.840.113549.1.9.1
 
 * Description: id-ct-pkixEvidence
 
+* Prototyping value: prototype implementations may use `1.3.6.1.4.1.32473.100.9998`, which is on the documentation arc reserved in RFC5612.
+
 * Reference: {{&SELF}}
 
 # Security Considerations
@@ -1486,38 +1488,18 @@ the minimal subset of CMS that it requires, without the need for a general-purpo
 while Verifiers outside of an HSM boundary can use existing CMS implementations. Verifiers
 running within an HSM boundary SHOULD reject any CMS structure that falls outside this profile.
 
-## Multiple Signers and Countersignatures {#sec-cons-multi-sigs}
+## Drift from CMS
 
-The Evidence format supports two distinct ways for more than one key to sign:
+The deliberately narrow and static CMS profile does present a security risk in that it will not allow for future security updates to CMS that fix vulnerabilities identified in the CMS specification. This is a deliberate choice that prioritizes interoperability over this aspect of security. The use case that motivates this decision is when a key is exported from one HSM to another and the exporting HSM requires attestation of the key-wrapping-key that it is exporting for. Consider a situation where an HSM is reaching end-of-life and production keys need to be extracted from it, if this HSM is not able to parse the key attestation of the newer HSM for which it is exporting, then the keys will become locked into that hardware, presenting an unacceptable risk to availability of those keys.  
 
-* Multiple `SignerInfo` values, each produced by an Attestation Key of the same Attester, are used to support
-  algorithm agility, such as hybrid environments where multiple keys using different cryptographic algorithms are
-  required to support appraisal policies.
-
-* Countersignatures, carried in the `unsignedAttrs` of a `SignerInfo`, are used by parties other than the Attester.
-  This is important for environments where a number of heterogeneous devices are deployed and a trusted actor,
-  intermediary between the Attester and the Verifier, validates the original signature(s) and endorses them with its own.
-
-Each `SignerInfo` is bound to the `PkixEvidence` content through its signed `message-digest` and
-`content-type` attributes. However, CMS does not bind the `SignerInfo` values to each other, so an attacker
-can remove a `SignerInfo` without invalidating the remaining ones. Similarly, since countersignatures are
-carried in unsigned attributes, they can be removed without leaving any trace.
-
-The transaction claim "ak-spki" binds the content to the set of Attestation Keys used by the Attesting Environment.
-Since the claim is within the signed content, the removal of a `SignerInfo` can be detected by a Verifier that
-checks that every `ak-spki` claim is matched by a `SignerInfo`. This claim also binds the algorithm and parameters
-of each Attestation Key to the content, as they are part of the SubjectPublicKeyInfo.
-
-Verifiers MUST be designed to accept Evidence based on their appraisal policies. Verifiers MUST NOT make any inferences
-based on the absence of a countersignature, or on the absence of a `SignerInfo` that is not referenced by an `ak-spki` claim,
-as these could have been removed in transit.
+Implementations are free to add new security-enhancing CMS features provided that they are backwards-compatible in the sense that they will be ignored by a legacy parser.
 
 ## Cross-Protocol Attacks {#sec-cons-cross-protocol}
 
-The signed `content-type` attribute in every `SignerInfo` identifies the signed content as PKIX Evidence, including
-when the Attestation Key is not certified by an X.509 certificate and the `id-kp-attestationKey` EKU therefore offers no
-protection. Verifiers MUST check this attribute as part of the procedures in {{sec-verif-proc}}; accepting
-arbitrary CMS `SignedData` signed by an Attestation Key would bypass this check.
+One of the primary purposes of an Attestation Key is to be a key that will only be used to sign Evidence and will never sign arbitrary content that could be made to look like Evidence. This is asserted by the CA via the `id-kp-attestationKey` EKU in the AK certificate.
+
+Therefore, when the AK is carried in a certificate, Verifiers MUST check for this EKU as described in {{sec-verif-proc}}. Additionally, an AK carrying this EKU that also signs
+arbitrary CMS `SignedData` is a security risk and should be flagged as a vulnerability to the operator or device manufacturer.
 
 ## Privacy and Evidence Encryption {#sec-cons-privacy}
 
