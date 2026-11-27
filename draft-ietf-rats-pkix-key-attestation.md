@@ -762,10 +762,8 @@ Within each `SignerInfo`:
 When the Attestation Key is certified by an X.509 certificate, `sid` MUST identify that AK certificate,
 using either `issuerAndSerialNumber` or `subjectKeyIdentifier`, and that AK certificate MUST be included
 in `SignedData.certificates`. The AK certificate is subject to the constraints in {{sec-ak-chain}}.
-It is expected that an X.509 certificate will be generally used, as it provides the public key needed
-to verify the signature and clearly identifies the Attester that provided the signature.
 
-`SignedData.certificates` MAY also include any or all intermediate CA certificates needed to build a
+`SignedData.certificates` MAY also include intermediate CA certificates needed to build a
 certification path, as well as the certificates of countersigners. It is not required to include trust anchors,
 and including a certificate never establishes it as a trust anchor. Order is not significant.
 
@@ -787,15 +785,9 @@ When `sid` identifies a certificate, `signedAttrs` SHOULD contain exactly one `s
 attribute {{RFC5035}}, whose first `ESSCertIDv2` identifies the AK certificate. This places the
 identity of the signer under the signature.
 
-`signedAttrs` MUST NOT contain a `signing-time` attribute. As described in {{sec-cons-hsm-timestamps}},
-HSM clocks are not reliable; the `timestamp` transaction claim, with the caveats described for it, is
-the place to report the time of generation.
+`signedAttrs` MUST NOT contain a `signing-time` attribute as this data is included explicitly within the `PkixEvidence.transaction.timestamp`, as described in {{sec-cons-hsm-timestamps}}.
 
-Generators SHOULD NOT include any other signed attributes. Verifiers MUST ignore signed attributes that they do not recognize.
-
-Note that the signature in each `SignerInfo` is computed over the DER encoding of the
-signed attributes as described in Section 5.4 of {{RFC5652}}, and the `PkixEvidence` is
-bound to the signature through the `message-digest` attribute.
+Generators SHOULD NOT include any other signed attributes. Verifiers MAY ignore signed attributes that they do not recognize or MAY reject as malformed.
 
 ### Multiple Signers {#sec-cms-multiple-signers}
 
@@ -1410,13 +1402,7 @@ as described in {{sec-data-model}}.
 # ASN.1 Module {#sec-asn1-mod}
 
 ~~~ asn.1
-
-<CODE STARTS>
-
 {::include-fold Pkix-Key-Attest-2025.asn}
-
-<CODE ENDS>
-
 ~~~
 
 # IANA Considerations
