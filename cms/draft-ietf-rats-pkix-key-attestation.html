@@ -1351,7 +1351,7 @@ whether the storage properties of this key meet the requirements of a given cert
                 <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="auto internal xref">9.2</a>.  <a href="#name-simple-to-implement" class="internal xref">Simple to Implement</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.3">
-                <p id="section-toc.1-1.9.2.3.1"><a href="#section-9.3" class="auto internal xref">9.3</a>.  <a href="#name-multiple-signers-and-counte" class="internal xref">Multiple Signers and Countersignatures</a></p>
+                <p id="section-toc.1-1.9.2.3.1"><a href="#section-9.3" class="auto internal xref">9.3</a>.  <a href="#name-drift-from-cms" class="internal xref">Drift from CMS</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.4">
                 <p id="section-toc.1-1.9.2.4.1"><a href="#section-9.4" class="auto internal xref">9.4</a>.  <a href="#name-cross-protocol-attacks" class="internal xref">Cross-Protocol Attacks</a></p>
@@ -2101,7 +2101,7 @@ identity. When the Attestation Keys are certified, each signing certificate <spa
 <p id="section-5.2.3-2">Every <code>SignerInfo</code> protects the same <code>PkixEvidence</code>, which <span class="bcp14">MUST</span> contain exactly one <code>ak-spki</code> transaction claim for each
 <code>SignerInfo</code>. Because these claims are inside the signed content, every signature covers the complete set of Attestation
 Keys, which allows a Verifier to detect a removed <code>SignerInfo</code>. This serves the same purpose as the <code>multiple-signatures</code>
-attribute of <span>[<a href="#RFC5752" class="cite xref">RFC5752</a>]</span> without requiring an additional signed attribute. The <code>multiple-signatures</code> attribute <span class="bcp14">MUST NOT</span> be included. See <a href="#sec-verif-proc" class="auto internal xref">Section 6.4</a> and <a href="#sec-cons-multi-sigs" class="auto internal xref">Section 9.3</a>.<a href="#section-5.2.3-2" class="pilcrow">¶</a></p>
+attribute of <span>[<a href="#RFC5752" class="cite xref">RFC5752</a>]</span> without requiring an additional signed attribute. The <code>multiple-signatures</code> attribute <span class="bcp14">MUST NOT</span> be included. See <a href="#sec-verif-proc" class="auto internal xref">Section 6.4</a>.<a href="#section-5.2.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-cms-countersignatures">
@@ -2850,7 +2850,7 @@ different values. However, within the scope of this specification, the "nonce" v
 <p id="section-5.6.3-1">This claim contains the Subject Public Key Information (SPKI) for the attestation key used to sign the Evidence. The claim value is of
 type <code>SubjectPublicKeyInfo</code>, as defined for X.509 certificates in <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>.<a href="#section-5.6.3-1" class="pilcrow">¶</a></p>
 <p id="section-5.6.3-2">This transaction claim is used to bind the content of the Evidence with the key(s) used to sign that Evidence. The importance
-of this binding is discussed in <a href="#sec-verif-proc" class="auto internal xref">Section 6.4</a> and <a href="#sec-cons-multi-sigs" class="auto internal xref">Section 9.3</a>.<a href="#section-5.6.3-2" class="pilcrow">¶</a></p>
+of this binding is discussed in <a href="#sec-verif-proc" class="auto internal xref">Section 6.4</a>.<a href="#section-5.6.3-2" class="pilcrow">¶</a></p>
 <p id="section-5.6.3-3">This claim <span class="bcp14">MUST</span> be reported exactly once for each <code>SignerInfo</code> (see <a href="#sec-cms-multiple-signers" class="auto internal xref">Section 5.2.3</a>). Each included claim <span class="bcp14">MUST</span> refer
 to a different attestation key.<a href="#section-5.6.3-3" class="pilcrow">¶</a></p>
 <p id="section-5.6.3-4">When the Attestation Key is not certified by an X.509 certificate (see <a href="#sec-cms-certificates" class="auto internal xref">Section 5.2.1</a>), this claim is the only means by which
@@ -3539,7 +3539,10 @@ in the "SMI Security for S/MIME CMS Content Type" registry (1.2.840.113549.1.9.1
           <p id="section-8-7.2.1">Description: id-ct-pkixEvidence<a href="#section-8-7.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-8-7.3">
-          <p id="section-8-7.3.1">Reference: RFCthis<a href="#section-8-7.3.1" class="pilcrow">¶</a></p>
+          <p id="section-8-7.3.1">Prototyping value: prototype implementations may use <code>1.3.6.1.4.1.32473.100.9998</code>, which is on the documentation arc reserved in RFC5612.<a href="#section-8-7.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-8-7.4">
+          <p id="section-8-7.4.1">Reference: RFCthis<a href="#section-8-7.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -3594,35 +3597,13 @@ while Verifiers outside of an HSM boundary can use existing CMS implementations.
 running within an HSM boundary <span class="bcp14">SHOULD</span> reject any CMS structure that falls outside this profile.<a href="#section-9.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="sec-cons-multi-sigs">
+<div id="drift-from-cms">
 <section id="section-9.3">
-        <h3 id="name-multiple-signers-and-counte">
-<a href="#section-9.3" class="section-number selfRef">9.3. </a><a href="#name-multiple-signers-and-counte" class="section-name selfRef">Multiple Signers and Countersignatures</a>
+        <h3 id="name-drift-from-cms">
+<a href="#section-9.3" class="section-number selfRef">9.3. </a><a href="#name-drift-from-cms" class="section-name selfRef">Drift from CMS</a>
         </h3>
-<p id="section-9.3-1">The Evidence format supports two distinct ways for more than one key to sign:<a href="#section-9.3-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-9.3-2.1">
-            <p id="section-9.3-2.1.1">Multiple <code>SignerInfo</code> values, each produced by an Attestation Key of the same Attester, are used to support
-algorithm agility, such as hybrid environments where multiple keys using different cryptographic algorithms are
-required to support appraisal policies.<a href="#section-9.3-2.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-9.3-2.2">
-            <p id="section-9.3-2.2.1">Countersignatures, carried in the <code>unsignedAttrs</code> of a <code>SignerInfo</code>, are used by parties other than the Attester.
-This is important for environments where a number of heterogeneous devices are deployed and a trusted actor,
-intermediary between the Attester and the Verifier, validates the original signature(s) and endorses them with its own.<a href="#section-9.3-2.2.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-9.3-3">Each <code>SignerInfo</code> is bound to the <code>PkixEvidence</code> content through its signed <code>message-digest</code> and
-<code>content-type</code> attributes. However, CMS does not bind the <code>SignerInfo</code> values to each other, so an attacker
-can remove a <code>SignerInfo</code> without invalidating the remaining ones. Similarly, since countersignatures are
-carried in unsigned attributes, they can be removed without leaving any trace.<a href="#section-9.3-3" class="pilcrow">¶</a></p>
-<p id="section-9.3-4">The transaction claim "ak-spki" binds the content to the set of Attestation Keys used by the Attesting Environment.
-Since the claim is within the signed content, the removal of a <code>SignerInfo</code> can be detected by a Verifier that
-checks that every <code>ak-spki</code> claim is matched by a <code>SignerInfo</code>. This claim also binds the algorithm and parameters
-of each Attestation Key to the content, as they are part of the SubjectPublicKeyInfo.<a href="#section-9.3-4" class="pilcrow">¶</a></p>
-<p id="section-9.3-5">Verifiers <span class="bcp14">MUST</span> be designed to accept Evidence based on their appraisal policies. Verifiers <span class="bcp14">MUST NOT</span> make any inferences
-based on the absence of a countersignature, or on the absence of a <code>SignerInfo</code> that is not referenced by an <code>ak-spki</code> claim,
-as these could have been removed in transit.<a href="#section-9.3-5" class="pilcrow">¶</a></p>
+<p id="section-9.3-1">The deliberately narrow and static CMS profile does present a security risk in that it will not allow for future security updates to CMS that fix vulnerabilities identified in the CMS specification. This is a deliberate choice that prioritizes interoperability over this aspect of security. The use case that motivates this decision is when a key is exported from one HSM to another and the exporting HSM requires attestation of the key-wrapping-key that it is exporting for. Consider a situation where an HSM is reaching end-of-life and production keys need to be extracted from it, if this HSM is not able to parse the key attestation of the newer HSM for which it is exporting, then the keys will become locked into that hardware, presenting an unacceptable risk to availability of those keys.<a href="#section-9.3-1" class="pilcrow">¶</a></p>
+<p id="section-9.3-2">Implementations are free to add new security-enhancing CMS features provided that they are backwards-compatible in the sense that they will be ignored by a legacy parser.<a href="#section-9.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-cons-cross-protocol">
@@ -3630,10 +3611,9 @@ as these could have been removed in transit.<a href="#section-9.3-5" class="pilc
         <h3 id="name-cross-protocol-attacks">
 <a href="#section-9.4" class="section-number selfRef">9.4. </a><a href="#name-cross-protocol-attacks" class="section-name selfRef">Cross-Protocol Attacks</a>
         </h3>
-<p id="section-9.4-1">The signed <code>content-type</code> attribute in every <code>SignerInfo</code> identifies the signed content as PKIX Evidence, including
-when the Attestation Key is not certified by an X.509 certificate and the <code>id-kp-attestationKey</code> EKU therefore offers no
-protection. Verifiers <span class="bcp14">MUST</span> check this attribute as part of the procedures in <a href="#sec-verif-proc" class="auto internal xref">Section 6.4</a>; accepting
-arbitrary CMS <code>SignedData</code> signed by an Attestation Key would bypass this check.<a href="#section-9.4-1" class="pilcrow">¶</a></p>
+<p id="section-9.4-1">One of the primary purposes of an Attestation Key is to be a key that will only be used to sign Evidence and will never sign arbitrary content that could be made to look like Evidence. This is asserted by the CA via the <code>id-kp-attestationKey</code> EKU in the AK certificate.<a href="#section-9.4-1" class="pilcrow">¶</a></p>
+<p id="section-9.4-2">Therefore, when the AK is carried in a certificate, Verifiers <span class="bcp14">MUST</span> check for this EKU as described in <a href="#sec-verif-proc" class="auto internal xref">Section 6.4</a>. Additionally, an AK carrying this EKU that also signs
+arbitrary CMS <code>SignedData</code> is a security risk and should be flagged as a vulnerability to the operator or device manufacturer.<a href="#section-9.4-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-cons-privacy">
