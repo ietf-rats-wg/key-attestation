@@ -100,6 +100,7 @@ normative:
     target: https://www.itu.int/rec/T-REC-X.690
 
 informative:
+  RFC5752:
   RFC6024:
   RFC9019:
   I-D.ietf-lamps-csr-attestation:
@@ -740,10 +741,7 @@ The following restrictions apply to the `SignedData`:
 * `crls` MUST be absent. Verifiers obtain revocation information according to their own validation policy.
 
 * `signerInfos` MUST contain at least one `SignerInfo`. Each `SignerInfo` is a signature by one Attestation Key of the
-  Attester; see {{sec-cms-multiple-signers}}. All `SignerInfo` values MUST be produced by the same Attester
-  identity. When the Attestation Keys are certified, each signing certificate MUST represent that same Attester
-  identity with the same subject Distinguished Name (DN), but contain a distinct SPKI. Entities other than the
-  Attester MUST NOT add a `SignerInfo`; they countersign instead, as described in {{sec-cms-countersignatures}}. For Attestation Keys that are not contained in certificates, the verifier MAY enforce the "same entity" requirement by other out-of-band methods.
+  Attester. See {{sec-cms-multiple-signers}} for the limited allowed use of multiple `SignerInfo` values.
 
 There MUST NOT be any backwards compatibility with PKCS #7 as described in Section 5.2.1 of {{RFC5652}}.
 
@@ -791,13 +789,15 @@ Generators SHOULD NOT include any other signed attributes. Verifiers MAY ignore 
 
 ### Multiple Signers {#sec-cms-multiple-signers}
 
-Multiple `SignerInfo` values support algorithm agility by allowing the same Attester identity to sign the
+Multiple `SignerInfo` values are allowed to support cryptographic algorithm agility by allowing the same Attester identity to sign the
 `PkixEvidence` with multiple Attestation Keys, for example to provide resilience against cryptographic degradation
-in a hybrid fashion. All `SignerInfo` values represent the same Attester identity, as required in {{sec-cms-profile}}.
+in a hybrid fashion. All `SignerInfo` values MUST be produced by the same Attester
+identity. When the Attestation Keys are certified, each signing certificate MUST contain the same subject Distinguished Name (DN), and a distinct SPKI. Entities other than the Attester MUST NOT add a `SignerInfo`; they countersign instead, as described in {{sec-cms-countersignatures}}. For Attestation Keys that are not contained in certificates, the Evidence alone does not allow a Verifier to check the "same entity" requirement; a Verifier MAY enforce it by out-of-band methods.
 
-Every `SignerInfo` protects the same `PkixEvidence`. Because CMS does not bind the `SignerInfo` values to each other,
-a `SignerInfo` can be removed without invalidating the others. The `ak-spki` transaction claim, which is
-inside the signed content, allows a Verifier to detect such removal. See {{sec-verif-proc}} and {{sec-cons-multi-sigs}}.
+Every `SignerInfo` protects the same `PkixEvidence`, which MUST contain exactly one `ak-spki` transaction claim for each
+`SignerInfo`. Because these claims are inside the signed content, every signature covers the complete set of Attestation
+Keys, which allows a Verifier to detect a removed `SignerInfo`. This serves the same purpose as the `multiple-signatures`
+attribute of {{RFC5752}} without requiring an additional signed attribute. The `multiple-signatures` attribute MUST NOT be included. See {{sec-verif-proc}} and {{sec-cons-multi-sigs}}.
 
 ### Countersignatures {#sec-cms-countersignatures}
 
@@ -1235,8 +1235,8 @@ type `SubjectPublicKeyInfo`, as defined for X.509 certificates in {{RFC5280}}.
 This transaction claim is used to bind the content of the Evidence with the key(s) used to sign that Evidence. The importance
 of this binding is discussed in {{sec-verif-proc}} and {{sec-cons-multi-sigs}}.
 
-This claim can be reported multiple times. Each included claim MUST refer to a different attestation key. In other words, this claim
-should be repeated only if multiple attestation keys are used to sign the Evidence.
+This claim MUST be reported exactly once for each `SignerInfo` (see {{sec-cms-multiple-signers}}). Each included claim MUST refer
+to a different attestation key.
 
 When the Attestation Key is not certified by an X.509 certificate (see {{sec-cms-certificates}}), this claim is the means by which
 the SubjectPublicKeyInfo of the Attestation Key is carried in the Evidence.
@@ -1384,10 +1384,11 @@ algorithm, and where applicable a certification path, acceptable under its appra
 A Verifier MAY verify additional `SignerInfo` values when it supports their algorithms. The presence of a signature made with an
 algorithm that is unsupported or unacceptable to the Verifier does not make an otherwise acceptable signature invalid.
 A Verifier MUST reject Evidence when multiple signing certificates do not represent the same Attester identity as described
-in {{sec-cms-profile}}.
+in {{sec-cms-multiple-signers}}.
 
-If any `transaction.ak-spki` claims are present, the Verifier SHOULD verify that the SubjectPublicKeyInfo of the Attestation Key of
-each verified `SignerInfo` matches at least one `ak-spki` value. Each such claim is authoritative only when it is backed by a
+The Verifier MUST reject Evidence that does not contain at least one `transaction.ak-spki` claim. The Verifier MUST verify that
+the SubjectPublicKeyInfo of the Attestation Key of each verified `SignerInfo` matches an `ak-spki` value, and MUST reject the
+Evidence if it does not. Each such claim is authoritative only when it is backed by a
 successfully verified `SignerInfo` using the corresponding attestation key. An `ak-spki` claim that is not matched by a verified
 `SignerInfo` MUST NOT by itself be treated as proof that the corresponding key was used to sign the Evidence. Conversely, an
 `ak-spki` claim with no corresponding `SignerInfo` indicates that a `SignerInfo` has been removed; a Verifier MAY reject such
