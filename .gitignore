@@ -20,11 +20,9 @@
 /versioned/
 Gemfile.lock
 archive.json
-draft-ounsworth-rats-key-attestation.xml
+draft-ietf-rats-pkix-key-attestation.xml
 package-lock.json
 report.xml
-draft-ounsworth-rats-key-attestation.txt
-draft-ounsworth-rats-pkix-key-attestation.txt
 Gemfile
 draft-ounsworth-rats-pkix-key-attestation.md_old
 draft-ietf-rats-pkix-key-attestation-01.txt

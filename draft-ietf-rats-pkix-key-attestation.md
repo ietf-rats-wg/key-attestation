@@ -84,6 +84,8 @@ normative:
   RFC5652:
   RFC6268:
   RFC5035:
+  RFC5911:
+  RFC5912:
   RFC9711:
   RFC4648:
   X680:
@@ -626,8 +628,10 @@ deployment within the target ecosystem, ASN.1 definitions {{X680}} and DER encod
 {{X690}} are used. A complete ASN.1 module is provided in {{sec-asn1-mod}}.
 
 Evidence is conveyed using the Cryptographic Message Syntax (CMS) {{RFC5652}}. The Evidence description
-is defined as a new CMS content type, which is then signed using a profile of CMS `SignedData`. CMS ASN.1
-types are imported from {{RFC6268}} and are not redefined by this document.
+is defined as a new CMS content type, which is then signed using a profile of CMS `SignedData`. The profile
+is expressed as restricted, encoding-compatible versions of the CMS `ContentInfo`, `SignedData`,
+`EncapsulatedContentInfo` and `SignerInfo` types (see {{sec-cms-profile}}). All other CMS ASN.1 types are
+imported from {{RFC6268}}.
 
 ## Evidence Content Type {#sec-cms-content}
 
@@ -658,24 +662,67 @@ another kind of content, or vice versa.
 
 ## CMS SignedData Profile {#sec-cms-profile}
 
-Evidence is a `ContentInfo` {{RFC5652}} with `contentType` equal to `id-signedData` and `content`
-equal to a `SignedData` value. The complete `ContentInfo` MUST be DER encoded.
-The resulting structure is:
+This section provides a profile of CMS in which to carry `PkixEvidence`. The intention is to allow producers and consumers of this Evidence
+operating within constrained environments to operate with a self-contained ASN.1 module and parser; i.e., it is an explicit design goal
+that parsers producers and parsers do not require a full-featured CMS library. Producers MUST NOT use any CMS features that are
+not explicitly allowed by this profile. Parsers MAY reject any Evidence that does not conform to this profile, but also MAY
+silently ignore any unrecognized attributes and parse as if the profile was respected.
 
+Evidence is carried within a `ContentInfo` {{RFC5652}} with `contentType` equal to `id-signedData` and `content`
+equal to a `SignedData` value. The complete `ContentInfo` MUST be DER encoded.
+
+The profile is expressed by the following ASN.1 types. Each is a restriction of the
+correspondingly-named CMS type from {{RFC6268}} that keeps the same tags, so a
+DER-encoded `PkixEvidenceContentInfo` is also a valid DER-encoded CMS `ContentInfo`. A
+general-purpose CMS implementation can therefore process the Evidence unchanged,
+while a constrained implementation needs only the types below.
+
+~~~ asn.1
+PkixEvidenceContentInfo ::= SEQUENCE {
+    contentType       OBJECT IDENTIFIER (id-signedData),
+    content           [0] EXPLICIT PkixEvidenceSignedData }
+
+PkixEvidenceSignedData ::= SEQUENCE {
+    version           CMSVersion (v3),
+    digestAlgorithms  SET OF DigestAlgorithmIdentifier,
+    encapContentInfo  PkixEvidenceEncapContentInfo,
+    certificates      [0] IMPLICIT SET OF Certificate OPTIONAL,
+    -- crls [1] is not permitted
+    signerInfos       SET SIZE (1..MAX) OF PkixEvidenceSignerInfo }
+
+PkixEvidenceEncapContentInfo ::= SEQUENCE {
+    eContentType      OBJECT IDENTIFIER (id-ct-pkixEvidence),
+    eContent          [0] EXPLICIT OCTET STRING
+                          (CONTAINING PkixEvidence) }
+
+PkixEvidenceSignerInfo ::= SEQUENCE {
+    version             CMSVersion (v1 | v3),
+    sid                 SignerIdentifier,
+    digestAlgorithm     DigestAlgorithmIdentifier,
+    signedAttrs         [0] IMPLICIT Attributes
+                            {{ PkixEvidenceSignedAttributes }},
+    signatureAlgorithm  SignatureAlgorithmIdentifier,
+    signature           SignatureValue,
+    unsignedAttrs       [1] IMPLICIT Attributes
+                            {{ PkixEvidenceUnsignedAttributes }}
+                            OPTIONAL }
+  ( WITH COMPONENTS { ..., version (v1),
+      sid (WITH COMPONENTS {
+          ..., issuerAndSerialNumber PRESENT }) } |
+    WITH COMPONENTS { ..., version (v3),
+      sid (WITH COMPONENTS {
+          ..., subjectKeyIdentifier PRESENT }) } )
+
+PkixEvidenceSignedAttributes ATTRIBUTE ::= {
+    aa-contentType | aa-messageDigest | aa-signingCertificateV2,
+    ... }
+
+PkixEvidenceUnsignedAttributes ATTRIBUTE ::= {
+    aa-countersignature, ... }
 ~~~
-ContentInfo (contentType = id-signedData)
-  SignedData (version = 3)
-    digestAlgorithms
-    encapContentInfo
-      eContentType = id-ct-pkixEvidence
-      eContent     = DER(PkixEvidence)
-    certificates   (AK certificates and intermediates, optional)
-    signerInfos    (one or more SignerInfo, one per Attestation Key)
-      SignerInfo
-        sid, digestAlgorithm, signedAttrs,
-        signatureAlgorithm, signature,
-        unsignedAttrs (countersignatures, optional)
-~~~
+
+Some restrictions cannot be expressed in the ASN.1.
+These, and the restrictions above, are stated in the text below.
 
 The following restrictions apply to the `SignedData`:
 
@@ -693,8 +740,10 @@ The following restrictions apply to the `SignedData`:
 * `crls` MUST be absent. Verifiers obtain revocation information according to their own validation policy.
 
 * `signerInfos` MUST contain at least one `SignerInfo`. Each `SignerInfo` is a signature by one Attestation Key of the
-  Attester; see {{sec-cms-multiple-signers}}. Entities other than the Attester MUST NOT add a `SignerInfo`; they
-  countersign instead, as described in {{sec-cms-countersignatures}}.
+  Attester; see {{sec-cms-multiple-signers}}. All `SignerInfo` values MUST be produced by the same Attester
+  identity. When the Attestation Keys are certified, each signing certificate MUST represent that same Attester
+  identity with the same subject Distinguished Name (DN), but contain a distinct SPKI. Entities other than the
+  Attester MUST NOT add a `SignerInfo`; they countersign instead, as described in {{sec-cms-countersignatures}}. For Attestation Keys that are not contained in certificates, the verifier MAY enforce the "same entity" requirement by other out-of-band methods.
 
 There MUST NOT be any backwards compatibility with PKCS #7 as described in Section 5.2.1 of {{RFC5652}}.
 
@@ -752,9 +801,7 @@ bound to the signature through the `message-digest` attribute.
 
 Multiple `SignerInfo` values support algorithm agility by allowing the same Attester identity to sign the
 `PkixEvidence` with multiple Attestation Keys, for example to provide resilience against cryptographic degradation
-in a hybrid fashion. When more than one `SignerInfo` is present and the Attestation Keys are certified, each signing
-certificate represents the same Attester identity with the same subject Distinguished Name (DN), but contains a
-distinct SPKI.
+in a hybrid fashion. All `SignerInfo` values represent the same Attester identity, as required in {{sec-cms-profile}}.
 
 Every `SignerInfo` protects the same `PkixEvidence`. Because CMS does not bind the `SignerInfo` values to each other,
 a `SignerInfo` can be removed without invalidating the others. The `ak-spki` transaction claim, which is
@@ -1345,7 +1392,7 @@ algorithm, and where applicable a certification path, acceptable under its appra
 A Verifier MAY verify additional `SignerInfo` values when it supports their algorithms. The presence of a signature made with an
 algorithm that is unsupported or unacceptable to the Verifier does not make an otherwise acceptable signature invalid.
 A Verifier MUST reject Evidence when multiple signing certificates do not represent the same Attester identity as described
-in {{sec-cms-multiple-signers}}.
+in {{sec-cms-profile}}.
 
 If any `transaction.ak-spki` claims are present, the Verifier SHOULD verify that the SubjectPublicKeyInfo of the Attestation Key of
 each verified `SignerInfo` matches at least one `ak-spki` value. Each such claim is authoritative only when it is backed by a
