@@ -801,7 +801,7 @@ attribute of {{RFC5752}} without requiring an additional signed attribute. The `
 
 ### Countersignatures {#sec-cms-countersignatures}
 
-A party other than the Attester, for example a trusted intermediary between the Attester and the Verifier, MAY
+A party other than the Attester, for example a third party Endorser, MAY
 countersign a `SignerInfo` by adding a `countersignature` attribute (Section 11.4 of {{RFC5652}}) to that `SignerInfo`'s
 `unsignedAttrs`. A countersignature signs the `signature` value of the `SignerInfo` it is attached to, and therefore
 endorses that Attestation Key signature, rather than the Evidence directly.
@@ -811,6 +811,8 @@ countersigners, and the processing of countersignatures, including which counter
 Verifier policy. Verifiers that do not implement countersignatures MUST ignore `unsignedAttrs`.
 
 Since `unsignedAttrs` are not covered by the Attestation Key signature, the removal of a countersignature cannot be detected.
+
+An intended use case for counter signatures is for HSMs within a cluster to assert that they contain the same key stored under the same properties. Another intended use case is for adding counter-signatures by auditing infrastructure, or to add additional endorsement information such as external endorsements of the HSM's certification status. HSM vendors MAY add proprietary attributes to the counter-signature SignerInfo to indicate a clustering relationship or carry additional endorsement information, which a generic parser MAY ignore.
 
 ## Elements and Claims {#sec-elements-claims}
 
