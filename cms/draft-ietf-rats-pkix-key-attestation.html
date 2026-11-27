@@ -2060,10 +2060,8 @@ Attester <span class="bcp14">MUST NOT</span> add a <code>SignerInfo</code>; they
           </h4>
 <p id="section-5.2.1-1">When the Attestation Key is certified by an X.509 certificate, <code>sid</code> <span class="bcp14">MUST</span> identify that AK certificate,
 using either <code>issuerAndSerialNumber</code> or <code>subjectKeyIdentifier</code>, and that AK certificate <span class="bcp14">MUST</span> be included
-in <code>SignedData.certificates</code>. The AK certificate is subject to the constraints in <a href="#sec-ak-chain" class="auto internal xref">Section 3.2</a>.
-It is expected that an X.509 certificate will be generally used, as it provides the public key needed
-to verify the signature and clearly identifies the Attester that provided the signature.<a href="#section-5.2.1-1" class="pilcrow">¶</a></p>
-<p id="section-5.2.1-2"><code>SignedData.certificates</code> <span class="bcp14">MAY</span> also include any or all intermediate CA certificates needed to build a
+in <code>SignedData.certificates</code>. The AK certificate is subject to the constraints in <a href="#sec-ak-chain" class="auto internal xref">Section 3.2</a>.<a href="#section-5.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.2.1-2"><code>SignedData.certificates</code> <span class="bcp14">MAY</span> also include intermediate CA certificates needed to build a
 certification path, as well as the certificates of countersigners. It is not required to include trust anchors,
 and including a certificate never establishes it as a trust anchor. Order is not significant.<a href="#section-5.2.1-2" class="pilcrow">¶</a></p>
 <p id="section-5.2.1-3">In environments where X.509 certificates are not used, <code>sid</code> <span class="bcp14">MUST</span> use the <code>subjectKeyIdentifier</code> alternative,
@@ -2090,13 +2088,8 @@ asserted in the signed <code>ak-spki</code> transaction claim.<a href="#section-
 <p id="section-5.2.2-3">When <code>sid</code> identifies a certificate, <code>signedAttrs</code> <span class="bcp14">SHOULD</span> contain exactly one <code>signing-certificate-v2</code>
 attribute <span>[<a href="#RFC5035" class="cite xref">RFC5035</a>]</span>, whose first <code>ESSCertIDv2</code> identifies the AK certificate. This places the
 identity of the signer under the signature.<a href="#section-5.2.2-3" class="pilcrow">¶</a></p>
-<p id="section-5.2.2-4"><code>signedAttrs</code> <span class="bcp14">MUST NOT</span> contain a <code>signing-time</code> attribute. As described in <a href="#sec-cons-hsm-timestamps" class="auto internal xref">Section 9.8</a>,
-HSM clocks are not reliable; the <code>timestamp</code> transaction claim, with the caveats described for it, is
-the place to report the time of generation.<a href="#section-5.2.2-4" class="pilcrow">¶</a></p>
-<p id="section-5.2.2-5">Generators <span class="bcp14">SHOULD NOT</span> include any other signed attributes. Verifiers <span class="bcp14">MUST</span> ignore signed attributes that they do not recognize.<a href="#section-5.2.2-5" class="pilcrow">¶</a></p>
-<p id="section-5.2.2-6">Note that the signature in each <code>SignerInfo</code> is computed over the DER encoding of the
-signed attributes as described in Section 5.4 of <span>[<a href="#RFC5652" class="cite xref">RFC5652</a>]</span>, and the <code>PkixEvidence</code> is
-bound to the signature through the <code>message-digest</code> attribute.<a href="#section-5.2.2-6" class="pilcrow">¶</a></p>
+<p id="section-5.2.2-4"><code>signedAttrs</code> <span class="bcp14">MUST NOT</span> contain a <code>signing-time</code> attribute as this data is included explicitly within the <code>PkixEvidence.transaction.timestamp</code>, as described in <a href="#sec-cons-hsm-timestamps" class="auto internal xref">Section 9.8</a>.<a href="#section-5.2.2-4" class="pilcrow">¶</a></p>
+<p id="section-5.2.2-5">Generators <span class="bcp14">SHOULD NOT</span> include any other signed attributes. Verifiers <span class="bcp14">MAY</span> ignore signed attributes that they do not recognize or <span class="bcp14">MAY</span> reject as malformed.<a href="#section-5.2.2-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-cms-multiple-signers">
@@ -3062,8 +3055,6 @@ as described in <a href="#sec-data-model" class="auto internal xref">Section 5</
       </h2>
 <div class="breakable lang-asn.1 sourcecode" id="section-7-1">
 <pre>
-&lt;CODE STARTS&gt;
-
 PKIX-Evidence-2025
       { iso(1) identified-organization(3) dod(6) internet(1)
         security(5) mechanisms(5) pkix(7) id-mod(0)
@@ -3500,9 +3491,6 @@ claim-key-device-bound CLAIM ::= {
 }
 
 END
-
-&lt;CODE ENDS&gt;
-
 </pre><a href="#section-7-1" class="pilcrow">¶</a>
 </div>
 </section>
