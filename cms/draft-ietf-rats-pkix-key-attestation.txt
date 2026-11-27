@@ -830,16 +830,9 @@ Table of Contents
       according to their own validation policy.
 
    *  signerInfos MUST contain at least one SignerInfo.  Each SignerInfo
-      is a signature by one Attestation Key of the Attester; see
-      Section 5.2.3.  All SignerInfo values MUST be produced by the same
-      Attester identity.  When the Attestation Keys are certified, each
-      signing certificate MUST represent that same Attester identity
-      with the same subject Distinguished Name (DN), but contain a
-      distinct SPKI.  Entities other than the Attester MUST NOT add a
-      SignerInfo; they countersign instead, as described in
-      Section 5.2.4.  For Attestation Keys that are not contained in
-      certificates, the verifier MAY enforce the "same entity"
-      requirement by other out-of-band methods.
+      is a signature by one Attestation Key of the Attester.  See
+      Section 5.2.3 for the limited allowed use of multiple SignerInfo
+      values.
 
    There MUST NOT be any backwards compatibility with PKCS #7 as
    described in Section 5.2.1 of [RFC5652].
@@ -903,17 +896,27 @@ Table of Contents
 
 5.2.3.  Multiple Signers
 
-   Multiple SignerInfo values support algorithm agility by allowing the
-   same Attester identity to sign the PkixEvidence with multiple
-   Attestation Keys, for example to provide resilience against
-   cryptographic degradation in a hybrid fashion.  All SignerInfo values
-   represent the same Attester identity, as required in Section 5.2.
+   Multiple SignerInfo values are allowed to support cryptographic
+   algorithm agility by allowing the same Attester identity to sign the
+   PkixEvidence with multiple Attestation Keys, for example to provide
+   resilience against cryptographic degradation in a hybrid fashion.
+   All SignerInfo values MUST be produced by the same Attester identity.
+   When the Attestation Keys are certified, each signing certificate
+   MUST contain the same subject Distinguished Name (DN), and a distinct
+   SPKI.  Entities other than the Attester MUST NOT add a SignerInfo;
+   they countersign instead, as described in Section 5.2.4.  For
+   Attestation Keys that are not contained in certificates, the Evidence
+   alone does not allow a Verifier to check the "same entity"
+   requirement; a Verifier MAY enforce it by out-of-band methods.
 
-   Every SignerInfo protects the same PkixEvidence.  Because CMS does
-   not bind the SignerInfo values to each other, a SignerInfo can be
-   removed without invalidating the others.  The ak-spki transaction
-   claim, which is inside the signed content, allows a Verifier to
-   detect such removal.  See Section 6.4 and Section 9.3.
+   Every SignerInfo protects the same PkixEvidence, which MUST contain
+   exactly one ak-spki transaction claim for each SignerInfo.  Because
+   these claims are inside the signed content, every signature covers
+   the complete set of Attestation Keys, which allows a Verifier to
+   detect a removed SignerInfo.  This serves the same purpose as the
+   multiple-signatures attribute of [RFC5752] without requiring an
+   additional signed attribute.  The multiple-signatures attribute MUST
+   NOT be included.  See Section 6.4 and Section 9.3.
 
 5.2.4.  Countersignatures
 
@@ -1588,10 +1591,9 @@ Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
    with the key(s) used to sign that Evidence.  The importance of this
    binding is discussed in Section 6.4 and Section 9.3.
 
-   This claim can be reported multiple times.  Each included claim MUST
-   refer to a different attestation key.  In other words, this claim
-   should be repeated only if multiple attestation keys are used to sign
-   the Evidence.
+   This claim MUST be reported exactly once for each SignerInfo (see
+   Section 5.2.3).  Each included claim MUST refer to a different
+   attestation key.
 
    When the Attestation Key is not certified by an X.509 certificate
    (see Section 5.2.1), this claim is the means by which the
@@ -1801,18 +1803,20 @@ Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
    is unsupported or unacceptable to the Verifier does not make an
    otherwise acceptable signature invalid.  A Verifier MUST reject
    Evidence when multiple signing certificates do not represent the same
-   Attester identity as described in Section 5.2.
+   Attester identity as described in Section 5.2.3.
 
-   If any transaction.ak-spki claims are present, the Verifier SHOULD
-   verify that the SubjectPublicKeyInfo of the Attestation Key of each
-   verified SignerInfo matches at least one ak-spki value.  Each such
-   claim is authoritative only when it is backed by a successfully
-   verified SignerInfo using the corresponding attestation key.  An ak-
-   spki claim that is not matched by a verified SignerInfo MUST NOT by
-   itself be treated as proof that the corresponding key was used to
-   sign the Evidence.  Conversely, an ak-spki claim with no
-   corresponding SignerInfo indicates that a SignerInfo has been
-   removed; a Verifier MAY reject such Evidence according to its policy.
+   The Verifier MUST reject Evidence that does not contain at least one
+   transaction.ak-spki claim.  The Verifier MUST verify that the
+   SubjectPublicKeyInfo of the Attestation Key of each verified
+   SignerInfo matches an ak-spki value, and MUST reject the Evidence if
+   it does not.  Each such claim is authoritative only when it is backed
+   by a successfully verified SignerInfo using the corresponding
+   attestation key.  An ak-spki claim that is not matched by a verified
+   SignerInfo MUST NOT by itself be treated as proof that the
+   corresponding key was used to sign the Evidence.  Conversely, an ak-
+   spki claim with no corresponding SignerInfo indicates that a
+   SignerInfo has been removed; a Verifier MAY reject such Evidence
+   according to its policy.
 
    Countersignatures, if present, are processed according to Verifier
    policy as described in Section 5.2.4.
@@ -2670,6 +2674,11 @@ Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
               Specification Version 3.1", 11 August 2022,
               <https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/
               pkcs11-spec-v3.1-cs01.html>.
+
+   [RFC5752]  Turner, S. and J. Schaad, "Multiple Signatures in
+              Cryptographic Message Syntax (CMS)", RFC 5752,
+              DOI 10.17487/RFC5752, January 2010,
+              <https://www.rfc-editor.org/rfc/rfc5752>.
 
    [RFC6024]  Reddy, R. and C. Wallace, "Trust Anchor Management
               Requirements", RFC 6024, DOI 10.17487/RFC6024, October

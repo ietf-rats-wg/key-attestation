@@ -2031,10 +2031,7 @@ See <a href="#sec-cms-certificates" class="auto internal xref">Section 5.2.1</a>
 </li>
           <li class="normal" id="section-5.2-7.6">
             <p id="section-5.2-7.6.1"><code>signerInfos</code> <span class="bcp14">MUST</span> contain at least one <code>SignerInfo</code>. Each <code>SignerInfo</code> is a signature by one Attestation Key of the
-Attester; see <a href="#sec-cms-multiple-signers" class="auto internal xref">Section 5.2.3</a>. All <code>SignerInfo</code> values <span class="bcp14">MUST</span> be produced by the same Attester
-identity. When the Attestation Keys are certified, each signing certificate <span class="bcp14">MUST</span> represent that same Attester
-identity with the same subject Distinguished Name (DN), but contain a distinct SPKI. Entities other than the
-Attester <span class="bcp14">MUST NOT</span> add a <code>SignerInfo</code>; they countersign instead, as described in <a href="#sec-cms-countersignatures" class="auto internal xref">Section 5.2.4</a>. For Attestation Keys that are not contained in certificates, the verifier <span class="bcp14">MAY</span> enforce the "same entity" requirement by other out-of-band methods.<a href="#section-5.2-7.6.1" class="pilcrow">¶</a></p>
+Attester. See <a href="#sec-cms-multiple-signers" class="auto internal xref">Section 5.2.3</a> for the limited allowed use of multiple <code>SignerInfo</code> values.<a href="#section-5.2-7.6.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-5.2-8">There <span class="bcp14">MUST NOT</span> be any backwards compatibility with PKCS #7 as described in Section 5.2.1 of <span>[<a href="#RFC5652" class="cite xref">RFC5652</a>]</span>.<a href="#section-5.2-8" class="pilcrow">¶</a></p>
@@ -2097,12 +2094,14 @@ identity of the signer under the signature.<a href="#section-5.2.2-3" class="pil
           <h4 id="name-multiple-signers">
 <a href="#section-5.2.3" class="section-number selfRef">5.2.3. </a><a href="#name-multiple-signers" class="section-name selfRef">Multiple Signers</a>
           </h4>
-<p id="section-5.2.3-1">Multiple <code>SignerInfo</code> values support algorithm agility by allowing the same Attester identity to sign the
+<p id="section-5.2.3-1">Multiple <code>SignerInfo</code> values are allowed to support cryptographic algorithm agility by allowing the same Attester identity to sign the
 <code>PkixEvidence</code> with multiple Attestation Keys, for example to provide resilience against cryptographic degradation
-in a hybrid fashion. All <code>SignerInfo</code> values represent the same Attester identity, as required in <a href="#sec-cms-profile" class="auto internal xref">Section 5.2</a>.<a href="#section-5.2.3-1" class="pilcrow">¶</a></p>
-<p id="section-5.2.3-2">Every <code>SignerInfo</code> protects the same <code>PkixEvidence</code>. Because CMS does not bind the <code>SignerInfo</code> values to each other,
-a <code>SignerInfo</code> can be removed without invalidating the others. The <code>ak-spki</code> transaction claim, which is
-inside the signed content, allows a Verifier to detect such removal. See <a href="#sec-verif-proc" class="auto internal xref">Section 6.4</a> and <a href="#sec-cons-multi-sigs" class="auto internal xref">Section 9.3</a>.<a href="#section-5.2.3-2" class="pilcrow">¶</a></p>
+in a hybrid fashion. All <code>SignerInfo</code> values <span class="bcp14">MUST</span> be produced by the same Attester
+identity. When the Attestation Keys are certified, each signing certificate <span class="bcp14">MUST</span> contain the same subject Distinguished Name (DN), and a distinct SPKI. Entities other than the Attester <span class="bcp14">MUST NOT</span> add a <code>SignerInfo</code>; they countersign instead, as described in <a href="#sec-cms-countersignatures" class="auto internal xref">Section 5.2.4</a>. For Attestation Keys that are not contained in certificates, the Evidence alone does not allow a Verifier to check the "same entity" requirement; a Verifier <span class="bcp14">MAY</span> enforce it by out-of-band methods.<a href="#section-5.2.3-1" class="pilcrow">¶</a></p>
+<p id="section-5.2.3-2">Every <code>SignerInfo</code> protects the same <code>PkixEvidence</code>, which <span class="bcp14">MUST</span> contain exactly one <code>ak-spki</code> transaction claim for each
+<code>SignerInfo</code>. Because these claims are inside the signed content, every signature covers the complete set of Attestation
+Keys, which allows a Verifier to detect a removed <code>SignerInfo</code>. This serves the same purpose as the <code>multiple-signatures</code>
+attribute of <span>[<a href="#RFC5752" class="cite xref">RFC5752</a>]</span> without requiring an additional signed attribute. The <code>multiple-signatures</code> attribute <span class="bcp14">MUST NOT</span> be included. See <a href="#sec-verif-proc" class="auto internal xref">Section 6.4</a> and <a href="#sec-cons-multi-sigs" class="auto internal xref">Section 9.3</a>.<a href="#section-5.2.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-cms-countersignatures">
@@ -2851,8 +2850,8 @@ different values. However, within the scope of this specification, the "nonce" v
 type <code>SubjectPublicKeyInfo</code>, as defined for X.509 certificates in <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>.<a href="#section-5.6.3-1" class="pilcrow">¶</a></p>
 <p id="section-5.6.3-2">This transaction claim is used to bind the content of the Evidence with the key(s) used to sign that Evidence. The importance
 of this binding is discussed in <a href="#sec-verif-proc" class="auto internal xref">Section 6.4</a> and <a href="#sec-cons-multi-sigs" class="auto internal xref">Section 9.3</a>.<a href="#section-5.6.3-2" class="pilcrow">¶</a></p>
-<p id="section-5.6.3-3">This claim can be reported multiple times. Each included claim <span class="bcp14">MUST</span> refer to a different attestation key. In other words, this claim
-should be repeated only if multiple attestation keys are used to sign the Evidence.<a href="#section-5.6.3-3" class="pilcrow">¶</a></p>
+<p id="section-5.6.3-3">This claim <span class="bcp14">MUST</span> be reported exactly once for each <code>SignerInfo</code> (see <a href="#sec-cms-multiple-signers" class="auto internal xref">Section 5.2.3</a>). Each included claim <span class="bcp14">MUST</span> refer
+to a different attestation key.<a href="#section-5.6.3-3" class="pilcrow">¶</a></p>
 <p id="section-5.6.3-4">When the Attestation Key is not certified by an X.509 certificate (see <a href="#sec-cms-certificates" class="auto internal xref">Section 5.2.1</a>), this claim is the means by which
 the SubjectPublicKeyInfo of the Attestation Key is carried in the Evidence.<a href="#section-5.6.3-4" class="pilcrow">¶</a></p>
 </section>
@@ -3034,9 +3033,10 @@ algorithm, and where applicable a certification path, acceptable under its appra
 A Verifier <span class="bcp14">MAY</span> verify additional <code>SignerInfo</code> values when it supports their algorithms. The presence of a signature made with an
 algorithm that is unsupported or unacceptable to the Verifier does not make an otherwise acceptable signature invalid.
 A Verifier <span class="bcp14">MUST</span> reject Evidence when multiple signing certificates do not represent the same Attester identity as described
-in <a href="#sec-cms-profile" class="auto internal xref">Section 5.2</a>.<a href="#section-6.4-6" class="pilcrow">¶</a></p>
-<p id="section-6.4-7">If any <code>transaction.ak-spki</code> claims are present, the Verifier <span class="bcp14">SHOULD</span> verify that the SubjectPublicKeyInfo of the Attestation Key of
-each verified <code>SignerInfo</code> matches at least one <code>ak-spki</code> value. Each such claim is authoritative only when it is backed by a
+in <a href="#sec-cms-multiple-signers" class="auto internal xref">Section 5.2.3</a>.<a href="#section-6.4-6" class="pilcrow">¶</a></p>
+<p id="section-6.4-7">The Verifier <span class="bcp14">MUST</span> reject Evidence that does not contain at least one <code>transaction.ak-spki</code> claim. The Verifier <span class="bcp14">MUST</span> verify that
+the SubjectPublicKeyInfo of the Attestation Key of each verified <code>SignerInfo</code> matches an <code>ak-spki</code> value, and <span class="bcp14">MUST</span> reject the
+Evidence if it does not. Each such claim is authoritative only when it is backed by a
 successfully verified <code>SignerInfo</code> using the corresponding attestation key. An <code>ak-spki</code> claim that is not matched by a verified
 <code>SignerInfo</code> <span class="bcp14">MUST NOT</span> by itself be treated as proof that the corresponding key was used to sign the Evidence. Conversely, an
 <code>ak-spki</code> claim with no corresponding <code>SignerInfo</code> indicates that a <code>SignerInfo</code> has been removed; a Verifier <span class="bcp14">MAY</span> reject such
@@ -3826,6 +3826,10 @@ such as the "nonce" claim of the "transaction" element, introduced in this speci
 <dt id="PKCS11">[PKCS11]</dt>
         <dd>
 <span class="refAuthor">Bong, D.</span>, <span class="refAuthor">Cox, T.</span>, and <span class="refAuthor">OASIS PKCS 11 TC</span>, <span class="refTitle">"PKCS #11 Specification Version 3.1"</span>, <time datetime="2022-08-11" class="refDate">11 August 2022</time>, <span>&lt;<a href="https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/pkcs11-spec-v3.1-cs01.html">https://docs.oasis-open.org/pkcs11/pkcs11-spec/v3.1/cs01/pkcs11-spec-v3.1-cs01.html</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5752">[RFC5752]</dt>
+        <dd>
+<span class="refAuthor">Turner, S.</span> and <span class="refAuthor">J. Schaad</span>, <span class="refTitle">"Multiple Signatures in Cryptographic Message Syntax (CMS)"</span>, <span class="seriesInfo">RFC 5752</span>, <span class="seriesInfo">DOI 10.17487/RFC5752</span>, <time datetime="2010-01" class="refDate">January 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5752">https://www.rfc-editor.org/rfc/rfc5752</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC6024">[RFC6024]</dt>
         <dd>
