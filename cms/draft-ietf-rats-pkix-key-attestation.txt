@@ -907,7 +907,8 @@ Table of Contents
    they countersign instead, as described in Section 5.2.4.  For
    Attestation Keys that are not contained in certificates, the Evidence
    alone does not allow a Verifier to check the "same entity"
-   requirement; a Verifier MAY enforce it by out-of-band methods.
+   requirement; a Verifier enforces it by out-of-band methods, as
+   described in Section 6.4.
 
    Every SignerInfo protects the same PkixEvidence, which MUST contain
    exactly one ak-spki transaction claim for each SignerInfo.  Because
@@ -1605,7 +1606,7 @@ Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
    attestation key.
 
    When the Attestation Key is not certified by an X.509 certificate
-   (see Section 5.2.1), this claim is the means by which the
+   (see Section 5.2.1), this claim is the only means by which the
    SubjectPublicKeyInfo of the Attestation Key is carried in the
    Evidence.
 
@@ -1782,7 +1783,7 @@ Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
           trustworthiness: the Verifier MUST establish trust in that key
           by other means, such as a trust anchor configured as a raw
           public key.  If no trusted key can be obtained, the SignerInfo
-          MUST be treated as unverifiable.
+          fails verification.
 
    3.  Verify the signature over the DER-encoded signed attributes, as
        described in Section 5.6 of [RFC5652].
@@ -1803,29 +1804,27 @@ Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
    deployments because it provides both the public key and an X.509
    identity.
 
-   Each SignerInfo is evaluated independently.  A Verifier MUST
-   successfully verify at least one SignerInfo using an algorithm, and
-   where applicable a certification path, acceptable under its appraisal
-   policy; otherwise the Evidence MUST be rejected.  A Verifier MAY
-   verify additional SignerInfo values when it supports their
-   algorithms.  The presence of a signature made with an algorithm that
-   is unsupported or unacceptable to the Verifier does not make an
-   otherwise acceptable signature invalid.  A Verifier MUST reject
-   Evidence when multiple signing certificates do not represent the same
-   Attester identity as described in Section 5.2.3.
+   A Verifier MUST check every SignerInfo in the Evidence according to
+   the steps above, and MUST reject the Evidence if any SignerInfo fails
+   verification.
 
-   The Verifier MUST reject Evidence that does not contain at least one
-   transaction.ak-spki claim.  The Verifier MUST verify that the
-   SubjectPublicKeyInfo of the Attestation Key of each verified
-   SignerInfo matches an ak-spki value, and MUST reject the Evidence if
-   it does not.  Each such claim is authoritative only when it is backed
-   by a successfully verified SignerInfo using the corresponding
-   attestation key.  An ak-spki claim that is not matched by a verified
-   SignerInfo MUST NOT by itself be treated as proof that the
-   corresponding key was used to sign the Evidence.  Conversely, an ak-
-   spki claim with no corresponding SignerInfo indicates that a
-   SignerInfo has been removed; a Verifier MAY reject such Evidence
-   according to its policy.
+   All SignerInfo values MUST belong to the same Attester.  When the
+   Attestation Keys are certified, a Verifier MUST reject Evidence whose
+   signing certificates do not all represent the same Attester identity
+   as described in Section 5.2.3.  When they are not certified, the
+   Verifier SHOULD establish that the Attestation Keys belong to the
+   same Attester by the same out-of-band means it uses to establish
+   trust in those keys, and SHOULD reject the Evidence if it cannot.
+
+   The Verifier MUST check the transaction.ak-spki claims against the
+   SignerInfo values, and MUST reject the Evidence as malformed if any
+   of the following is true:
+
+   *  the SubjectPublicKeyInfo of the Attestation Key of a SignerInfo
+      does not match an ak-spki value; or,
+
+   *  the Evidence contains more ak-spki claims than SignerInfo values.
+      This indicates that a SignerInfo has been removed.
 
    Countersignatures, if present, are processed according to Verifier
    policy as described in Section 5.2.4.
